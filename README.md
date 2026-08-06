@@ -38,9 +38,17 @@
   </a>
 </p>
 
-# Medusa DTC Starter
+# Sensus Collective × Medusa PoC
 
-A production-ready monorepo starter for direct-to-consumer ecommerce stores powered by Medusa and Next.js. Includes a fully featured storefront with product browsing, cart, checkout, customer accounts, and order management.
+Medusa v2 monorepo (backend + Next.js storefront) exploring a curated multi-vendor marketplace for **Sensus Collective**.
+
+Product outcomes: [`sensus.md`](./sensus.md). Architecture decisions: [`docs/adr/`](./docs/adr/). AI / engineering context: [`agents/`](./agents/) (start at [`agents/overview.md`](./agents/overview.md)).
+
+Based on the Medusa DTC starter; customized as we validate marketplace flows (one basket, many houses).
+
+## AI context
+
+Agents should read `AGENTS.md` (router) then `agents/overview.md`. Do not treat the RFP's Shopify Plus line as binding; Medusa is the commerce core (ADR 0001).
 
 ## Features
 

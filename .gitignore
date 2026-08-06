@@ -43,6 +43,9 @@ yarn-error.log*
 .turbo
 .vscode
 
+# Local IDE adapters (Cursor routers, etc.)
+.cursor/
+
 # vercel
 .vercel
 
