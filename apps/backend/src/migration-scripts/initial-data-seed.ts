@@ -15,13 +15,27 @@ import {
   createRegionsWorkflow,
   createSalesChannelsWorkflow,
   createShippingOptionsWorkflow,
-  createShippingProfilesWorkflow,
   createStockLocationsWorkflow,
   createStoresWorkflow,
   createTaxRegionsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows";
+import {
+  ALL_SENSUS_COUNTRY_CODES,
+  STORE_SUPPORTED_CURRENCIES,
+  SENSUS_MARKETS,
+  countryGeoZones,
+} from "../lib/sensus-markets";
+
+/** Demo catalogue prices: EUR / USD / GBP (GBP mirrors EUR for seed data). */
+function demoVariantPrices(eurAmount: number, usdAmount: number) {
+  return [
+    { amount: eurAmount, currency_code: "eur" },
+    { amount: usdAmount, currency_code: "usd" },
+    { amount: eurAmount, currency_code: "gbp" },
+  ];
+}
 
 export default async function initial_data_seed({
   container,
@@ -35,7 +49,7 @@ export default async function initial_data_seed({
     ModuleRegistrationName.FULFILLMENT
   );
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  const countries = ALL_SENSUS_COUNTRY_CODES;
 
   logger.info("Seeding store data...");
   const {
@@ -72,43 +86,29 @@ export default async function initial_data_seed({
     },
   });
 
-  const {
-    result: [store],
-  } = await createStoresWorkflow(container).run({
+  await createStoresWorkflow(container).run({
     input: {
       stores: [
         {
-          name: "Default Store",
-          supported_currencies: [
-            {
-              currency_code: "eur",
-              is_default: true,
-            },
-            {
-              currency_code: "usd",
-              is_default: false,
-            },
-          ],
+          name: "Sensus Collective",
+          supported_currencies: [...STORE_SUPPORTED_CURRENCIES],
           default_sales_channel_id: defaultSalesChannel.id,
         },
       ],
     },
   });
 
-  logger.info("Seeding region data...");
+  logger.info("Seeding Sensus region data (UK, EU, US)...");
   const { result: regionResult } = await createRegionsWorkflow(container).run({
     input: {
-      regions: [
-        {
-          name: "Europe",
-          currency_code: "eur",
-          countries,
-          payment_providers: ["pp_system_default"],
-        },
-      ],
+      regions: SENSUS_MARKETS.map((market) => ({
+        name: market.regionName,
+        currency_code: market.currencyCode,
+        countries: market.countries,
+        payment_providers: ["pp_system_default"],
+      })),
     },
   });
-  const region = regionResult[0];
   logger.info("Finished seeding regions.");
 
   logger.info("Seeding tax regions...");
@@ -127,10 +127,10 @@ export default async function initial_data_seed({
     input: {
       locations: [
         {
-          name: "European Warehouse",
+          name: "Sensus Hub",
           address: {
-            city: "Copenhagen",
-            country_code: "DK",
+            city: "London",
+            country_code: "GB",
             address_1: "",
           },
         },
@@ -157,41 +157,12 @@ export default async function initial_data_seed({
   const shippingProfile = shippingProfileResult[0];
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "European Warehouse delivery",
+    name: "Sensus markets delivery",
     type: "shipping",
     service_zones: [
       {
-        name: "Europe",
-        geo_zones: [
-          {
-            country_code: "gb",
-            type: "country",
-          },
-          {
-            country_code: "de",
-            type: "country",
-          },
-          {
-            country_code: "dk",
-            type: "country",
-          },
-          {
-            country_code: "se",
-            type: "country",
-          },
-          {
-            country_code: "fr",
-            type: "country",
-          },
-          {
-            country_code: "es",
-            type: "country",
-          },
-          {
-            country_code: "it",
-            type: "country",
-          },
-        ],
+        name: "UK · EU · US",
+        geo_zones: countryGeoZones(countries),
       },
     ],
   });
@@ -204,6 +175,11 @@ export default async function initial_data_seed({
       fulfillment_set_id: fulfillmentSet.id,
     },
   });
+
+  const regionShippingPrices = regionResult.map((region) => ({
+    region_id: region.id,
+    amount: 10,
+  }));
 
   await createShippingOptionsWorkflow(container).run({
     input: [
@@ -219,18 +195,10 @@ export default async function initial_data_seed({
           code: "standard",
         },
         prices: [
-          {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
-          },
-          {
-            region_id: region.id,
-            amount: 10,
-          },
+          { currency_code: "gbp", amount: 10 },
+          { currency_code: "eur", amount: 10 },
+          { currency_code: "usd", amount: 10 },
+          ...regionShippingPrices,
         ],
         rules: [
           {
@@ -257,18 +225,10 @@ export default async function initial_data_seed({
           code: "express",
         },
         prices: [
-          {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
-          },
-          {
-            region_id: region.id,
-            amount: 10,
-          },
+          { currency_code: "gbp", amount: 15 },
+          { currency_code: "eur", amount: 15 },
+          { currency_code: "usd", amount: 15 },
+          ...regionShippingPrices.map((p) => ({ ...p, amount: 15 })),
         ],
         rules: [
           {
@@ -381,16 +341,7 @@ export default async function initial_data_seed({
                 Size: "S",
                 Color: "Black",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "S / White",
@@ -399,16 +350,7 @@ export default async function initial_data_seed({
                 Size: "S",
                 Color: "White",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "M / Black",
@@ -417,16 +359,7 @@ export default async function initial_data_seed({
                 Size: "M",
                 Color: "Black",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "M / White",
@@ -435,16 +368,7 @@ export default async function initial_data_seed({
                 Size: "M",
                 Color: "White",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "L / Black",
@@ -453,16 +377,7 @@ export default async function initial_data_seed({
                 Size: "L",
                 Color: "Black",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "L / White",
@@ -471,16 +386,7 @@ export default async function initial_data_seed({
                 Size: "L",
                 Color: "White",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "XL / Black",
@@ -489,16 +395,7 @@ export default async function initial_data_seed({
                 Size: "XL",
                 Color: "Black",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "XL / White",
@@ -507,16 +404,7 @@ export default async function initial_data_seed({
                 Size: "XL",
                 Color: "White",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
           ],
           sales_channels: [
@@ -552,16 +440,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "S",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "M",
@@ -569,16 +448,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "M",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "L",
@@ -586,16 +456,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "L",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "XL",
@@ -603,16 +464,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "XL",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
           ],
           sales_channels: [
@@ -648,16 +500,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "S",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "M",
@@ -665,16 +508,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "M",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "L",
@@ -682,16 +516,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "L",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "XL",
@@ -699,16 +524,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "XL",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
           ],
           sales_channels: [
@@ -744,16 +560,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "S",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "M",
@@ -761,16 +568,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "M",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "L",
@@ -778,16 +576,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "L",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
             {
               title: "XL",
@@ -795,16 +584,7 @@ export default async function initial_data_seed({
               options: {
                 Size: "XL",
               },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
+              prices: demoVariantPrices(10, 15),
             },
           ],
           sales_channels: [

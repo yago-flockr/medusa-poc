@@ -50,6 +50,7 @@ Hard product problem: **one basket, many houses** → one payment, per-house con
 
 - **Medusa v2 backend**: `apps/backend`
 - **Next.js storefront**: `apps/storefront`
+- **Markets (UK / EU / US)**: `apps/backend/src/lib/sensus-markets.ts`, `docs/markets.md`
 - **pnpm + Turborepo**: root `package.json`, `pnpm-workspace.yaml`, `turbo.json`
 - **Postgres**: `docker-compose.yml`
 - **ADRs**: `docs/adr/`

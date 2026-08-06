@@ -8,7 +8,7 @@ Follow **Maintaining project documentation** in `agents/overview.md`.
 
 ## Overview
 
-Medusa v2 application (`@dtc/backend`). System of record for catalogue, cart, checkout, orders, customers, and admin. Config: `medusa-config.ts`.
+- Config: `medusa-config.ts`. Markets: `src/lib/sensus-markets.ts` (UK / EU / US regions for seed).
 
 ## Architecture
 

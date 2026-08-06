@@ -180,7 +180,7 @@ These need more time. They stay in the RFP vision; they are **not** Launch commi
 
 | Topic | Launch / v1 assumption | Revisit |
 | --- | --- | --- |
-| Markets | UK-first | When P0 stable |
+| Markets | UK-first (`gb` / GBP); EU + US regions seeded for localization | See `docs/markets.md` / ADR 0007 |
 | Shipping charge | One policy, pluggable | RFP TO CONFIRM |
 | Payouts | Visible commission; payout may be ops-assisted | Automate in v2 |
 | Labels | Manual fallback allowed if API late | Stretch → v2 |

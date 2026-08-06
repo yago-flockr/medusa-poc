@@ -17,5 +17,20 @@ services:
       timeout: 5s
       retries: 10
 
+  redis:
+    image: redis:7-alpine
+    container_name: medusa-poc-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - medusa_poc_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 volumes:
   medusa_poc_pgdata:
+  medusa_poc_redis:

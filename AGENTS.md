@@ -14,6 +14,7 @@ Medusa v2 monorepo PoC for **Sensus Collective**, a curated multi-vendor marketp
 - **Medusa learning map:** `agents/medusa-learning-map.md`
 - **ADRs:** `docs/adr/`
 - **Feasibility:** `docs/feasibility-sensus-medusa.md`
+- **Markets:** `docs/markets.md`
 
 ## Human onboarding
 
