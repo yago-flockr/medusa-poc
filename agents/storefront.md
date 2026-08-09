@@ -10,14 +10,14 @@ Follow **Maintaining project documentation** in `agents/overview.md`. Update thi
 
 Next.js App Router storefront from the Medusa DTC starter. Talks to the Medusa Store API. Port default: **8000**.
 
-This is the **customer** surface only. House portal is separate (ADR 0003). Brand-specific UI should eventually live in a theme/config layer (`docs/plan.md` Phase 4), not hard-coded product names.
+This is the **customer** surface only. House portal is a draft hypothesis (ADR 0003), out of scope for Now. Brand config layer is Later (`docs/plan.md`).
 
 ## Architecture and flow
 
 - Next.js 15 + React 19
 - Medusa JS SDK (`@medusajs/js-sdk`) with publishable key
 - Tailwind-based UI from the starter
-- Planned DX stack (`docs/plan.md` Phase 1): shadcn/ui, i18next, Zustand, TanStack Query, consistent icons/images
+- DX stack (shadcn/ui, i18next, Zustand, TanStack Query) is Next in `docs/plan.md`, not Now
 
 ## Patterns to follow when extending
 

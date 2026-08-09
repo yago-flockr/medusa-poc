@@ -18,7 +18,7 @@ Do not record generic facts, obvious code, or duplicates.
 **Where to update:**
 
 - Repo-wide → `agents/overview.md`
-- Roadmap / phased work → `docs/plan.md`
+- Roadmap / phased work → `docs/plan.md` (Now / Next / Later; draft)
 - Decisions that bind the codebase → `docs/adr/`
 - Human onboarding → `README.md`
 - Backend → `agents/backend.md`
@@ -30,16 +30,11 @@ Do not record generic facts, obvious code, or duplicates.
 
 ## Overview
 
-This repo is a **Medusa v2 monorepo chassis**: high-leverage, modular commerce foundation meant to be cloned and specialized for client marketplaces. It is brand-agnostic; client names and styling live in the Phase 4 config layer, not in core.
+This repo is a **Medusa v2 monorepo chassis**: a brand-agnostic commerce foundation to clone and specialize for client marketplaces. The codebase is still close to the Medusa DTC starter.
 
-Goals (see `docs/plan.md`):
+**Now** (see `docs/plan.md`): stakeholder-ready single-merchant vertical slice (browse → cart → checkout → admin), one small learning extension, and an isolated multi-vendor spike that must not break the demo.
 
-1. Strong developer experience (Biome, Next.js + Tailwind + shadcn/ui, i18next, Zustand, TanStack Query).
-2. Multi-vendor-aware Medusa engine (consignments by house, commission, schema extensions).
-3. Clear storefront ↔ backend contract (API strategy, auth for customer / house / admin).
-4. Factory workflow: clone, swap brand config, onboard data.
-
-Current code base is still close to the Medusa DTC starter. Treat `docs/plan.md` phases as the direction of travel; do not invent brand-specific product rules in the chassis.
+**Next / Later:** productized multi-vendor, DX hardening, factory/brand config. Those are not current implementation mandates.
 
 ## Architecture and flow
 
@@ -47,10 +42,10 @@ Current code base is still close to the Medusa DTC starter. Treat `docs/plan.md`
 2. Storefront calls Medusa Store API with a publishable API key.
 3. `apps/backend` (Medusa) is system of record for products, cart, checkout, orders, customers.
 4. Staff use Medusa Admin (`http://localhost:9000/app`) plus custom admin UI extensions.
-5. Vendor ("house") portal is a separate surface over the same backend (ADR 0003).
+5. Vendor ("house") portal is a draft hypothesis (ADR 0003), not in Now scope.
 6. Local DB and Redis: Docker Compose (ADR 0004).
 
-Hard chassis problem: **one basket, many houses** → one payment, per-house consignments (ADR 0002). De-risk with a two-house spike before large UI work.
+Hard scale problem (hypothesis ADR 0002): **one basket, many houses** → one payment, per-house consignments. De-risk with a time-boxed spike; keep the demo path single-merchant until then.
 
 ## Core technologies and where they live
 
@@ -66,8 +61,8 @@ Hard chassis problem: **one basket, many houses** → one payment, per-house con
 
 - `apps/backend/`: Medusa application. Detail → `agents/backend.md`
 - `apps/storefront/`: customer storefront. Detail → `agents/storefront.md`
-- `docs/adr/`: architecture decisions for the chassis
-- `docs/plan.md`: phased roadmap (DX → engine → bridge → factory)
+- `docs/adr/`: architecture decisions (accepted vs hypothesis)
+- `docs/plan.md`: Now / Next / Later roadmap (draft)
 - `docker-compose.yml`: local Postgres and Redis only
 
 ## Patterns to follow when extending
@@ -75,14 +70,14 @@ Hard chassis problem: **one basket, many houses** → one payment, per-house con
 1. Prefer Medusa modules, workflows, links, and subscribers over ad hoc services.
 2. Routes stay thin; business logic in workflows.
 3. Content/CMS may reference products; never duplicate price or stock.
-4. House isolation is structural (module filters / ownership), not ad hoc checks in every handler.
-5. Keep **core logic** separate from **brand styling** (colors, copy, images in config or theme layer).
+4. Do not productize multi-vendor on the demo path until the spike succeeds.
+5. Keep core logic separate from brand styling when a config layer appears (Later).
 6. Buy vs build: justify custom code against an off-the-shelf Medusa module or provider.
 
 ## Conventions and standards
 
 - Package manager: **pnpm only** (ADR 0005).
-- Lint today: ESLint + Prettier from the starter (`@medusajs/eslint-plugin`). Biome swap is Phase 1 in `docs/plan.md`; do not mix both.
+- Lint today: ESLint + Prettier from the starter (`@medusajs/eslint-plugin`). Biome is Next, not Now; do not mix both.
 - Code artifacts in English.
 - No secrets in git: `.env` / `.env.local` gitignored; document new vars in `.env.template`.
 - House style for docs in this repo: no markdown tables, no em dashes.
@@ -115,9 +110,12 @@ Backend DB (from `apps/backend`):
 - create-medusa-app may leave publishable key unset if interrupted; sync via admin or `apps/backend/src/scripts/sync-publishable-key.ts` if present.
 - Redis URL may be unset locally; Medusa uses an in-memory fake Redis (not for production).
 - Storefront without publishable key fails in confusing ways; check `.env.local` first.
-## Open chassis decisions
+- Multi-vendor planning notes: `docs/spikes/multi-vendor-order.md` (not productized for Now).
 
-- API contract: Medusa GraphQL vs REST + BFF (`docs/plan.md` Phase 3).
-- Shipping charge policy for multi-house orders (one vs per-house vs absorbed).
-- CMS and search provider defaults for the factory workflow.
-- Exact auth standard across Customer, House, and Admin.
+## Open decisions (Next / Later)
+
+- Multi-vendor model: spike findings in ADR 0002
+- Shipping charge policy for multi-house orders
+- API contract: Medusa GraphQL vs REST + BFF
+- Auth standard across Customer, House, and Admin
+- CMS and search provider defaults

@@ -14,6 +14,7 @@ Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor 
 - **Medusa learning map:** `agents/medusa-learning-map.md`
 - **Roadmap:** `docs/plan.md`
 - **ADRs:** `docs/adr/`
+- **Spikes (planning):** `docs/spikes/`
 
 ## Human onboarding
 

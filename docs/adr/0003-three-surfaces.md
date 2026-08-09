@@ -1,30 +1,30 @@
 # ADR 0003: Three surfaces, one commerce core
 
-- Status: proposed
+- Status: hypothesis / draft
 - Date: 2026-08-06
 - Updated: 2026-08-09
 - Deciders: engineering
 
+> Not an implementation mandate for the stakeholder demo. Now focuses on customer storefront + Medusa Admin. House portal is Later/Next.
+
 ## Context
 
-Marketplace clients built from this chassis typically need three products sharing one data model:
+Marketplace clients built from this chassis may eventually need three products sharing one data model:
 
-1. **Customer storefront**: discovery, purchase, post-purchase across multi-house orders.
+1. **Customer storefront**: discovery, purchase, post-purchase.
 2. **House portal**: onboarding, catalogue/stock, fulfilment, payouts.
-3. **Admin portal**: curation/ops, central orders/returns, commission ledger, CMS composition hooks.
+3. **Admin portal**: ops, central orders/returns, commission ledger, CMS hooks.
 
-## Decision (working)
+## Hypothesis (working)
 
-- **Customer storefront**: `apps/storefront` (Next.js), customized per brand via a config/theme layer (`docs/plan.md` Phase 4).
+- **Customer storefront**: `apps/storefront` (Next.js); brand via a config/theme layer when we reach Later.
 - **Admin**: Medusa Admin at `/app`, extended via `apps/backend/src/admin`.
-- **House portal**: a custom surface (Medusa auth plus APIs or dedicated routes). Do not rebrand Medusa Admin as the house experience.
+- **House portal**: a custom surface (not rebranded Medusa Admin).
 
-All three talk to **one Medusa backend** as system of record for commercial data. CMS owns content that references products; it never owns price or stock truth.
+All surfaces talk to **one Medusa backend** as system of record. CMS may reference products; it never owns price or stock truth.
 
-Identity: three audiences (customer, house user, staff) with separate auth concerns and hard house data isolation (`docs/plan.md` Phase 3).
+## Consequences if we adopt this
 
-## Consequences
-
-- Scope is not storefront-only. House portal and admin extensions are first-class chassis concerns.
-- Brand styling must not be tangled into auth or order orchestration.
-- Domain, modules, and APIs can proceed against provisional UI while client design arrives.
+- Scope is not storefront-only long term, but house portal is out of scope for Now.
+- Brand styling must not tangle into auth or order orchestration.
+- Domain work can proceed against provisional UI.

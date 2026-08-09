@@ -24,7 +24,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - Store: PostgreSQL
 - Layer: Medusa module data models and migrations
 - No custom chassis modules with owned models yet (starter + seed helpers only)
-- Planned extensions (Phase 2): house-scoped product/order fields, consignments, commission
+- Planned extensions (Next in `docs/plan.md`): house-scoped fields, consignments, commission
 
 ## Core technologies
 
@@ -41,7 +41,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
 - `admin/`: Admin dashboard widgets and routes
-- `migration-scripts/`: one-off / seed scripts (includes initial seed)
+- `migration-scripts/`: one-off / seed scripts (includes initial seed; runs once via `db:migrate`)
 - `scripts/`: CLI exec helpers (for example publishable key sync)
 - `lib/`: shared helpers (including default markets seed config)
 
@@ -51,7 +51,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 2. Business logic in **workflows** and steps; routes resolve and run workflows.
 3. Do not open a raw DB client or write SQL in routes.
 4. Marketplace concepts (house, consignment, commission) become explicit modules/links once the spike lands (ADR 0002). Avoid scattering house_id checks without a model.
-5. Shared chassis modules should stay brand-agnostic; brand config belongs outside core logic (`docs/plan.md` Phase 4).
+5. Shared chassis modules should stay brand-agnostic; brand config belongs outside core logic (`docs/plan.md` Later).
 
 ## Conventions and standards
 
@@ -78,3 +78,4 @@ From `apps/backend`:
 - Destructive DB ops only with explicit user confirmation.
 - `.medusa/` is build output; do not hand-edit.
 - Local Redis optional; fake Redis is not production-safe.
+- Multi-vendor planning notes: `docs/spikes/multi-vendor-order.md` (do not productize on the demo path yet).

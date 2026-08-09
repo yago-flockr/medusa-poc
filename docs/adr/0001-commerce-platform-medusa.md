@@ -19,7 +19,7 @@ Use **Medusa v2** (this monorepo: `apps/backend` + `apps/storefront`) as the com
 
 - Prefer Medusa modules, workflows, and links over inventing a parallel commerce domain.
 - Timeline risk: we own marketplace orchestration. De-risk multi-vendor order split early (ADR 0002).
-- Client projects clone this repo and specialize brand/config (`docs/plan.md` Phase 4); they do not fork a different commerce core.
+- Client projects clone this repo and specialize brand/config (`docs/plan.md` Later); they do not fork a different commerce core.
 
 ## References
 

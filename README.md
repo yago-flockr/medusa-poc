@@ -130,9 +130,10 @@ pnpm run storefront:dev
 
 ## Useful docs in this repo
 
-- [`docs/plan.md`](./docs/plan.md) — phased chassis roadmap
+- [`docs/plan.md`](./docs/plan.md) — Now / Next / Later roadmap (draft)
 - [`docs/pre-start.md`](./docs/pre-start.md) — short local checklist
 - [`docs/adr/`](./docs/adr/) — architecture decisions
+- [`docs/spikes/`](./docs/spikes/) — planning notes for hard problems
 
 ## External resources
 
