@@ -2,11 +2,12 @@
 
 - Status: accepted
 - Date: 2026-08-06
-- Deciders: engineering (PoC)
+- Updated: 2026-08-09
+- Deciders: engineering
 
 ## Context
 
-Local development runs on WSL2 with Docker Desktop on Windows. Installing Postgres or Redis via apt inside WSL is not the preferred path for this team.
+Local development often runs on WSL2 with Docker Desktop on Windows. Installing Postgres or Redis via apt inside WSL is not the preferred path for this team.
 
 ## Decision
 

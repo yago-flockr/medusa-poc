@@ -2,7 +2,8 @@
 
 - Status: accepted
 - Date: 2026-08-06
-- Deciders: engineering (PoC)
+- Updated: 2026-08-09
+- Deciders: engineering
 
 ## Context
 

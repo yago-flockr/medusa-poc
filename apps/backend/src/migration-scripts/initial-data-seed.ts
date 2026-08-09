@@ -22,11 +22,11 @@ import {
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows";
 import {
-  ALL_SENSUS_COUNTRY_CODES,
+  ALL_MARKET_COUNTRY_CODES,
   STORE_SUPPORTED_CURRENCIES,
-  SENSUS_MARKETS,
+  DEFAULT_MARKETS,
   countryGeoZones,
-} from "../lib/sensus-markets";
+} from "../lib/markets";
 
 /** Demo catalogue prices: EUR / USD / GBP (GBP mirrors EUR for seed data). */
 function demoVariantPrices(eurAmount: number, usdAmount: number) {
@@ -49,7 +49,7 @@ export default async function initial_data_seed({
     ModuleRegistrationName.FULFILLMENT
   );
 
-  const countries = ALL_SENSUS_COUNTRY_CODES;
+  const countries = ALL_MARKET_COUNTRY_CODES;
 
   logger.info("Seeding store data...");
   const {
@@ -90,7 +90,7 @@ export default async function initial_data_seed({
     input: {
       stores: [
         {
-          name: "Sensus Collective",
+          name: "Medusa Store",
           supported_currencies: [...STORE_SUPPORTED_CURRENCIES],
           default_sales_channel_id: defaultSalesChannel.id,
         },
@@ -98,10 +98,10 @@ export default async function initial_data_seed({
     },
   });
 
-  logger.info("Seeding Sensus region data (UK, EU, US)...");
+  logger.info("Seeding region data (UK, EU, US)...");
   const { result: regionResult } = await createRegionsWorkflow(container).run({
     input: {
-      regions: SENSUS_MARKETS.map((market) => ({
+      regions: DEFAULT_MARKETS.map((market) => ({
         name: market.regionName,
         currency_code: market.currencyCode,
         countries: market.countries,
@@ -127,7 +127,7 @@ export default async function initial_data_seed({
     input: {
       locations: [
         {
-          name: "Sensus Hub",
+          name: "Main Warehouse",
           address: {
             city: "London",
             country_code: "GB",
@@ -157,7 +157,7 @@ export default async function initial_data_seed({
   const shippingProfile = shippingProfileResult[0];
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "Sensus markets delivery",
+    name: "Default markets delivery",
     type: "shipping",
     service_zones: [
       {

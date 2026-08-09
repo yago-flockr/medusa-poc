@@ -4,7 +4,7 @@
 
 ## What this repo is
 
-Medusa v2 monorepo PoC for **Sensus Collective**, a curated multi-vendor marketplace. Product intent: `sensus.md`. Platform decision: Medusa (see `docs/adr/0001-commerce-platform-medusa.md`).
+Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor marketplace projects (clone, configure brand, ship). Roadmap: `plan.md`.
 
 ## Where to find context
 
@@ -12,14 +12,13 @@ Medusa v2 monorepo PoC for **Sensus Collective**, a curated multi-vendor marketp
 - **Backend:** `agents/backend.md` (when working under `apps/backend/`)
 - **Storefront:** `agents/storefront.md` (when working under `apps/storefront/`)
 - **Medusa learning map:** `agents/medusa-learning-map.md`
+- **Roadmap:** `plan.md`
 - **ADRs:** `docs/adr/`
-- **Feasibility:** `docs/feasibility-sensus-medusa.md`
-- **Markets:** `docs/markets.md`
 
 ## Human onboarding
 
-`README.md`. Local Postgres: `docker-compose.yml`.
+`README.md`. Local Postgres and Redis: `docker-compose.yml`.
 
 ## Maintaining documentation
 
-Update `agents/*.md` and `docs/adr/` as decisions change. Follow **Maintaining project documentation** in `agents/overview.md`. Change this router only when agent files are added or renamed.
+Update `agents/*.md` and `docs/adr/` as decisions change. Follow **Maintaining project documentation** in `agents/overview.md`. Change this router only when agent files are added or renamed. Cursor users: keep local `.cursor/rules/` routers in sync when paths or globs change (`.cursor/` is gitignored).

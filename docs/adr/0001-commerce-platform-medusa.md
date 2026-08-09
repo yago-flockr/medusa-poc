@@ -2,29 +2,27 @@
 
 - Status: accepted
 - Date: 2026-08-06
-- Deciders: engineering (PoC)
+- Updated: 2026-08-09
+- Deciders: engineering
 
 ## Context
 
-`sensus.md` (RFP v5.4) originally fixed Shopify Plus as the commerce core, driven by timeline. The engagement later moved away from that assumption. This repository is the technical exploration and implementation base for Sensus Collective on Medusa instead.
+This repository is a reusable Medusa chassis for multi-vendor marketplace clients. We need an open, TypeScript-first commerce core that we can extend with modules, workflows, and admin UI, and deploy on Medusa Cloud or self-host.
 
-Medusa is open source, TypeScript-first, module-based, and deployable on Medusa Cloud or self-hosted (for example AWS). It owns catalogue, cart, checkout, orders, payments integration points, and admin extensibility. Multi-vendor marketplace mechanics will be built or composed on top of Medusa rather than buying a separate Shopify marketplace layer.
+Medusa owns catalogue, cart, checkout, orders, payment integration points, and admin extensibility. Multi-vendor marketplace mechanics (consignments, commission, house isolation) are built on top of Medusa rather than buying a separate marketplace platform.
 
 ## Decision
 
-Use **Medusa v2** (this monorepo: `apps/backend` + `apps/storefront`) as the commerce system of record for Sensus.
-
-Shopify Plus is **not** a requirement for this codebase. Where `sensus.md` says "Shopify Plus as the commerce core (Fixed)", treat that line as historical RFP text superseded by this ADR.
+Use **Medusa v2** (this monorepo: `apps/backend` + `apps/storefront`) as the commerce system of record for every project spun from this chassis.
 
 ## Consequences
 
-- Product outcomes in `sensus.md` (MoR, multi-house basket, three surfaces, DDP, curation) still apply unless a later ADR changes them.
-- House catalogue ingestion "from Shopify" (RFP 7.4) becomes an **optional connector** for houses that already sell on Shopify, not a dependency on Shopify as our commerce core.
-- Timeline risk shifts: we own more of the marketplace orchestration than a Plus + marketplace app stack would. We must de-risk multi-vendor order split early (RFP 7.9).
 - Prefer Medusa modules, workflows, and links over inventing a parallel commerce domain.
+- Timeline risk: we own marketplace orchestration. De-risk multi-vendor order split early (ADR 0002).
+- Client projects clone this repo and specialize brand/config (`plan.md` Phase 4); they do not fork a different commerce core.
 
 ## References
 
-- Product source: `sensus.md`
+- Roadmap: `plan.md`
 - Stack entry: `agents/overview.md`
 - Learning path: `agents/medusa-learning-map.md`

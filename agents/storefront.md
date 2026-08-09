@@ -4,35 +4,38 @@
 
 ## Maintaining this file
 
-Follow **Maintaining project documentation** in `agents/overview.md`.
+Follow **Maintaining project documentation** in `agents/overview.md`. Update this file and the package README if setup/run changes.
 
 ## Overview
 
 Next.js App Router storefront from the Medusa DTC starter. Talks to the Medusa Store API. Port default: **8000**.
 
-This is the **customer** surface only. House portal is separate (ADR 0003).
+This is the **customer** surface only. House portal is separate (ADR 0003). Brand-specific UI should eventually live in a theme/config layer (`plan.md` Phase 4), not hard-coded product names.
 
-## Architecture
+## Architecture and flow
 
 - Next.js 15 + React 19
 - Medusa JS SDK (`@medusajs/js-sdk`) with publishable key
-- Tailwind-based UI from the starter (Sensus design system arrives via Figma later)
+- Tailwind-based UI from the starter
+- Planned DX stack (`plan.md` Phase 1): shadcn/ui, i18next, Zustand, TanStack Query, consistent icons/images
 
-## Patterns when extending
+## Patterns to follow when extending
 
 1. Always send `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` (SDK config). Missing key causes opaque store API failures.
-2. Faceted listing state should live in the URL (RFP 5.3 / 5.4) as we customize IA.
-3. Basket UX must eventually group by house (RFP 5.1); starter cart is single-merchant shaped until we extend it.
-4. Editorial/CMS blocks that embed products must resolve live commerce data at render time (RFP 5.2 / 7.6).
+2. Prefer URL-driven listing/filter state for shareable facet UX.
+3. Basket UX must eventually group by house; starter cart is single-merchant shaped until the engine spike lands.
+4. Editorial/CMS blocks that embed products must resolve live commerce data at render time.
+5. Keep brand tokens (colors, copy, imagery) out of core cart/checkout logic when introducing the config layer.
 
-## Environment
+## Environment variables
 
-`apps/storefront/.env.local` (gitignored):
+`apps/storefront/.env.local` (gitignored), from `.env.template`:
 
 - `NEXT_PUBLIC_MEDUSA_BACKEND_URL` (local default `http://localhost:9000`)
 - `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` (`pk_...`)
+- `NEXT_PUBLIC_DEFAULT_REGION` (seed default often `gb`)
 
-## Scripts
+## Scripts / commands
 
 From `apps/storefront`:
 
@@ -40,8 +43,8 @@ From `apps/storefront`:
 - `pnpm run build` / `pnpm run start`
 - `pnpm run lint` → `next lint` today
 
-## Gotchas
+## Gotchas and notes
 
-- Confirm `apps/storefront/` exists before storefront-only tasks (it does in this PoC).
+- Confirm `apps/storefront/` exists before storefront-only tasks.
 - Do not commit `.env.local`.
-- Starter SEO/search are baselines; Sensus needs stronger facet canonical rules and structured data (RFP 5.5).
+- Backend and storefront are separate processes; backend-only `dev` does not start port 8000.

@@ -1,10 +1,22 @@
-# Sensus Collective × Medusa PoC
+# medusa-poc
 
-Medusa v2 monorepo (backend + Next.js storefront) for **Sensus Collective**: a curated multi-vendor marketplace (houses are hand-picked; one customer basket may span many houses).
+Medusa v2 monorepo **chassis** for multi-vendor marketplace projects. Clone it, keep the shared commerce engine, swap brand config, and ship the next client (see [`plan.md`](./plan.md)).
 
-Product outcomes: [`sensus.md`](./sensus.md). Delivery / feasibility: [`docs/feasibility-sensus-medusa.md`](./docs/feasibility-sensus-medusa.md). Decisions: [`docs/adr/`](./docs/adr/).
+Based on the Medusa DTC starter. Platform choice: Medusa (ADR 0001).
 
-Based on the Medusa DTC starter. Platform choice is Medusa (not Shopify Plus); see ADR 0001.
+## Packages
+
+### Backend (`@dtc/backend`) [Read Docs](./apps/backend/README.md)
+
+Medusa application: Store/Admin APIs, workflows, modules, Admin UI at `/app`.
+
+### Storefront (`@dtc/storefront`) [Read Docs](./apps/storefront/README.md)
+
+Next.js customer storefront talking to the Medusa Store API (port 8000).
+
+## How the packages relate
+
+The storefront is a headless client of the backend. One Medusa backend is the system of record for catalogue, cart, checkout, and orders. Vendor (house) and staff surfaces share that same core (ADR 0003).
 
 ## Tech stack
 
@@ -12,7 +24,6 @@ Based on the Medusa DTC starter. Platform choice is Medusa (not Shopify Plus); s
 - **Next.js**: `apps/storefront` (customer storefront, port 8000)
 - **PostgreSQL 16 + Redis 7**: root `docker-compose.yml`
 - **pnpm + Turborepo**: workspace at repo root
-- **Markets**: UK / EU / US (`apps/backend/src/lib/sensus-markets.ts`); Launch default country `gb`
 
 ## Project structure
 
@@ -22,15 +33,15 @@ Based on the Medusa DTC starter. Platform choice is Medusa (not Shopify Plus); s
 │   ├── backend/           # Medusa application
 │   └── storefront/        # Next.js storefront
 ├── agents/                # AI engineering context
-├── docs/                  # ADRs, markets, pre-start, feasibility
+├── docs/adr/              # Architecture decisions
+├── plan.md                # Chassis roadmap
 ├── docker-compose.yml     # Local Postgres + Redis
-├── sensus.md              # Product RFP / outcomes
 └── AGENTS.md              # AI router
 ```
 
 ## AI context
 
-Machine-readable docs live in `AGENTS.md` and `agents/`. Start at `agents/overview.md`. Assistants should update those files when they learn something durable. Cursor users keep thin local routers under `.cursor/` (gitignored).
+This repo ships machine-readable documentation for AI coding assistants (`AGENTS.md` and the `agents/` folder). You do not need to maintain it by hand: those files describe how the project works and instruct assistants to update the context in-session when they learn something worth keeping. If you use Cursor, thin routers in `.cursor/rules/` (local, gitignored) point the IDE at these files; other tools use their own local adapter the same way. Start from `AGENTS.md` if you want an overview.
 
 ## Requirements
 
@@ -40,19 +51,27 @@ Machine-readable docs live in `AGENTS.md` and `agents/`. Start at `agents/overvi
 
 ## Getting started
 
-1. Install dependencies:
+1. Install tooling (Ubuntu / WSL):
+
+```bash
+pnpm run setup
+```
+
+Or: `bash scripts/setup.sh`
+
+2. Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-2. Start databases:
+3. Start databases:
 
 ```bash
 docker compose up -d
 ```
 
-3. Configure backend env:
+4. Configure backend env:
 
 ```bash
 cp apps/backend/.env.template apps/backend/.env
@@ -60,20 +79,20 @@ cp apps/backend/.env.template apps/backend/.env
 
 `DATABASE_URL` and `REDIS_URL` in the template match Docker Compose.
 
-4. Migrate and seed (from `apps/backend`):
+5. Migrate (from `apps/backend`):
 
 ```bash
 cd apps/backend
 pnpm exec medusa db:migrate
 ```
 
-5. Create an admin user:
+6. Create an admin user:
 
 ```bash
 pnpm exec medusa user -e admin@example.com -p supersecret
 ```
 
-6. Start the **backend** (terminal 1):
+7. Start the backend (terminal 1):
 
 ```bash
 cd apps/backend
@@ -82,22 +101,22 @@ pnpm run dev
 
 Admin: http://localhost:9000/app
 
-7. Configure the storefront:
+8. Configure the storefront:
 
 ```bash
 cp apps/storefront/.env.template apps/storefront/.env.local
 ```
 
-Set `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` from Admin → Settings → Publishable API keys (or run `pnpm exec medusa exec ./src/scripts/sync-publishable-key.ts` from `apps/backend` if that script is present). Keep `NEXT_PUBLIC_DEFAULT_REGION=gb`.
+Set `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` from Admin → Settings → Publishable API keys (or run `pnpm exec medusa exec ./src/scripts/sync-publishable-key.ts` from `apps/backend` if that script is present).
 
-8. Start the **storefront** (terminal 2):
+9. Start the storefront (terminal 2):
 
 ```bash
 cd apps/storefront
 pnpm run dev
 ```
 
-Storefront: http://localhost:8000 (redirects to `/gb/...`)
+Storefront: http://localhost:8000
 
 Backend and storefront are **separate processes**. Running `pnpm run dev` only under `apps/backend` does not start port 8000.
 
@@ -110,9 +129,8 @@ pnpm run storefront:dev
 
 ## Useful docs in this repo
 
+- [`plan.md`](./plan.md) — phased chassis roadmap
 - [`docs/pre-start.md`](./docs/pre-start.md) — short local checklist
-- [`docs/markets.md`](./docs/markets.md) — UK / EU / US regions
-- [`docs/feasibility-sensus-medusa.md`](./docs/feasibility-sensus-medusa.md) — CAN / MAYBE / CAN'T and Launch vs v2
 - [`docs/adr/`](./docs/adr/) — architecture decisions
 
 ## External resources

@@ -1,39 +1,19 @@
 /**
- * Sensus launch markets (RFP: UK · EU · US).
- * Single source for seed and docs. UK is default for Launch / v1.
- *
+ * Default seed markets for the chassis (UK · EU · US).
  * ISO 2 codes are lowercase (Medusa convention).
  */
 
-export type SensusMarketId = "uk" | "eu" | "us"
+export type MarketId = "uk" | "eu" | "us"
 
-export type SensusMarket = {
-  id: SensusMarketId
-  /** Medusa region name */
+export type Market = {
+  id: MarketId
   regionName: string
   currencyCode: "gbp" | "eur" | "usd"
-  /** ISO 3166-1 alpha-2, lowercase */
   countries: string[]
-  /** Launch priority: uk first */
   isLaunchDefault: boolean
 }
 
-/** Core EU set for early localization (not full EU-27). Expand in v2 if needed. */
-export const EU_COUNTRY_CODES = [
-  "at", // Austria
-  "be", // Belgium
-  "de", // Germany
-  "dk", // Denmark
-  "es", // Spain
-  "fr", // France
-  "ie", // Ireland
-  "it", // Italy
-  "nl", // Netherlands
-  "pt", // Portugal
-  "se", // Sweden
-] as const
-
-export const SENSUS_MARKETS: SensusMarket[] = [
+export const DEFAULT_MARKETS: Market[] = [
   {
     id: "uk",
     regionName: "United Kingdom",
@@ -45,7 +25,19 @@ export const SENSUS_MARKETS: SensusMarket[] = [
     id: "eu",
     regionName: "European Union",
     currencyCode: "eur",
-    countries: [...EU_COUNTRY_CODES],
+    countries: [
+      "at", // Austria
+      "be", // Belgium
+      "de", // Germany
+      "dk", // Denmark
+      "es", // Spain
+      "fr", // France
+      "ie", // Ireland
+      "it", // Italy
+      "nl", // Netherlands
+      "pt", // Portugal
+      "se", // Sweden
+    ],
     isLaunchDefault: false,
   },
   {
@@ -57,12 +49,12 @@ export const SENSUS_MARKETS: SensusMarket[] = [
   },
 ]
 
-export const ALL_SENSUS_COUNTRY_CODES: string[] = SENSUS_MARKETS.flatMap(
+export const ALL_MARKET_COUNTRY_CODES: string[] = DEFAULT_MARKETS.flatMap(
   (m) => m.countries
 )
 
 export const DEFAULT_COUNTRY_CODE =
-  SENSUS_MARKETS.find((m) => m.isLaunchDefault)?.countries[0] ?? "gb"
+  DEFAULT_MARKETS.find((m) => m.isLaunchDefault)?.countries[0] ?? "gb"
 
 export const STORE_SUPPORTED_CURRENCIES = [
   { currency_code: "gbp" as const, is_default: true },
