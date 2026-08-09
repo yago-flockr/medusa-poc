@@ -54,4 +54,4 @@ Treat Medusa as a **commerce application framework**: opinionated modules, workf
 
 - Load Medusa agent skills / MCP when available before inventing APIs.
 - Prefer extending modules and workflows over parallel services.
-- Direction of travel: `plan.md` + `docs/adr/` + `agents/overview.md`.
+- Direction of travel: `docs/plan.md` + `docs/adr/` + `agents/overview.md`.

@@ -9,7 +9,7 @@
 
 The chassis targets curated multi-vendor marketplaces. Commercially, the platform operator is typically **merchant of record**: sells to the customer; houses (vendors) supply. Houses hold stock and pick/pack; labels may be generated centrally.
 
-One customer basket may span many houses: **one payment and one customer-facing order**, split into per-house consignments behind the scenes. This is the highest-risk domain in the chassis. Medusa's default model is closer to a single merchant store than a marketplace. We will extend it deliberately (`plan.md` Phase 2).
+One customer basket may span many houses: **one payment and one customer-facing order**, split into per-house consignments behind the scenes. This is the highest-risk domain in the chassis. Medusa's default model is closer to a single merchant store than a marketplace. We will extend it deliberately (`docs/plan.md` Phase 2).
 
 ## Decision (working)
 

@@ -1,6 +1,6 @@
 # medusa-poc
 
-Medusa v2 monorepo **chassis** for multi-vendor marketplace projects. Clone it, keep the shared commerce engine, swap brand config, and ship the next client (see [`plan.md`](./plan.md)).
+Medusa v2 monorepo **chassis** for multi-vendor marketplace projects. Clone it, keep the shared commerce engine, swap brand config, and ship the next client (see [`docs/plan.md`](./docs/plan.md)).
 
 Based on the Medusa DTC starter. Platform choice: Medusa (ADR 0001).
 
@@ -33,8 +33,9 @@ The storefront is a headless client of the backend. One Medusa backend is the sy
 │   ├── backend/           # Medusa application
 │   └── storefront/        # Next.js storefront
 ├── agents/                # AI engineering context
-├── docs/adr/              # Architecture decisions
-├── plan.md                # Chassis roadmap
+├── docs/
+│   ├── adr/               # Architecture decisions
+│   └── plan.md            # Chassis roadmap
 ├── docker-compose.yml     # Local Postgres + Redis
 └── AGENTS.md              # AI router
 ```
@@ -129,7 +130,7 @@ pnpm run storefront:dev
 
 ## Useful docs in this repo
 
-- [`plan.md`](./plan.md) — phased chassis roadmap
+- [`docs/plan.md`](./docs/plan.md) — phased chassis roadmap
 - [`docs/pre-start.md`](./docs/pre-start.md) — short local checklist
 - [`docs/adr/`](./docs/adr/) — architecture decisions
 

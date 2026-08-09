@@ -4,7 +4,7 @@
 
 ## What this repo is
 
-Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor marketplace projects (clone, configure brand, ship). Roadmap: `plan.md`.
+Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor marketplace projects (clone, configure brand, ship). Roadmap: `docs/plan.md`.
 
 ## Where to find context
 
@@ -12,7 +12,7 @@ Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor 
 - **Backend:** `agents/backend.md` (when working under `apps/backend/`)
 - **Storefront:** `agents/storefront.md` (when working under `apps/storefront/`)
 - **Medusa learning map:** `agents/medusa-learning-map.md`
-- **Roadmap:** `plan.md`
+- **Roadmap:** `docs/plan.md`
 - **ADRs:** `docs/adr/`
 
 ## Human onboarding

@@ -15,13 +15,13 @@ Marketplace clients built from this chassis typically need three products sharin
 
 ## Decision (working)
 
-- **Customer storefront**: `apps/storefront` (Next.js), customized per brand via a config/theme layer (`plan.md` Phase 4).
+- **Customer storefront**: `apps/storefront` (Next.js), customized per brand via a config/theme layer (`docs/plan.md` Phase 4).
 - **Admin**: Medusa Admin at `/app`, extended via `apps/backend/src/admin`.
 - **House portal**: a custom surface (Medusa auth plus APIs or dedicated routes). Do not rebrand Medusa Admin as the house experience.
 
 All three talk to **one Medusa backend** as system of record for commercial data. CMS owns content that references products; it never owns price or stock truth.
 
-Identity: three audiences (customer, house user, staff) with separate auth concerns and hard house data isolation (`plan.md` Phase 3).
+Identity: three audiences (customer, house user, staff) with separate auth concerns and hard house data isolation (`docs/plan.md` Phase 3).
 
 ## Consequences
 

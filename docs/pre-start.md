@@ -8,4 +8,4 @@ Simple configs before feature work.
 4. Migrate + admin user + sync publishable key (if DB is fresh or reset)
 5. `pnpm run backend:dev` and `pnpm run storefront:dev`
 
-Skip for now (need accounts or product choices): Stripe keys, Medusa Cloud login, CMS, search provider, Biome swap (`plan.md` Phase 1).
+Skip for now (need accounts or product choices): Stripe keys, Medusa Cloud login, CMS, search provider, Biome swap (`docs/plan.md` Phase 1).

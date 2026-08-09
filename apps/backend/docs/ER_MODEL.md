@@ -16,7 +16,7 @@ Commerce tables (products, carts, orders, customers, regions, etc.) are owned by
 ```mermaid
 erDiagram
   %% No custom chassis entities yet.
-  %% Phase 2 (plan.md) will add house-scoped product/order fields,
+  %% Phase 2 (docs/plan.md) will add house-scoped product/order fields,
   %% consignments, and commission models here.
 ```
 

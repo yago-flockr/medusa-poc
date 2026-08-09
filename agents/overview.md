@@ -18,7 +18,7 @@ Do not record generic facts, obvious code, or duplicates.
 **Where to update:**
 
 - Repo-wide → `agents/overview.md`
-- Roadmap / phased work → `plan.md`
+- Roadmap / phased work → `docs/plan.md`
 - Decisions that bind the codebase → `docs/adr/`
 - Human onboarding → `README.md`
 - Backend → `agents/backend.md`
@@ -32,14 +32,14 @@ Do not record generic facts, obvious code, or duplicates.
 
 This repo is a **Medusa v2 monorepo chassis**: high-leverage, modular commerce foundation meant to be cloned and specialized for client marketplaces. It is brand-agnostic; client names and styling live in the Phase 4 config layer, not in core.
 
-Goals (see `plan.md`):
+Goals (see `docs/plan.md`):
 
 1. Strong developer experience (Biome, Next.js + Tailwind + shadcn/ui, i18next, Zustand, TanStack Query).
 2. Multi-vendor-aware Medusa engine (consignments by house, commission, schema extensions).
 3. Clear storefront ↔ backend contract (API strategy, auth for customer / house / admin).
 4. Factory workflow: clone, swap brand config, onboard data.
 
-Current code base is still close to the Medusa DTC starter. Treat `plan.md` phases as the direction of travel; do not invent brand-specific product rules in the chassis.
+Current code base is still close to the Medusa DTC starter. Treat `docs/plan.md` phases as the direction of travel; do not invent brand-specific product rules in the chassis.
 
 ## Architecture and flow
 
@@ -58,7 +58,7 @@ Hard chassis problem: **one basket, many houses** → one payment, per-house con
 - **Next.js storefront**: `apps/storefront`
 - **pnpm + Turborepo**: root `package.json`, `pnpm-workspace.yaml`, `turbo.json`
 - **Postgres + Redis**: `docker-compose.yml`
-- **Roadmap**: `plan.md`
+- **Roadmap**: `docs/plan.md`
 - **ADRs**: `docs/adr/`
 - **Default seed markets**: `apps/backend/src/lib/markets.ts`
 
@@ -67,7 +67,7 @@ Hard chassis problem: **one basket, many houses** → one payment, per-house con
 - `apps/backend/`: Medusa application. Detail → `agents/backend.md`
 - `apps/storefront/`: customer storefront. Detail → `agents/storefront.md`
 - `docs/adr/`: architecture decisions for the chassis
-- `plan.md`: phased roadmap (DX → engine → bridge → factory)
+- `docs/plan.md`: phased roadmap (DX → engine → bridge → factory)
 - `docker-compose.yml`: local Postgres and Redis only
 
 ## Patterns to follow when extending
@@ -82,7 +82,7 @@ Hard chassis problem: **one basket, many houses** → one payment, per-house con
 ## Conventions and standards
 
 - Package manager: **pnpm only** (ADR 0005).
-- Lint today: ESLint + Prettier from the starter (`@medusajs/eslint-plugin`). Biome swap is Phase 1 in `plan.md`; do not mix both.
+- Lint today: ESLint + Prettier from the starter (`@medusajs/eslint-plugin`). Biome swap is Phase 1 in `docs/plan.md`; do not mix both.
 - Code artifacts in English.
 - No secrets in git: `.env` / `.env.local` gitignored; document new vars in `.env.template`.
 - House style for docs in this repo: no markdown tables, no em dashes.
@@ -117,7 +117,7 @@ Backend DB (from `apps/backend`):
 - Storefront without publishable key fails in confusing ways; check `.env.local` first.
 ## Open chassis decisions
 
-- API contract: Medusa GraphQL vs REST + BFF (`plan.md` Phase 3).
+- API contract: Medusa GraphQL vs REST + BFF (`docs/plan.md` Phase 3).
 - Shipping charge policy for multi-house orders (one vs per-house vs absorbed).
 - CMS and search provider defaults for the factory workflow.
 - Exact auth standard across Customer, House, and Admin.

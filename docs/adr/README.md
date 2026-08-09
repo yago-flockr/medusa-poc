@@ -5,7 +5,7 @@ Nothing here is permanent: supersede with a new ADR when we change course.
 
 ## How to use
 
-1. Roadmap and phasing: `plan.md`.
+1. Roadmap and phasing: `docs/plan.md`.
 2. Local boot: `docs/pre-start.md`.
 3. Day-to-day AI / eng context: `agents/` (start at `agents/overview.md`).
 4. Decisions that bind the codebase: ADRs below.
@@ -35,4 +35,4 @@ Nothing here is permanent: supersede with a new ADR when we change course.
 1. Copy the next number: `docs/adr/00NN-kebab-title.md`.
 2. Include: Status, Date, Context, Decision, Consequences.
 3. Add a bullet to the index above.
-4. If it changes chassis direction, update `plan.md` and `agents/overview.md` in the same change.
+4. If it changes chassis direction, update `docs/plan.md` and `agents/overview.md` in the same change.

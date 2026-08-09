@@ -51,7 +51,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 2. Business logic in **workflows** and steps; routes resolve and run workflows.
 3. Do not open a raw DB client or write SQL in routes.
 4. Marketplace concepts (house, consignment, commission) become explicit modules/links once the spike lands (ADR 0002). Avoid scattering house_id checks without a model.
-5. Shared chassis modules should stay brand-agnostic; brand config belongs outside core logic (`plan.md` Phase 4).
+5. Shared chassis modules should stay brand-agnostic; brand config belongs outside core logic (`docs/plan.md` Phase 4).
 
 ## Conventions and standards
 
