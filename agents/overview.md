@@ -36,6 +36,16 @@ This repo is a **Medusa v2 monorepo chassis**: a brand-agnostic commerce foundat
 
 **Next / Later:** productized multi-vendor, DX hardening, factory/brand config. Those are not current implementation mandates.
 
+## Product bar (non-negotiable)
+
+See ADR 0006. This is a serious commerce chassis, not a toy that excuses broken flows.
+
+- Never treat nonsense UX as "common", "normal Medusa", or "fine for a PoC" when we claim client-ready work.
+- One customer per email: guest checkout then register/login with the same email must attach to the same customer and their orders. Manual order-ID transfer is recovery only, not the happy path.
+- Logged-in checkout must pre-fill from the customer (and saved addresses in region).
+- Framework defaults are a starting point. If they fail this bar, we fix them in this repo.
+- Agents: do not document workarounds as the product path. Flag defects, fix them, or park them explicitly as defects in `docs/plan.md`.
+
 ## Architecture and flow
 
 1. Customer browses and checks out on `apps/storefront` (Next.js).

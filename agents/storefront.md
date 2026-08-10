@@ -26,6 +26,7 @@ This is the **customer** surface only. House portal is a draft hypothesis (ADR 0
 3. Basket UX must eventually group by house; starter cart is single-merchant shaped until the engine spike lands.
 4. Editorial/CMS blocks that embed products must resolve live commerce data at render time.
 5. Keep brand tokens (colors, copy, imagery) out of core cart/checkout logic when introducing the config layer.
+6. Follow ADR 0006: guest → register with same email must be one customer with orders; logged-in checkout must pre-fill. Do not ship or document manual order transfer as the happy path.
 
 ## Environment variables
 

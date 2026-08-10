@@ -4,7 +4,7 @@
 
 ## What this repo is
 
-Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor marketplace projects (clone, configure brand, ship). Roadmap: `docs/plan.md`.
+Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor marketplace projects (clone, configure brand, ship). Roadmap: `docs/plan.md`. Quality bar: ADR 0006 (serious commerce; never normalize broken happy paths).
 
 ## Where to find context
 

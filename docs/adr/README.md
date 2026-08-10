@@ -12,7 +12,7 @@ Living decisions for the **medusa-poc chassis**. Nothing is set in stone: supers
 
 ## Reading order
 
-1. **Now facts:** ADR 0001 (platform) → 0004 (Docker) → 0005 (pnpm)
+1. **Now facts:** ADR 0001 (platform) → 0006 (quality bar) → 0004 (Docker) → 0005 (pnpm)
 2. **Draft hypotheses (not demo mandates):** ADR 0002 (multi-vendor) → 0003 (surfaces)
 3. Roadmap buckets: `docs/plan.md`
 
@@ -23,6 +23,7 @@ Living decisions for the **medusa-poc chassis**. Nothing is set in stone: supers
 - [0003](./0003-three-surfaces.md) — Three surfaces, one commerce core — **hypothesis / draft** — Storefront + admin now; house portal later.
 - [0004](./0004-local-postgres-docker.md) — Local Postgres and Redis via Docker Compose — **accepted** — `docker compose` for DB + Redis.
 - [0005](./0005-package-manager-pnpm.md) — Package manager is pnpm — **accepted** — pnpm only; workspace settings in `pnpm-workspace.yaml`.
+- [0006](./0006-commerce-quality-bar.md) — Serious commerce quality bar — **accepted** — Never normalize broken happy paths; one customer per email.
 
 ## Status legend
 
