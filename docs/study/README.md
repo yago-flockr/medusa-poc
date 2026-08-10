@@ -62,16 +62,21 @@ container and prints products with their variants and prices.
 
 ## Block B — The extension model (the core of the framework)
 
+> **Running example: Brand.** Blocks B and C build one feature end to end — a
+> brand that owns products — because it mirrors the official customization
+> tutorial and grows into the vendor of `docs/features/multi-vendor-marketplace.md`.
+> Tutorial index: [Build Custom Features](https://docs.medusajs.com/learn/customization/custom-features).
+
 ### B1. Your first module
 
 **Goal:** own a table without owning the query layer.
-**Build:** `src/modules/commission` with one data model (`CommissionRule`:
-`percentage`, `flat_amount`, `is_active`), a service extending `MedusaService`,
-the `Module(...)` definition, and registration in `medusa-config.ts`. Then
-`pnpm exec medusa db:generate commission` and `db:migrate`.
-**Done when:** you created a rule from a script and the table exists in Postgres.
-Update `apps/backend/docs/ER_MODEL.md` in the same session.
-**Read:** [Modules](https://docs.medusajs.com/learn/fundamentals/modules),
+**Build:** `src/modules/brand` with one data model (`Brand`: `name`, `handle`), a
+service extending `MedusaService`, the `Module(...)` definition, and registration
+in `medusa-config.ts`. Then `pnpm exec medusa db:generate brand` and `db:migrate`.
+**Done when:** the `brand` table exists in Postgres and you created a row from a
+script. Update `apps/backend/docs/ER_MODEL.md` in the same session.
+**Read:** [Implement Brand Module](https://docs.medusajs.com/learn/customization/custom-features/module),
+[Modules](https://docs.medusajs.com/learn/fundamentals/modules),
 [Data Models](https://docs.medusajs.com/learn/fundamentals/data-models),
 [Service Factory](https://docs.medusajs.com/resources/service-factory-reference)
 
@@ -79,23 +84,24 @@ Update `apps/backend/docs/ER_MODEL.md` in the same session.
 
 **Goal:** relate your module to core commerce data without foreign keys into
 Medusa's tables.
-**Build:** `src/links/commission-rule-product.ts` linking your rule to
+**Build:** `src/links/brand-product.ts` linking `Brand` to
 `ProductModule.linkable.product`, then `db:migrate` to sync the link table.
-**Done when:** `query.graph({ entity: "product", fields: ["commission_rule.*"] })`
-returns the linked rule.
-**Read:** [Module Links](https://docs.medusajs.com/learn/fundamentals/module-links),
+**Done when:** `query.graph({ entity: "product", fields: ["brand.*"] })` returns
+the linked brand.
+**Read:** [Define the link](https://docs.medusajs.com/learn/customization/extend-features/define-link),
+[Query linked records](https://docs.medusajs.com/learn/customization/extend-features/query-linked-records),
+[Module Links](https://docs.medusajs.com/learn/fundamentals/module-links),
 [Link](https://docs.medusajs.com/learn/fundamentals/module-links/link),
 [Module Isolation](https://docs.medusajs.com/learn/fundamentals/modules/isolation)
 
 ### B3. Workflows and steps
 
 **Goal:** the place where business logic belongs in Medusa.
-**Build:** `assignCommissionRuleWorkflow` — a custom step that creates the rule
-(with a compensation function that deletes it), `transform` to shape data,
-`createRemoteLinkStep` to link it to a product.
-**Done when:** you force an error in a later step and see the compensation undo
-the earlier one.
-**Read:** [Workflows](https://docs.medusajs.com/learn/fundamentals/workflows),
+**Build:** `createBrandWorkflow` — a custom step that creates the brand with a
+compensation function that deletes it.
+**Done when:** you force an error after the step and see the compensation undo it.
+**Read:** [Create Brand Workflow](https://docs.medusajs.com/learn/customization/custom-features/workflow),
+[Workflows](https://docs.medusajs.com/learn/fundamentals/workflows),
 [Compensation Function](https://docs.medusajs.com/learn/fundamentals/workflows/compensation-function),
 [transform](https://docs.medusajs.com/learn/fundamentals/workflows/variable-manipulation),
 [when-then](https://docs.medusajs.com/learn/fundamentals/workflows/conditions),
@@ -104,16 +110,19 @@ the earlier one.
 ### B4. Reusing core workflows
 
 **Goal:** extend Medusa's own flows instead of reimplementing them.
-**Build:** a workflow that calls a core flow with `runAsStep` (for example
-`createProductsWorkflow`), plus one **workflow hook** on an existing core flow.
-**Done when:** your logic runs inside a core flow and rolls back with it.
-**Read:** [Nested workflows](https://docs.medusajs.com/learn/fundamentals/workflows/execute-another-workflow),
+**Build:** hook into `createProductsWorkflow` so that creating a product with a
+`brand_id` in `additional_data` links it to the brand.
+**Done when:** one Admin call creates a product already linked to its brand, and
+a failure in your hook rolls the product creation back.
+**Read:** [Extend the create product flow](https://docs.medusajs.com/learn/customization/extend-features/extend-create-product),
+[additional_data](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data),
+[Nested workflows](https://docs.medusajs.com/learn/fundamentals/workflows/execute-another-workflow),
 [Workflow Hooks](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks)
 
 ### B5. API routes, validation, middlewares
 
 **Goal:** thin HTTP layer over workflows.
-**Build:** `POST /admin/commission-rules` that validates with Zod
+**Build:** `POST /admin/brands` that validates with Zod
 (`@medusajs/framework/zod`) via `validateAndTransformBody`, then runs the B3
 workflow. Register it in `src/api/middlewares.ts`.
 **Done when:** a bad body returns 400 from the middleware, a good one runs the
@@ -137,10 +146,10 @@ scheduled job that logs a daily count.
 ### B7. Admin extensions
 
 **Goal:** surface custom data to staff without a second dashboard.
-**Build:** a widget on the product details page showing the linked commission
-rule.
+**Build:** a widget on the product details page showing the linked brand.
 **Done when:** the widget renders in `/app` with real data.
-**Read:** [Admin Development](https://docs.medusajs.com/learn/fundamentals/admin),
+**Read:** [Add a product widget](https://docs.medusajs.com/learn/customization/customize-admin/widget),
+[Admin Development](https://docs.medusajs.com/learn/fundamentals/admin),
 [Widgets](https://docs.medusajs.com/learn/fundamentals/admin/widgets),
 [UI Routes](https://docs.medusajs.com/learn/fundamentals/admin/ui-routes)
 
