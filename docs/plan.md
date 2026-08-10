@@ -14,8 +14,8 @@ Stakeholder-facing slice must meet ADR 0006 before we call it ready. Multi-vendo
 - [ ] Seeded catalogue (regions/currencies from `apps/backend/src/lib/markets.ts`)
 - [ ] Storefront path: browse → cart → checkout (system payment OK for demo)
 - [ ] Order visible in Medusa Admin; can explain Store API + publishable key
-- [ ] **Defect / mandatory:** guest checkout then register/login with the same email → one customer, prior orders visible (no duplicate customers; no "transfer by order ID" as the happy path)
-- [ ] **Defect / mandatory:** logged-in checkout pre-fills name, email, and saved addresses in region
+- [ ] **Defect / mandatory:** guest checkout then register/login with the same email → one customer, prior orders visible — implemented via `registerCustomerAccountWorkflow` + `POST /store/customer-accounts` (verify manually)
+- [ ] **Defect / mandatory:** logged-in checkout pre-fills name, email, and saved addresses in region — storefront shipping form updated (verify manually)
 - [ ] One small end-to-end Medusa extension (module / workflow / subscriber) for learning
 - [ ] Time-boxed two-house multi-vendor spike (findings → ADR 0002). Do not merge half-broken split into the demo path
 

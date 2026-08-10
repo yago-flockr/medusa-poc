@@ -34,9 +34,9 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
 ## Module / directory breakdown (`src/`)
 
-- `api/`: file-based routes (`api/store/*`, `api/admin/*`) exporting HTTP verbs
+- `api/`: file-based routes (`api/store/*`, `api/admin/*`) exporting HTTP verbs; `api/middlewares.ts` for auth (e.g. register with `allowUnregistered`)
 - `modules/`: custom domain modules (models, services, migrations)
-- `workflows/`: orchestration; prefer over fat route handlers
+- `workflows/`: orchestration; prefer over fat route handlers (`register-customer-account.ts` promotes guest or creates account)
 - `links/`: links between module data models
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
@@ -52,6 +52,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 3. Do not open a raw DB client or write SQL in routes.
 4. Marketplace concepts (house, consignment, commission) become explicit modules/links once the spike lands (ADR 0002). Avoid scattering house_id checks without a model.
 5. Shared chassis modules should stay brand-agnostic; brand config belongs outside core logic (`docs/plan.md` Later).
+6. Storefront signup must use `POST /store/customer-accounts` (`registerCustomerAccountWorkflow`): promote guest or create one registered customer (ADR 0006). Do not use core `POST /store/customers` for that happy path.
 
 ## Conventions and standards
 

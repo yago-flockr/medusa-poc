@@ -43,8 +43,19 @@ See ADR 0006. This is a serious commerce chassis, not a toy that excuses broken 
 - Never treat nonsense UX as "common", "normal Medusa", or "fine for a PoC" when we claim client-ready work.
 - One customer per email: guest checkout then register/login with the same email must attach to the same customer and their orders. Manual order-ID transfer is recovery only, not the happy path.
 - Logged-in checkout must pre-fill from the customer (and saved addresses in region).
-- Framework defaults are a starting point. If they fail this bar, we fix them in this repo.
+- Framework **product** defaults can be wrong for us; we still fix them using Medusa’s **extension patterns** only (below).
 - Agents: do not document workarounds as the product path. Flag defects, fix them, or park them explicitly as defects in `docs/plan.md`.
+
+## Medusa engineering rules (non-negotiable)
+
+Always implement the Medusa way. No workarounds. No parallel “simpler” stacks.
+
+1. Prefer **modules, workflows, steps, links, subscribers, jobs, and file-based API routes** as documented.
+2. Prefer **core-flows** (`@medusajs/medusa/core-flows`) and compose them with `runAsStep` / custom steps; do not reimplement commerce in raw SQL or ad hoc services in routes.
+3. Routes stay thin: validate auth/body, run a workflow, return the result.
+4. Auth for custom register routes follows the official pattern: registration/login JWT + `authenticate(..., { allowUnregistered: true })` + `setAuthAppMetadataStep` (see Medusa “create actor type” / register guides).
+5. If core behavior fails ADR 0006, **replace the happy path** with our workflow/route; do not tell users to transfer orders or keep dual customers as the product story.
+6. Never invent a second path that leaves the first broken.
 
 ## Architecture and flow
 

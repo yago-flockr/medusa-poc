@@ -13,8 +13,8 @@ This repo is a chassis for real client marketplaces, not a toy demo of Medusa de
 1. **Never normalize nonsense.** If a flow would force clients or end users into manual sync, order-ID transfer as the happy path, duplicate accounts for one email, or blank checkout while logged in with known profile data, treat it as a **defect**, not documentation of expected behavior.
 2. **One customer per email** in the store. Guest purchase and later register/login with the same email must end as **one** customer identity with prior orders attached. Manual per-order transfer is recovery only, never the product story.
 3. **Logged-in checkout must use the customer.** Name, email, and saved addresses in region must pre-fill; the user is not a stranger after login.
-4. **"Medusa default" is not a product decision.** Defaults are a starting point. If the default fails the bar, we extend Medusa (workflows, auth link, storefront) until the happy path is coherent.
-5. **Agents and humans** must not excuse broken UX with "common in ecommerce" or "fine for a PoC" when the stated goal is a serious chassis. Flag, fix, or explicitly park with a defect label in `docs/plan.md`. Do not teach workarounds as the path.
+5. **"Medusa default" is not a product decision.** Defaults are a starting point. If the default fails the bar, we extend Medusa using **official patterns only** (workflows, core-flows steps, file-based routes, `authenticate` + `allowUnregistered`, `setAuthAppMetadataStep`). Never work around with dual happy paths, manual sync instructions, or ad hoc DB patches as the product story.
+6. **Agents and humans** must not excuse broken UX with "common in ecommerce" or "fine for a PoC" when the stated goal is a serious chassis. Flag, fix, or explicitly park with a defect label in `docs/plan.md`. Do not teach workarounds as the path.
 
 ## Consequences
 
