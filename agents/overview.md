@@ -18,11 +18,14 @@ Do not record generic facts, obvious code, or duplicates.
 **Where to update:**
 
 - Repo-wide → `agents/overview.md`
-- Roadmap → `docs/plan.md`
+- Roadmap and decisions → `docs/plan.md`
 - Human onboarding → `README.md`
 - Backend → `agents/backend.md`
 - Storefront → `agents/storefront.md`
-- Medusa study path → `agents/medusa-learning-map.md`
+- Medusa mental model → `agents/medusa-learning-map.md`
+- Medusa study stages → `docs/study/README.md`
+- What a feature should do (business intent) → `docs/features/<slug>.md`
+- Experiment protocol and results → `docs/spikes/<slug>.md`
 - Backend ER model → `apps/backend/docs/ER_MODEL.md`
 - `AGENTS.md` → only when agent files are added or renamed
 
@@ -61,13 +64,16 @@ Always implement the Medusa way. No workarounds.
 
 - `apps/backend/` → `agents/backend.md`
 - `apps/storefront/` → `agents/storefront.md`
-- `docs/plan.md`: roadmap
+- `docs/plan.md`: roadmap and recorded decisions
+- `docs/study/`: Medusa study stages with done criteria; notes per stage
+- `docs/features/`: intent briefs (what we want + likely Medusa primitives); `_template.md` is the shape
+- `docs/spikes/`: experiments that prove a direction before productizing
 - `docker-compose.yml`: local Postgres and Redis
 
 ## Conventions
 
 - Package manager: **pnpm only**
-- Lint today: ESLint + Prettier from the starter
+- Lint today: ESLint + Prettier from the starter (decision: migrate to Biome, `docs/plan.md`)
 - Code artifacts in English
 - No secrets in git; document new vars in `.env.template`
 

@@ -2,6 +2,8 @@
 
 Treat Medusa as a **commerce application framework**: opinionated modules, workflows, and admin, with escape hatches that look familiar if you know Nest/Node and Next.
 
+This file is the **mental model**. The ordered stages, exercises, and done criteria live in `docs/study/README.md` — keep them there, not here.
+
 ## Mental model (map your stack)
 
 - **Nest modules / providers** → Medusa **modules** (domain + service + data models)
@@ -12,30 +14,12 @@ Treat Medusa as a **commerce application framework**: opinionated modules, workf
 - **Admin panel** → Medusa Admin + `src/admin` extensions (React)
 - **Headless storefront** → any; here Next.js + JS SDK
 
-## Study in this order
+## Where the difficulty actually is
 
-1. **Commerce building blocks**  
-   Products, variants, regions/currencies, carts, line items, checkouts, orders, fulfillments, payments, customers. Skim official commerce module docs; do not memorize every endpoint.
-
-2. **Framework fundamentals** (hands-on in `apps/backend`)  
-   - Modules and data models  
-   - Module links  
-   - Workflows and steps  
-   - API routes (store vs admin)  
-   - Subscribers  
-   - `medusa-config.ts` and feature modules
-
-3. **Admin customization**  
-   Widgets, routes, how the dashboard loads custom UI.
-
-4. **Storefront integration**  
-   Publishable API keys, JS SDK, cart/checkout cookies/CORS, multi-region. Then plan house-grouped basket on top.
-
-5. **Marketplace-shaped gaps** (chassis core; this is the real study)  
-   Multi-vendor split, commission, payouts, vendor isolation, vendor portal auth. Medusa does not hand you MoR marketplace mechanics for free. Spike early when you are ready.
-
-6. **Ops**  
-   Medusa Cloud (`mcloud`) vs self-host (Postgres, Redis, S3, server + worker). Tax/shipping providers as integrations, not core rewrites.
+- **Commerce vocabulary** is broad but shallow: skim it, do not memorize endpoints.
+- **The extension model** (modules, links, workflows, routes, subscribers) is the part that pays off; everything custom is built from those five.
+- **Marketplace-shaped gaps** are the real study for this chassis. Medusa does not hand you merchant-of-record marketplace mechanics: multi-vendor split, commission, payouts, vendor isolation, and vendor portal auth are ours to build. Spike before productizing.
+- **Ops** is mostly a deployment shape question: Medusa Cloud versus self-hosting Postgres, Redis, S3, and a server plus worker process. Tax and shipping providers are integrations, not core rewrites.
 
 ## What you can skip early
 
@@ -46,6 +30,7 @@ Treat Medusa as a **commerce application framework**: opinionated modules, workf
 ## Docs worth bookmarking
 
 - Framework: https://docs.medusajs.com/learn
+- Architecture in one page: https://docs.medusajs.com/learn/introduction/architecture
 - Commerce modules: https://docs.medusajs.com/resources/commerce-modules
 - Storefront / publishable keys: https://docs.medusajs.com/resources/storefront-development
 - Cloud: https://docs.medusajs.com/cloud
