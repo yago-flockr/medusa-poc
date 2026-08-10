@@ -4,7 +4,7 @@
 
 ## What this repo is
 
-Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor marketplace projects (clone, configure brand, ship). Roadmap: `docs/plan.md`. Quality bar: ADR 0006 (serious commerce; never normalize broken happy paths).
+Medusa v2 monorepo chassis: reusable commerce foundation (clone, configure brand, ship). Roadmap: `docs/plan.md`.
 
 ## Where to find context
 
@@ -13,8 +13,6 @@ Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor 
 - **Storefront:** `agents/storefront.md` (when working under `apps/storefront/`)
 - **Medusa learning map:** `agents/medusa-learning-map.md`
 - **Roadmap:** `docs/plan.md`
-- **ADRs:** `docs/adr/`
-- **Spikes (planning):** `docs/spikes/`
 
 ## Human onboarding
 
@@ -22,4 +20,4 @@ Medusa v2 monorepo **chassis**: a reusable commerce foundation for multi-vendor 
 
 ## Maintaining documentation
 
-Update `agents/*.md` and `docs/adr/` as decisions change. Follow **Maintaining project documentation** in `agents/overview.md`. Change this router only when agent files are added or renamed. Cursor users: keep local `.cursor/rules/` routers in sync when paths or globs change (`.cursor/` is gitignored).
+Update `agents/*.md` as the repo changes. Follow **Maintaining project documentation** in `agents/overview.md`. Change this router only when agent files are added or renamed.

@@ -32,7 +32,7 @@ Treat Medusa as a **commerce application framework**: opinionated modules, workf
    Publishable API keys, JS SDK, cart/checkout cookies/CORS, multi-region. Then plan house-grouped basket on top.
 
 5. **Marketplace-shaped gaps** (chassis core; this is the real study)  
-   Multi-vendor split, commission, payouts, vendor isolation, vendor portal auth. Medusa does not hand you MoR marketplace mechanics for free. Spike early (ADR 0002).
+   Multi-vendor split, commission, payouts, vendor isolation, vendor portal auth. Medusa does not hand you MoR marketplace mechanics for free. Spike early when you are ready.
 
 6. **Ops**  
    Medusa Cloud (`mcloud`) vs self-host (Postgres, Redis, S3, server + worker). Tax/shipping providers as integrations, not core rewrites.
@@ -54,4 +54,4 @@ Treat Medusa as a **commerce application framework**: opinionated modules, workf
 
 - Load Medusa agent skills / MCP when available before inventing APIs.
 - Prefer extending modules and workflows over parallel services.
-- Direction of travel: `docs/plan.md` + `docs/adr/` + `agents/overview.md`.
+- Direction of travel: `docs/plan.md` + `agents/overview.md`.

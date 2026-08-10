@@ -10,23 +10,19 @@ Follow **Maintaining project documentation** in `agents/overview.md`. Update thi
 
 Next.js App Router storefront from the Medusa DTC starter. Talks to the Medusa Store API. Port default: **8000**.
 
-This is the **customer** surface only. House portal is a draft hypothesis (ADR 0003), out of scope for Now. Brand config layer is Later (`docs/plan.md`).
+This is the **customer** surface only. Brand/theme config is a later concern (`docs/plan.md`).
 
 ## Architecture and flow
 
 - Next.js 15 + React 19
 - Medusa JS SDK (`@medusajs/js-sdk`) with publishable key
 - Tailwind-based UI from the starter
-- DX stack (shadcn/ui, i18next, Zustand, TanStack Query) is Next in `docs/plan.md`, not Now
 
 ## Patterns to follow when extending
 
 1. Always send `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` (SDK config). Missing key causes opaque store API failures.
 2. Prefer URL-driven listing/filter state for shareable facet UX.
-3. Basket UX must eventually group by house; starter cart is single-merchant shaped until the engine spike lands.
-4. Editorial/CMS blocks that embed products must resolve live commerce data at render time.
-5. Keep brand tokens (colors, copy, imagery) out of core cart/checkout logic when introducing the config layer.
-6. Follow ADR 0006: guest → register with same email must be one customer with orders; logged-in checkout must pre-fill. Do not ship or document manual order transfer as the happy path.
+3. Keep brand tokens out of core cart/checkout logic when you introduce a config layer.
 
 ## Environment variables
 

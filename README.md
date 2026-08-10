@@ -2,7 +2,7 @@
 
 Medusa v2 monorepo **chassis** for multi-vendor marketplace projects. Clone it, keep the shared commerce engine, swap brand config, and ship the next client (see [`docs/plan.md`](./docs/plan.md)).
 
-Based on the Medusa DTC starter. Platform choice: Medusa (ADR 0001).
+Based on the Medusa DTC starter.
 
 ## Packages
 
@@ -16,7 +16,7 @@ Next.js customer storefront talking to the Medusa Store API (port 8000).
 
 ## How the packages relate
 
-The storefront is a headless client of the backend. One Medusa backend is the system of record for catalogue, cart, checkout, and orders. Vendor (house) and staff surfaces share that same core (ADR 0003).
+The storefront is a headless client of the backend. One Medusa backend is the system of record for catalogue, cart, checkout, and orders.
 
 ## Tech stack
 
@@ -34,8 +34,7 @@ The storefront is a headless client of the backend. One Medusa backend is the sy
 │   └── storefront/        # Next.js storefront
 ├── agents/                # AI engineering context
 ├── docs/
-│   ├── adr/               # Architecture decisions
-│   └── plan.md            # Chassis roadmap
+│   └── plan.md            # Roadmap (draft)
 ├── docker-compose.yml     # Local Postgres + Redis
 └── AGENTS.md              # AI router
 ```
@@ -130,10 +129,8 @@ pnpm run storefront:dev
 
 ## Useful docs in this repo
 
-- [`docs/plan.md`](./docs/plan.md) — Now / Next / Later roadmap (draft)
+- [`docs/plan.md`](./docs/plan.md) — roadmap (draft)
 - [`docs/pre-start.md`](./docs/pre-start.md) — short local checklist
-- [`docs/adr/`](./docs/adr/) — architecture decisions
-- [`docs/spikes/`](./docs/spikes/) — planning notes for hard problems
 
 ## External resources
 
