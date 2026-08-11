@@ -5,12 +5,12 @@ meta {
 }
 
 get {
-  url: {{base_url}}/admin/brands
+  url: {{base_url}}/admin/brands?limit=5&fields=+products.*
   body: none
   auth: inherit
 }
 
 params:query {
-  limit: 20
-  offset: 0
+  limit: 5
+  fields: +products.*
 }

@@ -5,11 +5,17 @@ meta {
 }
 
 get {
-  url: {{base_url}}/admin/products
+  url: {{base_url}}/admin/products?limit=5&fields=+brand.*
   body: none
   auth: inherit
 }
 
+params:query {
+  limit: 5
+  fields: +brand.*
+}
+
 settings {
   encodeUrl: true
+  timeout: 0
 }
