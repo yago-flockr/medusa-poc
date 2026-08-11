@@ -158,8 +158,10 @@ scheduled job that logs a daily count.
 ## Block C — Marketplace-shaped problems
 
 This block is where the chassis earns its value. Intent and design:
-`docs/features/multi-vendor-marketplace.md`. Experiment protocol:
-`docs/spikes/multi-vendor-order.md`.
+`docs/features/multi-vendor-marketplace.md` and
+`docs/features/commission-and-payouts.md`. Experiment protocol:
+`docs/spikes/multi-vendor-order.md`. The bar for this block is **What "working"
+means for the marketplace** in `docs/plan.md`, not the stages below.
 
 ### C1. Custom actor types and vendor isolation
 
@@ -192,6 +194,20 @@ run twice.
 orders.
 **Read:** [Locking in Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/locks),
 [Locking Module](https://docs.medusajs.com/resources/infrastructure-modules/locking)
+
+### C4. Money: commission and a payout run
+
+**Goal:** the half of a marketplace Medusa has no concept of — what a vendor is
+owed. Intent: `docs/features/commission-and-payouts.md`.
+**Build:** a commission rate per vendor, an append-only ledger entry written
+*inside* the order workflow, and a scheduled job that settles eligible entries
+into a simulated payout.
+**Done when:** placing an order writes the split as a stored fact, the job settles
+it, and a later partial refund adjusts only that vendor's balance — with the
+original entries still intact.
+**Read:** [Scheduled Jobs](https://docs.medusajs.com/learn/fundamentals/scheduled-jobs),
+[Big Numbers](https://docs.medusajs.com/learn/fundamentals/data-models/big-numbers),
+[Long-Running Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/long-running-workflow)
 
 ---
 

@@ -24,7 +24,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - Store: PostgreSQL
 - Layer: Medusa module data models and migrations
 - No custom chassis modules with owned models yet (starter + seed helpers only)
-- Planned extensions (Next in `docs/plan.md`): house-scoped fields, consignments, commission
+- Planned extensions (see `docs/features/`): vendors and vendor users, consignments, commission and payout ledger
 
 ## Core technologies
 
@@ -50,8 +50,35 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 1. Add or change a custom module model → `pnpm exec medusa db:generate <module>` then `db:migrate`. Update `docs/ER_MODEL.md` in the same session.
 2. Business logic in **workflows** and steps; routes resolve and run workflows.
 3. Do not open a raw DB client or write SQL in routes.
-4. Marketplace concepts (house, consignment, commission) become explicit modules/links once you spike them. Avoid scattering house_id checks without a model.
+4. Marketplace concepts (vendor, consignment, commission) become explicit modules/links once you spike them. Avoid scattering vendor_id checks without a model.
 5. Shared chassis modules should stay brand-agnostic; brand config belongs outside core logic when you add it.
+6. Money and rates use `bigNumber`, never a float.
+7. Keep provider and host choices at the edges: nothing outside a seam should know which payment, tax, carrier, content, search or hosting vendor a clone picked (`docs/plan.md`, "Not decided").
+
+## Marketplace implementation constraints
+
+What the requirements in `docs/features/` imply for the code. The briefs state
+behaviour only and deliberately name no primitives; this is where the mapping lives.
+
+- **Vendor isolation cannot come from Admin.** The User Module gives users and
+  invites but no granular per-user permissions, so a vendor-facing portal is a
+  separate app on a custom actor type, with every `/vendors/*` query scoped from
+  `req.auth_context.actor_id`. Never a filter a route author has to remember.
+- **Never store the customer-facing order status.** It is derived from the states of
+  its parts, so it cannot drift out of agreement with them.
+- **Compute the money split inside the order workflow**, so it is stored atomically
+  with the order and rolls back with it.
+- **Ledger entries are append-only.** A refund or correction is a new row; nothing is
+  updated in place.
+- **Checkout must be idempotent.** Lock the cart and guard the split, or a retry or
+  double-click produces duplicate parts that are very hard to unwind.
+- **Per-vendor stock means a stock location per vendor**, with reservation on
+  placement and release on cancellation.
+- **Extend core flows, never fork them.** Product creation and approval hook into
+  Medusa's own product workflow rather than growing a parallel product path.
+- The order container itself is **still open** — child orders (the official
+  marketplace recipe) versus one order plus consignment records. Settle it with
+  `docs/spikes/multi-vendor-order.md` before building a module to keep.
 
 ## Conventions and standards
 

@@ -34,7 +34,7 @@ The storefront is a headless client of the backend. One Medusa backend is the sy
 │   └── storefront/        # Next.js storefront
 ├── agents/                # AI engineering context
 ├── docs/
-│   └── plan.md            # Roadmap (draft)
+│   └── plan.md            # What we're building; fixed vs open choices
 ├── docker-compose.yml     # Local Postgres + Redis
 └── AGENTS.md              # AI router
 ```
@@ -129,8 +129,10 @@ pnpm run storefront:dev
 
 ## Useful docs in this repo
 
-- [`docs/plan.md`](./docs/plan.md) — roadmap (draft)
+- [`docs/plan.md`](./docs/plan.md) — what we're building, what is fixed, and what is deliberately still open
 - [`docs/pre-start.md`](./docs/pre-start.md) — short local checklist
+- [`docs/features/`](./docs/features) — what a feature should do, in business language
+- [`docs/study/README.md`](./docs/study/README.md) — Medusa learning path with done criteria
 
 ## External resources
 

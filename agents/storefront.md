@@ -10,7 +10,9 @@ Follow **Maintaining project documentation** in `agents/overview.md`. Update thi
 
 Next.js App Router storefront from the Medusa DTC starter. Talks to the Medusa Store API. Port default: **8000**.
 
-This is the **customer** surface only. Brand/theme config is a later concern (`docs/plan.md`).
+This is the **customer** surface only. Brand/theme config is a later concern.
+
+**Next.js and server rendering are fixed** (`docs/plan.md`, Fixed): discovery matters too much to ship a client-rendered store. Default to server rendering and treat a client component as a decision to justify. The **UI component library is not decided** — do not introduce one without asking.
 
 ## Architecture and flow
 

@@ -6,7 +6,7 @@ Next.js customer storefront for the Medusa chassis. Talks to the Medusa Store AP
 
 - **Next.js (App Router)**: UI and routing
 - **Medusa JS SDK**: Store API client
-- **Tailwind CSS**: starter styling (shadcn/ui planned in `docs/plan.md` Phase 1)
+- **Tailwind CSS**: starter styling (component library not chosen yet — see `docs/plan.md`)
 
 ## Project structure
 

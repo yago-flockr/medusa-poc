@@ -8,4 +8,4 @@ Simple configs before feature work.
 4. Migrate + admin user + sync publishable key (if DB is fresh or reset)
 5. `pnpm run backend:dev` and `pnpm run storefront:dev`
 
-Skip for Now (see `docs/plan.md` Next / Later): Stripe keys, Medusa Cloud login, CMS, search provider, Biome / shadcn / i18n overhaul, house portal.
+Not needed to boot locally: payment keys, deployment, CMS, search provider, component library, i18n, vendor portal. Several of those are deliberately unchosen — see `docs/plan.md`.

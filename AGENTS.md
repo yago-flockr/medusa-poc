@@ -4,7 +4,7 @@
 
 ## What this repo is
 
-Medusa v2 monorepo chassis: reusable commerce foundation (clone, configure brand, ship). Roadmap: `docs/plan.md`.
+Medusa v2 monorepo chassis: reusable commerce foundation (clone, configure brand, ship). What we're building, and what is fixed versus still open: `docs/plan.md`.
 
 ## Where to find context
 
@@ -12,7 +12,8 @@ Medusa v2 monorepo chassis: reusable commerce foundation (clone, configure brand
 - **Backend:** `agents/backend.md` (when working under `apps/backend/`)
 - **Storefront:** `agents/storefront.md` (when working under `apps/storefront/`)
 - **Medusa learning map:** `agents/medusa-learning-map.md`
-- **Roadmap:** `docs/plan.md`
+- **Scope and fixed constraints:** `docs/plan.md`
+- **What each capability must do:** `docs/features/`
 
 ## Human onboarding
 

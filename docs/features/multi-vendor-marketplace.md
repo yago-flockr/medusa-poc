@@ -1,157 +1,176 @@
-# Feature: multi-vendor marketplace (brands selling on our store)
+# Feature: vendors selling through our store
 
-> Intent brief. Plain language first, Medusa mechanics second. Not binding
-> architecture. Template: `docs/features/_template.md`.
+> Intent brief. **What must happen, not how we will build it.**
+> Shape: `docs/features/_template.md`. Money: `docs/features/commission-and-payouts.md`.
 
-**Status:** studying
-**Scope:** optional module — the base chassis boots without it; a clone enables it
+**Status:** agreed in principle, unproven
+**Scope:** optional per clone — the base boots without it
 
 ## What we want
 
-Several brands sell their products through our store. Each brand manages its own
-catalogue and sees its own sales, but the customer sees one storefront, pays
-once, and receives one confirmation. We handle shipping and customer service,
-and money is split between us and the brand according to an agreed percentage.
+Several independent brands sell their products through one storefront. Each brand
+manages its own catalogue and stock and sees only its own sales, while the customer
+experiences a single shop: one basket, one payment, one order to follow. Behind
+that, the order divides into one part per brand, and each part can be accepted,
+made, shipped, cancelled or returned on its own without disturbing the rest.
+
+Throughout, we call those brands **vendors**, and each per-vendor part of an order
+a **consignment**.
 
 ## Why
 
-It lets one deployment serve many brands instead of one store per brand, and it
-is the hardest thing Medusa does not give us for free — so it is the feature that
-decides whether this chassis is worth building.
+It lets one deployment serve many vendors instead of standing up a store per brand,
+and it is the part no commerce platform gives us for free. It is also where the
+money and the customer promise live, so if it is wrong, nothing else matters.
+
+## How it must work
+
+**Onboarding.** A vendor applies or is invited. We review and approve — vendors are
+selected, never self-serve. Once approved, the vendor completes its own details,
+including the public-facing name and description customers will see next to its
+products.
+
+**Vendor users.** People are invited into a vendor's account by us or by the vendor,
+never by signing themselves up. Because they can see customer names and delivery
+addresses, they authenticate more strictly than a shopper does.
+
+**Listing products.** The vendor creates its products, or brings them across from a
+store it already runs elsewhere rather than re-typing everything. The system refuses
+incomplete products: whatever we need for shipping, duties, accessibility and
+returns is required before a product can even be submitted.
+
+**Approval.** The vendor submits; we approve or send it back with a reason. Only
+approved products reach customers. Afterwards, a change to something we promised the
+customer — price, materials, dimensions, origin, customs information — goes back for
+review. Changing stock does not.
+
+**Limits.** A vendor may be capped on how many products it can have live at once.
+The cap is enforced, and both we and the vendor can see how close it is.
+
+**Stock.** Each vendor's stock is counted separately. Placing an order holds the
+stock; cancelling releases it. The customer is told the truth about availability
+when adding to the basket and again at checkout, and there is a defined path for
+when the answer changes in between.
+
+**Shopping and paying.** The customer fills one basket, which may span several
+vendors, and pays once. The basket makes clear which items come from which vendor
+and what that means for delivery.
+
+**Splitting.** On payment, the order divides into one consignment per vendor. The
+customer keeps one order; internally each consignment is worked separately. Where
+dispatch dates differ inside a single consignment, it may split again — and still
+does not become a second order.
+
+**Fulfilling.** The vendor accepts its consignment, confirming the dispatch window.
+It packs and ships using a label we generate on our own carrier account. Vendors
+never book their own couriers, so we keep control of cost, tracking and the
+customer's experience.
+
+**Following the order.** The customer sees one order containing several deliveries,
+each with its own status and tracking. Mixed states are normal and must read
+clearly: one part delivered, one in production, one cancelled, on the same page.
+
+**Returns.** The customer returns an individual item, not an order. We decide
+whether it is eligible, where it goes, who inspects it and when the money goes back.
+Return windows may differ by vendor. We stay the customer's point of contact even
+when a vendor handles the physical return.
 
 ## Rules we already know
 
-- A brand manages **its own products** and sees **only its own orders**.
-- The customer completes **one checkout** even when the cart mixes brands.
-- **We ship.** Fulfilment is ours, not the brand's.
-- A **percentage** splits the sale between us and the brand.
-- Unknown: who is merchant of record, and therefore who receives the money first
-  and who is refunded from. See open questions.
-- Unknown: what happens to the split on partial refund, return, or cancellation.
-- Unknown: whether brands need their own portal, or Admin access is enough.
+- **We are the seller.** We take the payment, own the customer relationship, apply
+  the taxes and issue the refunds. Vendors supply.
+- **Vendors hold and ship their own stock**, but do not arrange their own couriers.
+- **A vendor sees only its own data.** Isolation is a hard requirement, not a
+  filter someone remembers to apply. A vendor must never reach another vendor's
+  orders, customers or performance.
+- **Nothing reaches customers unapproved.**
+- **The status a customer sees is worked out from the parts**, never stored beside
+  them, so it can never contradict them.
+- **One consignment's state never changes another's.**
+- **The customer never pays twice or is charged per vendor.** One payment, always.
+- Vendors join and leave, and products are discontinued often. Churn is normal
+  operation, not an exception to handle later.
+- Unknown: whether vendors also sell the same stock elsewhere. If they do, someone
+  has to be right when two systems disagree.
 
-## Medusa building blocks we probably need
+## The consignment lifecycle
 
-### 1. A custom module for the brands
+The minimum set of states, and what the customer is told at each. Add to it if a
+clone needs more; do not collapse it.
 
-Medusa has no vendor concept. We own the table.
+| State | Moved by | What the customer sees |
+| --- | --- | --- |
+| Placed | System, on payment | One confirmation listing every part with its expected dispatch window |
+| Accepted | Vendor | Nothing — the window is confirmed, not changed |
+| Unfulfillable | Vendor | That part cannot be supplied; that line refunded, rest of the order unaffected |
+| In production | Vendor | A lead time, shown against that part only |
+| Dispatched | Vendor | Dispatch notice and tracking for that part alone |
+| Delivered | Carrier | Delivery confirmation for that part |
+| Cancelled | Customer or staff, before dispatch | Cancellation confirmed, partial refund against the original order |
+| Return requested | Customer | Instructions and the window that applies to that vendor |
+| Return received | Vendor, on inspection | Confirmation the return is being processed |
+| Refunded | System | Refund confirmed, partial against the original order |
 
-```ts
-// src/modules/marketplace/models/vendor.ts
-const Vendor = model.define("vendor", {
-  id: model.id().primaryKey(),
-  handle: model.text().unique(),
-  name: model.text(),
-  admins: model.hasMany(() => VendorAdmin, { mappedBy: "vendor" }),
-})
-```
+## What each audience sees
 
-The service extends `MedusaService({ Vendor, VendorAdmin })`, which generates
-`createVendors`, `listVendors`, and the rest. Register the module in
-`medusa-config.ts`, then `medusa db:generate marketplace` and `db:migrate`.
+**Customer** — one shop, one basket grouped by vendor, one payment, one order with
+several deliveries. Enough about each vendor to trust it, and a clear explanation of
+why one order arrives as several parcels.
 
-### 2. Module links to core data
+**Vendor** — its own dashboard: what needs action today, its catalogue and approval
+status, its stock, its consignments, its labels, its returns, its statements. Its own
+performance. Nothing belonging to anyone else.
 
-Modules are isolated, so we never add a `vendor_id` column to Medusa's product
-or order tables. We declare a link and Medusa creates the join table.
+**Our staff** — everything. All orders across all vendors, every consignment,
+approvals waiting, exceptions to fix, vendor records, and the ability to intervene
+on a customer's behalf without asking an engineer.
 
-```ts
-// src/links/vendor-product.ts
-export default defineLink(
-  MarketplaceModule.linkable.vendor,
-  { linkable: ProductModule.linkable.product.id, isList: true }
-)
-```
+## When it goes wrong
 
-Afterwards Query reads across the boundary in one call:
-`query.graph({ entity: "product", fields: ["vendor.*"] })`.
-
-### 3. A workflow that splits the order at checkout
-
-The recipe's shape: complete the cart into one **parent order**, group the line
-items by vendor, and create one **child order** per vendor linked back to it.
-
-```ts
-const { id: orderId } = completeCartWorkflow.runAsStep({ input: { id: cart.id } })
-const { vendorsItems } = groupVendorItemsStep({ cart })
-const { orders, linkDefs } = createVendorOrdersStep({ parentOrder, vendorsItems })
-createRemoteLinkStep(linkDefs)
-```
-
-The child orders carry `metadata.parent_order_id`, and the step's compensation
-function cancels them with `cancelOrderWorkflow` if anything fails. The
-storefront calls our route (`POST /store/carts/:id/complete-vendor`) instead of
-Medusa's complete-cart endpoint.
-
-### 4. Locking and idempotency
-
-Checkout can be retried or double-clicked. The recipe wraps the flow in
-`acquireLockStep` / `releaseLockStep` and guards the split with a `when` that
-checks whether vendor-order links already exist. Skipping this produces
-duplicated child orders under load, which is very hard to unwind later.
-
-### 5. A custom actor type for brand users
-
-Brand staff are neither `admin` nor `customer`.
-
-```ts
-authenticate("vendor", ["session", "bearer"], { allowUnregistered: true })
-```
-
-Registration goes through `/auth/vendor/emailpass/register`, and the
-create-vendor workflow attaches the identity with `setAuthAppMetadataStep`.
-Routes under `/vendors/*` then resolve `req.auth_context.actor_id` and scope
-every query to that vendor. Note that Medusa Admin is for super admins only, so
-a brand-facing portal would be a separate application.
-
-### 6. Commission and payouts
-
-Not covered by the recipe — this is our part. Likely shape: a second module
-owning a `CommissionRule` (linked to a vendor, maybe overridden per product) and
-a payout ledger row written when an order is placed or fulfilled, plus a
-scheduled job that settles them. Compute the split inside the order workflow so
-it is stored as a fact, not recalculated later from prices that may have changed.
+- **A vendor accepts and then cannot supply.** That consignment becomes
+  unfulfillable, that line is refunded, the rest of the order continues untouched,
+  and the customer is told what happened to which part.
+- **Stock is gone between basket and checkout.** The customer finds out before
+  paying, not after.
+- **The customer pays and something fails mid-split.** Either the whole order forms
+  correctly or none of it does. A half-created order is never acceptable.
+- **The customer pays twice, or retries.** One payment, one order, no duplicates.
+- **A vendor goes quiet.** We can see it, chase it against an agreed response time,
+  and cancel or reassign on the customer's behalf.
+- **A vendor leaves.** Its products come down without breaking the orders it already
+  has, or the history of what it sold.
 
 ## Open questions
 
-- **Blocking — who takes the commission?** The phrasing so far is that the brand
-  receives a commission, which means we are the seller and the brand is a
-  consignor (we hold the money, we refund, we pay the brand out). The recipe
-  assumes the opposite direction. This decides payouts, refunds, and tax.
-- **Blocking — is the child order the right container?** One parent plus child
-  orders is the recipe's answer. The alternative is a single order with one
-  fulfilment and one consignment record per brand, which fits "we ship
-  everything" better. Both are legitimate in Medusa.
-- Do brands hold their own stock, or do we? That decides whether each brand gets
-  a stock location and how inventory is reserved.
-- One shipping method for the whole cart, or per brand? The recipe reuses the
-  parent's shipping method for every child order as a simplification.
-- Do brands need their own sales channel or price list?
-- What does a brand see: an Admin account scoped by permissions, or a separate
-  portal on the `vendor` actor type?
+- **Blocking — is one consignment always one vendor?** A consignment that can split
+  again on differing dispatch dates says the answer is no, and that changes how
+  everything downstream is counted.
+- What does the customer pay for shipping when one basket becomes several parcels,
+  and do we absorb the difference?
+- How does a vendor's catalogue arrive: by hand, by upload, or by connecting a store
+  it already runs?
+- Do vendors share stock with other channels?
+- Does a vendor get its own pricing, or does it sell at our prices?
+- Which awkward product types must work on day one — one-of-a-kind items, made to
+  order, personalised?
 
-## How we prove it
+## How we know it works
 
-The smallest useful experiment is a two-vendor cart producing the expected
-orders, on a branch, with no storefront redesign: see
-`docs/spikes/multi-vendor-order.md`. Answer the two blocking questions before
-turning any of it into a module we intend to keep.
+The bar is set in `docs/plan.md`. The short version someone could check by hand: two
+vendors that cannot see each other, one basket across both, one payment, two
+consignments moving independently, one of them failing without harming the other,
+one refund that touches only its own part — and a readable history of all of it
+afterwards.
 
-## Out of scope for the spike
+Feasibility is not yet established. The experiment: `docs/spikes/multi-vendor-order.md`.
 
-Payouts and money movement, tax handling per brand, brand portal UI, brand-level
-inventory, per-brand shipping selection, and anything in the storefront beyond
-pointing checkout at the custom complete-cart route.
+## Out of scope
 
-## References
+Commission, statements and paying vendors (own brief). Tax and duty calculation.
+Content, search and storefront design. Anything about how a vendor's own systems
+work.
 
-- [Marketplace recipe: vendors example](https://docs.medusajs.com/resources/recipes/marketplace/examples/vendors)
-- [Example repository](https://github.com/medusajs/examples/tree/main/marketplace)
-- [Modules](https://docs.medusajs.com/learn/fundamentals/modules) ·
-  [Module links](https://docs.medusajs.com/learn/fundamentals/module-links) ·
-  [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query)
-- [Workflows](https://docs.medusajs.com/learn/fundamentals/workflows) ·
-  [Compensation](https://docs.medusajs.com/learn/fundamentals/workflows/compensation-function) ·
-  [Locks](https://docs.medusajs.com/learn/fundamentals/workflows/locks)
-- [Actor types](https://docs.medusajs.com/resources/commerce-modules/auth/auth-identity-and-actor-types) ·
-  [Create an actor type](https://docs.medusajs.com/resources/commerce-modules/auth/create-actor-type)
+## Related
+
+- `docs/features/commission-and-payouts.md`
+- `docs/plan.md` — what we need overall, and what is deliberately still open

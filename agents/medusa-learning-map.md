@@ -12,14 +12,14 @@ This file is the **mental model**. The ordered stages, exercises, and done crite
 - **Event emitters / queues** → **subscribers** + jobs (and real Redis in production)
 - **Nest controllers** → **file-based API routes** under `src/api`
 - **Admin panel** → Medusa Admin + `src/admin` extensions (React)
-- **Headless storefront** → any; here Next.js + JS SDK
+- **Headless storefront** → Medusa allows any; **here it is Next.js + JS SDK, and that is fixed** (`docs/plan.md`)
 
 ## Where the difficulty actually is
 
 - **Commerce vocabulary** is broad but shallow: skim it, do not memorize endpoints.
 - **The extension model** (modules, links, workflows, routes, subscribers) is the part that pays off; everything custom is built from those five.
 - **Marketplace-shaped gaps** are the real study for this chassis. Medusa does not hand you merchant-of-record marketplace mechanics: multi-vendor split, commission, payouts, vendor isolation, and vendor portal auth are ours to build. Spike before productizing.
-- **Ops** is mostly a deployment shape question: Medusa Cloud versus self-hosting Postgres, Redis, S3, and a server plus worker process. Tax and shipping providers are integrations, not core rewrites.
+- **Ops** is mostly about *who operates* the pieces, not which pieces. Postgres, a Redis-compatible service, file storage, and separate web and worker processes are required either way (`docs/plan.md`, Fixed); a managed host provides them, self-hosting means assembling them. Tax and shipping providers are integrations, not core rewrites.
 
 ## What you can skip early
 

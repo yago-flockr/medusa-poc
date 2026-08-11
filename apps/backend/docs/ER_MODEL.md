@@ -16,13 +16,13 @@ Commerce tables (products, carts, orders, customers, regions, etc.) are owned by
 ```mermaid
 erDiagram
   %% No custom chassis entities yet.
-  %% Phase 2 (docs/plan.md) will add house-scoped product/order fields,
-  %% consignments, and commission models here.
+  %% Planned (docs/features/): vendors and vendor users, consignments,
+  %% and the commission / payout ledger.
 ```
 
 ## Entities
 
-None. When Phase 2 modules land, document each custom entity (fields, refs, delete behavior) here and link from `agents/backend.md`.
+None. When the marketplace modules land, document each custom entity (fields, refs, delete behavior) here and link from `agents/backend.md`. Money and rates are `bigNumber` columns; ledger entries are append-only.
 
 ## Notes
 

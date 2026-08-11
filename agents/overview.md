@@ -18,13 +18,13 @@ Do not record generic facts, obvious code, or duplicates.
 **Where to update:**
 
 - Repo-wide → `agents/overview.md`
-- Roadmap and decisions → `docs/plan.md`
+- Scope, fixed constraints, and decisions → `docs/plan.md`
 - Human onboarding → `README.md`
 - Backend → `agents/backend.md`
 - Storefront → `agents/storefront.md`
 - Medusa mental model → `agents/medusa-learning-map.md`
 - Medusa study stages → `docs/study/README.md`
-- What a feature should do (business intent) → `docs/features/<slug>.md`
+- What a feature should do (business intent) → `docs/features/<slug>.md`. **Behaviour only** — no technology, file paths or primitives; those go in this file or `agents/backend.md`. Shape: `docs/features/_template.md`
 - Experiment protocol and results → `docs/spikes/<slug>.md`
 - Backend ER model → `apps/backend/docs/ER_MODEL.md`
 - `AGENTS.md` → only when agent files are added or renamed
@@ -33,7 +33,7 @@ Do not record generic facts, obvious code, or duplicates.
 
 Medusa v2 monorepo chassis (still close to the DTC starter). Brand-agnostic foundation to specialize per client.
 
-Roadmap: `docs/plan.md`.
+Scope and fixed constraints: `docs/plan.md`. **Read its Fixed and Not decided sections before choosing any technology** — several choices are deliberately still open, and picking one silently is a mistake.
 
 ## Medusa engineering rules
 
@@ -54,17 +54,24 @@ Always implement the Medusa way. No workarounds.
 
 ## Core technologies
 
+Fixed (no substitute — `docs/plan.md`):
+
 - **Medusa v2**: `apps/backend`
-- **Next.js**: `apps/storefront`
+- **Next.js, server-rendered**: `apps/storefront`
+- **Postgres**, and **Redis** for events, queues, cache and locks in production: `docker-compose.yml` locally
+- **TypeScript** everywhere; separate web and worker processes in production
+
+Current but replaceable:
+
 - **pnpm + Turborepo**: root workspace
-- **Postgres + Redis**: `docker-compose.yml`
+- **Tailwind** from the starter; component library not chosen
 - **Seed markets**: `apps/backend/src/lib/markets.ts`
 
 ## Module / directory breakdown
 
 - `apps/backend/` → `agents/backend.md`
 - `apps/storefront/` → `agents/storefront.md`
-- `docs/plan.md`: roadmap and recorded decisions
+- `docs/plan.md`: what the product must do, what is **Fixed**, and what is **Not decided** — read the latter before assuming a host or a provider
 - `docs/study/`: Medusa study stages with done criteria; notes per stage
 - `docs/features/`: intent briefs (what we want + likely Medusa primitives); `_template.md` is the shape
 - `docs/spikes/`: experiments that prove a direction before productizing
