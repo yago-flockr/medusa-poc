@@ -1,0 +1,37 @@
+meta {
+  name: admin
+  seq: 2
+}
+
+auth {
+  mode: none
+}
+
+script:pre-request {
+  let token = bru.getVar("admin_token");
+
+  if (!token) {
+    const res = await bru.sendRequest({
+      method: "POST",
+      url: bru.getEnvVar("base_url") + "/auth/user/emailpass",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: {
+        email: bru.getEnvVar("admin_email"),
+        password: bru.getEnvVar("admin_password")
+      }
+    });
+
+    token = res && res.data && res.data.token;
+    if (token) {
+      bru.setVar("admin_token", token);
+    }
+  }
+
+  if (!token) {
+    throw new Error("Could not obtain admin JWT");
+  }
+
+  req.setHeader("Authorization", "Bearer " + token);
+}
