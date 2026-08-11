@@ -1,0 +1,8 @@
+name: Global
+variables:
+  - name: base_url
+    value: http://localhost:9000
+  - name: admin_email
+    value: admin@example.com
+  - name: admin_password
+    value: supersecret

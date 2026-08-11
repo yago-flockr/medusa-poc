@@ -33,6 +33,7 @@ The storefront is a headless client of the backend. One Medusa backend is the sy
 │   ├── backend/           # Medusa application
 │   └── storefront/        # Next.js storefront
 ├── agents/                # AI engineering context
+├── bruno/                 # Bruno API collection (HTTP against local backend)
 ├── docs/
 │   └── plan.md            # What we're building; fixed vs open choices
 ├── docker-compose.yml     # Local Postgres + Redis

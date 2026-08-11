@@ -75,6 +75,7 @@ Current but replaceable:
 - `docs/study/`: Medusa study stages with done criteria; notes per stage
 - `docs/features/`: intent briefs (what we want + likely Medusa primitives); `_template.md` is the shape
 - `docs/spikes/`: experiments that prove a direction before productizing
+- `bruno/`: Bruno OpenCollection for Admin/Store HTTP (repo root — not under `apps/backend`, so `medusa develop` does not reload on request edits)
 - `docker-compose.yml`: local Postgres and Redis
 
 ## Conventions
