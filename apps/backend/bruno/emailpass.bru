@@ -1,0 +1,23 @@
+meta {
+  name: emailpass
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/auth/user/emailpass
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "admin@example.com",
+    "password": "supersecret"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
