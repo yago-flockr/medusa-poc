@@ -25,6 +25,7 @@ This is the **customer** surface only. Brand/theme config is a later concern.
 1. Always send `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` (SDK config). Missing key causes opaque store API failures.
 2. Prefer URL-driven listing/filter state for shareable facet UX.
 3. Keep brand tokens out of core cart/checkout logic when you introduce a config layer.
+4. **Mandatory:** never import backend models or `InferTypeOf` of models. Use JS SDK / `HttpTypes` for core commerce; for custom resources use the HTTP contract (`api/.../contract.ts` or a shared contracts package), never a second hand-copied type.
 
 ## Environment variables
 

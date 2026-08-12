@@ -3,32 +3,39 @@ import { DetailWidgetProps, AdminProduct } from "@medusajs/framework/types"
 import { Text } from "@medusajs/ui"
 import { Card } from "../components/card"
 import { useAdminProductRetrieve } from "../hooks/queries/products"
+import { optionalField } from "../lib/optional-field"
 
 const ProductBrandWidget = ({
   data: product,
 }: DetailWidgetProps<AdminProduct>) => {
-  const adminProductRetrieve = useAdminProductRetrieve(product.id, ["brand"])
+  const adminProductRetrieve = useAdminProductRetrieve(product.id, {
+    fields: "+brand.*",
+  })
+
+  const rows = [
+    { label: "Name", value: adminProductRetrieve.data?.brand?.name },
+    { label: "Handle", value: adminProductRetrieve.data?.brand?.handle },
+  ] as const satisfies { label: string, value: string | undefined }[]
 
   return (
     <Card.Root>
       <Card.Header>
-        <Card.Title title="Brand" />
+        <Card.Title level="h2" title="Brand" />
       </Card.Header>
-      <Card.Content
-        className="text-ui-fg-subtle grid-cols-2"
-      >
-        <Text size="small" weight="plus" leading="compact">
-          Name
-        </Text>
-
-        <Text
-          size="small"
-          leading="compact"
-          className="whitespace-pre-line text-pretty"
-        >
-          {adminProductRetrieve.data?.brand?.name || "-"}
-        </Text>
-      </Card.Content>
+      {rows.map((row, index) => (
+        <Card.Content key={index} className="text-ui-fg-subtle grid-cols-2">
+          <Text size="small" weight="plus" leading="compact">
+            {row.label}
+          </Text>
+          <Text
+            size="small"
+            leading="compact"
+            className="whitespace-pre-line text-pretty"
+          >
+            {optionalField(row.value)}
+          </Text>
+        </Card.Content>
+      ))}
     </Card.Root>
   )
 }

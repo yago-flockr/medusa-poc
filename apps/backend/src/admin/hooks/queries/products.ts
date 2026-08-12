@@ -1,44 +1,21 @@
 import { useQuery } from "@tanstack/react-query"
-import type { InferTypeOf } from "@medusajs/framework/types"
-import { Brand } from "../../../modules/brand/models/brand"
-import {
-  expandField,
-  expandFields,
-  type ExpandSelection,
-} from "../../lib/expand-fields"
+import type {
+  Product,
+  ProductQuery,
+} from "../../../api/admin/products/contract"
+import { queryKeys } from "../../lib/query-keys"
 import { sdk } from "../../lib/sdk"
 
-type ProductRetrieveQuery = NonNullable<
-  Parameters<typeof sdk.admin.product.retrieve>[1]
->
+export type { Product, ProductQuery }
 
-type ProductBase = Awaited<
-  ReturnType<typeof sdk.admin.product.retrieve>
->["product"]
-
-const productExpand = {
-  brand: expandField<InferTypeOf<typeof Brand> | null>("+brand.*"),
-}
-
-export const useAdminProductRetrieve = <
-  TKey extends keyof typeof productExpand,
->(
+export const useAdminProductRetrieve = (
   id: string,
-  expand: TKey[],
-  query?: Omit<ProductRetrieveQuery, "fields">
-) => {
-  const fields = expandFields(productExpand, expand)
-
-  return useQuery({
-    queryKey: ["admin", "product", id, expand, query],
+  query?: ProductQuery
+) =>
+  useQuery({
+    queryKey: [...queryKeys.products.byId(id), query],
     queryFn: async () => {
-      const { product } = await sdk.admin.product.retrieve(id, {
-        ...query,
-        ...(fields ? { fields } : {}),
-      })
-
-      return product as ProductBase &
-        ExpandSelection<typeof productExpand, TKey>
+      const { product } = await sdk.admin.product.retrieve(id, query)
+      return product as Product
     },
   })
-}
