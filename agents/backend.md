@@ -34,7 +34,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
 ## Module / directory breakdown (`src/`)
 
-- `api/`: file-based routes (`api/store/*`, `api/admin/*`) exporting HTTP verbs; optional `api/middlewares.ts`
+- `api/`: file-based routes (`api/store/*`, `api/admin/*`) exporting HTTP verbs. Medusa loads **only** root `api/middlewares.ts` — keep it a thin composer. Per feature, colocate `middlewares.ts` that exports a `MiddlewareRoute[]` (validators + `validateAndTransformQuery` defaults); import and spread into the root file. Do not nest `defineMiddlewares` in feature files.
 - `modules/`: custom domain modules (models, services, migrations)
 - `workflows/`: orchestration; prefer over fat route handlers
 - `links/`: links between module data models

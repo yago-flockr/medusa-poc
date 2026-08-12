@@ -13,6 +13,7 @@ This file is the **mental model**. The ordered stages, exercises, and done crite
 - **Nest controllers** → **file-based API routes** under `src/api`
 - **Admin panel** → Medusa Admin + `src/admin` extensions (React)
 - **Headless storefront** → Medusa allows any; **here it is Next.js + JS SDK, and that is fixed** (`docs/plan.md`)
+- **GraphQL selection set / Prisma `include`** → API `fields` on Query (`query.graph`): opt-in columns and relations (same-module *and* module links). Not link-only. Operators: bare list replaces route defaults; `+` / `-` amend defaults; `*relation` or `relation.*` expands a relation. Custom links (e.g. `brand`) almost never sit in defaults, so you ask for them explicitly (`+brand.*` or `*brand`).
 
 ## Where the difficulty actually is
 
