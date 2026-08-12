@@ -105,7 +105,7 @@ From `apps/backend`:
 
 - Editing models without generating migrations: schema never applies.
 - Destructive DB ops only with explicit user confirmation.
-- `.medusa/` is build output; do not hand-edit.
 - Local Redis optional; fake Redis is not production-safe.
+- Admin JS SDK does **not** type custom linked fields from `fields`. Use `src/admin/lib/expand-fields.ts`: register each link once with `expandField<InferTypeOf<typeof Model> | null>("+link.*")`, then hooks take `expand: ["brand"]` so the fields string and return type stay in sync. Never hand-list model columns.
 - Admin UI code under `src/admin/` that uses `import Medusa from "@medusajs/js-sdk"` needs `@medusajs/js-sdk` as a **direct** backend dependency (same version as other `@medusajs/*` packages). It is not pulled in by `@medusajs/admin-sdk` alone.
 - Multi-vendor planning notes: `docs/spikes/multi-vendor-order.md` (do not productize on the demo path yet).
