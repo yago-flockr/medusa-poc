@@ -23,7 +23,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
 - Store: PostgreSQL
 - Layer: Medusa module data models and migrations
-- No custom chassis modules with owned models yet (starter + seed helpers only)
+- Custom modules with owned models: **Brand** (`src/modules/brand`) — product taxonomy via `product-brand` link; see `docs/ER_MODEL.md`. Not the white-label client brand in `docs/plan.md`.
 - Planned extensions (see `docs/features/`): vendors and vendor users, consignments, commission and payout ledger
 
 ## Core technologies
@@ -34,7 +34,9 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
 ## Module / directory breakdown (`src/`)
 
-- `api/`: file-based routes (`api/store/*`, `api/admin/*`) exporting HTTP verbs. Medusa loads **only** root `api/middlewares.ts` — keep it a thin composer. Per feature, colocate `middlewares.ts` that exports a `MiddlewareRoute[]` (validators + `validateAndTransformQuery` defaults); import and spread into the root file. Do not nest `defineMiddlewares` in feature files.
+- `api/`: file-based routes (`api/store/*`, `api/admin/*`) exporting HTTP verbs. Medusa loads **only** root `api/middlewares.ts` — keep it a thin composer that spreads feature `MiddlewareRoute[]` exports. Do not nest `defineMiddlewares` in feature files.
+  - Per Admin feature: `validators.ts`, `query-config.ts` (when the feature has list/retrieve), `middlewares.ts` (wire that feature’s matchers only).
+  - Product `additional_data`: each feature that extends product create/update exports a fragment from `api/admin/<feature>/additional-data.ts`. Compose them in `api/admin/products/additional-data.ts` and pass the result from `products/middlewares.ts`. Do not put foreign-route matchers in the feature’s middlewares, and do not bury cross-route fields inside CRUD validators.
 - `modules/`: custom domain modules (models, services, migrations)
 - `workflows/`: orchestration; prefer over fat route handlers
 - `links/`: links between module data models
@@ -105,4 +107,5 @@ From `apps/backend`:
 - Destructive DB ops only with explicit user confirmation.
 - `.medusa/` is build output; do not hand-edit.
 - Local Redis optional; fake Redis is not production-safe.
+- Admin UI code under `src/admin/` that uses `import Medusa from "@medusajs/js-sdk"` needs `@medusajs/js-sdk` as a **direct** backend dependency (same version as other `@medusajs/*` packages). It is not pulled in by `@medusajs/admin-sdk` alone.
 - Multi-vendor planning notes: `docs/spikes/multi-vendor-order.md` (do not productize on the demo path yet).

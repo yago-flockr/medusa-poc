@@ -1,0 +1,85 @@
+import {
+  createStep,
+  createWorkflow,
+  StepResponse,
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+import { Modules } from "@medusajs/framework/utils"
+import type { LinkDefinition } from "@medusajs/framework/types"
+import { BRAND_MODULE } from "../modules/brand"
+import BrandModuleService from "../modules/brand/service"
+
+export type DeleteBrandWorkflowInput = {
+  id: string
+}
+
+type DeleteBrandCompensation = {
+  id: string
+  links: LinkDefinition[]
+}
+
+export const deleteBrandStep = createStep(
+  "delete-brand-step",
+  async (input: DeleteBrandWorkflowInput, { container }) => {
+    const brandModuleService: BrandModuleService = container.resolve(
+      BRAND_MODULE
+    )
+    const query = container.resolve("query")
+    const link = container.resolve("link")
+
+    await brandModuleService.retrieveBrand(input.id)
+
+    const { data: brands } = await query.graph({
+      entity: "brand",
+      filters: { id: input.id },
+      fields: ["id", "products.id"],
+    })
+
+    const brand = brands[0]
+    const products = (brand?.products ?? []) as { id: string }[]
+    const links: LinkDefinition[] = products.map((product) => ({
+      [Modules.PRODUCT]: {
+        product_id: product.id,
+      },
+      [BRAND_MODULE]: {
+        brand_id: input.id,
+      },
+    }))
+
+    if (links.length) {
+      await link.dismiss(links)
+    }
+
+    await brandModuleService.softDeleteBrands(input.id)
+
+    return new StepResponse({ id: input.id }, {
+      id: input.id,
+      links,
+    } satisfies DeleteBrandCompensation)
+  },
+  async (compensation: DeleteBrandCompensation | undefined, { container }) => {
+    if (!compensation) {
+      return
+    }
+
+    const brandModuleService: BrandModuleService = container.resolve(
+      BRAND_MODULE
+    )
+    const link = container.resolve("link")
+
+    await brandModuleService.restoreBrands(compensation.id)
+
+    if (compensation.links.length) {
+      await link.create(compensation.links)
+    }
+  }
+)
+
+export const deleteBrandWorkflow = createWorkflow(
+  "delete-brand",
+  function (input: DeleteBrandWorkflowInput) {
+    const result = deleteBrandStep(input)
+
+    return new WorkflowResponse(result)
+  }
+)

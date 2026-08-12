@@ -1,7 +1,10 @@
 import { defineMiddlewares } from "@medusajs/framework/http"
-import { brandMiddlewares } from "./admin/brands/middlewares"
-import { productMiddlewares } from "./admin/products/middlewares"
+import { adminBrandRoutesMiddlewares } from "./admin/brands/middlewares"
+import { adminProductRoutesMiddlewares } from "./admin/products/middlewares"
 
 export default defineMiddlewares({
-  routes: [...brandMiddlewares, ...productMiddlewares],
+  routes: [
+    ...adminBrandRoutesMiddlewares,
+    ...adminProductRoutesMiddlewares,
+  ],
 })

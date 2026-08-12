@@ -1,12 +1,15 @@
 import type { MiddlewareRoute } from "@medusajs/framework/http"
-import { z } from "@medusajs/framework/zod"
+import { productAdditionalDataValidators } from "./additional-data"
 
-export const productMiddlewares: MiddlewareRoute[] = [
+export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    matcher: "/admin/products",
     method: ["POST"],
-    additionalDataValidator: {
-      brand_id: z.string().optional(),
-    },
+    matcher: "/admin/products",
+    additionalDataValidator: productAdditionalDataValidators,
+  },
+  {
+    method: ["POST"],
+    matcher: "/admin/products/:id",
+    additionalDataValidator: productAdditionalDataValidators,
   },
 ]

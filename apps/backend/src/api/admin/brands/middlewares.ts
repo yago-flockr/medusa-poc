@@ -3,44 +3,55 @@ import {
   validateAndTransformQuery,
   type MiddlewareRoute,
 } from "@medusajs/framework/http"
+import * as QueryConfig from "./query-config"
 import {
-  GetBrandSchema,
-  GetBrandsSchema,
-  PostAdminCreateBrand,
+  AdminCreateBrand,
+  AdminGetBrandParams,
+  AdminGetBrandsParams,
+  AdminUpdateBrand,
 } from "./validators"
 
-const brandQueryDefaults = [
-  "id",
-  "name",
-  "created_at",
-  "updated_at",
-  "products.*",
-]
-
-export const brandMiddlewares: MiddlewareRoute[] = [
+export const adminBrandRoutesMiddlewares: MiddlewareRoute[] = [
   {
+    method: ["GET"],
     matcher: "/admin/brands",
-    method: "POST",
-    middlewares: [validateAndTransformBody(PostAdminCreateBrand)],
-  },
-  {
-    matcher: "/admin/brands",
-    method: "GET",
     middlewares: [
-      validateAndTransformQuery(GetBrandsSchema, {
-        defaults: brandQueryDefaults,
-        isList: true,
-      }),
+      validateAndTransformQuery(
+        AdminGetBrandsParams,
+        QueryConfig.listTransformQueryConfig
+      ),
     ],
   },
   {
-    matcher: "/admin/brands/:id",
-    method: "GET",
+    method: ["POST"],
+    matcher: "/admin/brands",
     middlewares: [
-      validateAndTransformQuery(GetBrandSchema, {
-        defaults: brandQueryDefaults,
-        isList: false,
-      }),
+      validateAndTransformBody(AdminCreateBrand),
+      validateAndTransformQuery(
+        AdminGetBrandParams,
+        QueryConfig.retrieveTransformQueryConfig
+      ),
+    ],
+  },
+  {
+    method: ["GET"],
+    matcher: "/admin/brands/:id",
+    middlewares: [
+      validateAndTransformQuery(
+        AdminGetBrandParams,
+        QueryConfig.retrieveTransformQueryConfig
+      ),
+    ],
+  },
+  {
+    method: ["POST"],
+    matcher: "/admin/brands/:id",
+    middlewares: [
+      validateAndTransformBody(AdminUpdateBrand),
+      validateAndTransformQuery(
+        AdminGetBrandParams,
+        QueryConfig.retrieveTransformQueryConfig
+      ),
     ],
   },
 ]

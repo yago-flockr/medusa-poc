@@ -3,15 +3,20 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
+import { z } from "@medusajs/framework/zod"
+import { updateBrandWorkflow } from "../../../../workflows/update-brand"
+import { deleteBrandWorkflow } from "../../../../workflows/delete-brand"
+import { AdminUpdateBrand } from "../validators"
 
-export const GET = async (
-  req: MedusaRequest,
-  res: MedusaResponse
-) => {
+type AdminUpdateBrandType = z.infer<typeof AdminUpdateBrand>
+
+export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve("query")
   const { id } = req.params
 
-  const { data: [brand] } = await query.graph({
+  const {
+    data: [brand],
+  } = await query.graph({
     entity: "brand",
     filters: { id },
     ...req.queryConfig,
@@ -25,4 +30,34 @@ export const GET = async (
   }
 
   res.json({ brand })
+}
+
+export const POST = async (
+  req: MedusaRequest<AdminUpdateBrandType>,
+  res: MedusaResponse
+) => {
+  const { id } = req.params
+
+  const { result } = await updateBrandWorkflow(req.scope).run({
+    input: {
+      id,
+      ...req.validatedBody,
+    },
+  })
+
+  res.json({ brand: result })
+}
+
+export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
+  const { id } = req.params
+
+  await deleteBrandWorkflow(req.scope).run({
+    input: { id },
+  })
+
+  res.json({
+    id,
+    object: "brand",
+    deleted: true,
+  })
 }

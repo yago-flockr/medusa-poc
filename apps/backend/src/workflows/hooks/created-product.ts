@@ -1,12 +1,12 @@
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
 import { StepResponse } from "@medusajs/framework/workflows-sdk"
 import { Modules } from "@medusajs/framework/utils"
-import { LinkDefinition } from "@medusajs/framework/types"
+import type { LinkDefinition } from "@medusajs/framework/types"
 import { BRAND_MODULE } from "../../modules/brand"
 import BrandModuleService from "../../modules/brand/service"
 
 createProductsWorkflow.hooks.productsCreated(
-  (async ({ products, additional_data }, { container }) => {
+  async ({ products, additional_data }, { container }) => {
     if (!additional_data?.brand_id) {
       return new StepResponse([], [])
     }
@@ -15,12 +15,9 @@ createProductsWorkflow.hooks.productsCreated(
       BRAND_MODULE
     )
 
-    // if the brand doesn't exist, an error is thrown.
     await brandModuleService.retrieveBrand(additional_data.brand_id as string)
 
     const link = container.resolve("link")
-    const logger = container.resolve("logger")
-
     const links: LinkDefinition[] = []
 
     for (const product of products) {
@@ -35,13 +32,15 @@ createProductsWorkflow.hooks.productsCreated(
     }
 
     await link.create(links)
+
     return new StepResponse(links, links)
-  }),
-  (async (links, { container }) => {
-    if (!links?.length) return
+  },
+  async (links, { container }) => {
+    if (!links?.length) {
+      return
+    }
 
     const link = container.resolve("link")
     await link.dismiss(links)
-  })
-
+  }
 )
