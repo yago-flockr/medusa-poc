@@ -46,7 +46,7 @@ This repo ships machine-readable documentation for AI coding assistants (`AGENTS
 
 ## Requirements
 
-- Node.js 20–24 (LTS)
+- Node.js 22–24 (LTS)
 - pnpm 10+ (this repo uses pnpm 11)
 - Docker Desktop (WSL integration on Windows) for Postgres and Redis
 

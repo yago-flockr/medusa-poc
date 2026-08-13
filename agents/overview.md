@@ -104,7 +104,7 @@ From `apps/backend`: `pnpm exec medusa db:migrate`, `pnpm exec medusa user -e ..
 
 ## Gotchas
 
-- pnpm 11: `trustLockfile` / `allowBuilds` in `pnpm-workspace.yaml`
+- pnpm 11: `trustLockfile` / `allowBuilds` in `pnpm-workspace.yaml`. Medusa Cloud defaults to Node 20.x; pnpm 11 fails there (`ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING`). Keep pnpm 11 and set `engines.node` to `>=22` so Cloud uses Node 22. Do not downgrade pnpm.
 - Storefront without publishable key fails opaquely
 - Redis may fall back to in-memory fake Redis locally
 - Medusa Cloud: leaving Project root empty makes the build look at the repo root (no `medusa-config.ts`) and fail. Missing `JWT_SECRET` / `COOKIE_SECRET` fails **start**, not `medusa build`. Setting `databaseUrl` / `redisUrl` in `medusa-config.ts` also fails Cloud build/migrate — omit them.

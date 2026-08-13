@@ -31,6 +31,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - **Medusa v2**: `medusa-config.ts`, commerce modules
 - **PostgreSQL / Redis**: via root Docker Compose and env URLs
 - **TypeScript**: package `tsconfig.json`
+- **Node**: `engines.node` `>=22` so Medusa Cloud does not install pnpm 11 on Node 20.20.0
 
 ## Module / directory breakdown (`src/`)
 
@@ -103,6 +104,7 @@ From `apps/backend`:
 
 ## Gotchas and notes
 
+- Medusa Cloud defaults to Node 20.x. This package pins `engines.node` to `>=22` so pnpm 11 can install. Do not revert to `>=20` to "match local 20".
 - Editing models without generating migrations: schema never applies.
 - Destructive DB ops only with explicit user confirmation.
 - Local Redis optional; fake Redis is not production-safe.
