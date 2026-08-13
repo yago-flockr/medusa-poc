@@ -91,6 +91,8 @@ Current but replaceable:
 - Storefront: `apps/storefront/.env.local`
 - Never print secret values in chat or commits
 
+If deploying this monorepo to **Medusa Cloud**: set Project root to `apps/backend` and Storefront root to `apps/storefront`. Cloud provides `DATABASE_URL`, `REDIS_URL`, `MEDUSA_WORKER_MODE`, and storefront `NEXT_PUBLIC_*` URLs/keys — do not set the reserved ones (dashboard or `medusa-config.ts`). Do not set `projectConfig.databaseUrl`, `projectConfig.databaseDriverOptions`, or `projectConfig.redisUrl`; `defineConfig` injects them when `EXECUTION_CONTEXT=medusa-cloud`. Explicit `process.env.DATABASE_URL` / `REDIS_URL` in config overrides those defaults with `undefined` at build time and breaks deploy. You must set `JWT_SECRET` and `COOKIE_SECRET` (runtime, not build). CORS is auto-configured when the storefront is hosted on Cloud. Local `.env` still supplies `DATABASE_URL` via `defineConfig` defaults.
+
 ## Scripts
 
 - `pnpm run setup`
@@ -105,3 +107,4 @@ From `apps/backend`: `pnpm exec medusa db:migrate`, `pnpm exec medusa user -e ..
 - pnpm 11: `trustLockfile` / `allowBuilds` in `pnpm-workspace.yaml`
 - Storefront without publishable key fails opaquely
 - Redis may fall back to in-memory fake Redis locally
+- Medusa Cloud: leaving Project root empty makes the build look at the repo root (no `medusa-config.ts`) and fail. Missing `JWT_SECRET` / `COOKIE_SECRET` fails **start**, not `medusa build`. Setting `databaseUrl` / `redisUrl` in `medusa-config.ts` also fails Cloud build/migrate — omit them.
