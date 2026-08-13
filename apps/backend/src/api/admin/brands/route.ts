@@ -1,3 +1,4 @@
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import {
   MedusaRequest,
   MedusaResponse,
@@ -9,7 +10,7 @@ import { AdminCreateBrand } from "./validators"
 type AdminCreateBrandType = z.infer<typeof AdminCreateBrand>
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve("query")
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   const {
     data: brands,

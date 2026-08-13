@@ -14,7 +14,7 @@ export type CreateBrandWorkflowInput = {
 }
 
 export const createBrandStep = createStep(
-  "create-brand-step",
+  "create-brand",
   async (input: CreateBrandWorkflowInput, { container }) => {
     const brandModuleService: BrandModuleService = container.resolve(
       BRAND_MODULE

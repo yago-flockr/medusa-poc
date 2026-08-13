@@ -86,7 +86,7 @@ behaviour only and deliberately name no primitives; this is where the mapping li
 
 - Satisfy `@medusajs/eslint-plugin` recommended rules (`eslint.config.ts` at repo root). A `@medusajs/*` lint failure usually means wrong framework shape.
 - Files kebab-case; DB columns snake_case.
-- No semicolons; double quotes; 2-space indent (starter style until Biome migration).
+- No semicolons; double quotes; 2-space indent (starter / Prettier style).
 
 ## Environment variables
 

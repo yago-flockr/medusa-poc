@@ -1,6 +1,6 @@
 import { updateProductsWorkflow } from "@medusajs/medusa/core-flows"
 import { StepResponse } from "@medusajs/framework/workflows-sdk"
-import { Modules } from "@medusajs/framework/utils"
+import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import type { LinkDefinition } from "@medusajs/framework/types"
 import { BRAND_MODULE } from "../../modules/brand"
 import BrandModuleService from "../../modules/brand/service"
@@ -15,8 +15,8 @@ updateProductsWorkflow.hooks.productsUpdated(
     }
 
     const brandId = additional_data.brand_id as string | null
-    const link = container.resolve("link")
-    const query = container.resolve("query")
+    const link = container.resolve(ContainerRegistrationKeys.LINK)
+    const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
     if (brandId) {
       const brandModuleService: BrandModuleService = container.resolve(
@@ -86,7 +86,7 @@ updateProductsWorkflow.hooks.productsUpdated(
       created?: LinkDefinition[]
     }
 
-    const link = container.resolve("link")
+    const link = container.resolve(ContainerRegistrationKeys.LINK)
 
     if (created.length) {
       await link.dismiss(created)

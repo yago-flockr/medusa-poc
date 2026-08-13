@@ -1,5 +1,9 @@
 import { ExecArgs } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+  Modules,
+} from "@medusajs/framework/utils"
 import { readFileSync, writeFileSync, existsSync } from "fs"
 import { resolve } from "path"
 
@@ -17,12 +21,18 @@ export default async function syncPublishableKey({ container }: ExecArgs) {
 
   const key = keys[0]
   if (!key?.token) {
-    throw new Error("No publishable API key found. Run migrations/seed first.")
+    throw new MedusaError(
+      MedusaError.Types.NOT_FOUND,
+      "No publishable API key found. Run migrations/seed first."
+    )
   }
 
   const envPath = resolve(process.cwd(), "../storefront/.env.local")
   if (!existsSync(envPath)) {
-    throw new Error(`Storefront env file not found at ${envPath}`)
+    throw new MedusaError(
+      MedusaError.Types.NOT_FOUND,
+      `Storefront env file not found at ${envPath}`
+    )
   }
 
   const current = readFileSync(envPath, "utf8")

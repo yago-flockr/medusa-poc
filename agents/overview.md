@@ -81,7 +81,7 @@ Current but replaceable:
 ## Conventions
 
 - Package manager: **pnpm only**
-- Lint today: ESLint + Prettier from the starter (decision: migrate to Biome, `docs/plan.md`)
+- Lint / format: ESLint + Prettier; Medusa rules via `@medusajs/eslint-plugin` (`docs/plan.md`)
 - Code artifacts in English
 - No secrets in git; document new vars in `.env.template`
 

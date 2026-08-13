@@ -4,7 +4,7 @@ import {
   StepResponse,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { Modules } from "@medusajs/framework/utils"
+import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import type { LinkDefinition } from "@medusajs/framework/types"
 import { BRAND_MODULE } from "../modules/brand"
 import BrandModuleService from "../modules/brand/service"
@@ -19,13 +19,13 @@ type DeleteBrandCompensation = {
 }
 
 export const deleteBrandStep = createStep(
-  "delete-brand-step",
+  "delete-brand",
   async (input: DeleteBrandWorkflowInput, { container }) => {
     const brandModuleService: BrandModuleService = container.resolve(
       BRAND_MODULE
     )
-    const query = container.resolve("query")
-    const link = container.resolve("link")
+    const query = container.resolve(ContainerRegistrationKeys.QUERY)
+    const link = container.resolve(ContainerRegistrationKeys.LINK)
 
     await brandModuleService.retrieveBrand(input.id)
 
@@ -65,7 +65,7 @@ export const deleteBrandStep = createStep(
     const brandModuleService: BrandModuleService = container.resolve(
       BRAND_MODULE
     )
-    const link = container.resolve("link")
+    const link = container.resolve(ContainerRegistrationKeys.LINK)
 
     await brandModuleService.restoreBrands(compensation.id)
 

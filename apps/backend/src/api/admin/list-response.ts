@@ -1,4 +1,3 @@
-
 export type CustomListQuery = {
   fields?: string
   limit?: number

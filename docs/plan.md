@@ -177,7 +177,7 @@ what gets built.
 
 ## Decisions
 
-- **Biome replaces ESLint + Prettier** for lint and format. Not started.
+- **ESLint + Prettier** for lint and format (keep `@medusajs/eslint-plugin`; no Biome).
 - **Backend first.** Frontend tooling is a separate track and does not gate
   progress on the commerce model.
 - **The order container is still open** — one order per vendor, or one order holding

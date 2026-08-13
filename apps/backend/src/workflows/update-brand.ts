@@ -20,7 +20,7 @@ type UpdateBrandCompensation = {
 }
 
 export const updateBrandStep = createStep(
-  "update-brand-step",
+  "update-brand",
   async (input: UpdateBrandWorkflowInput, { container }) => {
     const brandModuleService: BrandModuleService = container.resolve(
       BRAND_MODULE
