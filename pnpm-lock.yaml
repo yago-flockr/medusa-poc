@@ -30,6 +30,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@hookform/resolvers':
+        specifier: 3.4.2
+        version: 3.4.2(react-hook-form@7.49.1(react@18.3.1))
       '@medusajs/admin-sdk':
         specifier: 2.18.0
         version: 2.18.0
@@ -51,6 +54,9 @@ importers:
       '@medusajs/framework':
         specifier: 2.18.0
         version: 2.18.0(@medusajs/cli@2.18.0(@types/node@20.19.26)(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2))(@types/node@20.19.26)(debug@4.4.3(supports-color@10.2.2))(ioredis@5.8.2(supports-color@10.2.2))(supports-color@10.2.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))(zod@4.2.0)
+      '@medusajs/icons':
+        specifier: 2.18.0
+        version: 2.18.0(react@18.3.1)
       '@medusajs/js-sdk':
         specifier: 2.18.0
         version: 2.18.0
@@ -63,6 +69,9 @@ importers:
       '@tanstack/react-query':
         specifier: 5.64.2
         version: 5.64.2(react@18.3.1)
+      react-hook-form:
+        specifier: 7.49.1
+        version: 7.49.1(react@18.3.1)
       react-i18next:
         specifier: 13.5.0
         version: 13.5.0(i18next@23.7.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

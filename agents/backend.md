@@ -43,7 +43,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `links/`: links between module data models
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
-- `admin/`: Admin dashboard widgets and routes
+- `admin/`: Admin dashboard widgets and routes. Query hooks in `admin/hooks/queries/`, mutation hooks in `admin/hooks/mutations/`.
 - `migration-scripts/`: one-off / seed scripts (includes initial seed; runs once via `db:migrate`)
 - `scripts/`: CLI exec helpers (for example publishable key sync)
 - `lib/`: shared helpers (including default markets seed config)
@@ -108,7 +108,8 @@ From `apps/backend`:
 - Editing models without generating migrations: schema never applies.
 - Destructive DB ops only with explicit user confirmation.
 - Local Redis optional; fake Redis is not production-safe.
-- **Mandatory:** `src/admin` is frontend — never import `modules/**/models` or `InferTypeOf` of models. Wire types live once in `api/admin/<resource>/contract.ts` (entity + query). Shared list shapes: `CustomListQuery` / `CustomListResponse<"resource", Item>` in `api/admin/list-response.ts`. Admin hooks under `admin/hooks/queries/` only wrap `useQuery` and import those. Core Medusa entities: extend `HttpTypes` / JS SDK in the same contract file when needed.
-- Query keys: `admin/lib/query-keys.ts`.
-- Admin UI that imports `@medusajs/js-sdk` needs it as a **direct** backend dependency (same version as other `@medusajs/*`). It is not pulled in by `@medusajs/admin-sdk` alone.
+- **Mandatory:** `src/admin` is frontend — never import `modules/**/models` or `InferTypeOf` of models. Wire types live once in `api/admin/<resource>/contract.ts`: entity schema, list query, create schema, update schema, response types. Do not export field fragments or a third form-only schema — create/edit forms use the same create/update schemas via `zodResolver`. Shared list shapes: `CustomListQuery` / `CustomListResponse<"resource", Item>` in `api/admin/list-response.ts`. Admin hooks: `admin/hooks/queries/` for `useQuery`, `admin/hooks/mutations/` for `useMutation` — both import the contract, not validators that pull Medusa server utils. Core Medusa entities: extend `HttpTypes` / JS SDK in the same contract file when needed.
+- Query keys: `admin/lib/query-keys.ts`. Invalidate `queryKeys.<resource>.all` after mutations.
+- Admin custom CRUD UI: create with `FocusModal`, edit with `Drawer`, delete with `usePrompt` + `toast` (`@medusajs/ui`). Match core Admin create forms (inventory/product): header is close/esc only; body is a centered `max-w-[720px]` column with a heading and `grid-cols-2` fields (no `Card` wrapper); Cancel/Save live in the footer. Edit drawer: heading in the header, fields in the body, footer actions right-aligned. Forms use `react-hook-form` + `zodResolver` against the resource contract schemas. Do not re-declare field rules in the form. Do not import `@medusajs/dashboard` internals (`RouteFocusModal` / `RouteDrawer`).
+- Admin UI that imports `@medusajs/js-sdk`, `react-hook-form`, `@hookform/resolvers`, or `@medusajs/icons` needs them as **direct** backend dependencies (same `@medusajs/*` version as the rest). They are not reliably pulled in by `@medusajs/admin-sdk` alone for Vite resolution.
 - Multi-vendor planning notes: `docs/spikes/multi-vendor-order.md` (do not productize on the demo path yet).
