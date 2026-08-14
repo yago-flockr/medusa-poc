@@ -1,21 +1,21 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { EllipsisHorizontal } from "@medusajs/icons"
-import { useState } from "react"
 import {
   createDataTableColumnHelper,
   DataTable,
   DataTablePaginationState,
   DropdownMenu,
   IconButton,
-  toast,
   useDataTable,
   usePrompt,
 } from "@medusajs/ui"
+import { useState } from "react"
+import type { Brand } from "../../../api/admin/brands/contract"
 import { Card } from "../../components/card"
-import { useDeleteBrand } from "../../hooks/mutations/brands"
-import { useAdminBrandList, type Brand } from "../../hooks/queries/brands"
-import { CreateBrandForm } from "./create-brand-form"
-import { EditBrandForm } from "./edit-brand-form"
+import { useDeleteOneBrand } from "../../hooks/mutations/brands"
+import { useFindManyBrands } from "../../hooks/queries/brands"
+import { CreateBrandModal } from "./create-brand-modal"
+import { UpdateBrandDrawer } from "./update-brand-drawer"
 
 const PAGINATION_LIMIT = 15
 
@@ -28,7 +28,7 @@ type BrandRowActionsProps = {
 
 const BrandRowActions = ({ brand, onEdit }: BrandRowActionsProps) => {
   const prompt = usePrompt()
-  const { mutateAsync: deleteBrand } = useDeleteBrand()
+  const deleteOneBrand = useDeleteOneBrand()
 
   const handleDelete = async () => {
     const confirmed = await prompt({
@@ -39,18 +39,9 @@ const BrandRowActions = ({ brand, onEdit }: BrandRowActionsProps) => {
       variant: "danger",
     })
 
-    if (!confirmed) {
-      return
-    }
-
-    try {
-      await deleteBrand(brand.id)
-      toast.success(`Brand "${brand.name}" deleted`)
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to delete brand"
-      )
-    }
+    if (!confirmed) return
+    
+    deleteOneBrand.mutate(brand.id)
   }
 
   return (
@@ -77,7 +68,7 @@ const BrandsPage = () => {
   })
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
 
-  const adminBrandList = useAdminBrandList({
+  const findManyBrands = useFindManyBrands({
     limit: PAGINATION_LIMIT,
     offset: pagination.pageIndex * PAGINATION_LIMIT,
   })
@@ -96,10 +87,10 @@ const BrandsPage = () => {
 
   const table = useDataTable({
     columns,
-    data: adminBrandList.data?.brands ?? [],
+    data: findManyBrands.data?.brands ?? [],
     getRowId: (row) => row.id,
-    rowCount: adminBrandList.data?.count ?? 0,
-    isLoading: adminBrandList.isLoading,
+    rowCount: findManyBrands.data?.count ?? 0,
+    isLoading: findManyBrands.isLoading,
     pagination: {
       state: pagination,
       onPaginationChange: setPagination,
@@ -110,13 +101,13 @@ const BrandsPage = () => {
     <Card.Root>
       <Card.Header>
         <Card.Title title="Brands" />
-        <CreateBrandForm />
+        <CreateBrandModal />
       </Card.Header>
       <DataTable instance={table}>
         <DataTable.Table />
         <DataTable.Pagination />
       </DataTable>
-      <EditBrandForm
+      <UpdateBrandDrawer
         brand={editingBrand}
         onClose={() => setEditingBrand(null)}
       />

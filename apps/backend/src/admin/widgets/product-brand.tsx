@@ -1,5 +1,5 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
-import { DetailWidgetProps, AdminProduct } from "@medusajs/framework/types"
+import { AdminProduct, DetailWidgetProps } from "@medusajs/framework/types"
 import { Text } from "@medusajs/ui"
 import { Card } from "../components/card"
 import { useAdminProductRetrieve } from "../hooks/queries/products"
@@ -8,14 +8,14 @@ import { optionalField } from "../lib/optional-field"
 const ProductBrandWidget = ({
   data: product,
 }: DetailWidgetProps<AdminProduct>) => {
-  const adminProductRetrieve = useAdminProductRetrieve(product.id, {
+  const findOneProduct = useAdminProductRetrieve(product.id, {
     fields: "+brand.*",
   })
 
   const rows = [
-    { label: "Name", value: adminProductRetrieve.data?.brand?.name },
-    { label: "Handle", value: adminProductRetrieve.data?.brand?.handle },
-  ] as const satisfies { label: string, value: string | undefined }[]
+    { label: "Name", value: findOneProduct.data?.brand?.name },
+    { label: "Handle", value: findOneProduct.data?.brand?.handle },
+  ] as const satisfies { label: string; value: string | undefined }[]
 
   return (
     <Card.Root>

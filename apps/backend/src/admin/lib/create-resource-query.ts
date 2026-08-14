@@ -1,5 +1,9 @@
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query"
 
+// For custom modules only (no Medusa SDK support, so every operation is a
+// hand-written sdk.client.fetch call). A core resource with a typed SDK
+// method (sdk.admin.<resource>.*) should wrap it directly with useQuery
+// instead — there's no repeated fetch/key wiring left for this to remove.
 type ResourceQueryConfig<TQuery, TData> = {
   queryKey: (query: TQuery) => readonly unknown[]
   queryFn: (query: TQuery) => Promise<TData>

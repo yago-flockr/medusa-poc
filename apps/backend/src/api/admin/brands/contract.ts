@@ -1,5 +1,9 @@
 import { z } from "@medusajs/framework/zod"
-import type { CustomListQuery } from "../list-response"
+import type {
+  DeleteResponse,
+  FindParams,
+  PaginatedResponse,
+} from "@medusajs/framework/types"
 
 export const brandSchema = z.object({
   id: z.string(),
@@ -12,11 +16,22 @@ export const brandSchema = z.object({
 
 export type Brand = z.infer<typeof brandSchema>
 
-export type BrandListQuery = CustomListQuery & {
-  id?: string
-  name?: string
-  handle?: string
+export const brandListFiltersSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  handle: z.string().optional(),
+})
+
+export type BrandListQuery = FindParams &
+  z.infer<typeof brandListFiltersSchema>
+
+export type BrandListResponse = PaginatedResponse<{ brands: Brand[] }>
+
+export type BrandResponse = {
+  brand: Brand
 }
+
+export type BrandDeleteResponse = DeleteResponse<"brand">
 
 const emptyToUndefined = (value: unknown) => {
   if (typeof value !== "string") {
@@ -53,13 +68,3 @@ export const updateBrandSchema = z
   })
 
 export type UpdateBrand = z.infer<typeof updateBrandSchema>
-
-export type BrandResponse = {
-  brand: Brand
-}
-
-export type BrandDeleteResponse = {
-  id: string
-  object: "brand"
-  deleted: true
-}
