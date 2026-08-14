@@ -44,6 +44,39 @@ Always implement the Medusa way. No workarounds.
 3. Routes stay thin: auth/body → workflow → response.
 4. Never invent a second path that leaves the first broken.
 
+## Engineering principles
+
+Hard rules for how code is written, not aspirations to skim past. Sequencing
+(backend before frontend) and tooling (ESLint + Prettier) are hard rules too —
+`docs/plan.md` "Decisions".
+
+- **Single responsibility.** A module owns one domain's data and service; a
+  workflow orchestrates one business operation; a route only translates HTTP
+  into a workflow call and the result back out. If a layer starts doing
+  another layer's job, split it.
+- **Open for extension, closed for modification.** Extend Medusa's own
+  workflows with hooks and steps; never fork a core flow to add behavior —
+  this is "never invent a second path" above, restated as the general
+  principle it actually is.
+- **DRY.** A shape is translated in exactly one place — a contract file, a
+  mapper — never hand-copied into a second type because that was faster than
+  importing the first. If you are about to redefine something Medusa or an
+  existing contract already types, stop and import it instead.
+- **KISS.** Reach for the framework primitive (module, workflow, link,
+  subscriber, job) before reaching for a new abstraction. A second path next
+  to a working one is not simpler — it is a second thing to keep in sync.
+- **YAGNI.** Leave a `docs/plan.md` "Not decided" undecided until a clone
+  actually needs the answer. Marketplace support is optional per clone for
+  the same reason: do not build it into a clone that will never use it.
+- **TypeScript strictness is deliberate per package, not uniform.**
+  `apps/backend/tsconfig.json` enables `strictNullChecks` only; Medusa's own
+  decorator-metadata shape (`emitDecoratorMetadata` / `experimentalDecorators`)
+  is already switched on for the framework's sake, and full `strict` has not
+  been verified against it. `apps/storefront/tsconfig.json` enables full
+  `strict` — a plain Next.js app has no such conflict. Do not "fix" this into
+  consistency without checking framework compatibility first; treat the gap
+  as a decision, not an oversight.
+
 ## Architecture and flow
 
 1. Customer uses `apps/storefront` (Next.js).
