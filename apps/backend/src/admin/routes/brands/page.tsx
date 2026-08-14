@@ -5,7 +5,7 @@ import {
   DataTable,
   DataTablePaginationState,
   useDataTable,
-  usePrompt
+  usePrompt,
 } from "@medusajs/ui"
 import { useState } from "react"
 import type { Brand } from "../../../api/admin/brands/contract"
@@ -59,7 +59,7 @@ const BrandsPage = () => {
               variant: "danger",
             })
 
-            if (confirmed)deleteOneBrand.mutate(brand.id)
+            if (confirmed) deleteOneBrand.mutate(brand.id)
           },
         },
       ],
@@ -85,7 +85,18 @@ const BrandsPage = () => {
         <CreateBrandModal />
       </Card.Header>
       <DataTable instance={table}>
-        <DataTable.Table />
+        <DataTable.Table
+          emptyState={{
+            empty: {
+              heading: "No brands",
+              description: "There are no brands to display.",
+            },
+            filtered: {
+              heading: "No results",
+              description: "No brands match the current filter criteria.",
+            },
+          }}
+        />
         <DataTable.Pagination />
       </DataTable>
       <UpdateBrandDrawer
