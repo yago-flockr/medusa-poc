@@ -3,12 +3,12 @@ import { Button, Drawer, Heading } from "@medusajs/ui"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import {
-  createBrandSchema,
-  type Brand,
-  type CreateBrand,
-} from "../../api/admin/brands/contract"
-import { TextField } from "./fields/text-field"
-import type { CommonFormProps } from "./form-type"
+    createBrandSchema,
+    type Brand,
+    type CreateBrand,
+} from "../../../api/admin/brands/contract"
+import { TextField } from "../fields/text-field"
+import type { CommonFormProps } from "../form-type"
 
 export type UpdateBrandFormProps = CommonFormProps<CreateBrand>
 

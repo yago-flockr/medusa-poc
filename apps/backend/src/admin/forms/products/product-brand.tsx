@@ -3,9 +3,9 @@ import { z } from "@medusajs/framework/zod"
 import { Button, Drawer, Heading } from "@medusajs/ui"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
-import type { Brand } from "../../api/admin/brands/contract"
-import { SelectField } from "./fields/select-field"
-import type { CommonFormProps } from "./form-type"
+import type { Brand } from "../../../api/admin/brands/contract"
+import { SelectField } from "../fields/select-field"
+import type { CommonFormProps } from "../form-type"
 
 const NO_BRAND_VALUE = "none"
 

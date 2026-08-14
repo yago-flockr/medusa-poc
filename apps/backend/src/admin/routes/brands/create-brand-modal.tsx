@@ -1,6 +1,6 @@
 import { Button, FocusModal } from "@medusajs/ui"
 import { useState } from "react"
-import { CreateBrandForm } from "../../forms/create-brand"
+import { CreateBrandForm } from "../../forms/brands/create-brand"
 import { useCreateOneBrand } from "../../hooks/mutations/brands"
 
 export const CreateBrandModal = () => {

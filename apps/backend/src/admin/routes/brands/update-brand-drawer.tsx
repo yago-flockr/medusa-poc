@@ -1,6 +1,6 @@
 import { Drawer } from "@medusajs/ui"
 import type { Brand } from "../../../api/admin/brands/contract"
-import { UpdateBrandForm, brandToForm } from "../../forms/update-brand"
+import { UpdateBrandForm, brandToForm } from "../../forms/brands/update-brand"
 import { useUpdateOneBrand } from "../../hooks/mutations/brands"
 
 type UpdateBrandDrawerProps = {
