@@ -3,6 +3,7 @@ import {
   createFindParams,
   createSelectParams,
 } from "@medusajs/medusa/api/utils/validators"
+import { createBrandSchema, updateBrandSchema } from "./contract"
 
 export const AdminGetBrandParams = createSelectParams()
 
@@ -17,19 +18,6 @@ export const AdminGetBrandsParams = createFindParams({
   offset: 0,
 }).merge(AdminGetBrandsParamsFields)
 
-export const AdminCreateBrand = z
-  .object({
-    name: z.string().trim().min(1),
-    handle: z.string().trim().min(1).optional(),
-  })
-  .strict()
+export const AdminCreateBrand = createBrandSchema
 
-export const AdminUpdateBrand = z
-  .object({
-    name: z.string().trim().min(1).optional(),
-    handle: z.string().trim().min(1).optional(),
-  })
-  .strict()
-  .refine((data) => data.name !== undefined || data.handle !== undefined, {
-    message: "At least one of name or handle is required",
-  })
+export const AdminUpdateBrand = updateBrandSchema

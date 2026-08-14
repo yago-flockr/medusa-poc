@@ -3,12 +3,9 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { MedusaError, ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import { z } from "@medusajs/framework/zod"
 import { updateBrandWorkflow } from "../../../../workflows/update-brand"
 import { deleteBrandWorkflow } from "../../../../workflows/delete-brand"
-import { AdminUpdateBrand } from "../validators"
-
-type AdminUpdateBrandType = z.infer<typeof AdminUpdateBrand>
+import type { UpdateBrand } from "../contract"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -33,7 +30,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 }
 
 export const POST = async (
-  req: MedusaRequest<AdminUpdateBrandType>,
+  req: MedusaRequest<UpdateBrand>,
   res: MedusaResponse
 ) => {
   const { id } = req.params

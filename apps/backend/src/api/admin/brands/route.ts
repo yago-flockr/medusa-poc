@@ -3,11 +3,8 @@ import {
   MedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { z } from "@medusajs/framework/zod"
 import { createBrandWorkflow } from "../../../workflows/create-brand"
-import { AdminCreateBrand } from "./validators"
-
-type AdminCreateBrandType = z.infer<typeof AdminCreateBrand>
+import type { CreateBrand } from "./contract"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -30,7 +27,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 }
 
 export const POST = async (
-  req: MedusaRequest<AdminCreateBrandType>,
+  req: MedusaRequest<CreateBrand>,
   res: MedusaResponse
 ) => {
   const { result } = await createBrandWorkflow(req.scope).run({
