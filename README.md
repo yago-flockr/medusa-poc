@@ -35,7 +35,11 @@ The storefront is a headless client of the backend. One Medusa backend is the sy
 ├── agents/                # AI engineering context
 ├── bruno/                 # Bruno API collection
 ├── docs/
-│   └── plan.md            # What we're building; fixed vs open choices
+│   ├── plan.md            # What we're building; fixed vs open choices
+│   ├── features/          # Capability briefs: what each area must do
+│   ├── study/             # Medusa study plan and notes
+│   ├── spikes/            # Experiments that de-risk a direction before building it
+│   └── sensus/            # First client's RFP + our proposal (reference, not a spec)
 ├── docker-compose.yml     # Local Postgres + Redis
 └── AGENTS.md              # AI router
 ```

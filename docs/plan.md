@@ -64,6 +64,16 @@ Each area is a capability, not a task. Detail and business rules live in the lin
 brief. No clone needs all of it — this exists so a clone can be scoped honestly
 instead of discovering the hard parts late.
 
+Grouped by priority, not alphabetically. The spine has no substitute and has to be
+proven before anything else is worth building on top of it. The customer-facing
+layer is what actually differentiates one clone from another, and can start
+simple. Trust, operations and insight harden what already works, and can mature
+after launch. A short deadline changes how far down this list a clone gets, never
+the order — cut scope from the bottom, not by skipping the spine to reach the
+surface faster.
+
+### The marketplace spine — prove this first
+
 **A brand sells through us, and other brands sell through it too.**
 Vendors register, are approved, list their own products, and sell alongside
 everyone else under one storefront. Each keeps a share of the sale; we keep a
@@ -86,7 +96,8 @@ showed a vendor must still be reproducible months later.
 **Vendors see their own business and nothing else.**
 A vendor manages its catalogue and stock, works its own orders, prints labels and
 reads its own statements, and can never reach another vendor's orders, customers or
-performance. → `docs/features/multi-vendor-marketplace.md`
+performance. → `docs/features/multi-vendor-marketplace.md`,
+`docs/features/identity-and-access.md`
 
 **We control what gets published.**
 Vendors create products; we approve them before customers see them. Changes that
@@ -98,34 +109,55 @@ not. A vendor may be limited in how many products it can list at once.
 Each vendor's stock is tracked separately, held when an order is placed, and
 released when it is cancelled. The customer is told the truth about availability
 when adding to the basket and again at checkout, with a defined path for when the
-answer changes in between.
+answer changes in between. → `docs/features/multi-vendor-marketplace.md`
 
 **Shipping the customer can understand.**
 One basket may become several parcels. The customer needs to know what they are
 paying and why their order arrives in pieces. Labels are produced centrally on our
 account so we keep control of cost and tracking — vendors pack, they do not choose
-couriers.
+couriers. → `docs/features/multi-vendor-marketplace.md`
 
 **Returns and refunds that stay contained.**
 A customer returns one item, not an order. We decide eligibility, where it goes,
 who inspects it, and when the money goes back. A partial refund never disturbs the
 rest of the order, and we recover from the vendor separately.
+→ `docs/features/multi-vendor-marketplace.md`
+
+**Knowing who someone is, and what they may touch.**
+A customer, a vendor's staff, and our own staff are three separate identities with
+three separate proofs of who they are. A vendor is invited, never self-registered,
+and proves itself more strongly than a shopper because of what it can see. A
+vendor's isolation from every other vendor is structural, not a filter someone
+remembers to apply. → `docs/features/identity-and-access.md`
+
+### The customer-facing layer — differentiates each clone
 
 **Content that sells without owning the truth.**
 Editors compose pages from blocks and write editorial that can reference real,
 purchasable products, so a customer can buy from within a story. Content never owns
-price, stock or availability.
+price, stock or availability. → `docs/features/content-and-editorial.md`
 
 **Discovery that works.**
 Search with suggestions and sensible empty results, filters that reflect how the
 catalogue is actually cut, and a way to feature and pin things by hand. Filtered
-pages must be linkable, shareable and crawlable.
+pages must be linkable, shareable and crawlable, and legible to search engines and
+AI shopping assistants alike. → `docs/features/search-and-discovery.md`
+
+**Staying in touch when a customer isn't ready yet.**
+A customer who cannot buy something now — out of stock, an event at capacity — can
+leave their interest and be told when that changes. A customer who bought
+something can leave a review that honestly carries whether they actually bought it.
+→ `docs/features/notifications-and-capture.md`
+
+### Trust, operations and insight — harden after the spine works
 
 **Trust and compliance.**
 Consent asked before anything non-essential runs, granular, withdrawable and
-recorded. Accessibility treated as a requirement, not a pass at the end. Public
-forms protected from abuse. A stated position on what we keep, for how long, and
-how a customer gets their data or has it erased.
+recorded, geo-aware where regimes differ, and carried across the seam into a
+hosted checkout. Accessibility treated as a requirement, not a pass at the end.
+Public forms protected from abuse. A stated position on what we keep, for how
+long, and how a customer gets their data or has it erased.
+→ `docs/features/consent-and-privacy.md`, `docs/features/identity-and-access.md`
 
 **Operations we can run without engineers.**
 Staff can see what happened to an order, spot an exception, and correct it
@@ -136,7 +168,7 @@ failures at the boundary with someone else's system.
 **Numbers the business can act on.**
 What sells, which vendors perform, whether the way we cut the catalogue really
 drives discovery, how often baskets span vendors and what that does to cost, and
-whether vendors dispatch on time.
+whether vendors dispatch on time. → `docs/features/analytics-and-reporting.md`
 
 ## What "working" means for the marketplace
 
