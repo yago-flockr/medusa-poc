@@ -1,13 +1,11 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { EllipsisHorizontal } from "@medusajs/icons"
+import { PencilSquare, Trash } from "@medusajs/icons"
 import {
   createDataTableColumnHelper,
   DataTable,
   DataTablePaginationState,
-  DropdownMenu,
-  IconButton,
   useDataTable,
-  usePrompt,
+  usePrompt
 } from "@medusajs/ui"
 import { useState } from "react"
 import type { Brand } from "../../../api/admin/brands/contract"
@@ -21,47 +19,9 @@ const PAGINATION_LIMIT = 15
 
 const columnHelper = createDataTableColumnHelper<Brand>()
 
-type BrandRowActionsProps = {
-  brand: Brand
-  onEdit: (brand: Brand) => void
-}
-
-const BrandRowActions = ({ brand, onEdit }: BrandRowActionsProps) => {
+const BrandsPage = () => {
   const prompt = usePrompt()
   const deleteOneBrand = useDeleteOneBrand()
-
-  const handleDelete = async () => {
-    const confirmed = await prompt({
-      title: "Delete brand?",
-      description: `Delete "${brand.name}"? Linked products will be unlinked from this brand.`,
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      variant: "danger",
-    })
-
-    if (!confirmed) return
-    
-    deleteOneBrand.mutate(brand.id)
-  }
-
-  return (
-    <DropdownMenu>
-      <DropdownMenu.Trigger asChild>
-        <IconButton variant="transparent" size="small">
-          <EllipsisHorizontal />
-        </IconButton>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        <DropdownMenu.Item onClick={() => onEdit(brand)}>
-          Edit
-        </DropdownMenu.Item>
-        <DropdownMenu.Item onClick={handleDelete}>Delete</DropdownMenu.Item>
-      </DropdownMenu.Content>
-    </DropdownMenu>
-  )
-}
-
-const BrandsPage = () => {
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: PAGINATION_LIMIT,
     pageIndex: 0,
@@ -77,11 +37,32 @@ const BrandsPage = () => {
     columnHelper.accessor("id", { header: "ID" }),
     columnHelper.accessor("name", { header: "Name" }),
     columnHelper.accessor("handle", { header: "Handle" }),
-    columnHelper.display({
-      id: "actions",
-      cell: ({ row }) => (
-        <BrandRowActions brand={row.original} onEdit={setEditingBrand} />
-      ),
+    columnHelper.action({
+      actions: [
+        {
+          label: "Edit",
+          icon: <PencilSquare />,
+          onClick: (ctx) => {
+            setEditingBrand(ctx.row.original)
+          },
+        },
+        {
+          label: "Delete",
+          icon: <Trash />,
+          onClick: async (ctx) => {
+            const brand = ctx.row.original
+            const confirmed = await prompt({
+              title: "Delete brand?",
+              description: `Delete "${brand.name}"? Linked products will be unlinked from this brand.`,
+              confirmText: "Delete",
+              cancelText: "Cancel",
+              variant: "danger",
+            })
+
+            if (confirmed)deleteOneBrand.mutate(brand.id)
+          },
+        },
+      ],
     }),
   ]
 
