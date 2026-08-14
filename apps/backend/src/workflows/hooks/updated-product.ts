@@ -2,19 +2,22 @@ import { updateProductsWorkflow } from "@medusajs/medusa/core-flows"
 import { StepResponse } from "@medusajs/framework/workflows-sdk"
 import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import type { LinkDefinition } from "@medusajs/framework/types"
+import type { BrandAdditionalData } from "../../api/admin/brands/additional-data"
 import { BRAND_MODULE } from "../../modules/brand"
 import BrandModuleService from "../../modules/brand/service"
 
 updateProductsWorkflow.hooks.productsUpdated(
   async ({ products, additional_data }, { container }) => {
-    if (!additional_data || !("brand_id" in additional_data)) {
+    const brandData = additional_data as BrandAdditionalData | undefined
+
+    if (!brandData || !("brand_id" in brandData)) {
       return new StepResponse(
         { dismissed: [], created: [] },
         { dismissed: [], created: [] }
       )
     }
 
-    const brandId = additional_data.brand_id as string | null
+    const brandId = brandData.brand_id ?? null
     const link = container.resolve(ContainerRegistrationKeys.LINK)
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
