@@ -22,9 +22,8 @@ type UpdateBrandCompensation = {
 export const updateBrandStep = createStep(
   "update-brand",
   async (input: UpdateBrandWorkflowInput, { container }) => {
-    const brandModuleService: BrandModuleService = container.resolve(
-      BRAND_MODULE
-    )
+    const brandModuleService: BrandModuleService =
+      container.resolve(BRAND_MODULE)
 
     const existing = await brandModuleService.retrieveBrand(input.id)
     const update: { id: string; name?: string; handle?: string } = {
@@ -52,16 +51,15 @@ export const updateBrandStep = createStep(
       return
     }
 
-    const brandModuleService: BrandModuleService = container.resolve(
-      BRAND_MODULE
-    )
+    const brandModuleService: BrandModuleService =
+      container.resolve(BRAND_MODULE)
 
     await brandModuleService.updateBrands({
       id: compensation.id,
       name: compensation.name,
       handle: compensation.handle,
     })
-  }
+  },
 )
 
 export const updateBrandWorkflow = createWorkflow(
@@ -70,5 +68,5 @@ export const updateBrandWorkflow = createWorkflow(
     const brand = updateBrandStep(input)
 
     return new WorkflowResponse(brand)
-  }
+  },
 )

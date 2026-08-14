@@ -22,8 +22,7 @@ export const brandListFiltersSchema = z.object({
   handle: z.string().optional(),
 })
 
-export type BrandListQuery = FindParams &
-  z.infer<typeof brandListFiltersSchema>
+export type BrandListQuery = FindParams & z.infer<typeof brandListFiltersSchema>
 
 export type BrandListResponse = PaginatedResponse<{ brands: Brand[] }>
 
@@ -45,7 +44,7 @@ const emptyToUndefined = (value: unknown) => {
 const name = z.string().trim().min(1, "Name is required")
 const handle = z.preprocess(
   emptyToUndefined,
-  z.string().min(1, "Handle is required").optional()
+  z.string().min(1, "Handle is required").optional(),
 )
 
 export const createBrandSchema = z

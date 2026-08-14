@@ -1,22 +1,17 @@
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import {
-  MedusaRequest,
-  MedusaResponse,
-} from "@medusajs/framework/http"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createBrandWorkflow } from "../../../workflows/create-brand"
 import type { CreateBrand } from "./contract"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const {
-    data: brands,
-    metadata: { count, take, skip } = {},
-  } = await query.graph({
-    entity: "brand",
-    filters: req.filterableFields,
-    ...req.queryConfig,
-  })
+  const { data: brands, metadata: { count, take, skip } = {} } =
+    await query.graph({
+      entity: "brand",
+      filters: req.filterableFields,
+      ...req.queryConfig,
+    })
 
   res.json({
     brands,
@@ -28,7 +23,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
 export const POST = async (
   req: MedusaRequest<CreateBrand>,
-  res: MedusaResponse
+  res: MedusaResponse,
 ) => {
   const { result } = await createBrandWorkflow(req.scope).run({
     input: req.validatedBody,

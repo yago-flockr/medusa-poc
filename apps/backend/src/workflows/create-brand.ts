@@ -16,9 +16,8 @@ export type CreateBrandWorkflowInput = {
 export const createBrandStep = createStep(
   "create-brand",
   async (input: CreateBrandWorkflowInput, { container }) => {
-    const brandModuleService: BrandModuleService = container.resolve(
-      BRAND_MODULE
-    )
+    const brandModuleService: BrandModuleService =
+      container.resolve(BRAND_MODULE)
 
     const brand = await brandModuleService.createBrands({
       name: input.name,
@@ -32,12 +31,11 @@ export const createBrandStep = createStep(
       return
     }
 
-    const brandModuleService: BrandModuleService = container.resolve(
-      BRAND_MODULE
-    )
+    const brandModuleService: BrandModuleService =
+      container.resolve(BRAND_MODULE)
 
     await brandModuleService.deleteBrands(id)
-  }
+  },
 )
 
 export const createBrandWorkflow = createWorkflow(
@@ -46,5 +44,5 @@ export const createBrandWorkflow = createWorkflow(
     const brand = createBrandStep(input)
 
     return new WorkflowResponse(brand)
-  }
+  },
 )

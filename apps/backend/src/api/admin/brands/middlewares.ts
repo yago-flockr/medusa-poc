@@ -18,7 +18,7 @@ export const adminBrandRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformQuery(
         AdminGetBrandsParams,
-        QueryConfig.listTransformQueryConfig
+        QueryConfig.listTransformQueryConfig,
       ),
     ],
   },
@@ -29,7 +29,7 @@ export const adminBrandRoutesMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminCreateBrand),
       validateAndTransformQuery(
         AdminGetBrandParams,
-        QueryConfig.retrieveTransformQueryConfig
+        QueryConfig.retrieveTransformQueryConfig,
       ),
     ],
   },
@@ -39,7 +39,7 @@ export const adminBrandRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformQuery(
         AdminGetBrandParams,
-        QueryConfig.retrieveTransformQueryConfig
+        QueryConfig.retrieveTransformQueryConfig,
       ),
     ],
   },
@@ -50,7 +50,7 @@ export const adminBrandRoutesMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminUpdateBrand),
       validateAndTransformQuery(
         AdminGetBrandParams,
-        QueryConfig.retrieveTransformQueryConfig
+        QueryConfig.retrieveTransformQueryConfig,
       ),
     ],
   },

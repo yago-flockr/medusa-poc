@@ -74,7 +74,7 @@ const ProductBrandWidget = ({
                     id: product.id,
                     body: { additional_data: { brand_id: values.brand_id } },
                   },
-                  { onSuccess: () => setOpen(false) }
+                  { onSuccess: () => setOpen(false) },
                 )
               }}
             />

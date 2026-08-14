@@ -8,7 +8,10 @@ type UpdateBrandDrawerProps = {
   onClose: () => void
 }
 
-export const UpdateBrandDrawer = ({ brand, onClose }: UpdateBrandDrawerProps) => {
+export const UpdateBrandDrawer = ({
+  brand,
+  onClose,
+}: UpdateBrandDrawerProps) => {
   const updateOneBrand = useUpdateOneBrand()
 
   return (
@@ -29,7 +32,7 @@ export const UpdateBrandDrawer = ({ brand, onClose }: UpdateBrandDrawerProps) =>
                 onSuccess: () => {
                   onClose()
                 },
-              }
+              },
             )
           }}
         />

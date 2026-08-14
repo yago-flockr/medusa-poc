@@ -10,11 +10,11 @@ type ResourceQueryConfig<TQuery, TData> = {
 }
 
 export function createResourceQueryHook<TQuery, TData>(
-  config: ResourceQueryConfig<TQuery, TData>
+  config: ResourceQueryConfig<TQuery, TData>,
 ) {
   return function useResourceQuery(
     query: TQuery,
-    options?: Omit<UseQueryOptions<TData>, "queryKey" | "queryFn">
+    options?: Omit<UseQueryOptions<TData>, "queryKey" | "queryFn">,
   ) {
     return useQuery({
       queryKey: config.queryKey(query),

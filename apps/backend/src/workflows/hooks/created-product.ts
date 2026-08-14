@@ -14,9 +14,8 @@ createProductsWorkflow.hooks.productsCreated(
       return new StepResponse([], [])
     }
 
-    const brandModuleService: BrandModuleService = container.resolve(
-      BRAND_MODULE
-    )
+    const brandModuleService: BrandModuleService =
+      container.resolve(BRAND_MODULE)
 
     await brandModuleService.retrieveBrand(brandData.brand_id)
 
@@ -45,5 +44,5 @@ createProductsWorkflow.hooks.productsCreated(
 
     const link = container.resolve(ContainerRegistrationKeys.LINK)
     await link.dismiss(links)
-  }
+  },
 )

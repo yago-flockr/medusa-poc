@@ -38,8 +38,8 @@ const ActionMenuItem = ({ icon, label, disabled, onClick, to }: Action) => {
           onClick()
         }}
         className={clx("[&_svg]:text-ui-fg-subtle flex items-center gap-x-2", {
-    "[&_svg]:text-ui-fg-disabled": disabled,
-  })}
+          "[&_svg]:text-ui-fg-disabled": disabled,
+        })}
       >
         {icon}
         <span>{label}</span>

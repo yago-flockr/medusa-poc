@@ -25,5 +25,5 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         {error && <Hint variant="error">{error}</Hint>}
       </div>
     )
-  }
+  },
 )

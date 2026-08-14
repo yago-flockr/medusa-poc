@@ -23,7 +23,7 @@ export default async function syncPublishableKey({ container }: ExecArgs) {
   if (!key?.token) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      "No publishable API key found. Run migrations/seed first."
+      "No publishable API key found. Run migrations/seed first.",
     )
   }
 
@@ -31,7 +31,7 @@ export default async function syncPublishableKey({ container }: ExecArgs) {
   if (!existsSync(envPath)) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      `Storefront env file not found at ${envPath}`
+      `Storefront env file not found at ${envPath}`,
     )
   }
 
@@ -39,12 +39,12 @@ export default async function syncPublishableKey({ container }: ExecArgs) {
   const next = current.includes("NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=")
     ? current.replace(
         /^NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=.*$/m,
-        `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${key.token}`
+        `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${key.token}`,
       )
     : `${current.trimEnd()}\nNEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${key.token}\n`
 
   writeFileSync(envPath, next)
   logger.info(
-    `Synced publishable API key to storefront .env.local (token length ${key.token.length}).`
+    `Synced publishable API key to storefront .env.local (token length ${key.token.length}).`,
   )
 }

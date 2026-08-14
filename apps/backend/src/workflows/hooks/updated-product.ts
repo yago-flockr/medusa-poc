@@ -13,7 +13,7 @@ updateProductsWorkflow.hooks.productsUpdated(
     if (!brandData || !("brand_id" in brandData)) {
       return new StepResponse(
         { dismissed: [], created: [] },
-        { dismissed: [], created: [] }
+        { dismissed: [], created: [] },
       )
     }
 
@@ -22,9 +22,8 @@ updateProductsWorkflow.hooks.productsUpdated(
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
     if (brandId) {
-      const brandModuleService: BrandModuleService = container.resolve(
-        BRAND_MODULE
-      )
+      const brandModuleService: BrandModuleService =
+        container.resolve(BRAND_MODULE)
       await brandModuleService.retrieveBrand(brandId)
     }
 
@@ -74,10 +73,7 @@ updateProductsWorkflow.hooks.productsUpdated(
       }
     }
 
-    return new StepResponse(
-      { dismissed, created },
-      { dismissed, created }
-    )
+    return new StepResponse({ dismissed, created }, { dismissed, created })
   },
   async (compensation, { container }) => {
     if (!compensation) {
@@ -98,5 +94,5 @@ updateProductsWorkflow.hooks.productsUpdated(
     if (dismissed.length) {
       await link.create(dismissed)
     }
-  }
+  },
 )

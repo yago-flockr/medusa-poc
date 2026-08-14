@@ -21,9 +21,8 @@ type DeleteBrandCompensation = {
 export const deleteBrandStep = createStep(
   "delete-brand",
   async (input: DeleteBrandWorkflowInput, { container }) => {
-    const brandModuleService: BrandModuleService = container.resolve(
-      BRAND_MODULE
-    )
+    const brandModuleService: BrandModuleService =
+      container.resolve(BRAND_MODULE)
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const link = container.resolve(ContainerRegistrationKeys.LINK)
 
@@ -62,9 +61,8 @@ export const deleteBrandStep = createStep(
       return
     }
 
-    const brandModuleService: BrandModuleService = container.resolve(
-      BRAND_MODULE
-    )
+    const brandModuleService: BrandModuleService =
+      container.resolve(BRAND_MODULE)
     const link = container.resolve(ContainerRegistrationKeys.LINK)
 
     await brandModuleService.restoreBrands(compensation.id)
@@ -72,7 +70,7 @@ export const deleteBrandStep = createStep(
     if (compensation.links.length) {
       await link.create(compensation.links)
     }
-  }
+  },
 )
 
 export const deleteBrandWorkflow = createWorkflow(
@@ -81,5 +79,5 @@ export const deleteBrandWorkflow = createWorkflow(
     const result = deleteBrandStep(input)
 
     return new WorkflowResponse(result)
-  }
+  },
 )

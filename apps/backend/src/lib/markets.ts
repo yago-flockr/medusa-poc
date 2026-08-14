@@ -50,7 +50,7 @@ export const DEFAULT_MARKETS: Market[] = [
 ]
 
 export const ALL_MARKET_COUNTRY_CODES: string[] = DEFAULT_MARKETS.flatMap(
-  (m) => m.countries
+  (m) => m.countries,
 )
 
 export const DEFAULT_COUNTRY_CODE =

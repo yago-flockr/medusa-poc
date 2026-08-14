@@ -15,13 +15,13 @@ type ResourceMutationConfig<TVariables, TData> = {
 }
 
 export function createResourceMutationHook<TVariables, TData>(
-  config: ResourceMutationConfig<TVariables, TData>
+  config: ResourceMutationConfig<TVariables, TData>,
 ) {
   return function useResourceMutation(
     options?: Omit<
       UseMutationOptions<TData, Error, TVariables>,
       "mutationFn" | "mutationKey"
-    >
+    >,
   ) {
     const queryClient = useQueryClient()
 

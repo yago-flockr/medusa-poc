@@ -40,12 +40,12 @@ Link definition: `src/links/product-brand.ts` — Product (list) ↔ Brand. No F
 
 ### Brand
 
-| Field | Type | Notes |
-|-------|------|--------|
-| `id` | text PK | Medusa id |
-| `name` | text | Searchable |
-| `handle` | text unique | Stable public key; created via `toHandle(name)` when omitted |
-| `created_at` / `updated_at` / `deleted_at` | timestamptz | Soft-delete on Admin DELETE |
+| Field                                      | Type        | Notes                                                        |
+| ------------------------------------------ | ----------- | ------------------------------------------------------------ |
+| `id`                                       | text PK     | Medusa id                                                    |
+| `name`                                     | text        | Searchable                                                   |
+| `handle`                                   | text unique | Stable public key; created via `toHandle(name)` when omitted |
+| `created_at` / `updated_at` / `deleted_at` | timestamptz | Soft-delete on Admin DELETE                                  |
 
 **Delete behavior:** `deleteBrandWorkflow` dismisses product–brand links, then soft-deletes the brand. Compensation restores the brand and recreates links.
 

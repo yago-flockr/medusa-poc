@@ -17,7 +17,7 @@ deleteProductsWorkflow.hooks.productsDeleted(
         [Modules.PRODUCT]: { product_id: ids },
         [BRAND_MODULE]: {},
       },
-      { asLinkDefinition: true }
+      { asLinkDefinition: true },
     )) as LinkDefinition[]
 
     if (!links.length) {
@@ -35,5 +35,5 @@ deleteProductsWorkflow.hooks.productsDeleted(
 
     const link = container.resolve(ContainerRegistrationKeys.LINK)
     await link.create(links)
-  }
+  },
 )

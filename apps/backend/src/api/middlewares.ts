@@ -3,8 +3,5 @@ import { adminBrandRoutesMiddlewares } from "./admin/brands/middlewares"
 import { adminProductRoutesMiddlewares } from "./admin/products/middlewares"
 
 export default defineMiddlewares({
-  routes: [
-    ...adminBrandRoutesMiddlewares,
-    ...adminProductRoutesMiddlewares,
-  ],
+  routes: [...adminBrandRoutesMiddlewares, ...adminProductRoutesMiddlewares],
 })

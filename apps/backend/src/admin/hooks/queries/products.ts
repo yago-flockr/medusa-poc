@@ -6,10 +6,7 @@ import type {
 import { queryKeys } from "../../lib/query-keys"
 import { sdk } from "../../lib/sdk"
 
-export const useAdminProductRetrieve = (
-  id: string,
-  query?: ProductQuery
-) =>
+export const useAdminProductRetrieve = (id: string, query?: ProductQuery) =>
   useQuery({
     queryKey: [...queryKeys.products.findOne, id, query],
     queryFn: async () => {

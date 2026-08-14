@@ -1,8 +1,8 @@
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import {
-  MedusaRequest,
-  MedusaResponse,
-} from "@medusajs/framework/http"
-import { MedusaError, ContainerRegistrationKeys } from "@medusajs/framework/utils"
+  MedusaError,
+  ContainerRegistrationKeys,
+} from "@medusajs/framework/utils"
 import { updateBrandWorkflow } from "../../../../workflows/update-brand"
 import { deleteBrandWorkflow } from "../../../../workflows/delete-brand"
 import type { UpdateBrand } from "../contract"
@@ -22,7 +22,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   if (!brand) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      `Brand with id: ${id} was not found`
+      `Brand with id: ${id} was not found`,
     )
   }
 
@@ -31,7 +31,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
 export const POST = async (
   req: MedusaRequest<UpdateBrand>,
-  res: MedusaResponse
+  res: MedusaResponse,
 ) => {
   const { id } = req.params
 
