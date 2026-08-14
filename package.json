@@ -11,6 +11,8 @@
     "build": "pnpm -r build",
     "start": "turbo start",
     "lint": "turbo lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "turbo test",
     "backend:dev": "turbo dev --filter=@dtc/backend",
     "storefront:dev": "turbo dev --filter=@dtc/storefront"
@@ -18,7 +20,7 @@
   "devDependencies": {
     "@medusajs/eslint-plugin": "2.18.0",
     "eslint": "^9.39.4",
-    "jiti": "^2.7.0",
+    "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.2.5",
     "turbo": "^2.0.14"
   }
