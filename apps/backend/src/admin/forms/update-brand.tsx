@@ -4,9 +4,9 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import {
   createBrandSchema,
+  type Brand,
   type CreateBrand,
 } from "../../api/admin/brands/contract"
-import type { Brand } from "../hooks/queries/brands"
 import { TextField } from "./fields/text-field"
 import type { CommonFormProps } from "./form-type"
 

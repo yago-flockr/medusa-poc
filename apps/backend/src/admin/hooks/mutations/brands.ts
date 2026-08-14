@@ -1,53 +1,48 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import type {
   BrandDeleteResponse,
   BrandResponse,
   CreateBrand,
   UpdateBrand,
 } from "../../../api/admin/brands/contract"
+import { createResourceMutationHook } from "../../lib/create-resource-mutation"
+import { mutationKeys } from "../../lib/mutation-keys"
 import { queryKeys } from "../../lib/query-keys"
 import { sdk } from "../../lib/sdk"
 
-export const useCreateBrand = () => {
-  const queryClient = useQueryClient()
+export const useCreateOneBrand = createResourceMutationHook<
+  CreateBrand,
+  BrandResponse
+>({
+  mutationKey: mutationKeys.brands.createOne,
+  mutationFn: (body) =>
+    sdk.client.fetch<BrandResponse>("/admin/brands", {
+      method: "POST",
+      body,
+    }),
+  invalidateKey: queryKeys.brands.findMany,
+})
 
-  return useMutation({
-    mutationFn: (body: CreateBrand) =>
-      sdk.client.fetch<BrandResponse>("/admin/brands", {
-        method: "POST",
-        body,
-      }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.brands.all })
-    },
-  })
-}
+export const useUpdateOneBrand = createResourceMutationHook<
+  { brandId: string; body: UpdateBrand },
+  BrandResponse
+>({
+  mutationKey: mutationKeys.brands.updateOne,
+  mutationFn: ({ brandId, body }) =>
+    sdk.client.fetch<BrandResponse>(`/admin/brands/${brandId}`, {
+      method: "POST",
+      body,
+    }),
+  invalidateKey: queryKeys.brands.findMany,
+})
 
-export const useUpdateBrand = (id: string) => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (body: UpdateBrand) =>
-      sdk.client.fetch<BrandResponse>(`/admin/brands/${id}`, {
-        method: "POST",
-        body,
-      }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.brands.all })
-    },
-  })
-}
-
-export const useDeleteBrand = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (id: string) =>
-      sdk.client.fetch<BrandDeleteResponse>(`/admin/brands/${id}`, {
-        method: "DELETE",
-      }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.brands.all })
-    },
-  })
-}
+export const useDeleteOneBrand = createResourceMutationHook<
+  string,
+  BrandDeleteResponse
+>({
+  mutationKey: mutationKeys.brands.deleteOne,
+  mutationFn: (brandId) =>
+    sdk.client.fetch<BrandDeleteResponse>(`/admin/brands/${brandId}`, {
+      method: "DELETE",
+    }),
+  invalidateKey: queryKeys.brands.findMany,
+})
