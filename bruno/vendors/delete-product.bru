@@ -1,0 +1,27 @@
+meta {
+  name: delete-product
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{base_url}}/vendors/products/:id
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{vendor_token}}
+}
+
+params:path {
+  id: {{vendor_product_id}}
+}
+
+docs {
+  Deletes a product this vendor owns. Same ownership check as update (404,
+  not 403, on another vendor's product). Runs through
+  `deleteVendorProductWorkflow`, which dismisses the product-vendor link
+  before the core product delete — the link's foreign key would otherwise
+  block deletion outright.
+}

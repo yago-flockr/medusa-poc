@@ -1,0 +1,23 @@
+meta {
+  name: vendors
+  seq: 3
+}
+
+auth {
+  mode: none
+}
+
+docs {
+  Practice flow for the vendor actor type (`docs/study/README.md` C1,
+  `agents/backend.md` "Marketplace implementation constraints").
+
+  Run in order: register -> create -> login -> list-products ->
+  create-product -> update-product. Each step saves what the next one needs
+  (vendor_reg_token, vendor_id, vendor_token, vendor_product_id) as
+  collection variables. `register` mints a fresh email each run, so the whole
+  folder is safe to re-run from the top.
+
+  Run `isolation/` afterwards (in the same session, without clearing
+  variables) to prove a second vendor can never see or edit vendor A's
+  product created here.
+}

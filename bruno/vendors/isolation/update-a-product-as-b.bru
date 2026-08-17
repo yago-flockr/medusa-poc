@@ -1,0 +1,30 @@
+meta {
+  name: update-a-product-as-b
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/vendors/products/:id
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{vendor_b_token}}
+}
+
+params:path {
+  id: {{vendor_product_id}}
+}
+
+body:json {
+  {
+    "title": "Hijacked"
+  }
+}
+
+docs {
+  Expect 404, not 200 or 403 — vendor B cannot edit vendor A's product, and
+  the response must not confirm the product exists.
+}

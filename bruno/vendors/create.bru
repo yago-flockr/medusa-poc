@@ -1,0 +1,36 @@
+meta {
+  name: create
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/vendors
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{vendor_reg_token}}
+}
+
+body:json {
+  {
+    "name": "Acme",
+    "handle": "acme",
+    "admin": {
+      "email": "{{vendor_email}}",
+      "first_name": "Alice"
+    }
+  }
+}
+
+script:post-response {
+  bru.setVar("vendor_id", res.body.vendor.id);
+}
+
+docs {
+  Creates the Vendor and its first VendorAdmin, then links the admin's auth
+  identity to actor type "vendor" (setAuthAppMetadataStep). Requires the
+  registration token from `register`, not a logged-in token.
+}

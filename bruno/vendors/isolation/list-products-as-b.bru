@@ -1,0 +1,20 @@
+meta {
+  name: list-products-as-b
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/vendors/products
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{vendor_b_token}}
+}
+
+docs {
+  Expect an empty list — vendor B must never see vendor A's product, even
+  though one exists.
+}

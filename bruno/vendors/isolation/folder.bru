@@ -1,0 +1,17 @@
+meta {
+  name: isolation
+  seq: 7
+}
+
+auth {
+  mode: none
+}
+
+docs {
+  Proves vendor isolation using a second vendor against vendor A's product
+  from the parent `vendors/` folder. Run `vendors/` (through at least
+  `create-product`) first in the same session so `vendor_product_id` is set.
+
+  Run in order: register-vendor-b -> create-vendor-b -> login-vendor-b ->
+  list-products-as-b -> update-a-product-as-b.
+}

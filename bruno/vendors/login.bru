@@ -1,0 +1,27 @@
+meta {
+  name: login
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/auth/vendor/emailpass
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{vendor_email}}",
+    "password": "{{vendor_password}}"
+  }
+}
+
+script:post-response {
+  bru.setVar("vendor_token", res.body.token);
+}
+
+docs {
+  Exchanges the vendor admin's credentials for an authenticated token. This
+  is the token every `/vendors/*` route below expects.
+}

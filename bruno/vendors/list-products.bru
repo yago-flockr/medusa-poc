@@ -1,0 +1,20 @@
+meta {
+  name: list-products
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/vendors/products
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{vendor_token}}
+}
+
+docs {
+  Resolves `vendor_admin.vendor.products` from the authenticated actor_id.
+  Expect an empty list before `create-product` has run.
+}

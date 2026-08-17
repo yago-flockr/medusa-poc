@@ -1,0 +1,32 @@
+meta {
+  name: register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/auth/vendor/emailpass/register
+  body: json
+  auth: none
+}
+
+script:pre-request {
+  bru.setVar("vendor_email", `vendor+${Date.now()}@example.com`);
+}
+
+body:json {
+  {
+    "email": "{{vendor_email}}",
+    "password": "{{vendor_password}}"
+  }
+}
+
+script:post-response {
+  bru.setVar("vendor_reg_token", res.body.token);
+}
+
+docs {
+  Gets a registration JWT for a brand new vendor admin identity. Not yet a
+  vendor — `create` (next) turns this identity into a `Vendor` + its first
+  `VendorAdmin`.
+}

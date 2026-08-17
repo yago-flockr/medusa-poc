@@ -1,0 +1,43 @@
+meta {
+  name: create-product
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/vendors/products
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{vendor_token}}
+}
+
+body:json {
+  {
+    "title": "Acme Widget",
+    "description": "A fine widget",
+    "options": [{ "title": "Color", "values": ["Red", "Blue"] }],
+    "variants": [
+      { "optionValues": { "Color": "Red" }, "price": 10, "sku": "ACME-RED" },
+      { "optionValues": { "Color": "Blue" }, "price": 12, "sku": "ACME-BLUE" }
+    ]
+  }
+}
+
+script:post-response {
+  bru.setVar("vendor_product_id", res.body.product.id);
+}
+
+docs {
+  Creates a product owned by the calling vendor (vendor_id is resolved
+  server-side from the token, never accepted from the body). Always created
+  as status "proposed" — there is no approval step yet, so it never becomes
+  "published" on its own.
+
+  `variants` must have exactly one entry per combination the `options` imply
+  (each with its own price, and optionally sku/barcode/weight/dimensions/
+  thumbnail/images) — no options at all means a single variant with
+  `"optionValues": {}`.
+}

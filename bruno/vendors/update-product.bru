@@ -1,0 +1,30 @@
+meta {
+  name: update-product
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/vendors/products/:id
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{vendor_token}}
+}
+
+params:path {
+  id: {{vendor_product_id}}
+}
+
+body:json {
+  {
+    "title": "Acme Widget v2"
+  }
+}
+
+docs {
+  Updates a product this vendor owns. The route re-checks the product's
+  linked vendor against the caller's before allowing the edit.
+}
