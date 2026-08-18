@@ -61,7 +61,7 @@ The full bar is in `docs/plan.md`. The subset that must pass before productizing
 ## Results
 
 Implemented the recipe as-is: `src/links/vendor-order.ts`,
-`src/workflows/create-vendor-orders.ts` (a group-vendor-items step, and a
+`src/workflows/create-vendor-orders/` (a group-vendor-items step, and a
 create-vendor-orders step using `promiseAll`, `StepResponse.permanentFailure`,
 and a cancel-on-compensation rollback, orchestrated with `acquireLockStep`,
 `completeCartWorkflow.runAsStep`, `getOrderDetailWorkflow.runAsStep`, and

@@ -1,13 +1,8 @@
-import {
-  createStep,
-  createWorkflow,
-  StepResponse,
-  WorkflowResponse,
-} from "@medusajs/framework/workflows-sdk"
-import { BRAND_MODULE } from "../modules/brand"
-import BrandModuleService from "../modules/brand/service"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { BRAND_MODULE } from "../../../modules/brand"
+import BrandModuleService from "../../../modules/brand/service"
 
-export type UpdateBrandWorkflowInput = {
+export type UpdateBrandStepInput = {
   id: string
   name?: string
   handle?: string
@@ -21,7 +16,7 @@ type UpdateBrandCompensation = {
 
 export const updateBrandStep = createStep(
   "update-brand",
-  async (input: UpdateBrandWorkflowInput, { container }) => {
+  async (input: UpdateBrandStepInput, { container }) => {
     const brandModuleService: BrandModuleService =
       container.resolve(BRAND_MODULE)
 
@@ -59,14 +54,5 @@ export const updateBrandStep = createStep(
       name: compensation.name,
       handle: compensation.handle,
     })
-  },
-)
-
-export const updateBrandWorkflow = createWorkflow(
-  "update-brand",
-  function (input: UpdateBrandWorkflowInput) {
-    const brand = updateBrandStep(input)
-
-    return new WorkflowResponse(brand)
   },
 )

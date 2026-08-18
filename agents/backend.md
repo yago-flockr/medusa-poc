@@ -37,9 +37,9 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
 - `api/`: file-based routes (`api/store/*`, `api/admin/*`) exporting HTTP verbs. Medusa loads **only** root `api/middlewares.ts` — keep it a thin composer that spreads feature `MiddlewareRoute[]` exports. Do not nest `defineMiddlewares` in feature files.
   - Per Admin feature: `validators.ts`, `query-config.ts` (when the feature has list/retrieve), `middlewares.ts` (wire that feature’s matchers only).
-  - Product `additional_data`: each feature that extends product create/update exports a fragment from `api/admin/<feature>/additional-data.ts`. Compose them in `api/admin/products/additional-data.ts` and pass the result from `products/middlewares.ts`. Do not put foreign-route matchers in the feature’s middlewares, and do not bury cross-route fields inside CRUD validators.
+  - Product `additional_data`: each feature that extends product create/update exports a fragment from `api/admin/<feature>/additional-data.ts` (e.g. `brands`) — or, for a feature with no `/admin/*` CRUD surface of its own, from `api/<feature>/additional-data.ts` (e.g. `vendors`, since there is no `/admin/vendors`). Compose them in `api/admin/products/additional-data.ts` and pass the result from `products/middlewares.ts`. Do not put foreign-route matchers in the feature’s middlewares, and do not bury cross-route fields inside CRUD validators. Every fragment is a one-property `nullish()` zod object (string to set/change, `null` to clear) — copy that shape, don't invent a new one per feature.
 - `modules/`: custom domain modules (models, services, migrations)
-- `workflows/`: orchestration; prefer over fat route handlers
+- `workflows/`: orchestration; prefer over fat route handlers. **Every workflow is a folder, never a flat file**: `workflows/<name>/index.ts` holds only the `createWorkflow` composition (read top-to-bottom as the actual sequence of operations); `workflows/<name>/steps/<step-name>.ts` holds one `createStep` per file, each with its own input type (don't borrow a slice of the workflow's input type — a step should read standalone). No `steps/index.ts` barrel — `index.ts` imports each step from its own path. Applies even to a single-step workflow (e.g. `create-brand/`, `associate-vendor-variant-images/`) — consistency of shape matters more than saving one file for the smallest cases. `workflows/hooks/*.ts` is a different thing (callbacks registered onto an *existing* core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat — it was never a workflow of its own.
 - `links/`: links between module data models
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
@@ -57,6 +57,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 5. Shared chassis modules should stay brand-agnostic; brand config belongs outside core logic when you add it.
 6. Money and rates use `bigNumber`, never a float.
 7. Keep provider and host choices at the edges: nothing outside a seam should know which payment, tax, carrier, content, search or hosting vendor a clone picked (`docs/plan.md`, "Not decided").
+8. **A step's compensation function is part of that step's own contract, not scoped to how many steps the workflow currently has.** Write real, correct undo logic for any step whose action needs undoing, even in a workflow that today has only that one step (e.g. `update-brand/steps/update-brand.ts` retrieves the brand's current name/handle before overwriting them, purely so its compensation function has something to restore — unreachable today since nothing follows it, but correct the moment a second step is added later). A step should never rely on "I happen to be the only/last step right now" — that awareness of its neighbors is exactly what a workflow's composability is supposed to make unnecessary.
 
 ## Marketplace implementation constraints
 
@@ -67,7 +68,7 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   invites but no granular per-user permissions, so a vendor-facing portal is a
   separate app on a custom actor type, with every `/vendors/*` query scoped
   from `req.auth_context.actor_id`. Never a filter a route author has to
-  remember. Implemented: `src/modules/vendor`, `src/workflows/create-vendor.ts`,
+  remember. Implemented: `src/modules/vendor`, `src/workflows/create-vendor/`,
   `src/api/vendors/*` — `POST /vendors` registers a vendor + its first
   `VendorUser` (registration token via `/auth/vendor/emailpass/register`,
   `setAuthAppMetadataStep` with `actorType: "vendor"`); `authenticate("vendor",
@@ -112,7 +113,7 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   zod schema, exact-match validation against the option combinations, see
   `docs/ER_MODEL.md`). Per-variant images/thumbnail are a second step after
   `createProductsWorkflow`, run through `associateVendorVariantImagesWorkflow`
-  (`src/workflows/associate-vendor-variant-images.ts` —
+  (`src/workflows/associate-vendor-variant-images/` —
   `productModuleService.addImageToVariant` + `updateProductVariants` inside a
   proper step, not a direct service call from the route). Images
   upload via `POST /vendors/uploads` (Medusa's File module, PNG/JPEG/WEBP/GIF
@@ -139,7 +140,7 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   rather than fixed, once testing showed neither was solving a real problem.
   See `docs/ER_MODEL.md` "Deleting a vendor's product" for the full story.
 - **Order splitting is spiked, not settled — `docs/spikes/multi-vendor-order.md`.**
-  `src/links/vendor-order.ts`, `src/workflows/create-vendor-orders.ts`,
+  `src/links/vendor-order.ts`, `src/workflows/create-vendor-orders/`,
   `POST /store/carts/:id/complete-vendor` (replaces the store's own
   complete-cart call), `GET /vendors/orders`. Verified: a two-vendor cart
   produces one payment collection, one parent order, and one child order per
