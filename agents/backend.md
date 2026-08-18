@@ -23,7 +23,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
 - Store: PostgreSQL
 - Layer: Medusa module data models and migrations
-- Custom modules with owned models: **Brand** (`src/modules/brand`) — product taxonomy via `product-brand` link; see `docs/ER_MODEL.md`. Not the white-label client brand in `docs/plan.md`. **Vendor** (`src/modules/vendor`) — `Vendor` + `VendorAdmin`, the marketplace seller and its authenticated staff (custom actor type `vendor`), via `product-vendor` link; see `docs/ER_MODEL.md`.
+- Custom modules with owned models: **Brand** (`src/modules/brand`) — product taxonomy via `product-brand` link; see `docs/ER_MODEL.md`. Not the white-label client brand in `docs/plan.md`. **Vendor** (`src/modules/vendor`) — `Vendor` + `VendorUser`, the marketplace seller and its authenticated staff (custom actor type `vendor`), via `product-vendor` link; see `docs/ER_MODEL.md`.
 - Planned extensions (see `docs/features/`): consignments, commission and payout ledger, vendor onboarding/approval
 
 ## Core technologies
@@ -69,15 +69,17 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   from `req.auth_context.actor_id`. Never a filter a route author has to
   remember. Implemented: `src/modules/vendor`, `src/workflows/create-vendor.ts`,
   `src/api/vendors/*` — `POST /vendors` registers a vendor + its first
-  `VendorAdmin` (registration token via `/auth/vendor/emailpass/register`,
+  `VendorUser` (registration token via `/auth/vendor/emailpass/register`,
   `setAuthAppMetadataStep` with `actorType: "vendor"`); `authenticate("vendor",
-...)` guards `/vendors/*`. A vendor also owns its own products: `POST
+...)` guards `/vendors/*`. Named `VendorUser`, not `VendorAdmin` — every
+  vendor user has equal access today, no permission tiers exist yet, so
+  "admin" would overclaim; see `docs/ER_MODEL.md`. A vendor also owns its own products: `POST
 /vendors/products` creates a product forced to `status: "proposed"` and
   linked to the caller's vendor (never a client-supplied `vendor_id`) via the
   `productsCreated` hook in `src/workflows/hooks/created-product.ts` — the
   same hook the Brand admin flow already used, extended rather than
   duplicated, since Medusa allows only one handler per hook name. `GET
-/vendors/products` resolves `vendor_admin.vendor.products` from `actor_id`;
+/vendors/products` resolves `vendor_user.vendor.products` from `actor_id`;
   `POST /vendors/products/:id` re-derives ownership from `actor_id` before
   allowing an edit and 404s (not 403, so existence isn't leaked) otherwise.
   Verified with two vendor tokens: each sees/edits only its own product, an

@@ -18,7 +18,7 @@ body:json {
   {
     "name": "Acme",
     "handle": "acme",
-    "admin": {
+    "user": {
       "email": "{{vendor_email}}",
       "first_name": "Alice"
     }
@@ -30,7 +30,7 @@ script:post-response {
 }
 
 docs {
-  Creates the Vendor and its first VendorAdmin, then links the admin's auth
+  Creates the Vendor and its first VendorUser, then links the user's auth
   identity to actor type "vendor" (setAuthAppMetadataStep). Requires the
   registration token from `register`, not a logged-in token.
 }
