@@ -68,7 +68,11 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   invites but no granular per-user permissions, so a vendor-facing portal is a
   separate app on a custom actor type, with every `/vendors/*` query scoped
   from `req.auth_context.actor_id`. Never a filter a route author has to
-  remember. Implemented: `src/modules/vendor`, `src/workflows/create-vendor/`,
+  remember — and not something to re-derive per route either:
+  `resolveVendorUser(query, actorId, fields)` in
+  `src/api/vendors/resolve-vendor-user.ts` is the one place that lookup
+  happens, shared by every `/vendors/*` route, and it always throws if the
+  actor doesn't resolve to a real vendor user. Implemented: `src/modules/vendor`, `src/workflows/create-vendor/`,
   `src/api/vendors/*` — `POST /vendors` registers a vendor + its first
   `VendorUser` (registration token via `/auth/vendor/emailpass/register`,
   `setAuthAppMetadataStep` with `actorType: "vendor"`); `authenticate("vendor",
