@@ -4,6 +4,7 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { getOrdersListWorkflow } from "@medusajs/medusa/core-flows"
+import { resolveVendorUser } from "../resolve-vendor-user"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -11,15 +12,9 @@ export const GET = async (
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const {
-    data: [vendorUser],
-  } = await query.graph({
-    entity: "vendor_user",
-    fields: ["vendor.orders.*"],
-    filters: {
-      id: [req.auth_context.actor_id],
-    },
-  })
+  const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
+    "vendor.orders.*",
+  ])
 
   const orderIds = (vendorUser.vendor.orders ?? [])
     .filter((order): order is NonNullable<typeof order> => order != null)
