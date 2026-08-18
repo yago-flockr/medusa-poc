@@ -27,6 +27,7 @@ Do not record generic facts, obvious code, or duplicates.
 - What a feature should do (business intent) → `docs/features/<slug>.md`. **Behaviour only** — no technology, file paths or primitives; those go in this file or `agents/backend.md`. Shape: `docs/features/_template.md`
 - Experiment protocol and results → `docs/spikes/<slug>.md`
 - Backend ER model → `apps/backend/docs/ER_MODEL.md`
+- Known-insecure-for-now items, mapped but deliberately not fixed yet → `docs/security-backlog.md`
 - `AGENTS.md` → only when agent files are added or renamed
 
 ## Overview
@@ -103,12 +104,25 @@ Current but replaceable:
 ## Module / directory breakdown
 
 - `apps/backend/` → `agents/backend.md`
-- `apps/storefront/` → `agents/storefront.md`
-- `docs/plan.md`: what the product must do, what is **Fixed**, and what is **Not decided** — read the latter before assuming a host or a provider
+- `apps/storefront/` → `agents/storefront.md`. Also hosts the vendor-facing UI
+  at `/vendor` — a deliberately isolated route segment (own token, own
+  layout, never sharing session state with the customer routes), not a
+  separate app. Built SPA-style on purpose: plain browser `fetch`
+  (`app/vendor/api.ts`) and the vendor's JWT kept in `localStorage`, not the
+  storefront's usual Server Action / `httpOnly`-cookie pattern — see
+  `docs/plan.md` Decisions for why, and `docs/security-backlog.md` for what
+  that costs. See `docs/plan.md` Decisions too for why it's a route segment
+  at all rather than a separate deployable: exactly two deployables
+  (backend+Admin, storefront) is the standing rule, and any new UI surface
+  goes inside the storefront as another isolated segment unless a real
+  requirement rules that out.
+- `docs/plan.md`: what the product must do, what is **Fixed** and **Decided**, and what is **Not decided** — read before assuming a host or a provider (hosting itself is decided; see Decisions)
 - `docs/study/`: Medusa study stages with done criteria; notes per stage
 - `docs/features/`: intent briefs (what we want + likely Medusa primitives); `_template.md` is the shape
 - `docs/spikes/`: experiments that prove a direction before productizing
-- `bruno/`: Bruno `.bru` collection at repo root (admin JWT via `admin/folder.bru` pre-request)
+- `docs/security-backlog.md`: known-insecure-for-now items across the whole marketplace feature, mapped but deliberately not fixed yet — check before any real vendor or customer data touches this chassis
+- `docs/v1-scope-proposal.md`: client-facing scope proposal (not an engineering spec) mapping which marketplace areas can ship simple for a short-deadline v1 vs. which commercial decisions block further building
+- `bruno/`: Bruno `.bru` collection at repo root. `admin/` gets its JWT from a `folder.bru` pre-request script (one shared admin credential). `vendors/` is a step-by-step practice flow instead (register → create → login → list/create/update products) because each vendor mints its own token — run `vendors/isolation/` afterwards to see two vendors fail to see or edit each other's data.
 - `docker-compose.yml`: local Postgres and Redis
 
 ## Conventions
@@ -130,7 +144,7 @@ If deploying this monorepo to **Medusa Cloud**: set Project root to `apps/backen
 
 - `pnpm run setup`
 - `pnpm run backend:dev` → http://localhost:9000 (admin `/app`)
-- `pnpm run storefront:dev` → http://localhost:8000
+- `pnpm run storefront:dev` → http://localhost:8000 (customer storefront and, at `/vendor`, the vendor UI)
 - `docker compose up -d`
 
 From `apps/backend`: `pnpm exec medusa db:migrate`, `pnpm exec medusa user -e ... -p ...`

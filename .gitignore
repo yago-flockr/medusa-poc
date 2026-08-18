@@ -25,6 +25,10 @@ coverage
 **/build
 **/dist
 
+# Medusa Local File Module upload storage (apps/backend/static) — dev-only,
+# real files land here from any /vendors/uploads or /admin/uploads call
+apps/backend/static/
+
 # Misc
 *.pem
 

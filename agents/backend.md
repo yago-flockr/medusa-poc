@@ -23,8 +23,8 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
 - Store: PostgreSQL
 - Layer: Medusa module data models and migrations
-- Custom modules with owned models: **Brand** (`src/modules/brand`) — product taxonomy via `product-brand` link; see `docs/ER_MODEL.md`. Not the white-label client brand in `docs/plan.md`.
-- Planned extensions (see `docs/features/`): vendors and vendor users, consignments, commission and payout ledger
+- Custom modules with owned models: **Brand** (`src/modules/brand`) — product taxonomy via `product-brand` link; see `docs/ER_MODEL.md`. Not the white-label client brand in `docs/plan.md`. **Vendor** (`src/modules/vendor`) — `Vendor` + `VendorAdmin`, the marketplace seller and its authenticated staff (custom actor type `vendor`), via `product-vendor` link; see `docs/ER_MODEL.md`.
+- Planned extensions (see `docs/features/`): consignments, commission and payout ledger, vendor onboarding/approval
 
 ## Core technologies
 
@@ -65,8 +65,96 @@ behaviour only and deliberately name no primitives; this is where the mapping li
 
 - **Vendor isolation cannot come from Admin.** The User Module gives users and
   invites but no granular per-user permissions, so a vendor-facing portal is a
-  separate app on a custom actor type, with every `/vendors/*` query scoped from
-  `req.auth_context.actor_id`. Never a filter a route author has to remember.
+  separate app on a custom actor type, with every `/vendors/*` query scoped
+  from `req.auth_context.actor_id`. Never a filter a route author has to
+  remember. Implemented: `src/modules/vendor`, `src/workflows/create-vendor.ts`,
+  `src/api/vendors/*` — `POST /vendors` registers a vendor + its first
+  `VendorAdmin` (registration token via `/auth/vendor/emailpass/register`,
+  `setAuthAppMetadataStep` with `actorType: "vendor"`); `authenticate("vendor",
+...)` guards `/vendors/*`. A vendor also owns its own products: `POST
+/vendors/products` creates a product forced to `status: "proposed"` and
+  linked to the caller's vendor (never a client-supplied `vendor_id`) via the
+  `productsCreated` hook in `src/workflows/hooks/created-product.ts` — the
+  same hook the Brand admin flow already used, extended rather than
+  duplicated, since Medusa allows only one handler per hook name. `GET
+/vendors/products` resolves `vendor_admin.vendor.products` from `actor_id`;
+  `POST /vendors/products/:id` re-derives ownership from `actor_id` before
+  allowing an edit and 404s (not 403, so existence isn't leaked) otherwise.
+  Verified with two vendor tokens: each sees/edits only its own product, an
+  isolation attempt on the other vendor's product 404s, and an unauthenticated
+  request 401s (study plan C1 done-when).
+  The "separate app" this constraint calls for is `apps/storefront`'s own
+  `/vendor` route segment (`docs/plan.md` Decisions — an isolated segment
+  inside the existing storefront, not a standalone deployable). It's built
+  SPA-style on purpose (`docs/plan.md` Decisions) — plain browser `fetch`
+  from `apps/storefront/src/app/vendor/api.ts`, JWT in `localStorage`, no
+  Server Actions — for portability if it's ever promoted to its own deploy.
+  That means `/vendors/*` is called cross-origin from the browser and needs
+  its own CORS handling: `VENDOR_CORS` env var,
+  `src/api/vendors/cors.ts`, applied in `src/api/vendors/middlewares.ts`.
+  **Still missing, and worth flagging because it contradicts a stated rule:**
+  vendor creation today is open self-registration
+  (`POST /auth/vendor/emailpass/register` + `POST /vendors`, callable by
+  anyone) — `docs/features/multi-vendor-marketplace.md` and
+  `identity-and-access.md` both say a vendor is invited, never self-serve.
+  There is no invite model yet; building one (mirroring Medusa's own
+  `createInvitesWorkflow`/`acceptInviteWorkflow` pattern for the User module,
+  which doesn't itself apply to custom actor types) is the fix. Also still
+  missing: staff approval so a vendor's products can leave
+  `status: "proposed"` (nothing publishes them today). Variant/option
+  authoring and image upload are done, including **per-variant pricing**: a
+  vendor passes `options` (e.g. Size/Color) and one `variants` entry per
+  combination, each with its own price and optionally sku/barcode/
+  weight/dimensions/thumbnail/images (`src/api/vendors/products/
+  build-variants.ts` `resolveProductVariants` — max 50 variants via the
+  zod schema, exact-match validation against the option combinations, see
+  `docs/ER_MODEL.md`). Per-variant images/thumbnail are a second step after
+  `createProductsWorkflow`, run through `associateVendorVariantImagesWorkflow`
+  (`src/workflows/associate-vendor-variant-images.ts` —
+  `productModuleService.addImageToVariant` + `updateProductVariants` inside a
+  proper step, not a direct service call from the route). Images
+  upload via `POST /vendors/uploads` (Medusa's File module, PNG/JPEG/WEBP/GIF
+  only, 5MB/5-file limits enforced as clean 400s, not left as a raw 500).
+  Not done: vendor-assignable categories/collections/tags (would need its own
+  staff-curated-taxonomy listing endpoint, a bigger separate feature than the
+  per-variant fields above), storefront filtering by vendor-created option
+  values (blocked — see `docs/ER_MODEL.md` "Variant/option filtering"; setting
+  `is_exclusive: false` looked like the fix but breaks product creation on a
+  repeated option title instead, needs its own lookup-or-create design), and
+  real per-vendor inventory tracking (needs a stock location per vendor — see
+  the "Per-vendor stock" note below; not a quick add alongside the others). A
+  vendor can also delete their own product (`DELETE /vendors/products/:id` —
+  same ownership check as update, then the core `deleteProductsWorkflow`
+  called directly; no confirmation step, by design, matching the "don't need
+  to confirm" instruction it was built under). Building this surfaced, then
+  disproved, an assumption that a custom link needs explicit dismissal before
+  a linked product can be deleted — `deleteProductsWorkflow` already handles
+  that itself, for any module link, confirmed by direct testing — which in
+  turn surfaced a **real, pre-existing bug** in the Brand feature's own
+  `deleteProductsWorkflow.hooks.productsDeleted` handler that blocked *every*
+  product deletion in the system, not just vendors'. That hook (and the
+  vendor route's own unnecessary link-dismissal workflow) were both removed
+  rather than fixed, once testing showed neither was solving a real problem.
+  See `docs/ER_MODEL.md` "Deleting a vendor's product" for the full story.
+- **Order splitting is spiked, not settled — `docs/spikes/multi-vendor-order.md`.**
+  `src/links/vendor-order.ts`, `src/workflows/create-vendor-orders.ts`,
+  `POST /store/carts/:id/complete-vendor` (replaces the store's own
+  complete-cart call), `GET /vendors/orders`. Verified: a two-vendor cart
+  produces one payment collection, one parent order, and one child order per
+  vendor, each scoped correctly by vendor. Completing the same cart twice no
+  longer duplicates child orders (fixed by checking `order.metadata.parent_order_id`
+  in addition to the recipe's own vendor-order-link check, which only covered
+  its single-vendor branch). Stress-tested all three anticipated friction
+  points with real evidence: a child order's fulfillment never rolls up to the
+  parent (status must be computed from every child, never read off the parent);
+  Medusa's native partial fulfillment already lets one vendor's order dispatch
+  in waves without a second order (this friction point turned out to be a
+  non-issue); child orders have no `payment_collections` of their own — only
+  the parent does — so refunding one vendor's line needs custom logic, since
+  Medusa's standard per-order refund tooling has nothing to act on for a child
+  order. That last point is real evidence leaning toward consignment records
+  over child orders, but the consignment-record alternative hasn't been built
+  to confirm it — treat this as a lean, not the settled answer.
 - **Never store the customer-facing order status.** It is derived from the states of
   its parts, so it cannot drift out of agreement with them.
 - **Compute the money split inside the order workflow**, so it is stored atomically
@@ -74,7 +162,8 @@ behaviour only and deliberately name no primitives; this is where the mapping li
 - **Ledger entries are append-only.** A refund or correction is a new row; nothing is
   updated in place.
 - **Checkout must be idempotent.** Lock the cart and guard the split, or a retry or
-  double-click produces duplicate parts that are very hard to unwind.
+  double-click produces duplicate parts that are very hard to unwind. (Currently
+  violated by the spike above — see the note there.)
 - **Per-vendor stock means a stock location per vendor**, with reservation on
   placement and release on cancellation.
 - **Extend core flows, never fork them.** Product creation and approval hook into

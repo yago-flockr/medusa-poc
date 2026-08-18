@@ -50,10 +50,14 @@ Naming any of these now buys nothing and costs rework. Keep the code neutral: no
 host-specific setup, and no provider assumption leaking past the boundary where it
 belongs.
 
-Where it is hosted, and by whom · who processes payments · who pays vendors · who
-calculates tax and duty · which carrier prints labels · where editorial content is
-authored · which search service · who sends email · which UI component library ·
-how many countries a clone opens in.
+Who processes payments · who pays vendors · who calculates tax and duty · which
+carrier prints labels · where editorial content is authored · which search
+service · who sends email · which UI component library · how many countries a
+clone opens in.
+
+Hosting itself is no longer on this list — see Decisions below. What stays
+open per clone is only the account/billing specifics (custom domains, plan
+tier), not the platform.
 
 The distinction that matters: a fixed item has no real substitute, while everything
 here has several good ones and swapping later should cost a day, not a rewrite.
@@ -216,3 +220,55 @@ what gets built.
   a record per vendor. This is the decision everything downstream inherits, so it
   gets settled by experiment rather than argument:
   `docs/spikes/multi-vendor-order.md`.
+- **Deploy on Medusa Cloud. Exactly two deployables: the backend (which
+  includes Admin) and the storefront.** This was already assumed in
+  `medusa-config.ts` and `agents/backend.md` (`EXECUTION_CONTEXT=medusa-cloud`,
+  the Node 22 pin for it, the storefront-root setting) well before it was
+  written down here — this entry just makes it a stated decision instead of
+  an implicit one. Concretely, Cloud hosts one Medusa application (server +
+  Admin dashboard, bundled — Admin is never a separate deploy) plus one
+  Next.js storefront, both built from this monorepo via push-to-deploy, with
+  automatic CORS/env-var wiring and a preview environment per PR for each.
+  **Any new UI surface that comes up (a vendor portal, a partner-facing page,
+  anything) is built as an isolated route segment inside the existing
+  storefront app first** — isolation between actor types (customer, vendor,
+  staff) is enforced in code (separate auth cookie, separate layout, never a
+  shared session), not by standing up a separate deployable. Only reach for a
+  genuinely separate app if a real, specific requirement rules this out (a
+  need for a different framework Cloud doesn't support as a storefront, a
+  hosting requirement one surface has that the others can't share) — never by
+  default. This directly reverses an earlier session's choice to build a
+  standalone `apps/vendor-portal` Vite SPA for testing the vendor actor type;
+  that app was deleted and its functionality now lives at `/vendor` inside
+  `apps/storefront`.
+- **The `/vendor` route segment is built SPA-style on purpose: plain
+  browser-side `fetch`, JWT in `localStorage`, no Server Actions, no
+  server-fetched data.** Considered and rejected first: MercurJS's actual
+  production pattern (a second React SPA — its Vendor Panel — built and
+  bundled into the _backend's_ build output, served by the same Medusa
+  process at its own path, same origin as the API, no CORS). That's the more
+  conceptually correct shape long-term — a vendor back office belongs with
+  the engine, not the swappable per-brand storefront — but Medusa core has no
+  built-in mechanism for a second bundled dashboard; Mercur built that
+  static-bundling infrastructure themselves, and replicating it here would be
+  new custom infrastructure for a feature that isn't past the spike stage.
+  Building `/vendor` SPA-style instead of using the storefront's normal
+  Server Action / httpOnly-cookie pattern is deliberate, for the _same_
+  reason: if `/vendor` is ever promoted to Mercur's shape (or any standalone
+  deploy), a real SPA needs client-side `fetch` and a client-readable token
+  too — so the data/auth layer already matches what that migration needs
+  today, and only the wrapping project (Next.js route vs. a separate app)
+  would ever need to change, not the logic inside it. The accepted costs of
+  this choice, now: `/vendors/*` needs its own CORS handling
+  (`VENDOR_CORS`, `src/api/vendors/cors.ts`) since the browser calls it
+  cross-origin; and the vendor's JWT sits in `localStorage`, readable by any
+  JS on the page (weaker than an `httpOnly` cookie against XSS) — acceptable
+  while the vendor portal has no invite flow or approval flow yet, worth
+  revisiting (shorter-lived tokens, a refresh flow) once it's closer to real
+  production use. A third cost surfaced in practice, not anticipated up
+  front: a vendor creating or publishing a product happens entirely outside
+  the Next.js server, so it can never call `revalidateTag`/`revalidatePath`
+  — the customer-facing product listing's cache has no way to know a vendor
+  product now exists. Fixed by bounding that one fetch's staleness instead
+  (`lib/data/products.ts`, `revalidate: 60`) rather than inventing a
+  cross-app invalidation signal.
