@@ -58,6 +58,16 @@ export const listProducts = async ({
 
   const next = {
     ...(await getCacheOptions("products")),
+    // Belt-and-suspenders on top of the tag-based revalidation above: that
+    // tag is scoped to the visiting customer's own session (getCacheTag
+    // appends `_medusa_cache_id`), so it's only ever invalidated by that
+    // same customer's own mutations. A vendor creating or publishing a
+    // product happens entirely outside the Next.js server
+    // (app/vendor/api.ts calls the backend directly from the browser — see
+    // docs/plan.md Decisions), so nothing can ever call revalidateTag for
+    // it. Bound the staleness instead of relying on a signal that
+    // structurally can't reach this cache entry.
+    revalidate: 60,
   }
 
   return sdk.client
@@ -76,7 +86,7 @@ export const listProducts = async ({
         headers,
         next,
         cache: "force-cache",
-      }
+      },
     )
     .then(({ products, count }) => {
       const nextPage = count > offset + limit ? pageParam + 1 : null
@@ -115,7 +125,7 @@ export const listProductsWithSort = async ({
 }> => {
   const limit = queryParams?.limit || 12
   const optionFilters = Array.from(
-    new Set((optionValueIds || []).filter(Boolean))
+    new Set((optionValueIds || []).filter(Boolean)),
   )
 
   const {

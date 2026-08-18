@@ -105,6 +105,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // /vendor is a back-office surface for the vendor actor type, not a
+  // customer-facing regional page — it must never be prefixed with a
+  // country code.
+  if (request.nextUrl.pathname.startsWith("/vendor")) {
+    return NextResponse.next()
+  }
+
   const cacheIdCookie = request.cookies.get("_medusa_cache_id")
   const cacheId = cacheIdCookie?.value || crypto.randomUUID()
 
@@ -138,6 +145,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
+    "/((?!api|vendor|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
   ],
 }
