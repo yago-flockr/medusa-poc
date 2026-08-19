@@ -9,6 +9,7 @@ export const vendorUserSchema = z.object({
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   email: z.string(),
+  is_active: z.boolean(),
   created_at: z.string(),
   updated_at: z.string(),
 })
@@ -58,11 +59,18 @@ export const updateVendorUserSchema = z
   .object({
     first_name: optionalNamePart,
     last_name: optionalNamePart,
+    is_active: z.boolean().optional(),
   })
   .strict()
   .refine(
-    (data) => data.first_name !== undefined || data.last_name !== undefined,
-    { message: "At least one of first name or last name is required" },
+    (data) =>
+      data.first_name !== undefined ||
+      data.last_name !== undefined ||
+      data.is_active !== undefined,
+    {
+      message:
+        "At least one of first name, last name, or is_active is required",
+    },
   )
 
 export type UpdateVendorUser = z.infer<typeof updateVendorUserSchema>

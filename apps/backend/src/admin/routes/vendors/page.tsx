@@ -4,11 +4,15 @@ import {
   createDataTableColumnHelper,
   DataTable,
   DataTablePaginationState,
+  StatusBadge,
+  toast,
   useDataTable,
+  usePrompt,
 } from "@medusajs/ui"
 import { useState } from "react"
 import type { Vendor } from "../../../api/admin/vendors/contract"
 import { Card } from "../../components/card"
+import { useUpdateOneVendor } from "../../hooks/mutations/vendors"
 import { useFindManyVendors } from "../../hooks/queries/vendors"
 import { CreateVendorModal } from "./create-vendor-modal"
 import { UpdateVendorDrawer } from "./update-vendor-drawer"
@@ -18,6 +22,8 @@ const PAGINATION_LIMIT = 15
 const columnHelper = createDataTableColumnHelper<Vendor>()
 
 const VendorsPage = () => {
+  const prompt = usePrompt()
+  const updateOneVendor = useUpdateOneVendor()
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: PAGINATION_LIMIT,
     pageIndex: 0,
@@ -37,13 +43,56 @@ const VendorsPage = () => {
       id: "users",
       header: "Users",
     }),
+    columnHelper.accessor("is_active", {
+      header: "Status",
+      cell: ({ getValue }) =>
+        getValue() ? (
+          <StatusBadge color="green">Active</StatusBadge>
+        ) : (
+          <StatusBadge color="red">Disabled</StatusBadge>
+        ),
+    }),
     columnHelper.action({
-      actions: [
+      actions: (ctx) => [
         {
           label: "Edit",
           icon: <PencilSquare />,
-          onClick: (ctx) => {
+          onClick: () => {
             setEditingVendor(ctx.row.original)
+          },
+        },
+        {
+          label: ctx.row.original.is_active ? "Disable" : "Enable",
+          onClick: async () => {
+            const vendor = ctx.row.original
+
+            if (vendor.is_active) {
+              const confirmed = await prompt({
+                title: "Disable vendor?",
+                description: `Disabling "${vendor.name}" blocks it and all its users from doing anything further — creating or editing products, viewing orders, etc. Existing orders and products are unaffected.`,
+                confirmText: "Disable",
+                cancelText: "Cancel",
+                variant: "danger",
+              })
+
+              if (!confirmed) {
+                return
+              }
+            }
+
+            updateOneVendor.mutate(
+              {
+                vendorId: vendor.id,
+                body: { is_active: !vendor.is_active, handle: undefined },
+              },
+              {
+                onError: (error) => {
+                  toast.error("Failed to update vendor status", {
+                    description: error.message,
+                  })
+                },
+              },
+            )
           },
         },
       ],

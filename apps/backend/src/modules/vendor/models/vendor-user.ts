@@ -6,6 +6,7 @@ export const VendorUser = model.define("vendor_user", {
   first_name: model.text().nullable(),
   last_name: model.text().nullable(),
   email: model.text().unique(),
+  is_active: model.boolean().default(true),
   vendor: model.belongsTo(() => Vendor, {
     mappedBy: "users",
   }),

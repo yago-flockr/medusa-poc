@@ -10,7 +10,7 @@ export async function resolveVendorUser<const TField extends string>(
     data: [vendorUser],
   } = await query.graph({
     entity: "vendor_user",
-    fields,
+    fields: [...fields, "is_active", "vendor.is_active"],
     filters: { id: [actorId] },
   })
 
@@ -18,6 +18,13 @@ export async function resolveVendorUser<const TField extends string>(
     throw new MedusaError(
       MedusaError.Types.NOT_ALLOWED,
       "Vendor user is not associated with a vendor.",
+    )
+  }
+
+  if (!vendorUser.is_active || !vendorUser.vendor?.is_active) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_ALLOWED,
+      "This vendor user is disabled.",
     )
   }
 

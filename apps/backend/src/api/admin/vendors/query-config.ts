@@ -10,6 +10,7 @@ export const defaultAdminVendorFields = [
   "id",
   "name",
   "handle",
+  "is_active",
   "created_at",
   "updated_at",
   "users.id",

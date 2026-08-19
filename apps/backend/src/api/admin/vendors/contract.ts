@@ -15,6 +15,7 @@ export const vendorSchema = z.object({
   id: z.string(),
   name: z.string(),
   handle: z.string(),
+  is_active: z.boolean(),
   created_at: z.string(),
   updated_at: z.string(),
   deleted_at: z.string().nullable(),
@@ -54,10 +55,15 @@ export const updateVendorSchema = z
   .object({
     name: name.optional(),
     handle,
+    is_active: z.boolean().optional(),
   })
   .strict()
-  .refine((data) => data.name !== undefined || data.handle !== undefined, {
-    message: "At least one of name or handle is required",
-  })
+  .refine(
+    (data) =>
+      data.name !== undefined ||
+      data.handle !== undefined ||
+      data.is_active !== undefined,
+    { message: "At least one of name, handle, or is_active is required" },
+  )
 
 export type UpdateVendor = z.infer<typeof updateVendorSchema>

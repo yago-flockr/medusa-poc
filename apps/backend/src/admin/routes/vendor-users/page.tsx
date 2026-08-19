@@ -6,6 +6,7 @@ import {
   DataTable,
   DataTablePaginationState,
   FocusModal,
+  StatusBadge,
   toast,
   useDataTable,
   usePrompt,
@@ -14,7 +15,10 @@ import { useState } from "react"
 import type { VendorUser } from "../../../api/admin/vendor-users/contract"
 import { Card } from "../../components/card"
 import { OtpShow } from "../../components/otp-show"
-import { useRegenerateVendorUserPassword } from "../../hooks/mutations/vendor-users"
+import {
+  useRegenerateVendorUserPassword,
+  useUpdateOneVendorUser,
+} from "../../hooks/mutations/vendor-users"
 import { useFindManyVendorUsers } from "../../hooks/queries/vendor-users"
 import { CreateVendorUserModal } from "./create-vendor-user-modal"
 import { UpdateVendorUserDrawer } from "./update-vendor-user-drawer"
@@ -26,6 +30,7 @@ const columnHelper = createDataTableColumnHelper<VendorUser>()
 const VendorUsersPage = () => {
   const prompt = usePrompt()
   const regeneratePassword = useRegenerateVendorUserPassword()
+  const updateOneVendorUser = useUpdateOneVendorUser()
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: PAGINATION_LIMIT,
     pageIndex: 0,
@@ -50,19 +55,28 @@ const VendorUsersPage = () => {
       (row) => [row.first_name, row.last_name].filter(Boolean).join(" "),
       { id: "name", header: "Name" },
     ),
+    columnHelper.accessor("is_active", {
+      header: "Status",
+      cell: ({ getValue }) =>
+        getValue() ? (
+          <StatusBadge color="green">Active</StatusBadge>
+        ) : (
+          <StatusBadge color="red">Disabled</StatusBadge>
+        ),
+    }),
     columnHelper.action({
-      actions: [
+      actions: (ctx) => [
         {
           label: "Edit",
           icon: <PencilSquare />,
-          onClick: (ctx) => {
+          onClick: () => {
             setEditingVendorUser(ctx.row.original)
           },
         },
         {
           label: "Regenerate password",
           icon: <ArrowPath />,
-          onClick: async (ctx) => {
+          onClick: async () => {
             const vendorUser = ctx.row.original
             const confirmed = await prompt({
               title: "Regenerate password?",
@@ -86,6 +100,44 @@ const VendorUsersPage = () => {
                 })
               },
             })
+          },
+        },
+        {
+          label: ctx.row.original.is_active ? "Disable" : "Enable",
+          onClick: async () => {
+            const vendorUser = ctx.row.original
+
+            if (vendorUser.is_active) {
+              const confirmed = await prompt({
+                title: "Disable vendor user?",
+                description: `Disabling ${vendorUser.email} immediately blocks them from doing anything further — creating or editing products, viewing orders, etc.`,
+                confirmText: "Disable",
+                cancelText: "Cancel",
+                variant: "danger",
+              })
+
+              if (!confirmed) {
+                return
+              }
+            }
+
+            updateOneVendorUser.mutate(
+              {
+                vendorUserId: vendorUser.id,
+                body: {
+                  is_active: !vendorUser.is_active,
+                  first_name: undefined,
+                  last_name: undefined,
+                },
+              },
+              {
+                onError: (error) => {
+                  toast.error("Failed to update vendor user status", {
+                    description: error.message,
+                  })
+                },
+              },
+            )
           },
         },
       ],

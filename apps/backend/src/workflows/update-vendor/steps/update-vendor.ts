@@ -6,12 +6,14 @@ export type UpdateVendorStepInput = {
   id: string
   name?: string
   handle?: string
+  is_active?: boolean
 }
 
 type UpdateVendorCompensation = {
   id: string
   name: string
   handle: string
+  is_active: boolean
 }
 
 export const updateVendorStep = createStep(
@@ -21,7 +23,12 @@ export const updateVendorStep = createStep(
       container.resolve(VENDOR_MODULE)
 
     const existing = await vendorModuleService.retrieveVendor(input.id)
-    const update: { id: string; name?: string; handle?: string } = {
+    const update: {
+      id: string
+      name?: string
+      handle?: string
+      is_active?: boolean
+    } = {
       id: input.id,
     }
 
@@ -33,12 +40,17 @@ export const updateVendorStep = createStep(
       update.handle = input.handle
     }
 
+    if (input.is_active !== undefined) {
+      update.is_active = input.is_active
+    }
+
     const vendor = await vendorModuleService.updateVendors(update)
 
     return new StepResponse(vendor, {
       id: existing.id,
       name: existing.name,
       handle: existing.handle,
+      is_active: existing.is_active,
     } satisfies UpdateVendorCompensation)
   },
   async (compensation: UpdateVendorCompensation | undefined, { container }) => {
@@ -53,6 +65,7 @@ export const updateVendorStep = createStep(
       id: compensation.id,
       name: compensation.name,
       handle: compensation.handle,
+      is_active: compensation.is_active,
     })
   },
 )
