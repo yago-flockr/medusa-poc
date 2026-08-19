@@ -7,6 +7,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
+import { parseVendorListQuery } from "../list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 import { resolveProductVariants } from "./build-variants"
 import type { CreateVendorProduct } from "./contract"
@@ -16,15 +17,20 @@ export const GET = async (
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const { limit, offset } = parseVendorListQuery(req.query)
 
   const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
-    "vendor.products.*",
-    "vendor.products.variants.*",
-    "vendor.products.variants.prices.*",
-    "vendor.products.images.*",
+    "vendor_id",
   ])
 
-  res.json({ products: vendorUser.vendor.products })
+  const { data: products, metadata } = await query.graph({
+    entity: "product",
+    fields: ["*", "variants.*", "variants.prices.*", "images.*"],
+    filters: { vendor: { id: vendorUser.vendor_id } },
+    pagination: { skip: offset, take: limit },
+  })
+
+  res.json({ products, count: metadata?.count, limit, offset })
 }
 
 export const POST = async (

@@ -115,8 +115,17 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   `productsCreated` hook in `src/workflows/hooks/created-product.ts` — the
   same hook the Brand admin flow already used, extended rather than
   duplicated, since Medusa allows only one handler per hook name. `GET
-/vendors/products` resolves `vendor_user.vendor.products` from `actor_id`;
-  `POST /vendors/products/:id` re-derives ownership from `actor_id` before
+/vendors/products` (and `GET /vendors/orders`) are paginated —
+  `src/api/vendors/list-query.ts` (`parseVendorListQuery`, shared by both)
+  validates `?limit=&offset=` (limit 1–100, default 20) and throws a clean
+  `INVALID_DATA` 400 on bad values rather than an uncaught ZodError. Products
+  are queried directly (`entity: "product"`, `filters: { vendor: { id } }`,
+  `pagination: { skip, take }`) instead of the earlier "load the vendor,
+  read `vendor.products`" shape, since a nested relation array can't be
+  paginated at the top level — filtering `product` by a linked module's
+  field takes a nested object (`{ vendor: { id } }`), not a dot-path string
+  (`"vendor.id"` 500s — confirmed by testing both). `POST
+  /vendors/products/:id` re-derives ownership from `actor_id` before
   allowing an edit and 404s (not 403, so existence isn't leaked) otherwise.
   Verified with two vendor tokens: each sees/edits only its own product, an
   isolation attempt on the other vendor's product 404s, and an unauthenticated

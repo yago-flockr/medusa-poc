@@ -4,6 +4,7 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { getOrdersListWorkflow } from "@medusajs/medusa/core-flows"
+import { parseVendorListQuery } from "../list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 
 export const GET = async (
@@ -11,16 +12,17 @@ export const GET = async (
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const { limit, offset } = parseVendorListQuery(req.query)
 
   const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
-    "vendor.orders.*",
+    "vendor.orders.id",
   ])
 
   const orderIds = (vendorUser.vendor.orders ?? [])
     .filter((order): order is NonNullable<typeof order> => order != null)
     .map((order) => order.id)
 
-  const { result: orders } = await getOrdersListWorkflow(req.scope).run({
+  const { result } = await getOrdersListWorkflow(req.scope).run({
     input: {
       fields: [
         "id",
@@ -33,9 +35,16 @@ export const GET = async (
       ],
       variables: {
         filters: { id: orderIds },
+        skip: offset,
+        take: limit,
       },
     },
   })
 
-  res.json({ orders })
+  const { rows: orders, metadata } = result as {
+    rows: unknown[]
+    metadata: { count: number }
+  }
+
+  res.json({ orders, count: metadata.count, limit, offset })
 }

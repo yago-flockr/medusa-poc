@@ -13,14 +13,16 @@ each was found while building or adversarially testing the marketplace spine
 
 ## Vendor identity and tokens
 
-- **`JWT_SECRET` and `COOKIE_SECRET` are literal placeholders
-  (`supersecret`) in `apps/backend/.env`.** Anyone who has read this repo
-  could forge a valid token for any actor type, vendor included. Already
-  flagged generically in `agents/backend.md`'s env docs as "replace before
-  any shared/staging deploy" — restated here because it's the single
-  highest-impact item on this list. Fix: generate real random secrets per
-  environment, never commit them (already gitignored), rotate before any
-  deploy past a developer's own machine.
+- **RESOLVED locally: `JWT_SECRET`/`COOKIE_SECRET` were literal placeholders
+  (`supersecret`) in `apps/backend/.env`.** Anyone who had read this repo
+  could forge a valid token for any actor type, vendor included — the single
+  highest-impact item on this list. Replaced with two real random 256-bit
+  secrets in the local (gitignored) `.env`; `.env.template` intentionally
+  keeps the placeholder so it stays an example, not a real value to copy.
+  Still open: this only fixes the one developer machine it was run on —
+  **every other environment (staging, any teammate's machine, a future
+  deploy) needs its own freshly generated secrets**, never the same value
+  copied across environments, and never committed.
 - **RESOLVED: public self-registration is fully closed.** The
   `POST /vendors` public create route and its backing workflow were deleted
   outright, not just gated — every vendor and vendor user is now created
