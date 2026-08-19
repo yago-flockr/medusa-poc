@@ -1,5 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { ArrowPath, PencilSquare } from "@medusajs/icons"
+import { ArrowPath, CheckCircle, PencilSquare, XCircle } from "@medusajs/icons"
 import {
   Button,
   createDataTableColumnHelper,
@@ -15,6 +15,7 @@ import { useState } from "react"
 import type { VendorUser } from "../../../api/admin/vendor-users/contract"
 import { Card } from "../../components/card"
 import { OtpShow } from "../../components/otp-show"
+import { TitleSubtitle } from "../../components/title-subtitle"
 import {
   useRegenerateVendorUserPassword,
   useUpdateOneVendorUser,
@@ -103,6 +104,7 @@ const VendorUsersPage = () => {
           },
         },
         {
+          icon: ctx.row.original.is_active ? <XCircle /> : <CheckCircle />,
           label: ctx.row.original.is_active ? "Disable" : "Enable",
           onClick: async () => {
             const vendorUser = ctx.row.original
@@ -169,12 +171,20 @@ const VendorUsersPage = () => {
         <DataTable.Table
           emptyState={{
             empty: {
-              heading: "No vendor users",
-              description: "There are no vendor users to display.",
+              custom: (
+                <TitleSubtitle
+                  title="No vendor users"
+                  description="There are no vendor users to display."
+                />
+              ),
             },
             filtered: {
-              heading: "No results",
-              description: "No vendor users match the current filter criteria.",
+              custom: (
+                <TitleSubtitle
+                  title="No results"
+                  description="No vendor users match the current filter criteria."
+                />
+              ),
             },
           }}
         />

@@ -10,6 +10,7 @@ import {
 import { useState } from "react"
 import type { Brand } from "../../../api/admin/brands/contract"
 import { Card } from "../../components/card"
+import { TitleSubtitle } from "../../components/title-subtitle"
 import { useDeleteOneBrand } from "../../hooks/mutations/brands"
 import { useFindManyBrands } from "../../hooks/queries/brands"
 import { CreateBrandModal } from "./create-brand-modal"
@@ -88,12 +89,20 @@ const BrandsPage = () => {
         <DataTable.Table
           emptyState={{
             empty: {
-              heading: "No brands",
-              description: "There are no brands to display.",
+              custom: (
+                <TitleSubtitle
+                  title="No brands"
+                  description="There are no brands to display."
+                />
+              ),
             },
             filtered: {
-              heading: "No results",
-              description: "No brands match the current filter criteria.",
+              custom: (
+                <TitleSubtitle
+                  title="No results"
+                  description="No brands match the current filter criteria."
+                />
+              ),
             },
           }}
         />

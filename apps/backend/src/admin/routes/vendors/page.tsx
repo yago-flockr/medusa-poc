@@ -1,5 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { PencilSquare } from "@medusajs/icons"
+import { CheckCircle, PencilSquare, XCircle } from "@medusajs/icons"
 import {
   createDataTableColumnHelper,
   DataTable,
@@ -12,6 +12,7 @@ import {
 import { useState } from "react"
 import type { Vendor } from "../../../api/admin/vendors/contract"
 import { Card } from "../../components/card"
+import { TitleSubtitle } from "../../components/title-subtitle"
 import { useUpdateOneVendor } from "../../hooks/mutations/vendors"
 import { useFindManyVendors } from "../../hooks/queries/vendors"
 import { CreateVendorModal } from "./create-vendor-modal"
@@ -62,6 +63,7 @@ const VendorsPage = () => {
           },
         },
         {
+          icon: ctx.row.original.is_active ? <XCircle /> : <CheckCircle />,
           label: ctx.row.original.is_active ? "Disable" : "Enable",
           onClick: async () => {
             const vendor = ctx.row.original
@@ -124,12 +126,20 @@ const VendorsPage = () => {
         <DataTable.Table
           emptyState={{
             empty: {
-              heading: "No vendors",
-              description: "There are no vendors to display.",
+              custom: (
+                <TitleSubtitle
+                  title="No vendors"
+                  description="There are no vendors to display."
+                />
+              ),
             },
             filtered: {
-              heading: "No results",
-              description: "No vendors match the current filter criteria.",
+              custom: (
+                <TitleSubtitle
+                  title="No results"
+                  description="No vendors match the current filter criteria."
+                />
+              ),
             },
           }}
         />

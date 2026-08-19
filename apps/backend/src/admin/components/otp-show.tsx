@@ -11,17 +11,17 @@ export const OtpShow = forwardRef<HTMLDivElement, OtpShowProps>(
     return (
       <div
         className={clx(
-          "text-center flex flex-col items-center justify-center gap-4",
+          "text-center flex flex-col items-center justify-center gap-4 max-w-80",
           className,
         )}
         ref={ref}
         {...props}
       >
         <TitleSubtitle
-          title="Generated One-time Password"
+          title="Generated one-time password"
           description="Copy it now, it won't be shown again. You can generate a new one anytime."
         />
-        <Command className="gap-4 w-full max-w-96">
+        <Command className="gap-4 w-full">
           <Text>{otp}</Text>
           <Command.Copy content={otp} />
         </Command>
