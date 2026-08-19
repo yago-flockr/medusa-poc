@@ -39,7 +39,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
   - Per Admin feature: `validators.ts`, `query-config.ts` (when the feature has list/retrieve), `middlewares.ts` (wire that feature’s matchers only).
   - Product `additional_data`: each feature that extends product create/update exports a fragment from `api/admin/<feature>/additional-data.ts` (e.g. `brands`) — or, for a feature with no `/admin/*` CRUD surface of its own, from `api/<feature>/additional-data.ts` (e.g. `vendors`, since there is no `/admin/vendors`). Compose them in `api/admin/products/additional-data.ts` and pass the result from `products/middlewares.ts`. Do not put foreign-route matchers in the feature’s middlewares, and do not bury cross-route fields inside CRUD validators. Every fragment is a one-property `nullish()` zod object (string to set/change, `null` to clear) — copy that shape, don't invent a new one per feature.
 - `modules/`: custom domain modules (models, services, migrations)
-- `workflows/`: orchestration; prefer over fat route handlers. **Every workflow is a folder, never a flat file**: `workflows/<name>/index.ts` holds only the `createWorkflow` composition (read top-to-bottom as the actual sequence of operations); `workflows/<name>/steps/<step-name>.ts` holds one `createStep` per file, each with its own input type (don't borrow a slice of the workflow's input type — a step should read standalone). No `steps/index.ts` barrel — `index.ts` imports each step from its own path. Applies even to a single-step workflow (e.g. `create-brand/`, `associate-vendor-variant-images/`) — consistency of shape matters more than saving one file for the smallest cases. `workflows/hooks/*.ts` is a different thing (callbacks registered onto an *existing* core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat — it was never a workflow of its own.
+- `workflows/`: orchestration; prefer over fat route handlers. **Every workflow is a folder, never a flat file**: `workflows/<name>/index.ts` holds only the `createWorkflow` composition (read top-to-bottom as the actual sequence of operations); `workflows/<name>/steps/<step-name>.ts` holds one `createStep` per file, each with its own input type (don't borrow a slice of the workflow's input type — a step should read standalone). No `steps/index.ts` barrel — `index.ts` imports each step from its own path. Applies even to a single-step workflow (e.g. `create-brand/`, `create-vendor/`) — consistency of shape matters more than saving one file for the smallest cases. `workflows/hooks/*.ts` is a different thing (callbacks registered onto an *existing* core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat — it was never a workflow of its own.
 - `links/`: links between module data models
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
@@ -72,13 +72,44 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   `resolveVendorUser(query, actorId, fields)` in
   `src/api/vendors/resolve-vendor-user.ts` is the one place that lookup
   happens, shared by every `/vendors/*` route, and it always throws if the
-  actor doesn't resolve to a real vendor user. Implemented: `src/modules/vendor`, `src/workflows/create-vendor/`,
-  `src/api/vendors/*` — `POST /vendors` registers a vendor + its first
-  `VendorUser` (registration token via `/auth/vendor/emailpass/register`,
-  `setAuthAppMetadataStep` with `actorType: "vendor"`); `authenticate("vendor",
-...)` guards `/vendors/*`. Named `VendorUser`, not `VendorAdmin` — every
+  actor doesn't resolve to a real vendor user. Implemented: `src/modules/vendor`,
+  `src/api/vendors/*` — `authenticate("vendor", ...)` guards `/vendors/*`.
+  Named `VendorUser`, not `VendorAdmin` — every
   vendor user has equal access today, no permission tiers exist yet, so
-  "admin" would overclaim; see `docs/ER_MODEL.md`. A vendor also owns its own products: `POST
+  "admin" would overclaim; see `docs/ER_MODEL.md`.
+  **Vendor and VendorUser are two separate, independent CRUDs, not one
+  combined step.** `Vendor` (`src/workflows/create-vendor/`,
+  `src/workflows/update-vendor/`) is a plain CRUD exactly like Brand — just
+  name/handle, no linked side effects. `VendorUser`
+  (`src/workflows/create-vendor-user/`, `src/workflows/update-vendor-user/`,
+  `src/workflows/regenerate-vendor-user-password/`) is created and managed
+  separately, scoped to an existing `vendor_id`. This was a deliberate
+  simplification: an earlier version combined vendor creation, vendor user
+  creation, and Auth Module registration into one atomic workflow, and it
+  was cut down specifically because coupling unrelated concerns into one
+  step bought no real correctness benefit here (nothing needs vendor and its
+  first user to succeed-or-fail as one unit) while making every piece harder
+  to read, test, and extend independently. Security is not treated as
+  cuttable, though: every `VendorUser` is created with a **server-generated
+  random password** (`generateRandomPassword` in
+  `create-vendor-user/generate-random-password.ts`), never one staff or a
+  form types in, returned once in the create response for staff to copy and
+  share manually (no invite-email flow yet). Staff can regenerate a fresh
+  random password later (`regenerate-vendor-user-password/` — calls
+  `authModuleService.updateProvider("emailpass", {password, entity_id:
+  email})`; the emailpass provider keys its provider identity by **email**,
+  not by the vendor user's own id — confirmed by reading the provider's
+  source, since the Auth Module's own doc comment for `updateProvider` is
+  misleading here). There is no self-service password change yet — that's an
+  accepted v1 gap, not a security compromise, since regeneration still
+  requires staff action. `setAuthAppMetadataStep` with `actorType: "vendor"`
+  links the generated auth identity to the new `VendorUser` in both
+  workflows. There is **no public self-registration path** — no
+  `/auth/vendor/emailpass/register` + `POST /vendors` combo callable by
+  anyone; vendors and vendor users are both staff-created from
+  `/admin/vendors` and `/admin/vendor-users` (mirrored two-page Admin UI,
+  same as Brand's page, `src/admin/routes/vendors/`,
+  `src/admin/routes/vendor-users/`). A vendor also owns its own products: `POST
 /vendors/products` creates a product forced to `status: "proposed"` and
   linked to the caller's vendor (never a client-supplied `vendor_id`) via the
   `productsCreated` hook in `src/workflows/hooks/created-product.ts` — the
@@ -99,27 +130,34 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   That means `/vendors/*` is called cross-origin from the browser and needs
   its own CORS handling: `VENDOR_CORS` env var,
   `src/api/vendors/cors.ts`, applied in `src/api/vendors/middlewares.ts`.
-  **Still missing, and worth flagging because it contradicts a stated rule:**
-  vendor creation today is open self-registration
-  (`POST /auth/vendor/emailpass/register` + `POST /vendors`, callable by
-  anyone) — `docs/features/multi-vendor-marketplace.md` and
-  `identity-and-access.md` both say a vendor is invited, never self-serve.
-  There is no invite model yet; building one (mirroring Medusa's own
-  `createInvitesWorkflow`/`acceptInviteWorkflow` pattern for the User module,
-  which doesn't itself apply to custom actor types) is the fix. Also still
-  missing: staff approval so a vendor's products can leave
-  `status: "proposed"` (nothing publishes them today). Variant/option
+  **Vendor invitation is fully closed off, staff-only:** every vendor and
+  vendor user is created from Admin (`/admin/vendors`, `/admin/vendor-users`)
+  — there is no public registration route at all any more. This satisfies
+  "a vendor is invited, never self-registered" unconditionally, not just
+  "when staff happen to use this path." A real invite-email flow (mirroring
+  Medusa's own `createInvitesWorkflow`/`acceptInviteWorkflow` pattern for the
+  User module, which doesn't itself apply to custom actor types) to replace
+  "staff regenerates a password and shares it manually" with the vendor
+  choosing their own is still a real, undone follow-up — deliberately
+  deferred as UX polish, not a security gap, since password generation and
+  regeneration themselves are already handled server-side (see above).
+  Staff approval of a vendor's products is done, and it turned out cheap: a
+  vendor-created product is forced to `status: "proposed"`
+  (`src/api/vendors/products/route.ts`) using Medusa's own `ProductStatus`
+  enum (`draft`/`proposed`/`published`/`rejected`) — staff review and
+  publish/reject it from the **existing, unmodified** core Admin product
+  page. No new model, workflow, or UI was needed for this. Variant/option
   authoring and image upload are done, including **per-variant pricing**: a
   vendor passes `options` (e.g. Size/Color) and one `variants` entry per
   combination, each with its own price and optionally sku/barcode/
-  weight/dimensions/thumbnail/images (`src/api/vendors/products/
+  weight/dimensions (`src/api/vendors/products/
   build-variants.ts` `resolveProductVariants` — max 50 variants via the
   zod schema, exact-match validation against the option combinations, see
-  `docs/ER_MODEL.md`). Per-variant images/thumbnail are a second step after
-  `createProductsWorkflow`, run through `associateVendorVariantImagesWorkflow`
-  (`src/workflows/associate-vendor-variant-images/` —
-  `productModuleService.addImageToVariant` + `updateProductVariants` inside a
-  proper step, not a direct service call from the route). Images
+  `docs/ER_MODEL.md`). **Per-variant thumbnails/images were built, then
+  deliberately removed** — a vendor product now only has plain top-level
+  gallery images (`images` on the create schema), no per-variant image or
+  thumbnail assignment; that feature cost more complexity than it was worth
+  at this stage and can come back later if actually needed. Images
   upload via `POST /vendors/uploads` (Medusa's File module, PNG/JPEG/WEBP/GIF
   only, 5MB/5-file limits enforced as clean 400s, not left as a raw 500).
   Not done: vendor-assignable categories/collections/tags (would need its own
@@ -206,7 +244,7 @@ From `apps/backend`:
 - Local Redis optional; fake Redis is not production-safe.
 - **Mandatory:** `src/admin` is frontend — never import `modules/**/models` or `InferTypeOf` of models. Wire types live once in `api/admin/<resource>/contract.ts`: entity schema, list query, create schema, update schema, response types. Do not export field fragments or a third form-only schema — create/edit forms use the same create/update schemas via `zodResolver`. Shared list shapes: `CustomListQuery` / `CustomListResponse<"resource", Item>` in `api/admin/list-response.ts`. Admin hooks: `admin/hooks/queries/` for `useQuery`, `admin/hooks/mutations/` for `useMutation` — both import the contract, not validators that pull Medusa server utils. Core Medusa entities: extend `HttpTypes` / JS SDK in the same contract file when needed.
 - Query keys: `admin/lib/query-keys.ts`. Invalidate `queryKeys.<resource>.all` after mutations.
-- Admin custom CRUD UI: create with `FocusModal`, edit with `Drawer`, delete with `usePrompt` + `toast` (`@medusajs/ui`). Match core Admin create forms (inventory/product): header is close/esc only; body is a centered `max-w-[720px]` column with a heading and `grid-cols-2` fields (no `Card` wrapper); Cancel/Save live in the footer. Edit drawer: heading in the header, fields in the body, footer actions right-aligned. Forms use `react-hook-form` + `zodResolver` against the resource contract schemas. Do not re-declare field rules in the form. Do not import `@medusajs/dashboard` internals (`RouteFocusModal` / `RouteDrawer`).
+- Admin custom CRUD UI: create with `FocusModal`, edit with `Drawer`, delete with `usePrompt` + `toast` (`@medusajs/ui`). Match core Admin create forms (inventory/product): header is close/esc only; body is a centered `max-w-[720px]` column with a heading and `grid-cols-2` fields (no `Card` wrapper); Cancel/Save live in the footer. Edit drawer: heading in the header, fields in the body, footer actions right-aligned. Forms use `react-hook-form` + `zodResolver` against the resource contract schemas. Do not re-declare field rules in the form. Do not import `@medusajs/dashboard` internals (`RouteFocusModal` / `RouteDrawer`). Create/update mutations must pass an `onError` alongside `onSuccess` and surface the failure via `toast.error(title, { description: error.message })` — a mutation with only `onSuccess` silently swallows server errors (e.g. duplicate email) with no UI feedback. The Admin dashboard shell already mounts the toaster; nothing extra needs mounting.
 - DataTable row actions: `columnHelper.action({ actions })`. The table only fit-widths and pins that column when its id is `action` (singular). A display column named `actions` is treated as a data column and shares remaining width. Wrapping the cell in `w-*` / `justify-end` does not shrink the `<td>`. For a custom cell, still set `id: "action"`.
 - Admin UI that imports `@medusajs/js-sdk`, `react-hook-form`, `@hookform/resolvers`, or `@medusajs/icons` needs them as **direct** backend dependencies (same `@medusajs/*` version as the rest). They are not reliably pulled in by `@medusajs/admin-sdk` alone for Vite resolution.
 - Multi-vendor planning notes: `docs/spikes/multi-vendor-order.md` (do not productize on the demo path yet).

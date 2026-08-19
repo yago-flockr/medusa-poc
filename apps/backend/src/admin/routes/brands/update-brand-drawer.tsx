@@ -1,4 +1,4 @@
-import { Drawer } from "@medusajs/ui"
+import { Drawer, toast } from "@medusajs/ui"
 import type { Brand } from "../../../api/admin/brands/contract"
 import { UpdateBrandForm, brandToForm } from "../../forms/brands/update-brand"
 import { useUpdateOneBrand } from "../../hooks/mutations/brands"
@@ -31,6 +31,11 @@ export const UpdateBrandDrawer = ({
               {
                 onSuccess: () => {
                   onClose()
+                },
+                onError: (error) => {
+                  toast.error("Failed to update brand", {
+                    description: error.message,
+                  })
                 },
               },
             )

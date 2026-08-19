@@ -1,39 +1,43 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
-import { Button, Drawer, Heading } from "@medusajs/ui"
+import { Button, Drawer, Text } from "@medusajs/ui"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import {
-  createBrandSchema,
-  type Brand,
-  type CreateBrand,
-} from "../../../api/admin/brands/contract"
+import type { Vendor } from "../../../api/admin/vendors/contract"
+import { TitleSubtitle } from "../../components/title-subtitle"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
 
-export type UpdateBrandFormProps = CommonFormProps<CreateBrand>
+const updateVendorFormSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  handle: z.string().trim().min(1, "Handle is required"),
+})
 
-export function brandToForm(brand: Brand): CreateBrand {
+export type UpdateVendorFormValues = z.infer<typeof updateVendorFormSchema>
+export type UpdateVendorFormProps = CommonFormProps<UpdateVendorFormValues>
+
+export function vendorToForm(vendor: Vendor): UpdateVendorFormValues {
   return {
-    name: brand.name,
-    handle: brand.handle,
+    name: vendor.name,
+    handle: vendor.handle,
   }
 }
 
-export const UpdateBrandForm = ({
+export const UpdateVendorForm = ({
   defaultValues,
   isDisabled,
   isLoading,
   onCancel,
   onSubmit,
-}: UpdateBrandFormProps) => {
+  vendor,
+}: UpdateVendorFormProps & { vendor: Vendor | null }) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<z.input<typeof createBrandSchema>, unknown, CreateBrand>({
-    resolver: zodResolver(createBrandSchema),
+  } = useForm<UpdateVendorFormValues>({
+    resolver: zodResolver(updateVendorFormSchema),
     defaultValues: {
       name: "",
       handle: "",
@@ -52,28 +56,53 @@ export const UpdateBrandForm = ({
     await onSubmit?.(values)
   })
 
+  const users = vendor?.users ?? []
+
   return (
     <form onSubmit={submit} className="flex flex-1 flex-col overflow-hidden">
       <Drawer.Header>
-        <Heading>Edit Brand</Heading>
+        <TitleSubtitle title="Update Vendor" />
       </Drawer.Header>
       <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
         <div className="grid grid-cols-1 gap-4">
           <TextField
-            id="update-brand-name"
+            id="update-vendor-name"
             label="Name"
             error={errors.name?.message}
             disabled={isDisabled || isLoading}
             {...register("name")}
           />
           <TextField
-            id="update-brand-handle"
+            id="update-vendor-handle"
             label="Handle"
             placeholder="acme"
             error={errors.handle?.message}
             disabled={isDisabled || isLoading}
             {...register("handle")}
           />
+        </div>
+        <div>
+          <Text size="small" weight="plus" className="mb-2">
+            Users
+          </Text>
+          {users.length === 0 ? (
+            <Text size="small" className="text-ui-fg-subtle">
+              No users yet.
+            </Text>
+          ) : (
+            <ul className="flex flex-col gap-y-1">
+              {users.map((user) => (
+                <li key={user.id}>
+                  <Text size="small">
+                    {[user.first_name, user.last_name]
+                      .filter(Boolean)
+                      .join(" ") || user.email}{" "}
+                    <span className="text-ui-fg-subtle">({user.email})</span>
+                  </Text>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </Drawer.Body>
       <Drawer.Footer>

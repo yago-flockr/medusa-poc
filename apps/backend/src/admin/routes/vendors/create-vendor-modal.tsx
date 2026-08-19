@@ -1,11 +1,11 @@
 import { Button, FocusModal, toast } from "@medusajs/ui"
 import { useState } from "react"
-import { CreateBrandForm } from "../../forms/brands/create-brand"
-import { useCreateOneBrand } from "../../hooks/mutations/brands"
+import { CreateVendorForm } from "../../forms/vendors/create-vendor"
+import { useCreateOneVendor } from "../../hooks/mutations/vendors"
 
-export const CreateBrandModal = () => {
+export const CreateVendorModal = () => {
   const [open, setOpen] = useState(false)
-  const createOneBrand = useCreateOneBrand()
+  const createOneVendor = useCreateOneVendor()
 
   return (
     <FocusModal open={open} onOpenChange={setOpen}>
@@ -16,16 +16,16 @@ export const CreateBrandModal = () => {
       </FocusModal.Trigger>
       <FocusModal.Content>
         {open ? (
-          <CreateBrandForm
-            isLoading={createOneBrand.isPending}
+          <CreateVendorForm
+            isLoading={createOneVendor.isPending}
             onCancel={() => setOpen(false)}
             onSubmit={(values) => {
-              createOneBrand.mutate(values, {
+              createOneVendor.mutate(values, {
                 onSuccess: () => {
                   setOpen(false)
                 },
                 onError: (error) => {
-                  toast.error("Failed to create brand", {
+                  toast.error("Failed to create vendor", {
                     description: error.message,
                   })
                 },

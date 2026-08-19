@@ -1,0 +1,50 @@
+import type {
+  CreateVendorUser,
+  RegeneratePasswordResponse,
+  UpdateVendorUser,
+  VendorUserResponse,
+  VendorUserWithPasswordResponse,
+} from "../../../api/admin/vendor-users/contract"
+import { createResourceMutationHook } from "../../lib/create-resource-mutation"
+import { mutationKeys } from "../../lib/mutation-keys"
+import { queryKeys } from "../../lib/query-keys"
+import { sdk } from "../../lib/sdk"
+
+export const useCreateOneVendorUser = createResourceMutationHook<
+  CreateVendorUser,
+  VendorUserWithPasswordResponse
+>({
+  mutationKey: mutationKeys.vendorUsers.createOne,
+  mutationFn: (body) =>
+    sdk.client.fetch<VendorUserWithPasswordResponse>("/admin/vendor-users", {
+      method: "POST",
+      body,
+    }),
+  invalidateKey: queryKeys.vendorUsers.findMany,
+})
+
+export const useUpdateOneVendorUser = createResourceMutationHook<
+  { vendorUserId: string; body: UpdateVendorUser },
+  VendorUserResponse
+>({
+  mutationKey: mutationKeys.vendorUsers.updateOne,
+  mutationFn: ({ vendorUserId, body }) =>
+    sdk.client.fetch<VendorUserResponse>(
+      `/admin/vendor-users/${vendorUserId}`,
+      { method: "POST", body },
+    ),
+  invalidateKey: queryKeys.vendorUsers.findMany,
+})
+
+export const useRegenerateVendorUserPassword = createResourceMutationHook<
+  string,
+  RegeneratePasswordResponse
+>({
+  mutationKey: mutationKeys.vendorUsers.regeneratePassword,
+  mutationFn: (vendorUserId) =>
+    sdk.client.fetch<RegeneratePasswordResponse>(
+      `/admin/vendor-users/${vendorUserId}/regenerate-password`,
+      { method: "POST" },
+    ),
+  invalidateKey: queryKeys.vendorUsers.findMany,
+})

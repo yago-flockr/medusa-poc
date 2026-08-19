@@ -5,4 +5,10 @@ export const queryKeys = {
   brands: {
     findMany: ["findManyBrands"] as const,
   },
+  vendors: {
+    findMany: ["findManyVendors"] as const,
+  },
+  vendorUsers: {
+    findMany: ["findManyVendorUsers"] as const,
+  },
 }
