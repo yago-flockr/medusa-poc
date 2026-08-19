@@ -4,6 +4,7 @@ import type {
   FindParams,
   PaginatedResponse,
 } from "@medusajs/framework/types"
+import { optionalTrimmedString, requiredTrimmedString } from "../zod-helpers"
 
 export const brandSchema = z.object({
   id: z.string(),
@@ -32,20 +33,8 @@ export type BrandResponse = {
 
 export type BrandDeleteResponse = DeleteResponse<"brand">
 
-const emptyToUndefined = (value: unknown) => {
-  if (typeof value !== "string") {
-    return value
-  }
-
-  const trimmed = value.trim()
-  return trimmed.length ? trimmed : undefined
-}
-
-const name = z.string().trim().min(1, "Name is required")
-const handle = z.preprocess(
-  emptyToUndefined,
-  z.string().min(1, "Handle is required").optional(),
-)
+const name = requiredTrimmedString("Name is required")
+const handle = optionalTrimmedString()
 
 export const createBrandSchema = z
   .object({

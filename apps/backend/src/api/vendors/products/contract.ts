@@ -31,8 +31,6 @@ const variant = z
     length: dimension,
     height: dimension,
     width: dimension,
-    thumbnail: z.string().url().optional(),
-    images: z.array(productImage).max(5).optional(),
   })
   .strict()
 

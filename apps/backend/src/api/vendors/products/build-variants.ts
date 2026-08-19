@@ -1,5 +1,4 @@
 import { MedusaError } from "@medusajs/framework/utils"
-import type { VariantImageAssociation } from "../../../workflows/associate-vendor-variant-images"
 import type { CreateVendorProduct } from "./contract"
 
 export type VendorProductOption = {
@@ -113,58 +112,3 @@ function buildVariantInput(
   }
 }
 
-export function buildProductGallery(
-  images: { url: string }[] | undefined,
-  variants: VendorVariantInput[],
-) {
-  const galleryImageUrls = new Set((images ?? []).map((image) => image.url))
-
-  for (const variant of variants) {
-    for (const image of variant.images ?? []) {
-      galleryImageUrls.add(image.url)
-    }
-  }
-
-  return [...galleryImageUrls].map((url) => ({ url }))
-}
-
-type CreatedProduct = {
-  images?: { url: string; id: string }[] | null
-  variants?: { id: string; title: string }[] | null
-}
-
-export function matchVariantImageAssociations(
-  variants: VendorVariantInput[],
-  createdProduct: CreatedProduct,
-): VariantImageAssociation[] {
-  const imageIdByUrl = new Map(
-    (createdProduct.images ?? []).map((image) => [image.url, image.id]),
-  )
-
-  const associations: VariantImageAssociation[] = []
-
-  for (const variant of variants) {
-    const variantTitle =
-      Object.values(variant.optionValues).join(" / ") || "Default"
-    const createdVariant = createdProduct.variants?.find(
-      (candidate) => candidate.title === variantTitle,
-    )
-    if (!createdVariant) {
-      continue
-    }
-
-    const imageIds = (variant.images ?? [])
-      .map((image) => imageIdByUrl.get(image.url))
-      .filter((id): id is string => Boolean(id))
-
-    if (imageIds.length || variant.thumbnail) {
-      associations.push({
-        variantId: createdVariant.id,
-        imageIds,
-        thumbnail: variant.thumbnail,
-      })
-    }
-  }
-
-  return associations
-}

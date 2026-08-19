@@ -21,13 +21,17 @@ each was found while building or adversarially testing the marketplace spine
   highest-impact item on this list. Fix: generate real random secrets per
   environment, never commit them (already gitignored), rotate before any
   deploy past a developer's own machine.
-- **No vendor invite flow — `POST /auth/vendor/emailpass/register` is open
-  self-registration.** Anyone can become a vendor today. Contradicts
-  `docs/features/multi-vendor-marketplace.md` and `identity-and-access.md`
-  ("a vendor is invited, never self-registered"), already tracked in
-  `agents/backend.md`. Fix: an invite model gating registration to an email
-  staff actually invited, mirroring Medusa's own
-  `createInvitesWorkflow`/`acceptInviteWorkflow` pattern for the User module.
+- **RESOLVED: public self-registration is fully closed.** The
+  `POST /vendors` public create route and its backing workflow were deleted
+  outright, not just gated — every vendor and vendor user is now created
+  from Admin (`/admin/vendors`, `/admin/vendor-users`), with a
+  server-generated random password (never staff- or vendor-typed) returned
+  once for staff to share manually. Still open: a real invite model (email
+  + token, vendor chooses their own password), mirroring Medusa's own
+  `createInvitesWorkflow`/`acceptInviteWorkflow` pattern for the User
+  module — this replaces "staff shares a generated password manually," which
+  is accepted as v1 UX debt, not a security gap, since the password itself
+  is never weak or staff-chosen.
 - **The vendor JWT lives in browser `localStorage`, not an `httpOnly`
   cookie.** A deliberate tradeoff (`docs/plan.md` Decisions) for portability
   to a future standalone deploy, but the real cost: any JS running on the
