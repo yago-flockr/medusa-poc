@@ -1,11 +1,15 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
 import { AdminProduct, DetailWidgetProps } from "@medusajs/framework/types"
 import { PencilSquare } from "@medusajs/icons"
-import { Drawer, Text } from "@medusajs/ui"
+import { Button, Drawer, Text } from "@medusajs/ui"
 import { useState } from "react"
 import { ActionMenu } from "../components/action-menu"
 import { Card } from "../components/card"
-import { ProductBrandForm } from "../forms/products/product-brand"
+import { TitleSubtitle } from "../components/title-subtitle"
+import {
+  PRODUCT_BRAND_FORM_ID,
+  ProductBrandForm,
+} from "../forms/products/product-brand"
 import { useAdminProductUpdate } from "../hooks/mutations/products"
 import { useFindManyBrands } from "../hooks/queries/brands"
 import { useAdminProductRetrieve } from "../hooks/queries/products"
@@ -62,23 +66,48 @@ const ProductBrandWidget = ({
       ))}
       <Drawer open={open} onOpenChange={setOpen}>
         <Drawer.Content>
-          {open ? (
+          <Drawer.Header>
+            <TitleSubtitle title="Edit Brand" />
+          </Drawer.Header>
+          <Drawer.Body className="flex flex-1 flex-col gap-y-8 overflow-y-auto">
             <ProductBrandForm
               defaultValues={{ brand_id: brand?.id ?? null }}
               brands={findManyBrands.data?.brands ?? []}
               isLoading={updateProduct.isPending}
-              onCancel={() => setOpen(false)}
               onSubmit={(values) => {
                 updateProduct.mutate(
                   {
                     id: product.id,
-                    body: { additional_data: { brand_id: values.brand_id } },
+                    body: {
+                      additional_data: { brand_id: values.brand_id },
+                    },
                   },
                   { onSuccess: () => setOpen(false) },
                 )
               }}
             />
-          ) : null}
+          </Drawer.Body>
+          <Drawer.Footer>
+            <div className="flex items-center justify-end gap-x-2">
+              <Button
+                size="small"
+                variant="secondary"
+                type="button"
+                onClick={() => setOpen(false)}
+                disabled={updateProduct.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="small"
+                type="submit"
+                form={PRODUCT_BRAND_FORM_ID}
+                isLoading={updateProduct.isPending}
+              >
+                Save
+              </Button>
+            </div>
+          </Drawer.Footer>
         </Drawer.Content>
       </Drawer>
     </Card.Root>

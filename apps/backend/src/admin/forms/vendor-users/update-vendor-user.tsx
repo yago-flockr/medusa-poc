@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
-import { Button, Drawer, Text } from "@medusajs/ui"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import {
@@ -8,13 +7,12 @@ import {
   type UpdateVendorUser,
   type VendorUser,
 } from "../../../api/admin/vendor-users/contract"
-import { TitleSubtitle } from "../../components/title-subtitle"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
 
-export type UpdateVendorUserFormProps = CommonFormProps<UpdateVendorUser> & {
-  vendorUser: VendorUser | null
-}
+export const UPDATE_VENDOR_USER_FORM_ID = "update-vendor-user-form"
+
+export type UpdateVendorUserFormProps = CommonFormProps<UpdateVendorUser>
 
 export function vendorUserToForm(vendorUser: VendorUser): UpdateVendorUser {
   return {
@@ -27,9 +25,7 @@ export const UpdateVendorUserForm = ({
   defaultValues,
   isDisabled,
   isLoading,
-  onCancel,
   onSubmit,
-  vendorUser,
 }: UpdateVendorUserFormProps) => {
   const {
     register,
@@ -61,59 +57,27 @@ export const UpdateVendorUserForm = ({
   })
 
   return (
-    <form onSubmit={submit} className="flex flex-1 flex-col overflow-hidden">
-      <Drawer.Header>
-        <TitleSubtitle title="Update Vendor User" />
-      </Drawer.Header>
-      <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
-        <div className="grid grid-cols-1 gap-4">
-          <div className="flex flex-col space-y-2">
-            <Text size="small" weight="plus">
-              Email
-            </Text>
-            <Text size="small" className="text-ui-fg-subtle">
-              {vendorUser?.email}
-            </Text>
-          </div>
-          <TextField
-            id="update-vendor-user-first-name"
-            label="First name"
-            optional
-            error={errors.first_name?.message}
-            disabled={isDisabled || isLoading}
-            {...register("first_name")}
-          />
-          <TextField
-            id="update-vendor-user-last-name"
-            label="Last name"
-            optional
-            error={errors.last_name?.message}
-            disabled={isDisabled || isLoading}
-            {...register("last_name")}
-          />
-        </div>
-      </Drawer.Body>
-      <Drawer.Footer>
-        <div className="flex items-center justify-end gap-x-2">
-          <Button
-            size="small"
-            variant="secondary"
-            type="button"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Cancel
-          </Button>
-          <Button
-            size="small"
-            type="submit"
-            isLoading={isLoading}
-            disabled={isDisabled}
-          >
-            Save
-          </Button>
-        </div>
-      </Drawer.Footer>
+    <form
+      id={UPDATE_VENDOR_USER_FORM_ID}
+      onSubmit={submit}
+      className="grid grid-cols-1 gap-4"
+    >
+      <TextField
+        id="update-vendor-user-first-name"
+        label="First name"
+        optional
+        error={errors.first_name?.message}
+        disabled={isDisabled || isLoading}
+        {...register("first_name")}
+      />
+      <TextField
+        id="update-vendor-user-last-name"
+        label="Last name"
+        optional
+        error={errors.last_name?.message}
+        disabled={isDisabled || isLoading}
+        {...register("last_name")}
+      />
     </form>
   )
 }

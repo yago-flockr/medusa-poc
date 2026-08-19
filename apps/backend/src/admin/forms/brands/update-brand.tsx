@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
-import { Button, Drawer } from "@medusajs/ui"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import {
@@ -8,9 +7,10 @@ import {
   type Brand,
   type CreateBrand,
 } from "../../../api/admin/brands/contract"
-import { TitleSubtitle } from "../../components/title-subtitle"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
+
+export const UPDATE_BRAND_FORM_ID = "update-brand-form"
 
 export type UpdateBrandFormProps = CommonFormProps<CreateBrand>
 
@@ -25,7 +25,6 @@ export const UpdateBrandForm = ({
   defaultValues,
   isDisabled,
   isLoading,
-  onCancel,
   onSubmit,
 }: UpdateBrandFormProps) => {
   const {
@@ -54,50 +53,26 @@ export const UpdateBrandForm = ({
   })
 
   return (
-    <form onSubmit={submit} className="flex flex-1 flex-col overflow-hidden">
-      <Drawer.Header>
-        <TitleSubtitle title="Edit Brand" />
-      </Drawer.Header>
-      <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
-        <div className="grid grid-cols-1 gap-4">
-          <TextField
-            id="update-brand-name"
-            label="Name"
-            error={errors.name?.message}
-            disabled={isDisabled || isLoading}
-            {...register("name")}
-          />
-          <TextField
-            id="update-brand-handle"
-            label="Handle"
-            placeholder="acme"
-            error={errors.handle?.message}
-            disabled={isDisabled || isLoading}
-            {...register("handle")}
-          />
-        </div>
-      </Drawer.Body>
-      <Drawer.Footer>
-        <div className="flex items-center justify-end gap-x-2">
-          <Button
-            size="small"
-            variant="secondary"
-            type="button"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Cancel
-          </Button>
-          <Button
-            size="small"
-            type="submit"
-            isLoading={isLoading}
-            disabled={isDisabled}
-          >
-            Save
-          </Button>
-        </div>
-      </Drawer.Footer>
+    <form
+      id={UPDATE_BRAND_FORM_ID}
+      onSubmit={submit}
+      className="grid grid-cols-1 gap-4"
+    >
+      <TextField
+        id="update-brand-name"
+        label="Name"
+        error={errors.name?.message}
+        disabled={isDisabled || isLoading}
+        {...register("name")}
+      />
+      <TextField
+        id="update-brand-handle"
+        label="Handle"
+        placeholder="acme"
+        error={errors.handle?.message}
+        disabled={isDisabled || isLoading}
+        {...register("handle")}
+      />
     </form>
   )
 }
