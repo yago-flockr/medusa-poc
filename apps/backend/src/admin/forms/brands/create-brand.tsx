@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
-import { Button, FocusModal, Heading, Text } from "@medusajs/ui"
+import { Button, FocusModal } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import {
   createBrandSchema,
   type CreateBrand,
 } from "../../../api/admin/brands/contract"
+import { TitleSubtitle } from "../../components/title-subtitle"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
 
@@ -40,14 +41,10 @@ export const CreateBrandForm = ({
       <FocusModal.Header />
       <FocusModal.Body className="flex flex-1 flex-col items-center overflow-y-auto py-16">
         <div className="flex w-full max-w-[720px] flex-col gap-y-8">
-          <div>
-            <FocusModal.Title asChild>
-              <Heading>Create Brand</Heading>
-            </FocusModal.Title>
-            <Text size="small" className="text-ui-fg-subtle">
-              Create a new brand and manage its details.
-            </Text>
-          </div>
+          <TitleSubtitle
+            title="Create Brand"
+            description="Create a new brand and manage its details."
+          />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <TextField
               id="create-brand-name"

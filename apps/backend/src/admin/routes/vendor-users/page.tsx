@@ -1,9 +1,11 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { ArrowPath, PencilSquare } from "@medusajs/icons"
 import {
+  Button,
   createDataTableColumnHelper,
   DataTable,
   DataTablePaginationState,
+  FocusModal,
   toast,
   useDataTable,
   usePrompt,
@@ -11,6 +13,7 @@ import {
 import { useState } from "react"
 import type { VendorUser } from "../../../api/admin/vendor-users/contract"
 import { Card } from "../../components/card"
+import { OtpShow } from "../../components/otp-show"
 import { useRegenerateVendorUserPassword } from "../../hooks/mutations/vendor-users"
 import { useFindManyVendorUsers } from "../../hooks/queries/vendor-users"
 import { CreateVendorUserModal } from "./create-vendor-user-modal"
@@ -30,6 +33,7 @@ const VendorUsersPage = () => {
   const [editingVendorUser, setEditingVendorUser] = useState<VendorUser | null>(
     null,
   )
+  const [regeneratedPassword, setRegeneratedPassword] = useState<string>()
 
   const findManyVendorUsers = useFindManyVendorUsers({
     limit: PAGINATION_LIMIT,
@@ -74,10 +78,7 @@ const VendorUsersPage = () => {
 
             regeneratePassword.mutate(vendorUser.id, {
               onSuccess: (data) => {
-                toast.success("Password regenerated", {
-                  description: `One-time password: ${data.password} — copy it now, it won't be shown again.`,
-                  duration: 30000,
-                })
+                setRegeneratedPassword(data.password)
               },
               onError: (error) => {
                 toast.error("Failed to regenerate password", {
@@ -131,6 +132,29 @@ const VendorUsersPage = () => {
         vendorUser={editingVendorUser}
         onClose={() => setEditingVendorUser(null)}
       />
+      <FocusModal
+        open={Boolean(regeneratedPassword)}
+        onOpenChange={(open) => !open && setRegeneratedPassword(undefined)}
+      >
+        <FocusModal.Content>
+          <FocusModal.Header />
+          <FocusModal.Body className="flex flex-1 items-center justify-center">
+            {regeneratedPassword ? <OtpShow otp={regeneratedPassword} /> : null}
+          </FocusModal.Body>
+          <FocusModal.Footer>
+            <div className="flex items-center justify-end gap-x-2">
+              <Button
+                size="small"
+                variant="secondary"
+                type="button"
+                onClick={() => setRegeneratedPassword(undefined)}
+              >
+                Close
+              </Button>
+            </div>
+          </FocusModal.Footer>
+        </FocusModal.Content>
+      </FocusModal>
     </Card.Root>
   )
 }

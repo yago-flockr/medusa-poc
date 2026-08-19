@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
-import { Button, Drawer, Heading } from "@medusajs/ui"
+import { Button, Drawer } from "@medusajs/ui"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import {
@@ -8,6 +8,7 @@ import {
   type Brand,
   type CreateBrand,
 } from "../../../api/admin/brands/contract"
+import { TitleSubtitle } from "../../components/title-subtitle"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
 
@@ -55,7 +56,7 @@ export const UpdateBrandForm = ({
   return (
     <form onSubmit={submit} className="flex flex-1 flex-col overflow-hidden">
       <Drawer.Header>
-        <Heading>Edit Brand</Heading>
+        <TitleSubtitle title="Edit Brand" />
       </Drawer.Header>
       <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
         <div className="grid grid-cols-1 gap-4">

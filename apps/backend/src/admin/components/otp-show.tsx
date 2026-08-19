@@ -18,17 +18,13 @@ export const OtpShow = forwardRef<HTMLDivElement, OtpShowProps>(
         {...props}
       >
         <TitleSubtitle
-          title="Vendor user created!"
-          description="One-time password"
+          title="Generated One-time Password"
+          description="Copy it now, it won't be shown again. You can generate a new one anytime."
         />
         <Command className="gap-4 w-full max-w-96">
           <Text>{otp}</Text>
           <Command.Copy content={otp} />
         </Command>
-        <Text size="small" className="text-ui-fg-subtle max-w-64 text-center">
-          Copy it now, it won't be shown again. You can generate a new one
-          anytime.
-        </Text>
       </div>
     )
   },

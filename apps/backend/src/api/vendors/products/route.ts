@@ -7,13 +7,8 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
-import { associateVendorVariantImagesWorkflow } from "../../../workflows/associate-vendor-variant-images"
 import { resolveVendorUser } from "../resolve-vendor-user"
-import {
-  buildProductGallery,
-  matchVariantImageAssociations,
-  resolveProductVariants,
-} from "./build-variants"
+import { resolveProductVariants } from "./build-variants"
 import type { CreateVendorProduct } from "./contract"
 
 export const GET = async (
@@ -69,8 +64,6 @@ export const POST = async (
     storeCurrencies,
   )
 
-  const gallery = buildProductGallery(images, variants)
-
   const { result } = await createProductsWorkflow(req.scope).run({
     input: {
       products: [
@@ -80,7 +73,7 @@ export const POST = async (
           description,
           handle,
           status: "proposed",
-          images: gallery,
+          images: images ?? [],
           options: productOptions,
           variants: productVariants,
           sales_channels: store.default_sales_channel_id
@@ -94,28 +87,5 @@ export const POST = async (
     },
   })
 
-  const createdProduct = result[0]
-  const associations = matchVariantImageAssociations(variants, createdProduct)
-
-  if (associations.length) {
-    await associateVendorVariantImagesWorkflow(req.scope).run({
-      input: { associations },
-    })
-  }
-
-  const {
-    data: [refreshedProduct],
-  } = await query.graph({
-    entity: "product",
-    fields: [
-      "*",
-      "variants.*",
-      "variants.images.*",
-      "variants.prices.*",
-      "images.*",
-    ],
-    filters: { id: createdProduct.id },
-  })
-
-  res.json({ product: refreshedProduct })
+  res.json({ product: result[0] })
 }
