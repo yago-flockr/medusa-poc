@@ -1,0 +1,21 @@
+meta {
+  name: update
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/admin/vendor-users/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: {{admin_vendor_user_id}}
+}
+
+body:json {
+  {
+    "last_name": "Updated"
+  }
+}

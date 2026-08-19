@@ -1,11 +1,11 @@
 meta {
-  name: create
+  name: create-vendor-user
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
-  url: {{base_url}}/admin/vendors
+  url: {{base_url}}/admin/vendor-users
   body: json
   auth: none
 }
@@ -37,21 +37,22 @@ script:pre-request {
   }
 
   req.setHeader("Authorization", "Bearer " + token);
+  bru.setVar("vendor_email", `vendor+${Date.now()}@example.com`);
 }
 
 body:json {
   {
-    "name": "Acme",
-    "handle": "acme"
+    "vendor_id": "{{vendor_id}}",
+    "email": "{{vendor_email}}",
+    "first_name": "Alice"
   }
 }
 
 script:post-response {
-  bru.setVar("vendor_id", res.body.vendor.id);
+  bru.setVar("vendor_password", res.body.password);
 }
 
 docs {
-  Staff creates the Vendor from the Admin panel. `create-vendor-user`
-  (next) creates its first VendorUser separately — vendor and vendor user
-  are two independent CRUDs, not one combined step.
+  Staff creates the vendor's first user from the Admin panel. The password
+  is generated server-side and returned once here — `login` (next) uses it.
 }

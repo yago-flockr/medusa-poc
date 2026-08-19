@@ -1,0 +1,30 @@
+meta {
+  name: create
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/admin/vendor-users
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "vendor_id": "{{admin_vendor_id}}",
+    "email": "acme-owner@example.com",
+    "first_name": "Alice"
+  }
+}
+
+script:post-response {
+  bru.setVar("admin_vendor_user_id", res.body.vendor_user.id);
+}
+
+docs {
+  No password field — the server generates a random one and returns it
+  once in the response (`res.body.password`). Copy it now and share it
+  with the vendor yourself; there is no invite email yet and it will not
+  be shown again. Run admin/vendors/create first to get {{admin_vendor_id}}.
+}

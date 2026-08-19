@@ -1,0 +1,15 @@
+meta {
+  name: get-by-id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/admin/vendor-users/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: {{admin_vendor_user_id}}
+}

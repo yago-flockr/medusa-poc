@@ -1,0 +1,28 @@
+meta {
+  name: create
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/admin/vendors
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Acme",
+    "handle": "acme"
+  }
+}
+
+script:post-response {
+  bru.setVar("admin_vendor_id", res.body.vendor.id);
+}
+
+docs {
+  Vendor is a plain CRUD — name and handle only, exactly like Brand. Its
+  first user is created separately via admin/vendor-users/create, not in
+  the same step. There is no public self-registration path any more.
+}

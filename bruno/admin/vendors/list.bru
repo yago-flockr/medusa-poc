@@ -1,0 +1,22 @@
+meta {
+  name: list
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/admin/vendors?limit=5
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 5
+}
+
+docs {
+  Users are included by default (unlike Brand's products, which are
+  opt-in-only via `fields=+products.*`) — a vendor typically has very few
+  users, and the Admin UI always needs them for the list's user count and
+  the detail drawer's user list.
+}
