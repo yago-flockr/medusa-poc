@@ -16,9 +16,21 @@ Non-negotiable. Either Medusa requires it, or there is no alternative that meets
 requirement we cannot drop. Everything else is shaped around these, so an agent
 should treat them as constraints rather than choices.
 
-- **Medusa v2 is the commerce foundation.** Catalogue, pricing, cart, checkout,
-  orders, customers, stock, payments and fulfilment are its job. We build around
-  it, never a second commerce system beside it.
+- **Medusa v2 is the commerce foundation for our own marketplace storefront**
+  — cart, checkout, orders, customers, payments, and the aggregated
+  marketplace catalogue a customer actually shops. This is narrower than it
+  used to read: for a Shopify-connected vendor, **their own Shopify store is
+  the source of truth for that vendor's product data, imagery, variants and
+  stock** — Medusa syncs it in (read) and pushes a sale back out (write) via
+  the Shopify Admin API, the same way any other upstream system feeds a
+  cache. This doesn't reopen "never a second commerce system": Medusa still
+  owns every commercial fact *our* storefront and checkout depend on: our
+  own pricing/curation layer, the aggregated availability we show, the
+  order split per vendor, commission. What changed is that a vendor's own
+  catalogue/stock is no longer typed into ours by hand or by a bespoke
+  vendor panel — it arrives via sync, same as this file's own "Not decided"
+  question about catalogue arrival always said it might. See Decisions
+  below.
 - **TypeScript on Node.** Follows from Medusa; the backend has no other language.
 - **PostgreSQL.** Medusa's requirement, not a preference.
 - **A Redis-compatible service in production**, for events, background queues,
@@ -199,17 +211,90 @@ the best evidence available that it is the right bar.
 Commercial decisions, not technical ones. Each belongs to a clone, and each changes
 what gets built.
 
-- When does a vendor become eligible to be paid, and how long do we hold funds?
-- How are shipping, discounts, payment fees, refunds and chargebacks divided
-  between us and the vendor?
-- What does the customer pay for shipping when one basket becomes several parcels?
-- Who is the legal seller in each country a clone opens in, and who handles import
-  duties?
-- Where do returns go, who inspects them, and when is the customer refunded?
-- Does a vendor's catalogue arrive by hand, by upload, or by connecting a store it
-  already runs elsewhere?
-- Do vendors share stock with other sales channels? If so, who is right when two
-  systems disagree?
+Most of these have now been answered by Sensus specifically — see
+`docs/sensus/Sensus Questions.md` for the full text of each answer. Kept here
+in short form, with what's genuinely still open flagged as such:
+
+- **Vendor catalogue arrival — answered.** By connecting the vendor's own
+  Shopify store, not by hand or upload. Two-way sync (product, stock, order,
+  fulfilment-status) is treated as core, not optional.
+- **Stock shared with other sales channels — answered, implicitly.** A
+  vendor keeps selling on their own Shopify too, so yes. Their Shopify is
+  authoritative for their own stock; we sync it in read-only and never write
+  a stock *level* back, only a sale's decrement.
+- **Shipping/commission/fee division — answered.** Per-brand commission
+  rates, applied at line level, net of refunds and chargebacks. Exact
+  numbers (whether commission includes processing/FX fees) still
+  commercial, not technical.
+- **Returns — answered.** Customer-initiated, per-item/per-consignment,
+  reason-based responsibility, brand-configurable windows. Exchanges/store
+  credit are fast-follow, not launch.
+- **Payout timing — answered in shape, not in exact numbers.** Scheduled/
+  delayed, so refunds and chargebacks settle first. Exact timing is a
+  Phase 0 item.
+- **Legal seller / import duties per country — still open.** DDP is
+  confirmed at checkout for UK/EU/US; who is the legal seller of record
+  isn't stated yet.
+- **New, still open: does every launch brand actually connect via the
+  Shopify sync, or does some of the initial catalogue arrive by
+  spreadsheet instead?** `Sensus Questions.md` Q17's answer says the
+  initial catalogue load (~30 brands) happens "via the connector **or**
+  spreadsheet templates" — phrasing that implies not every brand is
+  Shopify-sync-connected, at least not from day one. If spreadsheet import
+  is a one-time convenience for brands that go on to connect Shopify
+  shortly after, nothing changes. If it's meant to stay an ongoing parallel
+  path for brands that never connect Shopify, we still need some kind of
+  bulk/manual catalogue entry capability alongside the sync — which the
+  current plan assumes is fully retired. Worth a direct answer before
+  assuming every brand is sync-only.
+- **New, still open: what is the "house-portal" mentioned in the design
+  handoff?** Q18's answer lists design deliverables as "~14 customer-facing
+  templates plus the house-portal and admin templates" — naming it
+  separately from "admin templates" suggests a third UI surface distinct
+  from both the customer storefront and Medusa Admin. This directly
+  touches the "exactly two deployables" decision below: if "house-portal"
+  means custom-designed screens for Medusa Admin itself, that decision
+  holds unchanged; if it means a separate staff/finance tool with its own
+  templates, that's new scope not currently accounted for anywhere in this
+  plan. Needs a plain definition, not an assumption either way.
+- **Genuinely still open, and load-bearing: how does "Shopify Payments,
+  customer-side" (the client's answer) reconcile with our own storefront and
+  checkout owning the sale?** Shopify Payments is a gateway that, as far as
+  we've found, only works through Shopify's own checkout — it isn't
+  offered as a standalone payment API the way Stripe is. If the mandate is
+  literally that gateway, our checkout may need to be a *headless Shopify
+  checkout* (Shopify Storefront API / Shopify Checkout) rather than
+  Medusa's own payment/order flow — which would be a materially different
+  build than "Medusa processes the sale, then notifies each vendor." Needs
+  resolving before the checkout architecture is settled, not discovered
+  mid-build.
+  - **A resolution worth proposing back, not assuming:** Sensus collects the
+    customer's payment centrally, on our own storefront, through whatever
+    PSP we choose — the same assumption this whole plan already made before
+    "Shopify Payments" came back as an answer — and pays each vendor out
+    later through the commission/payout ledger that's already planned
+    (`docs/features/commission-and-payouts.md`). This keeps checkout ours to
+    build, sidesteps the headless-Shopify-checkout question entirely, and
+    everybody still gets paid — the vendor just gets paid by Sensus instead
+    of by Shopify Payments directly. It reverses the client's given answer,
+    though, so it needs their explicit sign-off, not a silent substitution.
+- **Sync scope — answered, corrected from an earlier draft of this
+  question.** `Sensus Questions.md` Q1/Q2 already cover this: two-way sync
+  means product import (incl. pricing, since the brand's Shopify is source
+  of truth for "product data"), stock, order and fulfilment-status —
+  **returns and payouts are explicitly handled Sensus-side and are not
+  synced back into a brand's Shopify.** Confirmed separately via Shopify's
+  own docs that there's no prescribed standard either way for
+  restock-on-cancellation (the mechanics exist — `orderCancel`'s `restock`
+  flag — but using them is the integrator's call) — moot here since Sensus
+  already ruled out syncing returns back at all.
+- **Public Shopify app vs. a private link per vendor — decided internally,
+  not a question for Sensus.** See Decisions below: v1 uses a private
+  custom-app install link per vendor, generated by staff during onboarding.
+  Not raised with the client because their original proposal already
+  implied manual install and they raised no objection — bringing a public
+  App Store submission into scope now, on a build we haven't scoped or
+  timed, would be introducing risk nobody asked for.
 
 ## Decisions
 
@@ -241,6 +326,12 @@ what gets built.
   standalone `apps/vendor-portal` Vite SPA for testing the vendor actor type;
   that app was deleted and its functionality now lives at `/vendor` inside
   `apps/storefront`.
+- **Superseded — kept for the reasoning, not the outcome.** The `/vendor`
+  route segment (vendor-facing product/order management UI) described below
+  was built, then deleted once Sensus's answers confirmed each vendor
+  manages their own catalogue through their own Shopify store, not through
+  us. A vendor never needs a panel from us for that; see the new Shopify
+  sync decision below for what replaces it.
 - **The `/vendor` route segment is built SPA-style on purpose: plain
   browser-side `fetch`, JWT in `localStorage`, no Server Actions, no
   server-fetched data.** Considered and rejected first: MercurJS's actual
@@ -272,3 +363,69 @@ what gets built.
   product now exists. Fixed by bounding that one fetch's staleness instead
   (`lib/data/products.ts`, `revalidate: 60`) rather than inventing a
   cross-app invalidation signal.
+- **V1 connects a vendor's Shopify with a private custom-app install link,
+  generated by staff per vendor — not a public Shopify app.** Installing
+  one app across many stores without a per-store link only works natively
+  when those stores belong to one Shopify Plus organization (confirmed via
+  Shopify's distribution docs); our vendors are independent, unrelated
+  merchants, so that shortcut doesn't apply. The other documented path,
+  building this as a public app and going through Shopify's App Store
+  review, would let a vendor self-install without staff — but that review
+  timeline is unknown to us and sits on the critical path of a 3-month
+  build, and self-serve install isn't even a goal here: onboarding is
+  already staff-driven, not self-service (see the onboarding entry above).
+  A private link is just Shopify's version of the manual onboarding step
+  already planned, at zero extra build cost. This wasn't put to Sensus as a
+  question — their original proposal already implied a manual install and
+  they raised no objection, so there's nothing to ask. Revisit only if
+  vendor onboarding volume ever makes staff generating a link per vendor
+  the actual bottleneck, not before.
+- **A vendor's catalogue and stock arrive via Shopify sync, not a vendor
+  panel — the biggest single change from Sensus's answers.** Each vendor
+  runs their own, independent Shopify store; we don't build or touch its
+  UI. Our Next.js storefront stays our own build (confirmed both by the
+  client's answer and by the team's own preference for it) and remains the
+  actual marketplace shopping experience a customer uses — this is not
+  Shopify's own storefront/theme. What changes is where a vendor's product
+  data comes from: read in via the Shopify Admin API/webhooks
+  (`products/update`, `inventory_levels/update` — Shopify's own documented
+  pattern for exactly this "feed a centralized system" use case, not
+  something we're improvising), written back out with `inventoryAdjustQuantities`
+  and an `orderCreate`/`draftOrderCreate` when we sell one of their items,
+  so their own stock and fulfilment queue reflect the sale. Connecting a
+  vendor is an OAuth app install per store (`@shopify/shopify-api`), **not**
+  a single shared API key — Shopify's terms forbid the simpler
+  one-token-per-store "custom app" method across more than one merchant,
+  so this needs a proper (if privately-distributed) OAuth app, not a
+  shortcut. Staff approval before a synced-in product is customer-visible
+  still holds and needs no new mechanism — the existing `ProductStatus`
+  `proposed`/`published` gate already built for the vendor panel applies
+  identically to a synced-in product; only the source of the data changes,
+  not the review step. The vendor-facing product/order CRUD API and its
+  storefront UI, built before this answer came back, are deleted — see the
+  superseded entry above. Vendor/VendorUser as a data model, and the
+  order-splitting/commission work, are unaffected: a marketplace still
+  needs to know who owns a product and how to split an order and its
+  payout regardless of where the catalogue came from.
+- **Evaluated and rejected `@rx-ventures/medusa-plugin-shopify-sync`
+  (a real, actively-maintained npm package listed on
+  `medusajs.com/integrations`) as a base for the sync above — building our
+  own module instead.** Checked directly against the npm registry and
+  GitHub's API rather than trusting the listing: it's real and current (17
+  versions since 2026-04-28), but its claimed GitHub source 404s, doesn't
+  turn up in GitHub's own search, and its own `package.json` lists
+  `"internal"` as a keyword — reads as an agency's internal tool that
+  reached public npm, not an auditable open-source project, which matters
+  for something that would hold live vendor credentials. It's also the
+  wrong shape regardless of that: a single config row per Medusa instance
+  (one store, not one per independent vendor), **one-way only**
+  (Shopify → Medusa, no push-back of a sale — exactly the direction this
+  file already decided is core), authenticated with a manually pasted
+  static Admin API token (the kind Shopify has stopped issuing to new
+  custom apps, not the private-per-vendor OAuth install decided above), and
+  its historical-order import writes raw SQL directly against order tables
+  — which this project's own "never a workaround, always the Medusa way"
+  rule already rules out. Its resumable job-tracking model and its
+  handling of a vendor adding a new variant option after the initial sync
+  are worth reusing as technique, not as code. Full evaluation and the
+  technical shape to build against: `docs/spikes/vendor-shopify-sync.md`.

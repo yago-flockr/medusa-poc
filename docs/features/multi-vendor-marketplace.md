@@ -147,10 +147,15 @@ on a customer's behalf without asking an engineer.
   everything downstream is counted.
 - What does the customer pay for shipping when one basket becomes several parcels,
   and do we absorb the difference?
-- How does a vendor's catalogue arrive: by hand, by upload, or by connecting a store
-  it already runs?
-- Do vendors share stock with other channels?
-- Does a vendor get its own pricing, or does it sell at our prices?
+- **How does a vendor's catalogue arrive — answered.** By connecting a store the
+  vendor already runs (currently Shopify), synced two-way — not by hand or upload.
+  Full behaviour: `docs/features/vendor-shopify-sync.md`.
+- **Do vendors share stock with other channels — answered.** Yes; the vendor's own
+  store stays authoritative for its stock, which is exactly what the sync above keeps
+  true.
+- Does a vendor get its own pricing, or does it sell at our prices? Still open even
+  for a Shopify-connected vendor — see the same question in
+  `docs/features/vendor-shopify-sync.md`.
 - Which awkward product types must work on day one — one-of-a-kind items, made to
   order, personalised?
 
@@ -168,9 +173,11 @@ Feasibility is not yet established. The experiment: `docs/spikes/multi-vendor-or
 
 Commission, statements and paying vendors (own brief). Tax and duty calculation.
 Content, search and storefront design. Anything about how a vendor's own systems
-work.
+work — the boundary itself is `docs/features/vendor-shopify-sync.md`'s job, not this
+brief's.
 
 ## Related
 
 - `docs/features/commission-and-payouts.md`
+- `docs/features/vendor-shopify-sync.md` — how a vendor's catalogue and stock arrive
 - `docs/plan.md` — what we need overall, and what is deliberately still open

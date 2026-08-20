@@ -20,18 +20,19 @@ This is the **customer** surface only. Brand/theme config is a later concern.
 - Medusa JS SDK (`@medusajs/js-sdk`) with publishable key
 - Tailwind-based UI from the starter
 
-## `/vendor` — the vendor actor type's UI, not a separate app
+## `/vendor` — removed
 
-`src/app/vendor/**` is the vendor-facing surface for the `vendor` actor type
-(`agents/backend.md`, "Vendor isolation cannot come from Admin") — register a
-vendor, log in, manage its own products, view its own orders. It is
-deliberately isolated from the customer routes and, just as deliberately,
-built differently from the rest of this app:
-
-- **Not under `[countryCode]`.** A back-office tool has no region. `src/middleware.ts` excludes `/vendor` from the region-redirect entirely.
-- **SPA-style, not the storefront's normal pattern.** Every other data-fetching flow here uses Server Actions and an `httpOnly` cookie (`lib/data/customer.ts`, `lib/data/cookies.ts`) — server-to-server, no CORS. `/vendor` instead uses plain browser `fetch` (`src/app/vendor/api.ts`) and a JWT in `localStorage`. This is intentional, not an oversight: see `docs/plan.md` Decisions for why (portability to a standalone deploy later without rewriting the auth/data layer) and its accepted costs (`VENDOR_CORS` on the backend; the token is readable by any JS on the page, unlike an `httpOnly` cookie).
-- **Auth guard is client-side**, per page (`getVendorToken()` checked in a `useEffect`, redirect via `router.replace` if missing) — there is a brief unauthenticated render before the check runs, same as any client-rendered app; this is accepted for now.
-- Do not import `lib/data/*` (the Server Action / `_medusa_jwt` cookie helpers) into anything under `src/app/vendor/` or vice versa — the two auth systems must never touch.
+This app used to host a vendor-facing UI at `src/app/vendor/**` (register/log
+in, manage its own products, view its own orders, SPA-style with a
+`localStorage` JWT). It's deleted — Sensus's answers confirmed a vendor
+manages their own catalogue through their own Shopify store, not through
+us, so there was never a real need for a vendor to log into anything of
+ours to manage products. See `docs/plan.md` Decisions for the full
+reasoning (including why it was built SPA-style in the first place) and
+what's replacing it (Shopify sync). `src/middleware.ts` still excludes
+`/vendor` from the region-redirect as a harmless no-op, in case a vendor
+panel comes back later as a deliberate alternative to Shopify — not
+because anything currently lives there.
 
 ## Patterns to follow when extending
 

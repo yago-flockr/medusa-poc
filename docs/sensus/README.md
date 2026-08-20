@@ -4,9 +4,9 @@ Reference input, not a spec for this repo. The two documents here — each kept 
 both `.pdf` (for people) and `.md` (for agents) — are our first prospective
 client's request for proposal and our own response to it:
 
-- `Sensus Collective.md` / `.pdf` — Sensus Collective's RFP. Written against
+- `initial-draft.md` / `.pdf` — Sensus Collective's RFP. Written against
   Shopify Plus as the fixed commerce core.
-- `Sensus Collective - Z1 Proposal.md` / `.pdf` — our proposal back to them,
+- `z1-proposal.md` / `.pdf` — our proposal back to them,
   recommending Medusa instead once Shopify proved unable to model the
   marketplace mechanics they need.
 
@@ -19,7 +19,7 @@ the problem, not the problem itself: no house names, no Sensus commission
 rates, no Sensus page templates, and no Shopify-specific decisions belong in
 this codebase or in `docs/plan.md`.
 
-Read these to understand *why* the chassis needs what it needs. Do not use
+Read these to understand _why_ the chassis needs what it needs. Do not use
 them as the target output. `docs/plan.md` and `docs/features/` are what this
 repo actually implements — they restate what mattered from these documents in
 brand-neutral language a second and third client could equally read.
@@ -39,7 +39,7 @@ brand-neutral language a second and third client could equally read.
   refund, reproducible history) → **What "working" means for the marketplace**
   in `docs/plan.md`
 
-Anything Sensus-specific that did *not* generalize (their scale, their launch
+Anything Sensus-specific that did _not_ generalize (their scale, their launch
 dates, their AWS cost estimates, Shopify, "houses" as a name) stays out of the
 chassis on purpose. If a future client needs the actual Sensus build, that
 work happens in Sensus's own repository, not here.

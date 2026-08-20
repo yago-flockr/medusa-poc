@@ -64,6 +64,21 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 What the requirements in `docs/features/` imply for the code. The briefs state
 behaviour only and deliberately name no primitives; this is where the mapping lives.
 
+**Read this before touching anything vendor-related:** everything below —
+`/vendors/products`, `/vendors/orders`, the manual product-creation path —
+is still real, working code, but Sensus's answers mean it's no longer the
+intended path for a vendor's catalogue to arrive. A vendor's own Shopify
+store is meant to be the source of that data, synced in, not typed into
+this API by the vendor themselves. See `docs/plan.md` Decisions for the
+full reasoning. Nothing below has been deleted or changed for this yet —
+the vendor-facing UI that called this API was removed (it's genuinely
+obsolete, a vendor never manages products through us), but this API itself
+is untouched pending the actual Shopify sync design, since staff or an
+internal tool may still want a manual-entry path for something a vendor
+can't get into their own Shopify. Don't extend this API assuming it's the
+long-term ingestion path — extend the sync design instead when that work
+starts.
+
 - **Vendor isolation cannot come from Admin.** The User Module gives users and
   invites but no granular per-user permissions, so a vendor-facing portal is a
   separate app on a custom actor type, with every `/vendors/*` query scoped
@@ -130,15 +145,16 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   Verified with two vendor tokens: each sees/edits only its own product, an
   isolation attempt on the other vendor's product 404s, and an unauthenticated
   request 401s (study plan C1 done-when).
-  The "separate app" this constraint calls for is `apps/storefront`'s own
-  `/vendor` route segment (`docs/plan.md` Decisions — an isolated segment
-  inside the existing storefront, not a standalone deployable). It's built
-  SPA-style on purpose (`docs/plan.md` Decisions) — plain browser `fetch`
-  from `apps/storefront/src/app/vendor/api.ts`, JWT in `localStorage`, no
-  Server Actions — for portability if it's ever promoted to its own deploy.
-  That means `/vendors/*` is called cross-origin from the browser and needs
-  its own CORS handling: `VENDOR_CORS` env var,
-  `src/api/vendors/cors.ts`, applied in `src/api/vendors/middlewares.ts`.
+  The "separate app" this constraint originally called for was
+  `apps/storefront`'s own `/vendor` route segment — since deleted (see
+  `docs/plan.md` Decisions: Sensus's answers confirmed a vendor manages
+  their own catalogue through their own Shopify store, not through us, so
+  there's no vendor-facing UI to build against this API at all right now).
+  `/vendors/*` still needs its own CORS handling regardless — `VENDOR_CORS`
+  env var, `src/api/vendors/cors.ts`, applied in
+  `src/api/vendors/middlewares.ts` — since it's still callable
+  cross-origin by whatever eventually consumes it (Bruno today; possibly a
+  vendor panel again later, per `docs/plan.md`).
   **Vendor invitation is fully closed off, staff-only:** every vendor and
   vendor user is created from Admin (`/admin/vendors`, `/admin/vendor-users`)
   — there is no public registration route at all any more. This satisfies
