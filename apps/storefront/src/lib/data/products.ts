@@ -61,11 +61,10 @@ export const listProducts = async ({
     // Belt-and-suspenders on top of the tag-based revalidation above: that
     // tag is scoped to the visiting customer's own session (getCacheTag
     // appends `_medusa_cache_id`), so it's only ever invalidated by that
-    // same customer's own mutations. A vendor creating or publishing a
-    // product happens entirely outside the Next.js server
-    // (app/vendor/api.ts calls the backend directly from the browser — see
-    // docs/plan.md Decisions), so nothing can ever call revalidateTag for
-    // it. Bound the staleness instead of relying on a signal that
+    // same customer's own mutations. A vendor's product being created,
+    // approved, or synced in from their own Shopify store happens entirely
+    // outside this Next.js server, so nothing can ever call revalidateTag
+    // for it. Bound the staleness instead of relying on a signal that
     // structurally can't reach this cache entry.
     revalidate: 60,
   }
