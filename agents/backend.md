@@ -171,13 +171,36 @@ behaviour only and deliberately name no primitives; this is where the mapping li
   only, 5MB/5-file limits enforced as clean 400s, not left as a raw 500).
   Not done: vendor-assignable categories/collections/tags (would need its own
   staff-curated-taxonomy listing endpoint, a bigger separate feature than the
-  per-variant fields above), storefront filtering by vendor-created option
-  values (blocked — see `docs/ER_MODEL.md` "Variant/option filtering"; setting
-  `is_exclusive: false` looked like the fix but breaks product creation on a
-  repeated option title instead, needs its own lookup-or-create design), and
-  real per-vendor inventory tracking (needs a stock location per vendor — see
-  the "Per-vendor stock" note below; not a quick add alongside the others). A
-  vendor can also delete their own product (`DELETE /vendors/products/:id` —
+  per-variant fields above), and real per-vendor inventory tracking (needs a
+  stock location per vendor — see the "Per-vendor stock" note below; not a
+  quick add alongside the others). Storefront filtering by vendor-created
+  option values is now **done** — `src/workflows/create-vendor-product/`
+  resolves each vendor option to a shared (`is_exclusive: false`) row by
+  title before creating the product (merging in any new values), instead of
+  each product getting its own exclusive copy; see `docs/ER_MODEL.md`
+  "Variant/option filtering" for the full mechanism and why the naive
+  `is_exclusive: false` flip was tried first and broke product creation.
+  Every vendor variant is created with `manage_inventory: false` — this is
+  not a gap, it's Medusa's real, fully-supported "untracked stock" mode:
+  traced through the cart-confirmation and fulfillment code, no inventory
+  item, location, or reservation is ever required or checked for such a
+  variant, at any stage. The one piece that *was* a real gap: vendor
+  products got no `shipping_profile_id` at all, which let checkout complete
+  but threw a hard error the moment staff tried to fulfill the order (Medusa
+  requires the order item's product's shipping profile to match the chosen
+  shipping option's). Fixed by looking up the store's one default shipping
+  profile (`query.graph({entity: "shipping_profile"})`, same row
+  `initial-data-seed.ts` already uses) and setting it on every vendor
+  product at creation (`src/api/vendors/products/route.ts`) — no new model,
+  no per-vendor warehouse system. Additionally, `create-vendor-orders`
+  (`steps/assert-items-fulfillable.ts`) now checks every cart item's product
+  has a shipping profile *before* the cart is ever completed into an order,
+  not after — so a still-missing profile (e.g. on data from before this fix)
+  surfaces as a checkout error, not as an order that silently can never
+  ship. Verified live: a product with no shipping profile is blocked with a
+  clear message before order creation; a product with one passes this check
+  and fails only at the unrelated, expected next step (no payment
+  collection) in a bare test cart. A vendor can also delete their own product (`DELETE /vendors/products/:id` —
   same ownership check as update, then the core `deleteProductsWorkflow`
   called directly; no confirmation step, by design, matching the "don't need
   to confirm" instruction it was built under). Building this surfaced, then

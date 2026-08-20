@@ -5,8 +5,9 @@ import type {
 import {
   ContainerRegistrationKeys,
   MedusaError,
+  ProductStatus,
 } from "@medusajs/framework/utils"
-import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
+import { createVendorProductWorkflow } from "../../../workflows/create-vendor-product"
 import { parseVendorListQuery } from "../list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 import { resolveProductVariants } from "./build-variants"
@@ -50,6 +51,13 @@ export const POST = async (
     fields: ["default_sales_channel_id", "supported_currencies.currency_code"],
   })
 
+  const {
+    data: [shippingProfile],
+  } = await query.graph({
+    entity: "shipping_profile",
+    fields: ["id"],
+  })
+
   const { title, subtitle, description, handle, images, options, variants } =
     req.validatedBody
 
@@ -64,32 +72,37 @@ export const POST = async (
     )
   }
 
+  if (!shippingProfile) {
+    throw new MedusaError(
+      MedusaError.Types.UNEXPECTED_STATE,
+      "The store has no shipping profile configured — cannot create a shippable product.",
+    )
+  }
+
   const { productOptions, productVariants } = resolveProductVariants(
     options,
     variants,
     storeCurrencies,
   )
 
-  const { result } = await createProductsWorkflow(req.scope).run({
+  const { result } = await createVendorProductWorkflow(req.scope).run({
     input: {
-      products: [
-        {
-          title,
-          subtitle,
-          description,
-          handle,
-          status: "proposed",
-          images: images ?? [],
-          options: productOptions,
-          variants: productVariants,
-          sales_channels: store.default_sales_channel_id
-            ? [{ id: store.default_sales_channel_id }]
-            : [],
-        },
-      ],
-      additional_data: {
-        vendor_id: vendorUser.vendor_id,
+      product: {
+        title,
+        subtitle,
+        description,
+        handle,
+        status: ProductStatus.PROPOSED,
+        shipping_profile_id: shippingProfile.id,
+        images: images ?? [],
+        variants: productVariants,
+        sales_channels: store.default_sales_channel_id
+          ? [{ id: store.default_sales_channel_id }]
+          : [],
       },
+      options: productOptions,
+      shared: Boolean(options?.length),
+      vendor_id: vendorUser.vendor_id,
     },
   })
 

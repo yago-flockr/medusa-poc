@@ -14,6 +14,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import type { CartLineItemDTO } from "@medusajs/framework/types"
 import vendorOrderLink from "../../links/vendor-order"
+import { assertItemsFulfillableStep } from "./steps/assert-items-fulfillable"
 import { createVendorOrdersStep } from "./steps/create-vendor-orders"
 import { groupVendorItemsStep } from "./steps/group-vendor-items"
 
@@ -30,6 +31,14 @@ export const createVendorOrdersWorkflow = createWorkflow(
       filters: { id: input.cart_id },
       options: { throwIfKeyNotFound: true },
     })
+
+    const cartItems = transform({ carts }, (data) =>
+      (data.carts[0].items ?? []).filter(
+        (item): item is NonNullable<typeof item> => item != null,
+      ),
+    ) as unknown as CartLineItemDTO[]
+
+    assertItemsFulfillableStep({ items: cartItems })
 
     acquireLockStep({
       key: input.cart_id,
@@ -87,13 +96,7 @@ export const createVendorOrdersWorkflow = createWorkflow(
         data.existingVendorLinks.length === 0 &&
         data.existingChildOrders.length === 0,
     ).then(() => {
-      const items = transform({ carts }, (data) =>
-        (data.carts[0].items ?? []).filter(
-          (item): item is NonNullable<typeof item> => item != null,
-        ),
-      ) as unknown as CartLineItemDTO[]
-
-      const { vendorsItems } = groupVendorItemsStep({ items })
+      const { vendorsItems } = groupVendorItemsStep({ items: cartItems })
 
       const { orders, linkDefs } = createVendorOrdersStep({
         parentOrder: order,
