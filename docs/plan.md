@@ -295,6 +295,20 @@ in short form, with what's genuinely still open flagged as such:
   implied manual install and they raised no objection — bringing a public
   App Store submission into scope now, on a build we haven't scoped or
   timed, would be introducing risk nobody asked for.
+- **New, still open: does a vendor manage their own Shopify connection
+  through a vendor-facing panel, and does that mean per-vendor credentials
+  live on the Vendor module instead of a single shared config?** Surfaced
+  while spiking the pull (`docs/spikes/vendor-shopify-sync.md`): the
+  Decision below has staff generating the install link during onboarding,
+  which is still probably right for *originating* the connection — but it
+  doesn't say who manages it afterward (reconnecting after a revoke,
+  rotating credentials) or where per-vendor credentials are actually stored.
+  A vendor-facing panel for this is a real, not-yet-built piece of scope,
+  and it's a different shape from the vendor-facing product/order panel
+  that was deliberately deleted (that one was for manual catalogue entry,
+  which Shopify sync replaced; this one would be for managing the
+  connection itself, which nothing else covers). Needs a real decision
+  before building it, not an assumption either way.
 
 ## Decisions
 

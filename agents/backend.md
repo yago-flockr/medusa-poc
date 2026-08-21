@@ -248,6 +248,25 @@ starts.
   order. That last point is real evidence leaning toward consignment records
   over child orders, but the consignment-record alternative hasn't been built
   to confirm it — treat this as a lean, not the settled answer.
+- **Shopify pull is spiked, not settled — `docs/spikes/vendor-shopify-sync.md`.**
+  `src/lib/shopify-test-pull.ts` (raw Shopify Admin GraphQL client: client-credentials
+  token exchange + product query) and `src/workflows/sync-shopify-products/` (pull →
+  resolve shipping-profile/sales-channel prerequisites → skip-if-already-imported by
+  `external_id` → `createProductsWorkflow`) are real, verified-against-a-real-store
+  code, not throwaway. Credentials are a caller-supplied parameter, not env
+  config — `src/scripts/test-shopify-products-pull.ts` takes
+  `<store-domain> <client-id> <client-secret>` as CLI args (env vars as a local
+  fallback only), so testing a second store never means overwriting the
+  first one's values. Nothing Shopify-specific lives in `.env`/`.env.template`.
+  Deliberately spike-shaped still: create-only (no update path for an
+  already-synced product), no vendor link, images left pointing at Shopify's own
+  CDN instead of re-hosted through the File Module. Triggered only by that exec
+  script — an earlier
+  staff-facing Admin button was built then deliberately removed, since a staff member
+  triggering one vendor's pull from a page shared by every vendor was the wrong
+  surface; the real trigger belongs to a vendor-facing panel that doesn't exist yet
+  (see `docs/plan.md`'s open question on who manages a vendor's Shopify connection
+  after staff originates it).
 - **Never store the customer-facing order status.** It is derived from the states of
   its parts, so it cannot drift out of agreement with them.
 - **Compute the money split inside the order workflow**, so it is stored atomically

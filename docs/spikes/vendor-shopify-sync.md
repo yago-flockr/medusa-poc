@@ -6,7 +6,11 @@
 > the auth model) is already settled in `docs/plan.md` Decisions; this spike is about
 > whether it holds up once built, not about re-deciding it.
 
-**Status:** not started — prior art evaluated (below), no code written yet.
+**Status:** in progress — read side proven against a real store (Sensus test store)
+**through the actual decided auth model** (private custom-distribution OAuth app,
+client-credentials grant), and now actually **writes into Medusa** too (create-only,
+idempotent on `external_id`). Still untested: double-sell race, write-back direction,
+pagination/resumability beyond one small page, image re-hosting.
 **Prerequisite:** `docs/features/vendor-shopify-sync.md` (the requirement),
 `docs/plan.md` Decisions (already-settled direction and auth model).
 
@@ -151,4 +155,124 @@ API and Medusa's product-import DTOs, current as of this evaluation):
 
 ## Results
 
-Not started.
+**Pull direction, first read against a real store — done, via Shopify CLI rather than
+custom code.** `shopify store auth --store sensus-en0h00hi.myshopify.com --scopes
+read_products,read_inventory` followed by `shopify store execute` running the same
+GraphQL shape `test-shopify-products-pull.ts` uses, against the actual "Sensus" test
+store (org `yago-teste`). No custom app / client-credentials setup needed for this —
+the CLI's own store-scoped session was enough to prove the read side. The throwaway
+script and this CLI path both work; the CLI path is faster for iterating on the query
+itself, the script is what will actually grow into the module once the pull is wired
+into Medusa.
+
+What the real data showed, evidence for Questions 2 and 3:
+
+- Store currently has **3 products**, all `ACTIVE`, in USD.
+- **Every variant's `sku` and `barcode` is `null`.** Question 2 (cross-vendor SKU
+  collision) is moot for this specific store today — there's nothing to collide on
+  yet — but that also means the importer must handle a null SKU gracefully rather
+  than assuming one exists (already anticipated: `sku: v.sku || null` in the plugin
+  technique borrowed above). Revisit Question 2 once a vendor's store actually has
+  SKUs populated.
+- `productType` and `tags` are empty on every product — the type/tag-id resolution
+  step (create-or-find by name before writing the product) needs to handle "nothing
+  to resolve" as the common case here, not the exception.
+- Each product's `totalInventory` matched the sum of its variants'
+  `inventoryQuantity` exactly (70 = 20+25+25, 15 = 5+5+5, 135 = 45+45+45) — a cheap
+  sanity check worth keeping as an automated assertion once real writes happen.
+- Images resolve to ordinary `cdn.shopify.com` URLs via the `media` connection as
+  expected — nothing unusual to design around for the re-host-through-File-Module
+  step.
+
+Not yet exercised: the double-sell race (Question 1), and the write-back direction
+(inventory decrement + order push) entirely.
+
+**Writing into Medusa — done, first cut.** `src/workflows/sync-shopify-products/`
+(pull → resolve prerequisites → filter-already-imported → `createProductsWorkflow`),
+triggered by both the exec script and the admin button. Verified against the real
+Sensus data:
+
+- All 3 products created with `status: proposed` — staff approval applies exactly
+  as it does for a manually entered product, no special-casing needed.
+- `external_id` set to Shopify's product `gid` — confirmed idempotent by running
+  twice: first run created 3/skipped 0, second run created 0/skipped 3, no
+  duplicates.
+- Variant prices matched the source exactly (50/55/60 USD) — confirms the
+  "don't multiply by 100" caveat was handled correctly, and the shop's currency
+  (`usd`) was accepted since it's one of the store's supported currencies.
+- `shipping_profile` and `sales_channels` both correctly attached — the two fields
+  that break a product silently (unfulfillable / invisible) if skipped.
+
+**Known gap, deliberate for this pass:** product images point directly at
+Shopify's `cdn.shopify.com` URLs rather than being re-hosted through Medusa's File
+Module. Every official guidance on this (Medusa's own migration docs, the
+evaluated plugin) treats re-hosting as required — a vendor's Shopify CDN URL isn't
+guaranteed stable long-term, and Medusa's own image pipeline (thumbnails, etc.)
+assumes files it hosts. Skipped here purely for speed; do it before this leaves
+spike status.
+
+**Credentials are per-call now, not a shared env config.** Caught mid-spike: the
+first cut read `SHOPIFY_STORE_DOMAIN`/`SHOPIFY_CLIENT_ID`/`SHOPIFY_CLIENT_SECRET`
+from env inside the shared lib itself — exactly the "one config row per app
+instance" shape the evaluated plugin got flagged for above, wrong for the same
+reason: each vendor gets its own connection, not one shared one. Fixed by making
+`pullShopifyTestProducts`/the workflow take credentials as an explicit parameter;
+the exec script now takes them as CLI args (`medusa exec ...
+test-shopify-products-pull.ts <store-domain> <client-id> <client-secret>`),
+falling back to env only as a local convenience. Nothing Shopify-specific is in
+`.env`/`.env.template` anymore. Where credentials come from long-term (the Vendor
+module, presumably) is still the open question tracked in `docs/plan.md`.
+
+**Other simplifications, also deliberate:** create-only (an already-imported
+product is skipped, never updated — safe but means a price/stock change on
+Shopify won't reach an already-synced product yet); no vendor link (nothing in
+the Vendor module ties these products to a Vendor record, since no vendor
+onboarding happened for this test store); each product's options are created
+fresh rather than resolved against the shared/filterable option rows
+`create-vendor-product` uses (a step can't loop over N products inside workflow
+composition, so sharing options across a whole paginated pull needs a different
+shape — worth solving once pagination itself is built, not before).
+
+## Trigger surface — corrected mid-spike
+
+The pull briefly had a staff-facing Admin button (`product.list.before` widget +
+an `/admin/shopify-sync/test-pull` route) purely to prove the mechanics fast.
+Removed once the mechanics were proven: **a staff member clicking a button to
+pull a specific vendor's Shopify catalogue is the wrong long-term shape** — the
+trigger belongs wherever a vendor manages *its own* Shopify connection, not on a
+page staff use for every vendor's products at once. The workflow itself
+(`src/workflows/sync-shopify-products/`) and its underlying pull
+(`src/lib/shopify-test-pull.ts`) are unaffected and stay — only the staff-facing
+front door was removed. The only remaining trigger right now is the exec script
+(`src/scripts/test-shopify-products-pull.ts`), a developer convenience, not a
+real UI.
+
+**Open question this raises, not yet resolved:** `docs/plan.md`'s existing
+Decision says a vendor's Shopify connection is installed via **a link staff
+generates during onboarding** — staff-driven, not self-service, matching "a
+vendor is invited, never self-registered." A vendor-facing panel where the
+vendor manages their own connection (and where per-vendor credentials would need
+to live — likely on the Vendor module, not a single global env-var set like this
+spike uses) is a **different shape**: the vendor acting on their own connection
+after the fact, even if staff still originates the invite. These aren't
+necessarily in conflict (staff invites → vendor completes/manages the connection
+themselves afterward is a normal split), but it hasn't been reconciled with the
+existing Decision in writing — worth a real decision before building the panel,
+not an assumption either way. Tracked as a fresh open question in
+`docs/plan.md` rather than silently overwriting the existing Decision.
+
+**Confirmed the real auth model end-to-end, not just the CLI shortcut above.**
+Created an actual custom-distribution OAuth app (via `shopify app init` +
+`shopify app deploy`, since the Dev Dashboard's plain "create app" form now
+funnels into the CLI rather than offering a static-token form — matches the
+Medusa import guide's caveat that Shopify has removed that path entirely), scoped
+to `read_products,read_inventory`, `access.admin.direct_api_mode = "offline"`
+(required since this is a server-to-server sync with no online merchant session).
+One real gate worth remembering for the per-vendor rollout: a brand-new
+CLI-created app has **no distribution method set**, and Shopify refuses to even
+show the install-consent screen until a human sets it to **Custom distribution**
+in the Dev Dashboard — a one-time, dashboard-only decision with no CLI flag.
+After that, `client_credentials` token exchange returned a real `200` with a
+working access token, and the exec script pulled the same real product data
+through it as the earlier CLI-session test. Full step-by-step trail (useful if
+this needs repeating per vendor): `SHOPIFY_SPIKE_SETUP.md` at the repo root.
