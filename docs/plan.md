@@ -309,6 +309,15 @@ in short form, with what's genuinely still open flagged as such:
   which Shopify sync replaced; this one would be for managing the
   connection itself, which nothing else covers). Needs a real decision
   before building it, not an assumption either way.
+  **Partly resolved by a hard technical constraint, confirmed hands-on:** a
+  client-credentials custom app only installs on stores in *its own* Shopify
+  organization — staff cannot create the app on a vendor's behalf, because a
+  real vendor's store is never in our organization. So the app-creation and
+  distribution steps (`docs/vendor-shopify-connection-guide.md`) must happen
+  on the vendor's side — by the vendor or whoever runs their store — not by
+  staff. Staff's role narrows to receiving the resulting store domain +
+  client ID/secret and using them, which still leaves open where those get
+  stored and who's shown a "connection unhealthy" state later.
 
 ## Decisions
 

@@ -261,6 +261,12 @@ existing Decision in writing — worth a real decision before building the panel
 not an assumption either way. Tracked as a fresh open question in
 `docs/plan.md` rather than silently overwriting the existing Decision.
 
+**Partly resolved, not by choice but by a hard constraint:** a client-credentials
+custom app only installs on stores in its own Shopify organization. A real
+vendor's store is never in ours, so staff cannot create the app on a vendor's
+behalf — the app-creation steps have to happen vendor-side. Wrote up exactly
+those steps for a vendor to follow: `docs/vendor-shopify-connection-guide.md`.
+
 **Confirmed the real auth model end-to-end, not just the CLI shortcut above.**
 Created an actual custom-distribution OAuth app (via `shopify app init` +
 `shopify app deploy`, since the Dev Dashboard's plain "create app" form now
