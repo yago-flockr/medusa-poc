@@ -249,24 +249,39 @@ starts.
   over child orders, but the consignment-record alternative hasn't been built
   to confirm it — treat this as a lean, not the settled answer.
 - **Shopify pull is spiked, not settled — `docs/spikes/vendor-shopify-sync.md`.**
-  `src/lib/shopify-test-pull.ts` (raw Shopify Admin GraphQL client: client-credentials
-  token exchange + product query) and `src/workflows/sync-shopify-products/` (pull →
-  resolve shipping-profile/sales-channel prerequisites → skip-if-already-imported by
-  `external_id` → `createProductsWorkflow`) are real, verified-against-a-real-store
-  code, not throwaway. Credentials are a caller-supplied parameter, not env
-  config — `src/scripts/test-shopify-products-pull.ts` takes
-  `<store-domain> <client-id> <client-secret>` as CLI args (env vars as a local
-  fallback only), so testing a second store never means overwriting the
-  first one's values. Nothing Shopify-specific lives in `.env`/`.env.template`.
+  `src/lib/shopify-test-pull.ts` (raw Shopify Admin GraphQL client: takes an
+  already-issued offline access token + product query — it no longer does its
+  own token exchange, see the connection entry below) and
+  `src/workflows/sync-shopify-products/` (pull → resolve shipping-profile/
+  sales-channel prerequisites → skip-if-already-imported by `external_id` →
+  `createProductsWorkflow`) are real, verified-against-a-real-store code, not
+  throwaway. Credentials are a caller-supplied parameter, not env config —
+  the caller is expected to read `shopify_store_domain`/`shopify_access_token`
+  off a Vendor record. Nothing Shopify-specific lives in `.env`/`.env.template`.
   Deliberately spike-shaped still: create-only (no update path for an
   already-synced product), no vendor link, images left pointing at Shopify's own
-  CDN instead of re-hosted through the File Module. Triggered only by that exec
-  script — an earlier
-  staff-facing Admin button was built then deliberately removed, since a staff member
-  triggering one vendor's pull from a page shared by every vendor was the wrong
-  surface; the real trigger belongs to a vendor-facing panel that doesn't exist yet
-  (see `docs/plan.md`'s open question on who manages a vendor's Shopify connection
-  after staff originates it).
+  CDN instead of re-hosted through the File Module. The CLI exec script that used
+  to trigger this was removed; there's now a debug-only "Log a vendor's Shopify
+  products" widget on the Admin Products list page (vendor ID input → console.log
+  the raw pull, nothing is created) — explicitly a manual verification tool, not
+  a production trigger. An earlier staff-facing button that actually *created*
+  products from that same shared-across-vendors surface was built then
+  deliberately removed for being the wrong surface for that; the real
+  product-import trigger still belongs to a vendor-facing panel that doesn't
+  exist yet (see `docs/plan.md`'s open question on who manages a vendor's
+  Shopify connection after staff originates it).
+- **Vendor's Shopify connection uses OAuth authorization-code-grant, one
+  Shopify app per vendor, credentials stored on the Vendor record — see
+  `shopify-app-config.md` and `docs/vendor-shopify-connection-guide.md`.**
+  Superseded the client-credentials approach the pull spike started with,
+  which only works for stores in our own Shopify organization and can never
+  work for a real vendor's independent store. `src/api/hooks/shopify/oauth/callback`
+  + `src/workflows/complete-vendor-shopify-connection/` handle Shopify's
+  redirect and save `shopify_access_token`/`shopify_scope`/`shopify_connected_at`.
+  Confirmed hands-on: Shopify's Custom Distribution caps a single app at one
+  live production store, so "one app per vendor" isn't a choice, it's a
+  platform constraint — see `docs/plan.md`'s Open Questions entry for the full
+  reasoning.
 - **Never store the customer-facing order status.** It is derived from the states of
   its parts, so it cannot drift out of agreement with them.
 - **Compute the money split inside the order workflow**, so it is stored atomically

@@ -56,6 +56,36 @@ each was found while building or adversarially testing the marketplace spine
   offer MFA the way `identity-and-access.md` implies it should ("proves
   itself more strongly than a shopper does").
 
+## Shopify vendor connection (OAuth)
+
+- **`shopify_client_secret` and `shopify_access_token` are stored as plain
+  text in Postgres, no encryption at rest.** Found while building the vendor
+  Shopify OAuth connection (`docs/vendor-shopify-connection-guide.md`,
+  `shopify-app-config.md`) — a database dump, backup leak, or any other
+  read access to the `vendor` table hands over a live, directly-usable
+  credential against a real vendor's real Shopify store. Not fixed yet:
+  this POC uses no real payments (no Stripe or similar) and every store
+  connected so far is a test store, so the actual blast radius today is
+  low — but this is explicitly **not acceptable for the v1 release** and
+  must be fixed before then, no exceptions. Hashing is the wrong tool here
+  (it's one-way; we need the plaintext back to call Shopify's API on the
+  vendor's behalf) — the fix is real encryption at rest: AES-256-GCM via
+  Node's built-in `crypto`, keyed by a secret env var, applied to just
+  those two columns (`shopify_client_id`/`shopify_store_domain` aren't
+  secret and can stay plain). Whoever implements this must also decide how
+  the encryption key is provisioned and backed up — losing it makes every
+  already-stored token permanently undecryptable, forcing every connected
+  vendor to reconnect from scratch.
+- **The OAuth callback (`src/api/hooks/shopify/oauth/callback`) doesn't
+  validate a `state` parameter.** Lower priority than the item above:
+  there's no vendor browser session in this flow to hijack, and trust is
+  already anchored by Shopify's HMAC signature plus matching the callback's
+  `shop` to a staff-pre-registered Vendor row — so this isn't believed to
+  be a live exploitable gap today. Still worth closing as defense-in-depth
+  before v1: generate a random `state` value when building the
+  authorization URL, store it against the vendor, and reject the callback
+  if it doesn't match.
+
 ## Authorization structure
 
 - **Ownership checks are correct today but enforced by hand, per route, not

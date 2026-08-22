@@ -1,67 +1,43 @@
-# Connecting your Shopify store
+# Connecting a new vendor's Shopify store
 
-This connects your Shopify store to our marketplace automatically. Run each command below one at a time — paste it, press Enter, wait for it to finish, then move to the next one.
+Every new vendor needs their **own** Shopify app — Shopify's Custom
+Distribution only allows one live production store per app, so one shared
+app can't cover multiple independent vendors. This is annoying but free
+(no Shopify subscription, no review) and takes about 10 minutes.
 
-**Step 1.** Installs Shopify's command-line tool.
+**Step 1 — Configure the Shopify app.** Follow `shopify-app-config.md` at
+the repo root, start to finish — it covers app creation, scopes, the
+redirect URLs, and a couple of non-obvious Shopify dashboard gotchas
+(an app-naming restriction, an "embed" toggle that has to be off). Come
+back here once you've built the authorization URL described in that
+doc's Step 5, but don't open it yet.
 
-```
-npm install -g @shopify/cli@latest
-```
+**Step 2 — Save the vendor's app credentials in our system**
 
-**Step 2.** Creates the app and asks which organization/store to use — pick the one shown.
+1. In the Shopify app's **Settings** page, copy the **Client ID** and
+   **Client secret**
+2. In our Admin (`/app/vendors`), open the vendor and click **Edit**
+3. Fill in **Shopify store domain**, **Shopify client ID**, and
+   **Shopify client secret**, then save
 
-```
-shopify app init --name our-marketplace-sync --template none
-```
+This has to happen **before** anyone opens the authorization URL — our
+callback matches Shopify's redirect back to a vendor by store domain, and
+can't do that if it isn't saved yet.
 
-**Step 3.** Moves into the folder the last command created.
+**Step 3 — Send the vendor the link**
 
-```
-cd our-marketplace-sync
-```
+Send the vendor the authorization URL you built in `shopify-app-config.md`
+Step 5 (not the link Shopify's Distribution tab generates — that one
+doesn't work for us, see that doc for why). They open it, click
+**Install**/**Approve** on Shopify's real consent screen, and land on a
+page confirming they're connected — nothing else for them to do. That
+approval automatically saves their access token on our side
+(`complete-vendor-shopify-connection` workflow).
 
-**Step 4.** Removes demo files we don't need.
+**Step 4 (optional) — Verify the connection**
 
-```
-rm -rf extensions shared
-```
-
-**Step 5.** Turns on the access mode we need. (No output means it worked)
-
-```
-sed -i 's/direct_api_mode = "online"/direct_api_mode = "offline"/' shopify.app.toml
-```
-
-**Step 6.** Limits the app to only see products and stock. (No output means it worked)
-
-```
-sed -i 's/scopes = "write_products"/scopes = "read_products,read_inventory"/' shopify.app.toml
-```
-
-**Step 7.** Removes an unrelated demo feature that would otherwise block the next step. (No output means it worked)
-
-```
-sed -i '/^\[metaobjects.app.faq\]/,$d' shopify.app.toml
-```
-
-**Step 8.** Registers the app with Shopify and prints a link you'll need for Step 9.
-
-```
-shopify app deploy --allow-updates
-```
-
-**Step 9.** Open the link Step 8 printed (starts with `https://dev.shopify.com/dashboard/...`). This makes the app installable on your store and installs it.
-
-1. Click **Distribution**
-2. Click **Custom distribution**
-3. Click **Install app**
-
-**Step 10.** Prints your connection details.
-
-```
-shopify app env show
-```
-
-**Step 11.** Copy everything Step 10 printed and send it to us — insert your onboarding contact here: **[ONBOARDING_CONTACT]**.
-
-That's it — nothing else to do on your side.
+In our Admin, go to **Products** — there's a small "Log a vendor's
+Shopify products" box at the top. Paste the vendor's ID, click **Log
+products**, then open your browser's console (F12) to see their Shopify
+catalogue pulled live. Nothing is created in Medusa; it's a read-only
+sanity check.
