@@ -1,5 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { CheckCircle, PencilSquare, XCircle } from "@medusajs/icons"
+import { CheckCircle, Link, PencilSquare, XCircle } from "@medusajs/icons"
 import {
   createDataTableColumnHelper,
   DataTable,
@@ -13,7 +13,10 @@ import { useState } from "react"
 import type { Vendor } from "../../../api/admin/vendors/contract"
 import { Card } from "../../components/card"
 import { TitleSubtitle } from "../../components/title-subtitle"
-import { useUpdateOneVendor } from "../../hooks/mutations/vendors"
+import {
+  useGenerateVendorShopifyInstallLink,
+  useUpdateOneVendor,
+} from "../../hooks/mutations/vendors"
 import { useFindManyVendors } from "../../hooks/queries/vendors"
 import { CreateVendorModal } from "./create-vendor-modal"
 import { UpdateVendorDrawer } from "./update-vendor-drawer"
@@ -25,6 +28,7 @@ const columnHelper = createDataTableColumnHelper<Vendor>()
 const VendorsPage = () => {
   const prompt = usePrompt()
   const updateOneVendor = useUpdateOneVendor()
+  const generateShopifyInstallLink = useGenerateVendorShopifyInstallLink()
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: PAGINATION_LIMIT,
     pageIndex: 0,
@@ -101,6 +105,27 @@ const VendorsPage = () => {
                 },
               },
             )
+          },
+        },
+        {
+          icon: <Link />,
+          label: "Copy Shopify install link",
+          onClick: () => {
+            generateShopifyInstallLink.mutate(ctx.row.original.id, {
+              onSuccess: async ({ installLink }) => {
+                try {
+                  await navigator.clipboard.writeText(installLink)
+                  toast.success("Install link copied to clipboard")
+                } catch {
+                  toast.info("Install link", { description: installLink })
+                }
+              },
+              onError: (error) => {
+                toast.error("Couldn't generate install link", {
+                  description: error.message,
+                })
+              },
+            })
           },
         },
       ],

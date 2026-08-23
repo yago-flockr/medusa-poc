@@ -32,6 +32,15 @@ export const usePullVendorShopifyProducts = () =>
       ),
   })
 
+export const useGenerateVendorShopifyInstallLink = () =>
+  useMutation({
+    mutationKey: mutationKeys.vendors.generateShopifyInstallLink,
+    mutationFn: (vendorId: string) =>
+      sdk.client.fetch<{ installLink: string }>(
+        `/admin/vendors/${vendorId}/shopify-connection/install-link`,
+      ),
+  })
+
 export const useUpdateOneVendor = createResourceMutationHook<
   { vendorId: string; body: UpdateVendor },
   VendorResponse
