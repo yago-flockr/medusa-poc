@@ -11,7 +11,13 @@ export const UPDATE_VENDOR_FORM_ID = "update-vendor-form"
 const updateVendorFormSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   handle: z.string().trim().min(1, "Handle is required"),
-  shopify_store_domain: z.string().trim(),
+  shopify_store_domain: z
+    .string()
+    .trim()
+    .refine(
+      (value) => !value.includes("://"),
+      "Enter just the domain, without https:// (e.g. your-store.myshopify.com)",
+    ),
   shopify_client_id: z.string().trim(),
   shopify_client_secret: z.string().trim(),
 })
