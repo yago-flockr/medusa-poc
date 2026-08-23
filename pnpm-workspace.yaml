@@ -12,6 +12,9 @@ overrides:
 
 allowBuilds:
   '@medusajs/telemetry': true
+  # false: only used for `graphql-codegen --watch`, which we don't run —
+  # no need to grant it a native build script for the one-shot codegen we do use.
+  '@parcel/watcher': false
   '@swc/core': true
   esbuild: true
   msgpackr-extract: true

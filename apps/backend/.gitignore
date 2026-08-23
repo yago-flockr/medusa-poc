@@ -24,3 +24,7 @@ build
 !.yarn/versions
 
 .medusa
+
+# Regenerate with `pnpm run shopify-codegen` — full Shopify Admin schema
+# types + introspection JSON, ~9.6MB, deliberately not committed.
+src/lib/generated/

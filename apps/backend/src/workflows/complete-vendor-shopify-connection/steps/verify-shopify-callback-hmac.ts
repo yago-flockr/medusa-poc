@@ -7,13 +7,6 @@ export type VerifyShopifyCallbackHmacStepInput = {
   clientSecret: string
 }
 
-/**
- * A failed check throws and nothing has mutated yet, so there's nothing to
- * compensate. This has to run with the *vendor's* client secret, which is
- * only known after find-vendor-by-shopify-domain resolves — never trust the
- * shop the callback claims before this passes, since anyone could forge a
- * ?shop=&code= request otherwise.
- */
 export const verifyShopifyCallbackHmacStep = createStep(
   "verify-shopify-callback-hmac",
   async (input: VerifyShopifyCallbackHmacStepInput) => {

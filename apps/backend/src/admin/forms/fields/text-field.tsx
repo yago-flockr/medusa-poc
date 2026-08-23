@@ -1,5 +1,5 @@
-import { forwardRef, type ComponentPropsWithoutRef } from "react"
 import { Hint, Input, Label, Text } from "@medusajs/ui"
+import { forwardRef, type ComponentPropsWithoutRef } from "react"
 
 export type TextFieldProps = {
   label: string
@@ -8,7 +8,7 @@ export type TextFieldProps = {
 } & Omit<ComponentPropsWithoutRef<typeof Input>, "size">
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  function TextField({ id, label, optional, error, ...inputProps }, ref) {
+  function TextField({ id, label, optional, error, ...props }, ref) {
     return (
       <div className="flex flex-col space-y-2">
         <div className="flex items-center gap-x-1">
@@ -21,7 +21,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             </Text>
           )}
         </div>
-        <Input id={id} ref={ref} {...inputProps} />
+        <Input id={id} ref={ref} {...props} />
         {error && <Hint variant="error">{error}</Hint>}
       </div>
     )

@@ -1,13 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 import { VendorUser } from "./vendor-user"
 
-/**
- * shopify_client_id/secret are per-vendor, not a shared app config: Shopify's
- * Custom Distribution caps a single app at one live production store, so
- * each vendor gets its own app in the Dev Dashboard. shopify_access_token is
- * filled in once the vendor approves the install (see
- * complete-vendor-shopify-connection workflow).
- */
 export const Vendor = model.define("vendor", {
   id: model.id().primaryKey(),
   name: model.text().searchable(),

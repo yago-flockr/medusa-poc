@@ -258,6 +258,14 @@ starts.
   throwaway. Credentials are a caller-supplied parameter, not env config —
   the caller is expected to read `shopify_store_domain`/`shopify_access_token`
   off a Vendor record. Nothing Shopify-specific lives in `.env`/`.env.template`.
+  The GraphQL response types (`TestPullQuery`) are generated from Shopify's own
+  Admin API schema via `@shopify/api-codegen-preset` (`.graphqlrc.ts`,
+  `pnpm run shopify-codegen`), not hand-typed — run that script after cloning
+  or after changing `PRODUCTS_QUERY`, since `src/lib/generated/` is gitignored
+  (~9.6MB of generated schema types, deliberately not committed). ESLint also
+  ignores that folder (`eslint.config.mjs`) — the codegen emits
+  `eslint-comments/*` disable directives that our Medusa ESLint setup does not
+  ship, and `medusa develop` would otherwise refuse to start.
   Deliberately spike-shaped still: create-only (no update path for an
   already-synced product), no vendor link, images left pointing at Shopify's own
   CDN instead of re-hosted through the File Module. The CLI exec script that used

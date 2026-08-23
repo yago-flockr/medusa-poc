@@ -1,12 +1,6 @@
 import crypto from "node:crypto"
 import { MedusaError } from "@medusajs/framework/utils"
 
-/**
- * Verifies Shopify's HMAC signature on an OAuth callback query string.
- * Without this, anyone could POST/GET a forged ?shop=&code= to our
- * callback and trick us into "connecting" a store we were never
- * authorized for.
- */
 export function verifyShopifyCallbackHmac(
   query: Record<string, string>,
   clientSecret: string,

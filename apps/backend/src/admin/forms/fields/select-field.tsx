@@ -1,5 +1,5 @@
-import type { ComponentPropsWithoutRef } from "react"
 import { Hint, Label, Select, Text } from "@medusajs/ui"
+import type { ComponentPropsWithoutRef } from "react"
 
 export type SelectFieldOption = {
   label: string
@@ -22,7 +22,7 @@ export const SelectField = ({
   error,
   placeholder,
   options,
-  ...selectProps
+  ...props
 }: SelectFieldProps) => {
   return (
     <div className="flex flex-col space-y-2">
@@ -36,7 +36,7 @@ export const SelectField = ({
           </Text>
         )}
       </div>
-      <Select {...selectProps}>
+      <Select {...props}>
         <Select.Trigger id={id}>
           <Select.Value placeholder={placeholder} />
         </Select.Trigger>

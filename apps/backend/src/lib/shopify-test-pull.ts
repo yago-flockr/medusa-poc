@@ -1,58 +1,5 @@
 import { MedusaError } from "@medusajs/framework/utils"
-
-/**
- * Spike-only Shopify Admin API pull, shared by the debug "Log a vendor's
- * Shopify products" admin widget (src/api/admin/vendors/[id]/shopify-products)
- * and src/workflows/sync-shopify-products/. Takes an already-issued offline
- * access token (from complete-vendor-shopify-connection's OAuth exchange,
- * stored on the Vendor record) rather than deriving one itself — a prior
- * version of this file did its own client_credentials exchange here, but
- * that grant only works for stores in our own Shopify organization, never
- * for a real vendor's independent store (docs/plan.md).
- */
-
-interface ShopifyImageEdge {
-  node: { image: { url: string; altText: string | null } | null } | null
-}
-
-interface ShopifyVariantEdge {
-  node: {
-    id: string
-    title: string
-    sku: string | null
-    price: string
-    compareAtPrice: string | null
-    barcode: string | null
-    inventoryQuantity: number | null
-    selectedOptions: { name: string; value: string }[]
-  }
-}
-
-interface ShopifyProductEdge {
-  node: {
-    id: string
-    title: string
-    handle: string
-    description: string
-    productType: string
-    vendor: string
-    status: string
-    tags: string[]
-    totalInventory: number
-    options: { name: string; values: string[] }[]
-    media: { edges: ShopifyImageEdge[] }
-    variants: { edges: ShopifyVariantEdge[] }
-    collections: { edges: { node: { title: string; handle: string } }[] }
-  }
-}
-
-interface ProductsQueryResult {
-  shop: { currencyCode: string }
-  products: {
-    edges: ShopifyProductEdge[]
-    pageInfo: { hasNextPage: boolean; endCursor: string | null }
-  }
-}
+import type { TestPullQuery } from "./generated/admin.generated"
 
 export interface ShopifyTestPullProduct {
   shopify_id: string
@@ -79,7 +26,7 @@ export interface ShopifyTestPullResult {
   products: ShopifyTestPullProduct[]
 }
 
-const PRODUCTS_QUERY = `
+const PRODUCTS_QUERY = `#graphql
   query TestPull($first: Int!) {
     shop { currencyCode }
     products(first: $first, sortKey: ID) {
@@ -122,7 +69,7 @@ async function runProductsQuery(
   })
 
   const payload = (await res.json()) as {
-    data?: ProductsQueryResult
+    data?: TestPullQuery
     errors?: { message: string }[]
     extensions?: { cost?: { requestedQueryCost: number } }
   }
@@ -170,9 +117,9 @@ export async function pullShopifyTestProducts(
         .filter((url): url is string => Boolean(url)),
       variants: p.variants.edges.map((v) => ({
         title: v.node.title,
-        sku: v.node.sku,
+        sku: v.node.sku ?? null,
         price: v.node.price,
-        inventoryQuantity: v.node.inventoryQuantity,
+        inventoryQuantity: v.node.inventoryQuantity ?? null,
         options: v.node.selectedOptions,
       })),
       collections: p.collections.edges.map((c) => c.node.handle),

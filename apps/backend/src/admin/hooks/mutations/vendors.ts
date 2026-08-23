@@ -23,8 +23,6 @@ export const useCreateOneVendor = createResourceMutationHook<
   invalidateKey: queryKeys.vendors.findMany,
 })
 
-// No invalidateKey — this doesn't change anything in Medusa, it just pulls
-// live data from Shopify for the caller to inspect.
 export const usePullVendorShopifyProducts = () =>
   useMutation({
     mutationKey: mutationKeys.vendors.pullShopifyProducts,

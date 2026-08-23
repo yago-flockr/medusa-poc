@@ -4,12 +4,6 @@ import { VENDOR_MODULE } from "../../../../../modules/vendor"
 import type VendorModuleService from "../../../../../modules/vendor/service"
 import { pullShopifyTestProducts } from "../../../../../lib/shopify-test-pull"
 
-/**
- * Debug-only: pulls a vendor's Shopify products live and returns them
- * as-is, no Medusa product created. Backs the "Log Shopify products"
- * button on the admin Products page — the point is to eyeball the raw
- * pull in the browser console, not to import anything.
- */
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params
 

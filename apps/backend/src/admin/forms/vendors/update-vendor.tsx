@@ -19,11 +19,6 @@ const updateVendorFormSchema = z.object({
 export type UpdateVendorFormValues = z.infer<typeof updateVendorFormSchema>
 export type UpdateVendorFormProps = CommonFormProps<UpdateVendorFormValues>
 
-/**
- * shopify_client_secret is never returned by GET /admin/vendors/:id, so it
- * always starts blank here — leaving it blank on submit means "don't
- * change it" (the backend treats an empty string as unset), not "clear it".
- */
 export function vendorToForm(vendor: Vendor): UpdateVendorFormValues {
   return {
     name: vendor.name,

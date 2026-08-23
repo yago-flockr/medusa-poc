@@ -7,12 +7,6 @@ export type FindVendorByShopifyDomainStepInput = {
   shopifyStoreDomain: string
 }
 
-/**
- * Read-only, nothing to compensate. Staff must have already pasted this
- * vendor's store domain in via the admin vendor update endpoint before
- * sending them the Shopify install link, otherwise there's no vendor to
- * match Shopify's callback to.
- */
 export const findVendorByShopifyDomainStep = createStep(
   "find-vendor-by-shopify-domain",
   async (input: FindVendorByShopifyDomainStepInput, { container }) => {
