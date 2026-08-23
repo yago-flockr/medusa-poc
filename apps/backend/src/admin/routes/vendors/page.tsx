@@ -85,7 +85,13 @@ const VendorsPage = () => {
             updateOneVendor.mutate(
               {
                 vendorId: vendor.id,
-                body: { is_active: !vendor.is_active, handle: undefined },
+                body: {
+                  is_active: !vendor.is_active,
+                  handle: undefined,
+                  shopify_store_domain: undefined,
+                  shopify_client_id: undefined,
+                  shopify_client_secret: undefined,
+                },
               },
               {
                 onError: (error) => {

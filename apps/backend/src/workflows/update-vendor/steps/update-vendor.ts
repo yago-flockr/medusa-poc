@@ -2,19 +2,37 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { VENDOR_MODULE } from "../../../modules/vendor"
 import VendorModuleService from "../../../modules/vendor/service"
 
+const VENDOR_UPDATABLE_FIELDS = [
+  "name",
+  "handle",
+  "is_active",
+  "shopify_store_domain",
+  "shopify_client_id",
+  "shopify_client_secret",
+  "shopify_access_token",
+  "shopify_scope",
+  "shopify_connected_at",
+] as const
+
+type VendorUpdatableField = (typeof VENDOR_UPDATABLE_FIELDS)[number]
+
 export type UpdateVendorStepInput = {
   id: string
   name?: string
   handle?: string
   is_active?: boolean
+  shopify_store_domain?: string
+  shopify_client_id?: string
+  shopify_client_secret?: string
+  shopify_access_token?: string
+  shopify_scope?: string
+  shopify_connected_at?: Date
 }
 
-type UpdateVendorCompensation = {
-  id: string
-  name: string
-  handle: string
-  is_active: boolean
-}
+type UpdateVendorCompensation = { id: string } & Record<
+  VendorUpdatableField,
+  string | boolean | Date | null
+>
 
 export const updateVendorStep = createStep(
   "update-vendor",
@@ -23,35 +41,23 @@ export const updateVendorStep = createStep(
       container.resolve(VENDOR_MODULE)
 
     const existing = await vendorModuleService.retrieveVendor(input.id)
-    const update: {
-      id: string
-      name?: string
-      handle?: string
-      is_active?: boolean
-    } = {
-      id: input.id,
+
+    const update: Record<string, unknown> = { id: input.id }
+    const compensation: Record<string, unknown> = { id: existing.id }
+
+    for (const field of VENDOR_UPDATABLE_FIELDS) {
+      compensation[field] = existing[field]
+
+      if (input[field] !== undefined) {
+        update[field] = input[field]
+      }
     }
 
-    if (input.name !== undefined) {
-      update.name = input.name
-    }
+    const vendor = await vendorModuleService.updateVendors(
+      update as Parameters<VendorModuleService["updateVendors"]>[0],
+    )
 
-    if (input.handle !== undefined) {
-      update.handle = input.handle
-    }
-
-    if (input.is_active !== undefined) {
-      update.is_active = input.is_active
-    }
-
-    const vendor = await vendorModuleService.updateVendors(update)
-
-    return new StepResponse(vendor, {
-      id: existing.id,
-      name: existing.name,
-      handle: existing.handle,
-      is_active: existing.is_active,
-    } satisfies UpdateVendorCompensation)
+    return new StepResponse(vendor, compensation as UpdateVendorCompensation)
   },
   async (compensation: UpdateVendorCompensation | undefined, { container }) => {
     if (!compensation) {
@@ -61,11 +67,10 @@ export const updateVendorStep = createStep(
     const vendorModuleService: VendorModuleService =
       container.resolve(VENDOR_MODULE)
 
-    await vendorModuleService.updateVendors({
-      id: compensation.id,
-      name: compensation.name,
-      handle: compensation.handle,
-      is_active: compensation.is_active,
-    })
+    await vendorModuleService.updateVendors(
+      compensation as unknown as Parameters<
+        VendorModuleService["updateVendors"]
+      >[0],
+    )
   },
 )

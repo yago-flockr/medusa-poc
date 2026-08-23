@@ -7,6 +7,7 @@ export const mutationKeys = {
   vendors: {
     createOne: ["createOneVendor"] as const,
     updateOne: ["updateOneVendor"] as const,
+    pullShopifyProducts: ["pullVendorShopifyProducts"] as const,
   },
   vendorUsers: {
     createOne: ["createOneVendorUser"] as const,

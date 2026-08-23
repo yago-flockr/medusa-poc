@@ -1,14 +1,14 @@
 import { MedusaError } from "@medusajs/framework/utils"
 
 /**
- * Spike-only Shopify Admin API pull, shared by the exec script
- * (src/scripts/test-shopify-products-pull.ts) and
- * src/workflows/sync-shopify-products/. Credentials are a caller-supplied
- * parameter, not read from env here — this is deliberately per-store, not
- * per-app, since the real design is one connection per vendor, not one
- * shared config (docs/spikes/vendor-shopify-sync.md). Where the caller gets
- * those three values from (env var, CLI arg, eventually the Vendor module)
- * is entirely the caller's concern.
+ * Spike-only Shopify Admin API pull, shared by the debug "Log a vendor's
+ * Shopify products" admin widget (src/api/admin/vendors/[id]/shopify-products)
+ * and src/workflows/sync-shopify-products/. Takes an already-issued offline
+ * access token (from complete-vendor-shopify-connection's OAuth exchange,
+ * stored on the Vendor record) rather than deriving one itself — a prior
+ * version of this file did its own client_credentials exchange here, but
+ * that grant only works for stores in our own Shopify organization, never
+ * for a real vendor's independent store (docs/plan.md).
  */
 
 interface ShopifyImageEdge {
@@ -106,27 +106,6 @@ const PRODUCTS_QUERY = `
   }
 `
 
-async function exchangeToken(domain: string, clientId: string, clientSecret: string) {
-  const res = await fetch(`https://${domain}/admin/oauth/access_token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      client_id: clientId,
-      client_secret: clientSecret,
-      grant_type: "client_credentials",
-    }),
-  })
-
-  if (!res.ok) {
-    throw new MedusaError(
-      MedusaError.Types.UNEXPECTED_STATE,
-      `Shopify token exchange failed: ${res.status} ${await res.text()}`,
-    )
-  }
-
-  return (await res.json()) as { access_token: string; expires_in: number }
-}
-
 async function runProductsQuery(
   domain: string,
   apiVersion: string,
@@ -164,8 +143,7 @@ async function runProductsQuery(
 
 export type ShopifyStoreCredentials = {
   storeDomain: string
-  clientId: string
-  clientSecret: string
+  accessToken: string
   apiVersion?: string
 }
 
@@ -173,11 +151,10 @@ export async function pullShopifyTestProducts(
   credentials: ShopifyStoreCredentials,
   first = 5,
 ): Promise<ShopifyTestPullResult> {
-  const { storeDomain: domain, clientId, clientSecret } = credentials
+  const { storeDomain: domain, accessToken } = credentials
   const apiVersion = credentials.apiVersion ?? "2026-01"
 
-  const { access_token } = await exchangeToken(domain, clientId, clientSecret)
-  const { data, cost } = await runProductsQuery(domain, apiVersion, access_token, first)
+  const { data, cost } = await runProductsQuery(domain, apiVersion, accessToken, first)
 
   const products = data.products.edges.map((edge) => {
     const p = edge.node

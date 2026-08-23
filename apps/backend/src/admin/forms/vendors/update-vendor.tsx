@@ -11,15 +11,26 @@ export const UPDATE_VENDOR_FORM_ID = "update-vendor-form"
 const updateVendorFormSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   handle: z.string().trim().min(1, "Handle is required"),
+  shopify_store_domain: z.string().trim(),
+  shopify_client_id: z.string().trim(),
+  shopify_client_secret: z.string().trim(),
 })
 
 export type UpdateVendorFormValues = z.infer<typeof updateVendorFormSchema>
 export type UpdateVendorFormProps = CommonFormProps<UpdateVendorFormValues>
 
+/**
+ * shopify_client_secret is never returned by GET /admin/vendors/:id, so it
+ * always starts blank here — leaving it blank on submit means "don't
+ * change it" (the backend treats an empty string as unset), not "clear it".
+ */
 export function vendorToForm(vendor: Vendor): UpdateVendorFormValues {
   return {
     name: vendor.name,
     handle: vendor.handle,
+    shopify_store_domain: vendor.shopify_store_domain ?? "",
+    shopify_client_id: vendor.shopify_client_id ?? "",
+    shopify_client_secret: "",
   }
 }
 
@@ -39,6 +50,9 @@ export const UpdateVendorForm = ({
     defaultValues: {
       name: "",
       handle: "",
+      shopify_store_domain: "",
+      shopify_client_id: "",
+      shopify_client_secret: "",
       ...defaultValues,
     },
   })
@@ -47,8 +61,17 @@ export const UpdateVendorForm = ({
     reset({
       name: defaultValues?.name ?? "",
       handle: defaultValues?.handle ?? "",
+      shopify_store_domain: defaultValues?.shopify_store_domain ?? "",
+      shopify_client_id: defaultValues?.shopify_client_id ?? "",
+      shopify_client_secret: "",
     })
-  }, [defaultValues?.name, defaultValues?.handle, reset])
+  }, [
+    defaultValues?.name,
+    defaultValues?.handle,
+    defaultValues?.shopify_store_domain,
+    defaultValues?.shopify_client_id,
+    reset,
+  ])
 
   const submit = handleSubmit(async (values) => {
     await onSubmit?.(values)
@@ -74,6 +97,33 @@ export const UpdateVendorForm = ({
         error={errors.handle?.message}
         disabled={isDisabled || isLoading}
         {...register("handle")}
+      />
+      <TextField
+        id="update-vendor-shopify-store-domain"
+        label="Shopify store domain"
+        optional
+        placeholder="their-store.myshopify.com"
+        error={errors.shopify_store_domain?.message}
+        disabled={isDisabled || isLoading}
+        {...register("shopify_store_domain")}
+      />
+      <TextField
+        id="update-vendor-shopify-client-id"
+        label="Shopify client ID"
+        optional
+        error={errors.shopify_client_id?.message}
+        disabled={isDisabled || isLoading}
+        {...register("shopify_client_id")}
+      />
+      <TextField
+        id="update-vendor-shopify-client-secret"
+        label="Shopify client secret"
+        optional
+        type="password"
+        placeholder="Leave blank to keep the current secret"
+        error={errors.shopify_client_secret?.message}
+        disabled={isDisabled || isLoading}
+        {...register("shopify_client_secret")}
       />
     </form>
   )

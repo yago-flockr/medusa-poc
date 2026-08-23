@@ -16,6 +16,9 @@ export const vendorSchema = z.object({
   name: z.string(),
   handle: z.string(),
   is_active: z.boolean(),
+  shopify_store_domain: z.string().nullable(),
+  shopify_client_id: z.string().nullable(),
+  shopify_connected_at: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
   deleted_at: z.string().nullable(),
@@ -56,14 +59,23 @@ export const updateVendorSchema = z
     name: name.optional(),
     handle,
     is_active: z.boolean().optional(),
+    shopify_store_domain: optionalTrimmedString(),
+    shopify_client_id: optionalTrimmedString(),
+    shopify_client_secret: optionalTrimmedString(),
   })
   .strict()
   .refine(
     (data) =>
       data.name !== undefined ||
       data.handle !== undefined ||
-      data.is_active !== undefined,
-    { message: "At least one of name, handle, or is_active is required" },
+      data.is_active !== undefined ||
+      data.shopify_store_domain !== undefined ||
+      data.shopify_client_id !== undefined ||
+      data.shopify_client_secret !== undefined,
+    {
+      message:
+        "At least one of name, handle, is_active, shopify_store_domain, shopify_client_id, or shopify_client_secret is required",
+    },
   )
 
 export type UpdateVendor = z.infer<typeof updateVendorSchema>
