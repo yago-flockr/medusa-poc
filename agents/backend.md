@@ -260,9 +260,14 @@ starts.
   off a Vendor record. Nothing Shopify-specific lives in `.env`/`.env.template`.
   The GraphQL response types (`TestPullQuery`) are generated from Shopify's own
   Admin API schema via `@shopify/api-codegen-preset` (`.graphqlrc.ts`,
-  `pnpm run shopify-codegen`), not hand-typed — run that script after cloning
-  or after changing `PRODUCTS_QUERY`, since `src/lib/generated/` is gitignored
-  (~9.6MB of generated schema types, deliberately not committed). ESLint also
+  `pnpm run shopify-codegen`), not hand-typed. `src/lib/generated/` is
+  gitignored (~9.6MB of generated schema types, deliberately not committed) —
+  `prebuild`/`predev` scripts in `package.json` regenerate it automatically
+  (npm/pnpm's lifecycle convention: `pnpm run build`/`pnpm run dev` runs
+  `graphql-codegen` first on its own), including on a Cloud deploy, so a
+  missing `src/lib/generated/` never breaks the build. Only run
+  `pnpm run shopify-codegen` by hand if you changed `PRODUCTS_QUERY` and want
+  updated types without a full build/dev restart. ESLint also
   ignores that folder (`eslint.config.mjs`) — the codegen emits
   `eslint-comments/*` disable directives that our Medusa ESLint setup does not
   ship, and `medusa develop` would otherwise refuse to start.

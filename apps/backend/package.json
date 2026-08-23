@@ -14,8 +14,10 @@
   ],
   "scripts": {
     "build": "medusa build",
+    "prebuild": "graphql-codegen",
     "start": "medusa start",
     "dev": "medusa develop",
+    "predev": "graphql-codegen",
     "lint": "medusa lint",
     "shopify-codegen": "graphql-codegen",
     "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
