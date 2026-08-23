@@ -44,6 +44,9 @@ export type VendorResponse = {
 
 const name = requiredTrimmedString("Name is required")
 const handle = optionalTrimmedString()
+const shopifyStoreDomain = optionalTrimmedString().transform((value) =>
+  value?.replace(/^https?:\/\//i, "").replace(/\/+$/, ""),
+)
 
 export const createVendorSchema = z
   .object({
@@ -59,7 +62,7 @@ export const updateVendorSchema = z
     name: name.optional(),
     handle,
     is_active: z.boolean().optional(),
-    shopify_store_domain: optionalTrimmedString(),
+    shopify_store_domain: shopifyStoreDomain,
     shopify_client_id: optionalTrimmedString(),
     shopify_client_secret: optionalTrimmedString(),
   })
