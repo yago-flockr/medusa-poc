@@ -109,7 +109,7 @@ const VendorsPage = () => {
         },
         {
           icon: <Link />,
-          label: "Copy Shopify install link",
+          label: "Copy Install Link",
           onClick: () => {
             generateShopifyInstallLink.mutate(ctx.row.original.id, {
               onSuccess: async ({ installLink }) => {

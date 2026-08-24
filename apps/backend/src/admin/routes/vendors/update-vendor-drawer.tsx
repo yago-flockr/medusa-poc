@@ -1,5 +1,7 @@
+import { User } from "@medusajs/icons"
 import { Button, Drawer, Text, toast } from "@medusajs/ui"
 import type { Vendor } from "../../../api/admin/vendors/contract"
+import { Divider } from "../../components/divider"
 import { TitleSubtitle } from "../../components/title-subtitle"
 import {
   UPDATE_VENDOR_FORM_ID,
@@ -50,10 +52,8 @@ export const UpdateVendorDrawer = ({
               )
             }}
           />
-          <div>
-            <Text size="small" weight="plus" className="mb-2">
-              Users
-            </Text>
+          <div className="flex flex-col gap-y-4">
+            <Divider>Users</Divider>
             {users.length === 0 ? (
               <Text size="small" className="text-ui-fg-subtle">
                 No users yet.
@@ -61,14 +61,14 @@ export const UpdateVendorDrawer = ({
             ) : (
               <ul className="flex flex-col gap-y-1">
                 {users.map((user) => (
-                  <li key={user.id}>
+                  <li className="flex items-center gap-x-2" key={user.id}>
                     <Text size="small">
                       {[user.first_name, user.last_name]
                         .filter(Boolean)
                         .join(" ") || user.email}{" "}
-                      <span className="text-ui-fg-subtle">
-                        ({user.email})
-                      </span>
+                    </Text>
+                    <Text size="small" className="text-ui-fg-subtle">
+                      ({user.email})
                     </Text>
                   </li>
                 ))}

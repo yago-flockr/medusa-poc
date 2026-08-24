@@ -3,6 +3,7 @@ import { z } from "@medusajs/framework/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import type { Vendor } from "../../../api/admin/vendors/contract"
+import { Divider } from "../../components/divider"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
 
@@ -99,9 +100,10 @@ export const UpdateVendorForm = ({
         disabled={isDisabled || isLoading}
         {...register("handle")}
       />
+      <Divider>Shopify</Divider>
       <TextField
         id="update-vendor-shopify-store-domain"
-        label="Shopify store domain"
+        label="Store Domain"
         optional
         placeholder="their-store.myshopify.com"
         error={errors.shopify_store_domain?.message}
@@ -110,7 +112,7 @@ export const UpdateVendorForm = ({
       />
       <TextField
         id="update-vendor-shopify-client-id"
-        label="Shopify client ID"
+        label="Client ID"
         optional
         error={errors.shopify_client_id?.message}
         disabled={isDisabled || isLoading}
@@ -118,7 +120,7 @@ export const UpdateVendorForm = ({
       />
       <TextField
         id="update-vendor-shopify-client-secret"
-        label="Shopify client secret"
+        label="Client Secret"
         optional
         type="password"
         placeholder="Leave blank to keep the current secret"
