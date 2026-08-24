@@ -1,9 +1,9 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import type { ShopifyTestPullProduct } from "../../../lib/shopify-test-pull"
+import type { ShopifyProduct } from "../../../lib/shopify-products"
 
 export type FilterNewShopifyProductsStepInput = {
-  products: ShopifyTestPullProduct[]
+  products: ShopifyProduct[]
 }
 
 /**

@@ -44,8 +44,8 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
 - `admin/`: Admin dashboard widgets and routes. Query hooks in `admin/hooks/queries/`, mutation hooks in `admin/hooks/mutations/`.
-- `migration-scripts/`: one-off / seed scripts (includes initial seed; runs once via `db:migrate`)
-- `scripts/`: CLI exec helpers (for example publishable key sync)
+- `migration-scripts/`: one-off DB data-migration scripts — Medusa-recognized location, auto-run once as part of `db:migrate` (tracked so it never reruns). Not for demo/seed data — see `scripts/`.
+- `scripts/`: CLI exec helpers — demo-data seeding (`seed.ts`, `pnpm run seed`, not idempotent — re-running duplicates rather than updates), publishable key sync
 - `lib/`: shared helpers (including default markets seed config)
 
 ## Patterns to follow when extending
@@ -206,7 +206,7 @@ starts.
   requires the order item's product's shipping profile to match the chosen
   shipping option's). Fixed by looking up the store's one default shipping
   profile (`query.graph({entity: "shipping_profile"})`, same row
-  `initial-data-seed.ts` already uses) and setting it on every vendor
+  `scripts/seed.ts` already uses) and setting it on every vendor
   product at creation (`src/api/vendors/products/route.ts`) — no new model,
   no per-vendor warehouse system. Additionally, `create-vendor-orders`
   (`steps/assert-items-fulfillable.ts`) now checks every cart item's product
@@ -249,7 +249,7 @@ starts.
   over child orders, but the consignment-record alternative hasn't been built
   to confirm it — treat this as a lean, not the settled answer.
 - **Shopify pull is spiked, not settled — `docs/spikes/vendor-shopify-sync.md`.**
-  `src/lib/shopify-test-pull.ts` (raw Shopify Admin GraphQL client: takes an
+  `src/lib/shopify-products.ts` (raw Shopify Admin GraphQL client: takes an
   already-issued offline access token + product query — it no longer does its
   own token exchange, see the connection entry below) and
   `src/workflows/sync-shopify-products/` (pull → resolve shipping-profile/

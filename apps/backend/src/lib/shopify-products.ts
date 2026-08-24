@@ -1,7 +1,7 @@
 import { MedusaError } from "@medusajs/framework/utils"
 import type { TestPullQuery } from "./generated/admin.generated"
 
-export interface ShopifyTestPullProduct {
+export interface ShopifyProduct {
   shopify_id: string
   title: string
   handle: string
@@ -19,11 +19,11 @@ export interface ShopifyTestPullProduct {
   collections: string[]
 }
 
-export interface ShopifyTestPullResult {
+export interface ShopifyProductsPullResult {
   currencyCode: string
   requestedQueryCost?: number
   hasNextPage: boolean
-  products: ShopifyTestPullProduct[]
+  products: ShopifyProduct[]
 }
 
 const PRODUCTS_QUERY = `#graphql
@@ -94,10 +94,10 @@ export type ShopifyStoreCredentials = {
   apiVersion?: string
 }
 
-export async function pullShopifyTestProducts(
+export async function pullShopifyProducts(
   credentials: ShopifyStoreCredentials,
   first = 5,
-): Promise<ShopifyTestPullResult> {
+): Promise<ShopifyProductsPullResult> {
   const { storeDomain: domain, accessToken } = credentials
   const apiVersion = credentials.apiVersion ?? "2026-01"
 

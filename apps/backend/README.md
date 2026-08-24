@@ -19,8 +19,8 @@ src/
 ├── subscribers/         # Event handlers
 ├── jobs/                # Scheduled work
 ├── admin/               # Admin UI extensions
-├── migration-scripts/   # Seed / one-off scripts
-└── scripts/             # medusa exec helpers
+├── migration-scripts/   # One-off DB data-migration scripts (Medusa-managed, run via db:migrate)
+└── scripts/             # medusa exec helpers, incl. seed.ts (demo data)
 ```
 
 Persistence notes for custom models: [`docs/ER_MODEL.md`](./docs/ER_MODEL.md).
@@ -52,7 +52,13 @@ pnpm exec medusa db:migrate
 pnpm exec medusa user -e admin@example.com -p supersecret
 ```
 
-4. Run this package:
+4. Seed demo data (regions, a store, sample products — safe to skip, but re-running it duplicates data rather than updating it):
+
+```bash
+pnpm run seed
+```
+
+5. Run this package:
 
 ```bash
 pnpm run dev

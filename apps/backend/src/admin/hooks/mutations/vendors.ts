@@ -4,7 +4,7 @@ import type {
   UpdateVendor,
   VendorResponse,
 } from "../../../api/admin/vendors/contract"
-import type { ShopifyTestPullResult } from "../../../lib/shopify-test-pull"
+import type { ShopifyProductsPullResult } from "../../../lib/shopify-products"
 import { createResourceMutationHook } from "../../lib/create-resource-mutation"
 import { mutationKeys } from "../../lib/mutation-keys"
 import { queryKeys } from "../../lib/query-keys"
@@ -27,7 +27,7 @@ export const usePullVendorShopifyProducts = () =>
   useMutation({
     mutationKey: mutationKeys.vendors.pullShopifyProducts,
     mutationFn: (vendorId: string) =>
-      sdk.client.fetch<ShopifyTestPullResult>(
+      sdk.client.fetch<ShopifyProductsPullResult>(
         `/admin/vendors/${vendorId}/shopify-products`,
       ),
   })

@@ -2,7 +2,7 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
 import { VENDOR_MODULE } from "../../../../../modules/vendor"
 import type VendorModuleService from "../../../../../modules/vendor/service"
-import { pullShopifyTestProducts } from "../../../../../lib/shopify-test-pull"
+import { pullShopifyProducts } from "../../../../../lib/shopify-products"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params
@@ -17,7 +17,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     )
   }
 
-  const result = await pullShopifyTestProducts({
+  const result = await pullShopifyProducts({
     storeDomain: vendor.shopify_store_domain,
     accessToken: vendor.shopify_access_token,
   })

@@ -1,8 +1,8 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import {
-  pullShopifyTestProducts,
+  pullShopifyProducts,
   type ShopifyStoreCredentials,
-} from "../../../lib/shopify-test-pull"
+} from "../../../lib/shopify-products"
 
 export type PullShopifyProductsStepInput = {
   credentials: ShopifyStoreCredentials
@@ -15,7 +15,7 @@ export type PullShopifyProductsStepInput = {
 export const pullShopifyProductsStep = createStep(
   "pull-shopify-products",
   async (input: PullShopifyProductsStepInput) => {
-    const result = await pullShopifyTestProducts(input.credentials, input.first ?? 5)
+    const result = await pullShopifyProducts(input.credentials, input.first ?? 5)
     return new StepResponse(result)
   },
 )

@@ -5,7 +5,7 @@ export default {
     default: shopifyApiProject({
       apiType: ApiType.Admin,
       apiVersion: "2026-01",
-      documents: ["./src/lib/shopify-test-pull.ts"],
+      documents: ["./src/lib/shopify-products.ts"],
       outputDir: "./src/lib/generated",
     }),
   },

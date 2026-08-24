@@ -1,4 +1,4 @@
-import { MedusaContainer } from "@medusajs/framework"
+import { ExecArgs } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   ModuleRegistrationName,
@@ -7,7 +7,6 @@ import {
 } from "@medusajs/framework/utils"
 import {
   createApiKeysWorkflow,
-  createCollectionsWorkflow,
   createInventoryLevelsWorkflow,
   createProductCategoriesWorkflow,
   createProductOptionsWorkflow,
@@ -37,11 +36,7 @@ function demoVariantPrices(eurAmount: number, usdAmount: number) {
   ]
 }
 
-export default async function initial_data_seed({
-  container,
-}: {
-  container: MedusaContainer
-}) {
+export default async function seed({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const link = container.resolve(ContainerRegistrationKeys.LINK)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
