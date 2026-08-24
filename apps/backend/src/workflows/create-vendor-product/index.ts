@@ -10,10 +10,7 @@ import { resolveSharedProductOptionsStep } from "./steps/resolve-shared-product-
 export type CreateVendorProductWorkflowInput = {
   product: Omit<CreateProductWorkflowInputDTO, "options">
   options: { title: string; values: string[] }[]
-  // True only when the vendor explicitly provided options (Size, Color,
-  // ...) — these should become shared/filterable. False for the synthetic
-  // "Default" option used when a vendor creates a single-variant product
-  // with no real options, which must stay exclusive to that one product.
+  // See resolve-shared-product-options.ts for what this controls and why.
   shared: boolean
   vendor_id: string
 }

@@ -1,5 +1,6 @@
 import {
   createWorkflow,
+  parallelize,
   transform,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
@@ -29,12 +30,12 @@ export const syncShopifyProductsWorkflow = createWorkflow(
   "sync-shopify-products",
   function (input: SyncShopifyProductsWorkflowInput) {
     const pulled = pullShopifyProductsStep(input)
-    const filtered = filterNewShopifyProductsStep({
-      products: pulled.products,
-    })
-    const prerequisites = resolveShopifyProductPrerequisitesStep({
-      shopCurrencyCode: pulled.currencyCode,
-    })
+    const [filtered, prerequisites] = parallelize(
+      filterNewShopifyProductsStep({ products: pulled.products }),
+      resolveShopifyProductPrerequisitesStep({
+        shopCurrencyCode: pulled.currencyCode,
+      }),
+    )
 
     const createInput = transform(
       { filtered, prerequisites },

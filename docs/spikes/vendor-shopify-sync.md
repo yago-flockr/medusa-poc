@@ -235,17 +235,21 @@ shape — worth solving once pagination itself is built, not before).
 
 ## Trigger surface — corrected mid-spike
 
+**Superseded — file paths below are stale, kept for the reasoning only.**
+`src/lib/shopify-test-pull.ts` is now `src/lib/shopify-products.ts`, and the
+exec script this section describes was later removed entirely in favor of a
+debug-only Admin widget on the Products list page (see `agents/backend.md`).
+
 The pull briefly had a staff-facing Admin button (`product.list.before` widget +
 an `/admin/shopify-sync/test-pull` route) purely to prove the mechanics fast.
 Removed once the mechanics were proven: **a staff member clicking a button to
 pull a specific vendor's Shopify catalogue is the wrong long-term shape** — the
 trigger belongs wherever a vendor manages *its own* Shopify connection, not on a
 page staff use for every vendor's products at once. The workflow itself
-(`src/workflows/sync-shopify-products/`) and its underlying pull
-(`src/lib/shopify-test-pull.ts`) are unaffected and stay — only the staff-facing
-front door was removed. The only remaining trigger right now is the exec script
-(`src/scripts/test-shopify-products-pull.ts`), a developer convenience, not a
-real UI.
+(`src/workflows/sync-shopify-products/`) and its underlying pull were
+unaffected and stayed — only the staff-facing front door was removed at the
+time. The only remaining trigger at the time was the exec script, a developer
+convenience, not a real UI.
 
 **Open question this raises, not yet resolved:** `docs/plan.md`'s existing
 Decision says a vendor's Shopify connection is installed via **a link staff

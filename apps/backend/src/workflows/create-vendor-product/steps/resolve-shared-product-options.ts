@@ -3,21 +3,23 @@ import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 
 export type ResolveSharedProductOptionsStepInput = {
   options: { title: string; values: string[] }[]
-  // Only vendor-provided options (Size, Color, ...) should become shared,
-  // storefront-filterable options. The single "Default" option synthesized
-  // for a no-options product must stay exclusive to that product, so this
-  // step is a no-op pass-through when false — see create-vendor-product/
-  // index.ts for which case sets it.
   shared: boolean
 }
 
-type ResolvedOption = { id: string } | { title: string; values: string[] }
+type ResolvedOption =
+  | { id: string }
+  | { title: string; values: string[]; is_exclusive?: boolean }
 
 type OptionCompensation = {
   id: string
   previousValues: string[]
 }
 
+// `shared` is true only for vendor-provided options (Size, Color, ...);
+// it's false for the synthetic "Default" option on a no-options product,
+// which must stay exclusive to that one product — this step is a no-op
+// pass-through in that case.
+//
 // Medusa's shared (is_exclusive: false) product options are looked up by
 // title with a real DB-level unique constraint — creating one with a title
 // that already exists throws outright, and there is no per-product/
@@ -32,33 +34,33 @@ export const resolveSharedProductOptionsStep = createStep(
   "resolve-shared-product-options",
   async (input: ResolveSharedProductOptionsStepInput, { container }) => {
     if (!input.shared) {
-      return new StepResponse(
-        input.options.map((option) => ({
-          title: option.title,
-          values: option.values,
-        })) satisfies ResolvedOption[],
-        [],
-      )
+      const resolved: ResolvedOption[] = input.options.map((option) => ({
+        title: option.title,
+        values: option.values,
+      }))
+      return new StepResponse(resolved, [])
     }
 
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const productModuleService = container.resolve(Modules.PRODUCT)
 
-    const resolved: ResolvedOption[] = []
-    const compensation: OptionCompensation[] = []
+    const { data: existingOptions } = await query.graph({
+      entity: "product_option",
+      fields: ["id", "title", "values.value"],
+      filters: {
+        title: input.options.map((option) => option.title),
+        is_exclusive: false,
+      },
+    })
 
-    for (const option of input.options) {
-      const {
-        data: [existing],
-      } = await query.graph({
-        entity: "product_option",
-        fields: ["id", "values.value"],
-        filters: { title: option.title, is_exclusive: false },
-      })
+    const existingByTitle = new Map(
+      existingOptions.map((option) => [option.title, option]),
+    )
 
+    const updates = input.options.flatMap((option) => {
+      const existing = existingByTitle.get(option.title)
       if (!existing) {
-        resolved.push({ title: option.title, values: option.values })
-        continue
+        return []
       }
 
       const existingValues = (existing.values ?? [])
@@ -68,15 +70,30 @@ export const resolveSharedProductOptionsStep = createStep(
         (value) => !existingValues.includes(value),
       )
 
-      if (missingValues.length) {
-        await productModuleService.updateProductOptions(existing.id, {
-          values: [...existingValues, ...missingValues],
-        })
-        compensation.push({ id: existing.id, previousValues: existingValues })
-      }
+      return missingValues.length
+        ? [{ id: existing.id, existingValues, missingValues }]
+        : []
+    })
 
-      resolved.push({ id: existing.id })
-    }
+    await Promise.all(
+      updates.map((update) =>
+        productModuleService.updateProductOptions(update.id, {
+          values: [...update.existingValues, ...update.missingValues],
+        }),
+      ),
+    )
+
+    const compensation: OptionCompensation[] = updates.map((update) => ({
+      id: update.id,
+      previousValues: update.existingValues,
+    }))
+
+    const resolved: ResolvedOption[] = input.options.map((option) => {
+      const existing = existingByTitle.get(option.title)
+      return existing
+        ? { id: existing.id }
+        : { title: option.title, values: option.values, is_exclusive: false }
+    })
 
     return new StepResponse(resolved, compensation)
   },

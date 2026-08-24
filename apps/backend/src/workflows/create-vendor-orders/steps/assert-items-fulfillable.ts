@@ -31,7 +31,7 @@ export const assertItemsFulfillableStep = createStep(
 
     const { data: products } = await query.graph({
       entity: "product",
-      fields: ["id", "title", "shipping_profile.id"],
+      fields: ["id", "title", "shipping_profile.id", "vendor.id"],
       filters: { id: productIds },
     })
 
@@ -43,6 +43,20 @@ export const assertItemsFulfillableStep = createStep(
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         `Cannot complete this order — missing shipping information for: ${unfulfillable
+          .map((product) => product.title)
+          .join(", ")}.`,
+      )
+    }
+
+    // A product with no vendor link can't be routed to any vendor order
+    // downstream (group-vendor-items.ts) — blocking here means that never
+    // happens after the customer has already been charged.
+    const unassigned = products.filter((product) => !product.vendor?.id)
+
+    if (unassigned.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Cannot complete this order — no vendor assigned for: ${unassigned
           .map((product) => product.title)
           .join(", ")}.`,
       )

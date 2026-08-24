@@ -1,5 +1,5 @@
 import { MedusaError } from "@medusajs/framework/utils"
-import type { TestPullQuery } from "./generated/admin.generated"
+import type { ShopifyProductsPullQuery } from "./generated/admin.generated"
 
 export interface ShopifyProduct {
   shopify_id: string
@@ -27,7 +27,7 @@ export interface ShopifyProductsPullResult {
 }
 
 const PRODUCTS_QUERY = `#graphql
-  query TestPull($first: Int!) {
+  query ShopifyProductsPull($first: Int!) {
     shop { currencyCode }
     products(first: $first, sortKey: ID) {
       edges {
@@ -69,7 +69,7 @@ async function runProductsQuery(
   })
 
   const payload = (await res.json()) as {
-    data?: TestPullQuery
+    data?: ShopifyProductsPullQuery
     errors?: { message: string }[]
     extensions?: { cost?: { requestedQueryCost: number } }
   }

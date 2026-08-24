@@ -26,16 +26,20 @@ export const resolveShopifyProductPrerequisitesStep = createStep(
   ) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const {
-      data: [store],
-    } = await query.graph({
-      entity: "store",
-      fields: ["default_sales_channel_id", "supported_currencies.currency_code"],
-    })
-
-    const {
-      data: [shippingProfile],
-    } = await query.graph({ entity: "shipping_profile", fields: ["id"] })
+    const [
+      {
+        data: [store],
+      },
+      {
+        data: [shippingProfile],
+      },
+    ] = await Promise.all([
+      query.graph({
+        entity: "store",
+        fields: ["default_sales_channel_id", "supported_currencies.currency_code"],
+      }),
+      query.graph({ entity: "shipping_profile", fields: ["id"] }),
+    ])
 
     if (!shippingProfile) {
       throw new MedusaError(

@@ -1,5 +1,6 @@
 import {
   createWorkflow,
+  parallelize,
   transform,
   WorkflowResponse,
   when,
@@ -58,20 +59,21 @@ export const createVendorOrdersWorkflow = createWorkflow(
     // parent order id (as the official recipe does) misses every retry of a
     // multi-vendor cart, since no link ever points at the parent's id in
     // that branch — see docs/spikes/multi-vendor-order.md proof #6.
-    const { data: existingVendorLinks } = useQueryGraphStep({
-      entity: vendorOrderLink.entryPoint,
-      fields: ["vendor.id"],
-      filters: { order_id: orderId },
-    }).config({ name: "retrieve-existing-vendor-order-links" })
-
-    const { data: existingChildOrders } = useQueryGraphStep({
-      entity: "order",
-      fields: ["id"],
-      filters: { metadata: { parent_order_id: orderId } } as Record<
-        string,
-        unknown
-      >,
-    }).config({ name: "retrieve-existing-vendor-orders" })
+    const [{ data: existingVendorLinks }, { data: existingChildOrders }] = parallelize(
+      useQueryGraphStep({
+        entity: vendorOrderLink.entryPoint,
+        fields: ["vendor.id"],
+        filters: { order_id: orderId },
+      }).config({ name: "retrieve-existing-vendor-order-links" }),
+      useQueryGraphStep({
+        entity: "order",
+        fields: ["id"],
+        filters: { metadata: { parent_order_id: orderId } } as Record<
+          string,
+          unknown
+        >,
+      }).config({ name: "retrieve-existing-vendor-orders" }),
+    )
 
     const order = getOrderDetailWorkflow.runAsStep({
       input: {
