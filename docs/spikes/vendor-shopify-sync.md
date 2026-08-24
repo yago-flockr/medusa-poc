@@ -251,19 +251,18 @@ unaffected and stayed — only the staff-facing front door was removed at the
 time. The only remaining trigger at the time was the exec script, a developer
 convenience, not a real UI.
 
-**Open question this raises, not yet resolved:** `docs/plan.md`'s existing
-Decision says a vendor's Shopify connection is installed via **a link staff
-generates during onboarding** — staff-driven, not self-service, matching "a
-vendor is invited, never self-registered." A vendor-facing panel where the
-vendor manages their own connection (and where per-vendor credentials would need
-to live — likely on the Vendor module, not a single global env-var set like this
-spike uses) is a **different shape**: the vendor acting on their own connection
-after the fact, even if staff still originates the invite. These aren't
-necessarily in conflict (staff invites → vendor completes/manages the connection
-themselves afterward is a normal split), but it hasn't been reconciled with the
-existing Decision in writing — worth a real decision before building the panel,
-not an assumption either way. Tracked as a fresh open question in
-`docs/plan.md` rather than silently overwriting the existing Decision.
+**Resolved.** `docs/plan.md` Decisions now records the split this section
+predicted: staff invites and approves the vendor; the vendor connects and
+manages their own Shopify connection afterward, through a vendor panel that's
+back in scope (`docs/features/vendor-shopify-sync.md` "Connecting"). Per-vendor
+credentials live on the Vendor module, not a global env-var set, matching what
+this spike already moved to below ("Credentials are per-call now"). Also
+decided alongside it: the ongoing sync itself stays pull-triggered (vendor
+login, a scheduled backstop job, and a live check at checkout) rather than
+webhook-push for v1 — see `docs/plan.md` Decisions for the full shape and why.
+That last piece doubles as the answer to Question 1 above: the live
+checkout-time check is the actual mitigation for the double-sell race, not a
+still-open question.
 
 **Partly resolved, not by choice but by a hard constraint:** a client-credentials
 custom app only installs on stores in its own Shopify organization. A real

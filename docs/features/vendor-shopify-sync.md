@@ -27,19 +27,33 @@ Shopify.
 
 ## How it must work
 
-**Connecting.** During onboarding, staff generate a private connection for that
-vendor. The vendor authorises it from inside their own Shopify — this is not a public,
-self-service install; a vendor cannot connect themselves without a link staff gave
-them.
+**Connecting.** Staff invite and approve the vendor, same as any onboarding. The
+vendor then connects their own Shopify store from inside their own panel — not a
+public, self-service signup (nobody gets in without being invited first), but the
+connection action itself is the vendor's to take, not staff's. This is a hard
+constraint, not a design preference: a private-distribution Shopify app can only be
+created by someone with access to the *installing* store's own organization, so
+staff was never able to do this step on the vendor's behalf.
 
-**Bringing the catalogue in.** Once connected, the vendor's existing products,
-variants, images and stock start appearing in our system automatically, exactly as if
-they had been entered by hand — including going through the same review before
-customers can see them (see "Approval" below).
+**Bringing the catalogue in.** Once connected, the vendor sees their Shopify catalogue
+and chooses what to bring across — this isn't an all-or-nothing dump of everything in
+their store. Whatever they choose to import goes through the same review before
+customers can see it (see "Approval" below).
 
-**Staying current.** Any change the vendor makes on their own Shopify — new stock, a
-new product, a price change, a new variant, taking something down — arrives here
-without staff or the vendor doing anything extra to trigger it.
+**Staying current.** A Shopify-connected product's price and stock are refreshed (a)
+whenever the vendor logs into their panel, (b) on a periodic schedule regardless of
+whether the vendor logs in, and (c) live, right before a customer's payment for it is
+taken — this last check is what actually protects against a sale racing a stock
+change, not the other two. Full mechanics: `docs/plan.md` Decisions.
+
+**Who can change what.** A product's own data — title, price, images, variants —
+always comes from wherever it was created and never from the other side. If it
+started on Shopify, it can only be edited on Shopify and re-synced; the vendor's
+panel lets them turn it on or off here, and layer a markup or discount on top of the
+synced price, but never rewrite the price itself. If it was created directly with us
+(no connection, or before one existed), it behaves as it always has — fully editable
+here. This is what keeps there from being two conflicting sources of truth for the
+same product.
 
 **Approval.** A synced-in product is held back from customers until staff review it,
 the same review a manually entered product already goes through. The source of the
@@ -72,8 +86,14 @@ connection is restored.
   entirely on our side, start to finish.
 - **A vendor keeps selling on their own Shopify at the same time as through us.** Both
   places must agree about what's actually in stock.
-- **Connecting a vendor is staff-driven, not self-service.** A vendor cannot connect
-  their own store without a link staff generated for them during onboarding.
+- **A vendor is invited by staff, but connects their own store themselves.** Nobody
+  reaches the connection step without being invited first; nobody but the vendor can
+  take the connection step itself, since staff has no access to the vendor's own
+  Shopify organization to do it for them.
+- **A Shopify-sourced product's core data is never editable on our side.** Title,
+  price, images and variants stay one-directional from Shopify. The vendor's own
+  control here is limited to visibility (on/off) and a markup or discount applied on
+  top of the synced price — never a rewrite of the price itself.
 
 ## What each audience sees
 
@@ -103,13 +123,21 @@ regardless of source.
 
 ## Open questions
 
-- **Blocking — what happens when a sale on our marketplace and a sale on the vendor's
-  own Shopify race for the same last unit?** No agreed answer yet: a short hold, or
-  accepting the rare double sale and refunding one side.
+- **Answered in shape, not yet built: what happens when a sale on our marketplace and
+  a sale on the vendor's own Shopify race for the same last unit?** A live check
+  against Shopify runs immediately before payment is taken, so the race is caught at
+  the one moment it actually matters rather than relying on however fresh our synced
+  copy happens to be. See `docs/plan.md` Decisions for the full mechanics.
+- **Newly open, a product decision — what happens when that live check finds the
+  price has moved since the customer saw it in their cart?** Block checkout and ask
+  them to reconfirm, or silently honor the new price.
 - **Can we ever show a different price than the vendor's own Shopify says, or must
   their price always be what the customer pays?** Unconfirmed with the client. The
-  same question as `docs/features/multi-vendor-marketplace.md`'s "does a vendor get
-  its own pricing," specific to the Shopify case.
+  markup/discount layered on top of the synced price (see "Who can change what"
+  above) is our internal answer to "how would this work if we could" — it doesn't
+  by itself resolve whether the client actually allows us to. Same question as
+  `docs/features/multi-vendor-marketplace.md`'s "does a vendor get its own pricing,"
+  specific to the Shopify case.
 - **Does every vendor actually connect this way, or does some initial catalogue keep
   arriving by spreadsheet as an ongoing alternative, not a one-time convenience?**
 

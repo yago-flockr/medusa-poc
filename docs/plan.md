@@ -314,7 +314,9 @@ in short form, with what's genuinely still open flagged as such:
   `shopify_access_token` once the vendor approves, and if the connection
   ever breaks, staff just repeats the app-creation flow and re-pastes — no
   self-service reconnect UI, no "connection unhealthy" surfacing, both
-  acceptable fast-follows rather than v1 requirements.
+  acceptable fast-follows rather than v1 requirements. **Superseded within
+  the week — see the vendor-panel and sync-strategy decisions at the end of
+  Decisions below.**
 
 ## Decisions
 
@@ -448,3 +450,49 @@ in short form, with what's genuinely still open flagged as such:
   handling of a vendor adding a new variant option after the initial sync
   are worth reusing as technique, not as code. Full evaluation and the
   technical shape to build against: `docs/spikes/vendor-shopify-sync.md`.
+- **A full vendor panel is back — superseding "no vendor-facing panel for
+  v1" above, and the earlier deletion of `/vendor`.** Not a return to manual
+  catalogue entry: the panel's job is connection management (a vendor
+  connects and picks what to import from their own Shopify), staff-parity
+  profile CRUD, and its own orders/statements — not typing in products by
+  hand, which stays retired. This also resolves something the sync spike
+  had already flagged as unreconciled: the original "staff creates the app
+  and pastes credentials" shape assumed staff could act inside a vendor's
+  Shopify org, which hands-on testing already proved false — a
+  custom-distribution app can only be created by someone with access to the
+  *installing* store's own org, so the connection step was always going to
+  have to be vendor-driven, not staff-driven, regardless of this decision.
+  Staff still originates the relationship (invite, approval) — only the
+  "click connect, pick what to bring in" action moves to the vendor. Two
+  things this does **not** reopen: a Shopify-connected product's own
+  data (title, price, images, variants) still comes from Shopify only,
+  never edited by hand on either side of the connection — see the new SSOT
+  rule in `docs/features/vendor-shopify-sync.md`; and Vendor/VendorUser as a
+  model, staff approval via `ProductStatus`, and the order-splitting work
+  are all unaffected, exactly as when the sync decision first landed.
+- **Shopify sync is vendor-pull-triggered for v1, not webhook-push** —
+  refines the sync direction above rather than reversing it (product/stock
+  still flows in, a sale still flows out; only what *triggers* an inbound
+  refresh changes). Three layers, none of them a persistent listener: (1) a
+  vendor's own login to their panel triggers a refresh pull for their
+  connected store; (2) a scheduled job (`defineJobConfig` — fires and
+  exits, not a live connection) refreshes every connected vendor
+  periodically, so stock doesn't go stale just because a vendor hasn't
+  logged in; (3) immediately before a cart with any Shopify-sourced line
+  item is allowed to complete, one live Admin API check per vendor
+  represented in the cart re-verifies price and stock for just those
+  lines — insufficient stock is handled exactly like any other
+  vendor-can't-supply case (that line is refunded, the rest of the order
+  proceeds untouched). Layer 3 is the one that actually matters: it is the
+  concrete answer to the sync spike's still-open "double-sell race" question
+  — regardless of how stale layers 1–2 get, nothing is charged without a
+  live check first. Chosen for simplicity within this build's timeline (no
+  public tunnel needed for local dev, no webhook signature/retry/replay
+  plumbing to build yet), not because webhooks were found to be unsafe or
+  operationally heavy — a webhook is an ordinary API route Shopify happens
+  to call, not a standing connection, and nothing here rules out adding one
+  later purely to shrink the staleness window layers 1–2 leave, since layer
+  3 would still be required either way. **Still open, and a product
+  decision, not a technical one:** when layer 3 finds the live price has
+  moved since the customer saw it in cart, do we block checkout and ask
+  them to reconfirm, or silently honor the new price?
