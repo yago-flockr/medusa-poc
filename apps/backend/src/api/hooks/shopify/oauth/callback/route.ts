@@ -1,5 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { completeVendorShopifyConnectionWorkflow } from "../../../../../workflows/complete-vendor-shopify-connection"
+import { parseRawQuery } from "../../../../../lib/shopify-oauth"
 
 function escapeHtml(value: string): string {
   return value
@@ -11,7 +12,7 @@ function escapeHtml(value: string): string {
 }
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.query as Record<string, string>
+  const query = parseRawQuery(req.originalUrl.split("?")[1] ?? "")
   const { shop, code } = query
 
   res.setHeader("Content-Type", "text/html")

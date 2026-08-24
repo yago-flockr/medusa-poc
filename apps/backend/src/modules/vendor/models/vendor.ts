@@ -12,6 +12,7 @@ export const Vendor = model.define("vendor", {
   shopify_access_token: model.text().nullable(),
   shopify_scope: model.text().nullable(),
   shopify_connected_at: model.dateTime().nullable(),
+  shopify_oauth_state: model.text().nullable(),
   users: model.hasMany(() => VendorUser, {
     mappedBy: "vendor",
   }),

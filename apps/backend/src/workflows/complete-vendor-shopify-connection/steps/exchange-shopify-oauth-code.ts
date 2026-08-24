@@ -1,5 +1,5 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { exchangeShopifyCodeForToken } from "../../../lib/shopify-oauth"
+import { exchangeShopifyCodeForToken, uninstallShopifyApp } from "../../../lib/shopify-oauth"
 
 export type ExchangeShopifyOAuthCodeStepInput = {
   shop: string
@@ -8,8 +8,13 @@ export type ExchangeShopifyOAuthCodeStepInput = {
   code: string
 }
 
+type ExchangeShopifyOAuthCodeCompensation = {
+  shop: string
+  accessToken: string
+}
+
 export const exchangeShopifyOAuthCodeStep = createStep(
-  "exchange-shopify-oauth-code",
+  "exchange-shopify-o-auth-code",
   async (input: ExchangeShopifyOAuthCodeStepInput) => {
     const { access_token, scope } = await exchangeShopifyCodeForToken(
       input.shop,
@@ -18,6 +23,16 @@ export const exchangeShopifyOAuthCodeStep = createStep(
       input.code,
     )
 
-    return new StepResponse({ access_token, scope, connectedAt: new Date() })
+    return new StepResponse(
+      { access_token, scope, connectedAt: new Date() },
+      { shop: input.shop, accessToken: access_token } satisfies ExchangeShopifyOAuthCodeCompensation,
+    )
+  },
+  async (compensation: ExchangeShopifyOAuthCodeCompensation | undefined) => {
+    if (!compensation) {
+      return
+    }
+
+    await uninstallShopifyApp(compensation.shop, compensation.accessToken)
   },
 )

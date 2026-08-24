@@ -1,6 +1,23 @@
 import crypto from "node:crypto"
 import { MedusaError } from "@medusajs/framework/utils"
 
+export function parseRawQuery(rawQuery: string): Record<string, string> {
+  const result: Record<string, string> = {}
+
+  for (const pair of rawQuery.split("&")) {
+    if (!pair) {
+      continue
+    }
+
+    const eqIndex = pair.indexOf("=")
+    const key = eqIndex === -1 ? pair : pair.slice(0, eqIndex)
+    const value = eqIndex === -1 ? "" : pair.slice(eqIndex + 1)
+    result[decodeURIComponent(key)] = decodeURIComponent(value)
+  }
+
+  return result
+}
+
 export function verifyShopifyCallbackHmac(
   query: Record<string, string>,
   clientSecret: string,
@@ -46,4 +63,17 @@ export async function exchangeShopifyCodeForToken(
   }
 
   return (await res.json()) as { access_token: string; scope: string }
+}
+
+export async function uninstallShopifyApp(shop: string, accessToken: string): Promise<void> {
+  await fetch(`https://${shop}/admin/api/2026-01/graphql.json`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Access-Token": accessToken,
+    },
+    body: JSON.stringify({
+      query: `mutation { appUninstall { userErrors { field message } } }`,
+    }),
+  })
 }

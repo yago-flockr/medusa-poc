@@ -12,6 +12,7 @@ const VENDOR_UPDATABLE_FIELDS = [
   "shopify_access_token",
   "shopify_scope",
   "shopify_connected_at",
+  "shopify_oauth_state",
 ] as const
 
 type VendorUpdatableField = (typeof VENDOR_UPDATABLE_FIELDS)[number]
@@ -21,17 +22,17 @@ export type UpdateVendorStepInput = {
   name?: string
   handle?: string
   is_active?: boolean
-  shopify_store_domain?: string
-  shopify_client_id?: string
+  shopify_store_domain?: string | null
+  shopify_client_id?: string | null
   shopify_client_secret?: string
   shopify_access_token?: string
   shopify_scope?: string
   shopify_connected_at?: Date
+  shopify_oauth_state?: string | null
 }
 
-type UpdateVendorCompensation = { id: string } & Record<
-  VendorUpdatableField,
-  string | boolean | Date | null
+type UpdateVendorCompensation = { id: string } & Partial<
+  Record<VendorUpdatableField, string | boolean | Date | null>
 >
 
 export const updateVendorStep = createStep(
@@ -46,9 +47,8 @@ export const updateVendorStep = createStep(
     const compensation: Record<string, unknown> = { id: existing.id }
 
     for (const field of VENDOR_UPDATABLE_FIELDS) {
-      compensation[field] = existing[field]
-
       if (input[field] !== undefined) {
+        compensation[field] = existing[field]
         update[field] = input[field]
       }
     }

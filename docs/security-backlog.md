@@ -76,15 +76,35 @@ each was found while building or adversarially testing the marketplace spine
   the encryption key is provisioned and backed up — losing it makes every
   already-stored token permanently undecryptable, forcing every connected
   vendor to reconnect from scratch.
-- **The OAuth callback (`src/api/hooks/shopify/oauth/callback`) doesn't
-  validate a `state` parameter.** Lower priority than the item above:
-  there's no vendor browser session in this flow to hijack, and trust is
-  already anchored by Shopify's HMAC signature plus matching the callback's
-  `shop` to a staff-pre-registered Vendor row — so this isn't believed to
-  be a live exploitable gap today. Still worth closing as defense-in-depth
-  before v1: generate a random `state` value when building the
-  authorization URL, store it against the vendor, and reject the callback
-  if it doesn't match.
+- **RESOLVED: the OAuth callback now validates the `state` parameter.**
+  `shopify_oauth_state` is generated and saved on the Vendor row when the
+  install link is built, checked against the callback's `state` before the
+  code is exchanged, and cleared after a successful connection
+  (`verify-shopify-oauth-state` step). Previously generated but never
+  checked — a real gap, not just theoretical, since it looked like CSRF
+  protection existed when it didn't.
+- **The install-link route (`.../shopify-connection/install-link`) builds
+  the callback's `redirect_uri` from `X-Forwarded-Proto`/`X-Forwarded-Host`
+  request headers, with no Express `trust proxy` configured anywhere in the
+  repo (confirmed via grep).** Those headers are ordinary client-supplied
+  input unless the framework is told which proxy to actually trust, so in
+  principle a caller could send a fake `X-Forwarded-Host` and get an install
+  link whose `redirect_uri` points somewhere else. Real exploitability is
+  low today — this route requires admin auth already, and Shopify
+  independently checks `redirect_uri` against that vendor's app's own
+  allowlist, so a spoofed host would also need to already be a registered
+  redirect URL on that specific Shopify app. Proper fix: configure Express's
+  `trust proxy` setting (scoped to Cloud's actual proxy, not "trust
+  anything") so `req.protocol`/`req.hostname` become the safe,
+  framework-verified source instead of reading forwarded headers by hand.
+- **`exchangeShopifyOAuthCodeStep`'s compensation (uninstall the app via
+  Shopify's `appUninstall` mutation if a later step in the same workflow
+  fails) is unverified in practice.** It's a genuine, non-fabricated attempt
+  at real compensation (the codebase's own rule: every side-effecting step
+  needs one) using a real, documented Shopify mutation — but exercising it
+  needs a failure injected *between* a successful token exchange and the
+  following DB write, which hasn't been tested live. If it's ever needed for
+  real, confirm it actually revokes access rather than silently failing.
 
 ## Authorization structure
 

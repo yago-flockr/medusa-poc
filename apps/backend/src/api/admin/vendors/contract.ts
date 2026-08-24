@@ -1,6 +1,10 @@
 import { z } from "@medusajs/framework/zod"
 import type { FindParams, PaginatedResponse } from "@medusajs/framework/types"
-import { optionalTrimmedString, requiredTrimmedString } from "../zod-helpers"
+import {
+  optionalTrimmedString,
+  optionalTrimmedStringOrNull,
+  requiredTrimmedString,
+} from "../zod-helpers"
 
 export const vendorUserSchema = z.object({
   id: z.string(),
@@ -44,9 +48,10 @@ export type VendorResponse = {
 
 const name = requiredTrimmedString("Name is required")
 const handle = optionalTrimmedString()
-const shopifyStoreDomain = optionalTrimmedString().transform((value) =>
-  value?.replace(/^https?:\/\//i, "").replace(/\/+$/, ""),
+const shopifyStoreDomain = optionalTrimmedStringOrNull().transform((value) =>
+  value ? value.replace(/^https?:\/\//i, "").replace(/\/+$/, "").toLowerCase() : value,
 )
+const shopifyClientId = optionalTrimmedStringOrNull()
 
 export const createVendorSchema = z
   .object({
@@ -63,7 +68,7 @@ export const updateVendorSchema = z
     handle,
     is_active: z.boolean().optional(),
     shopify_store_domain: shopifyStoreDomain,
-    shopify_client_id: optionalTrimmedString(),
+    shopify_client_id: shopifyClientId,
     shopify_client_secret: optionalTrimmedString(),
   })
   .strict()
