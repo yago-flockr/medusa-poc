@@ -1,4 +1,3 @@
-import { User } from "@medusajs/icons"
 import { Button, Drawer, Text, toast } from "@medusajs/ui"
 import type { Vendor } from "../../../api/admin/vendors/contract"
 import { Divider } from "../../components/divider"

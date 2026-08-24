@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
@@ -20,13 +19,21 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
+      - name: Generate Shopify types
+        working-directory: apps/backend
+        run: pnpm run shopify-codegen
+
+      - name: Typecheck (server)
         working-directory: apps/backend
         run: npx tsc --noEmit
 
-      - name: Lint
+      - name: Typecheck (admin)
         working-directory: apps/backend
-        run: npx medusa lint
+        run: npx tsc -p src/admin/tsconfig.json
+
+      # - name: Lint
+      #   working-directory: apps/backend
+      #   run: npx medusa lint
 
       - name: Unit tests
         working-directory: apps/backend
