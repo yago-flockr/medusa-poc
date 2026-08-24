@@ -23,6 +23,7 @@ Do not record generic facts, obvious code, or duplicates.
 - Backend → `agents/backend.md`
 - Storefront → `agents/storefront.md`
 - Medusa mental model → `agents/medusa-learning-map.md`
+- Coding-pattern rule (SOLID, clean code, DRY/KISS/YAGNI, type safety, UI state) → `agents/patterns/<topic>.md`
 - Medusa study stages → `docs/study/README.md`
 - What a feature should do (business intent) → `docs/features/<slug>.md`. **Behaviour only** — no technology, file paths or primitives; those go in this file or `agents/backend.md`. Shape: `docs/features/_template.md`
 - Experiment protocol and results → `docs/spikes/<slug>.md`
@@ -50,6 +51,14 @@ Always implement the Medusa way. No workarounds.
 Hard rules for how code is written, not aspirations to skim past. Sequencing
 (backend before frontend) and tooling (ESLint + Prettier) are hard rules too —
 `docs/plan.md` "Decisions".
+
+Below are this project's own architectural principles (Medusa-specific: SRP
+across route/workflow/module, extend-don't-fork, etc.). `agents/patterns/`
+is the general-software-engineering layer underneath these — SOLID, clean
+code, DRY/KISS/YAGNI, type safety, UI state — and applies to every change on
+this repo the same way these do: by default, without being asked. Where a
+pattern file's guidance and this section overlap (DRY in particular), this
+section's wording is the one that governs for this repo.
 
 - **Single responsibility.** A module owns one domain's data and service; a
   workflow orchestrates one business operation; a route only translates HTTP
