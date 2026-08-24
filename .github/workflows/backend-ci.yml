@@ -19,9 +19,13 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Generate Shopify types
+      - name: Generate Shopify GraphQL types
         working-directory: apps/backend
         run: pnpm run shopify-codegen
+
+      - name: Build
+        working-directory: apps/backend
+        run: pnpm run build
 
       - name: Typecheck (server)
         working-directory: apps/backend
