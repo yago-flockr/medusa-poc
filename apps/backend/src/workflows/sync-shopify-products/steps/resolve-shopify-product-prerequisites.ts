@@ -1,5 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
+import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
 
 export type ResolveShopifyProductPrerequisitesStepInput = {
   shopCurrencyCode: string
@@ -11,13 +12,6 @@ export type ShopifyProductPrerequisites = {
   currencyCode: string
 }
 
-/**
- * Mirrors the same prerequisite resolution src/api/vendors/products/route.ts
- * already does for vendor-created products — a synced-in product needs the
- * exact same shipping-profile/sales-channel wiring or it's unfulfillable /
- * invisible with no error raised (docs/spikes/vendor-shopify-sync.md).
- * Read-only, nothing to compensate.
- */
 export const resolveShopifyProductPrerequisitesStep = createStep(
   "resolve-shopify-product-prerequisites",
   async (
@@ -26,31 +20,9 @@ export const resolveShopifyProductPrerequisitesStep = createStep(
   ) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const [
-      {
-        data: [store],
-      },
-      {
-        data: [shippingProfile],
-      },
-    ] = await Promise.all([
-      query.graph({
-        entity: "store",
-        fields: ["default_sales_channel_id", "supported_currencies.currency_code"],
-      }),
-      query.graph({ entity: "shipping_profile", fields: ["id"] }),
-    ])
+    const { shippingProfileId, salesChannelId, storeCurrencies } =
+      await resolveStorePrerequisites(query)
 
-    if (!shippingProfile) {
-      throw new MedusaError(
-        MedusaError.Types.UNEXPECTED_STATE,
-        "The store has no shipping profile configured — cannot create a shippable product.",
-      )
-    }
-
-    const storeCurrencies = (store.supported_currencies ?? []).map(
-      (currency) => currency!.currency_code,
-    )
     const currencyCode = input.shopCurrencyCode.toLowerCase()
 
     if (!storeCurrencies.includes(currencyCode)) {
@@ -61,8 +33,8 @@ export const resolveShopifyProductPrerequisitesStep = createStep(
     }
 
     return new StepResponse({
-      shippingProfileId: shippingProfile.id,
-      salesChannelId: store.default_sales_channel_id ?? null,
+      shippingProfileId,
+      salesChannelId,
       currencyCode,
     } satisfies ShopifyProductPrerequisites)
   },

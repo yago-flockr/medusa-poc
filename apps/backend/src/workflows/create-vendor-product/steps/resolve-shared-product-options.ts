@@ -1,5 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import type { MedusaContainer } from "@medusajs/framework/types"
 
 export type ResolveSharedProductOptionsStepInput = {
   options: { title: string; values: string[] }[]
@@ -15,86 +16,98 @@ type OptionCompensation = {
   previousValues: string[]
 }
 
-// `shared` is true only for vendor-provided options (Size, Color, ...);
-// it's false for the synthetic "Default" option on a no-options product,
-// which must stay exclusive to that one product — this step is a no-op
-// pass-through in that case.
-//
+function resolveExclusiveOptions(
+  options: { title: string; values: string[] }[],
+): ResolvedOption[] {
+  return options.map((option) => ({ title: option.title, values: option.values }))
+}
+
 // Medusa's shared (is_exclusive: false) product options are looked up by
-// title with a real DB-level unique constraint — creating one with a title
-// that already exists throws outright, and there is no per-product/
-// per-vendor scoping possible for it (confirmed by testing). So making
-// vendor options filterable means resolving each one to the *same*
-// underlying option row every vendor's products with that title share,
-// adding any new values to it, rather than creating a fresh row per
-// product. This is the correct marketplace behaviour, not a workaround: a
-// customer filtering the whole store by "Color" should see every vendor's
-// matching products, not just one's.
+// title with a DB-level unique constraint, so every vendor's product with
+// the same option title must resolve to the same underlying row.
+async function resolveSharedOptionsWithLocking(
+  options: { title: string; values: string[] }[],
+  container: MedusaContainer,
+): Promise<{ resolved: ResolvedOption[]; compensation: OptionCompensation[] }> {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  const productModuleService = container.resolve(Modules.PRODUCT)
+  const lockingModuleService = container.resolve(Modules.LOCKING)
+
+  const { data: existingOptions } = await query.graph({
+    entity: "product_option",
+    fields: ["id", "title"],
+    filters: { title: options.map((option) => option.title), is_exclusive: false },
+  })
+
+  const existingByTitle = new Map(
+    existingOptions.map((option) => [option.title, option]),
+  )
+
+  const updates = (
+    await Promise.all(
+      options.flatMap((option) => {
+        const existing = existingByTitle.get(option.title)
+        if (!existing) {
+          return []
+        }
+
+        return [
+          // Locked per option id, with a fresh read inside the lock — two
+          // concurrent writers adding different values would otherwise both
+          // read the same stale list and one's addition would silently
+          // overwrite the other's.
+          lockingModuleService.execute(`product-option:${existing.id}`, async () => {
+            const {
+              data: [fresh],
+            } = await query.graph({
+              entity: "product_option",
+              fields: ["values.value"],
+              filters: { id: existing.id },
+            })
+
+            const existingValues = (fresh.values ?? [])
+              .filter((value) => value != null)
+              .map((value) => value!.value)
+            const missingValues = option.values.filter(
+              (value) => !existingValues.includes(value),
+            )
+
+            if (!missingValues.length) {
+              return null
+            }
+
+            await productModuleService.updateProductOptions(existing.id, {
+              values: [...existingValues, ...missingValues],
+            })
+
+            return { id: existing.id, previousValues: existingValues }
+          }),
+        ]
+      }),
+    )
+  ).filter((update): update is OptionCompensation => update !== null)
+
+  const resolved: ResolvedOption[] = options.map((option) => {
+    const existing = existingByTitle.get(option.title)
+    return existing
+      ? { id: existing.id }
+      : { title: option.title, values: option.values, is_exclusive: false }
+  })
+
+  return { resolved, compensation: updates }
+}
+
 export const resolveSharedProductOptionsStep = createStep(
   "resolve-shared-product-options",
   async (input: ResolveSharedProductOptionsStepInput, { container }) => {
     if (!input.shared) {
-      const resolved: ResolvedOption[] = input.options.map((option) => ({
-        title: option.title,
-        values: option.values,
-      }))
-      return new StepResponse(resolved, [])
+      return new StepResponse(resolveExclusiveOptions(input.options), [])
     }
 
-    const query = container.resolve(ContainerRegistrationKeys.QUERY)
-    const productModuleService = container.resolve(Modules.PRODUCT)
-
-    const { data: existingOptions } = await query.graph({
-      entity: "product_option",
-      fields: ["id", "title", "values.value"],
-      filters: {
-        title: input.options.map((option) => option.title),
-        is_exclusive: false,
-      },
-    })
-
-    const existingByTitle = new Map(
-      existingOptions.map((option) => [option.title, option]),
+    const { resolved, compensation } = await resolveSharedOptionsWithLocking(
+      input.options,
+      container,
     )
-
-    const updates = input.options.flatMap((option) => {
-      const existing = existingByTitle.get(option.title)
-      if (!existing) {
-        return []
-      }
-
-      const existingValues = (existing.values ?? [])
-        .filter((value) => value != null)
-        .map((value) => value!.value)
-      const missingValues = option.values.filter(
-        (value) => !existingValues.includes(value),
-      )
-
-      return missingValues.length
-        ? [{ id: existing.id, existingValues, missingValues }]
-        : []
-    })
-
-    await Promise.all(
-      updates.map((update) =>
-        productModuleService.updateProductOptions(update.id, {
-          values: [...update.existingValues, ...update.missingValues],
-        }),
-      ),
-    )
-
-    const compensation: OptionCompensation[] = updates.map((update) => ({
-      id: update.id,
-      previousValues: update.existingValues,
-    }))
-
-    const resolved: ResolvedOption[] = input.options.map((option) => {
-      const existing = existingByTitle.get(option.title)
-      return existing
-        ? { id: existing.id }
-        : { title: option.title, values: option.values, is_exclusive: false }
-    })
-
     return new StepResponse(resolved, compensation)
   },
   async (compensation: OptionCompensation[] | undefined, { container }) => {

@@ -18,6 +18,7 @@ import vendorOrderLink from "../../links/vendor-order"
 import { assertItemsFulfillableStep } from "./steps/assert-items-fulfillable"
 import { createVendorOrdersStep } from "./steps/create-vendor-orders"
 import { groupVendorItemsStep } from "./steps/group-vendor-items"
+import { resolveVendorOrdersStep } from "./steps/resolve-vendor-orders"
 
 export type CreateVendorOrdersWorkflowInput = {
   cart_id: string
@@ -41,10 +42,16 @@ export const createVendorOrdersWorkflow = createWorkflow(
 
     assertItemsFulfillableStep({ items: cartItems })
 
+    // ttl has no renewal (Medusa's default lock provider expires it
+    // unconditionally at ttl regardless of whether this run finished) — 60s
+    // is a pragmatic margin against real DB latency, not a full fix. A real
+    // fix needs either lock renewal or a DB-level unique constraint behind
+    // the idempotency checks below, which are point-in-time queries with
+    // no constraint backing them.
     acquireLockStep({
       key: input.cart_id,
       timeout: 2,
-      ttl: 10,
+      ttl: 60,
     })
 
     const { id: orderId } = completeCartWorkflow.runAsStep({
@@ -91,7 +98,7 @@ export const createVendorOrdersWorkflow = createWorkflow(
       },
     })
 
-    const vendorOrders = when(
+    when(
       "create-vendor-order-links",
       { existingVendorLinks, existingChildOrders },
       (data) =>
@@ -100,15 +107,19 @@ export const createVendorOrdersWorkflow = createWorkflow(
     ).then(() => {
       const { vendorsItems } = groupVendorItemsStep({ items: cartItems })
 
-      const { orders, linkDefs } = createVendorOrdersStep({
+      const { linkDefs } = createVendorOrdersStep({
         parentOrder: order,
         vendorsItems,
       })
 
       createRemoteLinkStep(linkDefs)
-
-      return orders
     })
+
+    // Runs regardless of whether the block above just created the vendor
+    // orders or they already existed from an earlier attempt — otherwise a
+    // retry after a client timeout would return vendorOrders: undefined
+    // even though the vendor orders exist in the DB.
+    const vendorOrders = resolveVendorOrdersStep({ orderId, parentOrder: order })
 
     releaseLockStep({ key: input.cart_id })
 

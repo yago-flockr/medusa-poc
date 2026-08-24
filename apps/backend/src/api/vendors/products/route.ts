@@ -8,6 +8,7 @@ import {
   ProductStatus,
 } from "@medusajs/framework/utils"
 import { createVendorProductWorkflow } from "../../../workflows/create-vendor-product"
+import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
 import { parseVendorListQuery } from "../list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 import { resolveProductVariants } from "./build-variants"
@@ -44,38 +45,16 @@ export const POST = async (
     "vendor_id",
   ])
 
-  const {
-    data: [store],
-  } = await query.graph({
-    entity: "store",
-    fields: ["default_sales_channel_id", "supported_currencies.currency_code"],
-  })
-
-  const {
-    data: [shippingProfile],
-  } = await query.graph({
-    entity: "shipping_profile",
-    fields: ["id"],
-  })
+  const { shippingProfileId, salesChannelId, storeCurrencies } =
+    await resolveStorePrerequisites(query)
 
   const { title, subtitle, description, handle, images, options, variants } =
     req.validatedBody
-
-  const storeCurrencies = (store.supported_currencies ?? []).map(
-    (currency) => currency!.currency_code,
-  )
 
   if (!storeCurrencies.length) {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
       "The store has no supported currencies configured — cannot price a product.",
-    )
-  }
-
-  if (!shippingProfile) {
-    throw new MedusaError(
-      MedusaError.Types.UNEXPECTED_STATE,
-      "The store has no shipping profile configured — cannot create a shippable product.",
     )
   }
 
@@ -93,12 +72,10 @@ export const POST = async (
         description,
         handle,
         status: ProductStatus.PROPOSED,
-        shipping_profile_id: shippingProfile.id,
+        shipping_profile_id: shippingProfileId,
         images: images ?? [],
         variants: productVariants,
-        sales_channels: store.default_sales_channel_id
-          ? [{ id: store.default_sales_channel_id }]
-          : [],
+        sales_channels: salesChannelId ? [{ id: salesChannelId }] : [],
       },
       options: productOptions,
       shared: Boolean(options?.length),
