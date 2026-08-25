@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useVendorAuthStore } from "@vendor/stores/auth-store"
 import { useRouter } from "next/navigation"
-import { useVendorAuthStore } from "@vendor/lib/auth-store"
+import { useEffect, useState } from "react"
 
 export default function VendorDashboardPage() {
   const router = useRouter()

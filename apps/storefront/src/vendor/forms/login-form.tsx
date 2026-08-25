@@ -1,10 +1,10 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { useRouter } from "next/navigation"
-import { useVendorAuthStore } from "@vendor/lib/auth-store"
 import { useLoginVendor } from "@vendor/hooks/mutations/auth"
+import { useVendorAuthStore } from "@vendor/stores/auth-store"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
 import z from "zod"
 
 export const loginVendorSchema = z.object({

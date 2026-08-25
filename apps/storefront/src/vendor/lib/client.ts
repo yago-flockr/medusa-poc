@@ -1,4 +1,4 @@
-import { useVendorAuthStore } from "./auth-store"
+import { useVendorAuthStore } from "../stores/auth-store"
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? "http://localhost:9000"

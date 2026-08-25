@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useVendorAuthStore } from "@vendor/lib/auth-store"
 import { LoginForm } from "@vendor/forms/login-form"
+import { useVendorAuthStore } from "@vendor/stores/auth-store"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function VendorHomePage() {
   const router = useRouter()

@@ -1,9 +1,9 @@
 "use client"
 
+import { VendorApiError } from "@vendor/lib/client"
+import { useVendorAuthStore } from "@vendor/stores/auth-store"
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
-import { VendorApiError } from "@vendor/lib/client"
-import { useVendorAuthStore } from "@vendor/lib/auth-store"
 
 export function useVendorErrorHandler() {
   const router = useRouter()
