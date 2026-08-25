@@ -1,14 +1,47 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript",
-    "prettier"
-  ],
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": ["error", {
-      "argsIgnorePattern": "^_",
-      "varsIgnorePattern": "^_",
-      "caughtErrorsIgnorePattern": "^_"
-    }]
-  }
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/vendor/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@modules/*", "**/store/*", "**/store"],
+                "message": "vendor/ must never import from store/ — these are isolated actor boundaries."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/store/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@vendor/*", "**/vendor/*", "**/vendor"],
+                "message": "store/ must never import from vendor/ — these are isolated actor boundaries."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
