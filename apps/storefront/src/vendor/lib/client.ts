@@ -29,7 +29,7 @@ export class VendorApiError extends Error {
 
 type ApiErrorBody = { message?: string }
 
-async function request<T>(
+export async function request<T>(
   path: string,
   options: { method?: string; authToken?: string; body?: unknown } = {},
 ): Promise<T> {
@@ -56,9 +56,3 @@ async function request<T>(
 
   return data as T
 }
-
-export const loginVendorAdmin = (email: string, password: string) =>
-  request<{ token: string }>("/auth/vendor/emailpass", {
-    method: "POST",
-    body: { email, password },
-  })

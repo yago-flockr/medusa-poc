@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { clearVendorToken, getVendorToken } from "../api"
+import { clearVendorToken, getVendorToken } from "@vendor/lib/client"
 
 export default function VendorDashboardPage() {
   const router = useRouter()

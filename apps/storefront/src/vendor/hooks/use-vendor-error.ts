@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
-import { clearVendorToken, VendorApiError } from "./api"
+import { clearVendorToken, VendorApiError } from "@vendor/lib/client"
 
 export function useVendorErrorHandler() {
   const router = useRouter()
