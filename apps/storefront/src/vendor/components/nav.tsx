@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 
 const NAV_ITEMS = [
-  { href: "/vendor/dashboard", label: "Dashboard" },
+  { href: "/vendor", label: "Dashboard" },
   { href: "/vendor/profile", label: "Profile" },
   { href: "/vendor/orders", label: "Orders" },
 ]

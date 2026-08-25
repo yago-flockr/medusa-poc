@@ -6,7 +6,6 @@ import {
   useVendorAuthStore,
   type VendorAuthState,
 } from "@/vendor/stores/auth-store"
-import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import z from "zod"
 import { Button } from "@/components/ui/button"
@@ -20,7 +19,6 @@ export const loginVendorSchema = z.object({
 export type LoginVendorInput = z.infer<typeof loginVendorSchema>
 
 export function LoginForm() {
-  const router = useRouter()
   const loginMutation = useLoginVendor()
   const setToken = useVendorAuthStore((s: VendorAuthState) => s.setToken)
   const {
@@ -36,7 +34,6 @@ export function LoginForm() {
     loginMutation.mutate(values, {
       onSuccess: ({ token }: { token: string }) => {
         setToken(token)
-        router.push("/vendor/dashboard")
       },
     })
   })

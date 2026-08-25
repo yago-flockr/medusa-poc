@@ -25,6 +25,10 @@ coverage
 **/build
 **/dist
 
+# TypeScript incremental build cache — regenerates on every tsc run, never
+# meant to be committed
+**/*.tsbuildinfo
+
 # Medusa Local File Module upload storage (apps/backend/static) — dev-only,
 # real files land here from any /vendors/uploads or /admin/uploads call
 apps/backend/static/

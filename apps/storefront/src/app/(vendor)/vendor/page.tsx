@@ -1,9 +1,7 @@
 "use client"
 
-import { LoginForm } from "@/vendor/forms/login-form"
-import { useVendorAuthStore } from "@/vendor/stores/auth-store"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useFindOneVendor } from "@/vendor/hooks/queries/vendor"
+import { VendorNav } from "@/vendor/components/nav"
 import {
   Card,
   CardContent,
@@ -12,34 +10,23 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-export default function VendorHomePage() {
-  const router = useRouter()
-  const [checked, setChecked] = useState(false)
-
-  useEffect(() => {
-    if (useVendorAuthStore.getState().token) {
-      router.replace("/vendor/dashboard")
-      return
-    }
-    setChecked(true)
-  }, [router])
-
-  if (!checked) {
-    return null
-  }
+export default function VendorDashboardPage() {
+  const { data, isLoading } = useFindOneVendor()
 
   return (
-    <div className="max-w-sm">
+    <div>
+      <VendorNav />
       <Card>
         <CardHeader>
-          <CardTitle>Vendor log in</CardTitle>
+          <CardTitle>
+            {isLoading ? "Loading…" : `Welcome, ${data?.vendor.name ?? ""}`}
+          </CardTitle>
           <CardDescription>
-            Sign in with the credentials staff created for you.
+            This is your vendor dashboard. See your profile and orders in the
+            navigation above.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <LoginForm />
-        </CardContent>
+        <CardContent />
       </Card>
     </div>
   )

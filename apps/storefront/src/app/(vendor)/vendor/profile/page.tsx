@@ -1,6 +1,5 @@
 "use client"
 
-import { useRequireVendorAuth } from "@/vendor/hooks/custom/use-require-vendor-auth"
 import { useFindOneVendor } from "@/vendor/hooks/queries/vendor"
 import { VendorNav } from "@/vendor/components/nav"
 import {
@@ -21,14 +20,7 @@ function ProfileRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function VendorProfilePage() {
-  const checked = useRequireVendorAuth()
-  const { data, isLoading } = useFindOneVendor(undefined, {
-    enabled: checked,
-  })
-
-  if (!checked) {
-    return null
-  }
+  const { data, isLoading } = useFindOneVendor()
 
   return (
     <div>

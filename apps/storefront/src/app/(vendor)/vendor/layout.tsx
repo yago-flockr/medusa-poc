@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import "@/styles/globals.css"
 import { VendorQueryClientProvider } from "./query-client-provider"
+import { VendorAuthGate } from "./vendor-auth-gate"
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -17,7 +18,7 @@ export default function VendorLayout({
 }) {
   return (
     <VendorQueryClientProvider>
-      <div className="max-w-3xl mx-auto px-4 py-8">{children}</div>
+      <VendorAuthGate>{children}</VendorAuthGate>
     </VendorQueryClientProvider>
   )
 }

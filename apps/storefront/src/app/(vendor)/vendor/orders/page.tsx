@@ -1,6 +1,5 @@
 "use client"
 
-import { useRequireVendorAuth } from "@/vendor/hooks/custom/use-require-vendor-auth"
 import {
   useFindManyVendorOrders,
   type VendorOrder,
@@ -14,14 +13,7 @@ import {
 } from "@/components/ui/card"
 
 export default function VendorOrdersPage() {
-  const checked = useRequireVendorAuth()
-  const { data, isLoading } = useFindManyVendorOrders(undefined, {
-    enabled: checked,
-  })
-
-  if (!checked) {
-    return null
-  }
+  const { data, isLoading } = useFindManyVendorOrders()
 
   return (
     <div>
@@ -35,9 +27,7 @@ export default function VendorOrdersPage() {
             <p className="text-sm text-muted-foreground">Loading…</p>
           )}
           {!isLoading && data?.orders.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              No orders yet.
-            </p>
+            <p className="text-sm text-muted-foreground">No orders yet.</p>
           )}
           {data?.orders.map((order: VendorOrder) => (
             <div
@@ -49,7 +39,8 @@ export default function VendorOrdersPage() {
                 <p className="text-muted-foreground">{order.status}</p>
               </div>
               <p className="font-medium">
-                {(order.total / 100).toFixed(2)} {order.currency_code.toUpperCase()}
+                {(order.total / 100).toFixed(2)}{" "}
+                {order.currency_code.toUpperCase()}
               </p>
             </div>
           ))}
