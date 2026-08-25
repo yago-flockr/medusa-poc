@@ -1,14 +1,19 @@
 "use client"
 
-import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
-import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
+import {
+  useVendorAuthStore,
+  type VendorAuthState,
+} from "@/vendor/stores/auth-store"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import z from "zod"
+import { Button } from "@/components/ui/button"
+import { TextField } from "./fields/text-field"
 
 export const loginVendorSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(1),
 })
 
@@ -17,7 +22,7 @@ export type LoginVendorInput = z.infer<typeof loginVendorSchema>
 export function LoginForm() {
   const router = useRouter()
   const loginMutation = useLoginVendor()
-  const setToken = useVendorAuthStore((s) => s.setToken)
+  const setToken = useVendorAuthStore((s: VendorAuthState) => s.setToken)
   const {
     register,
     handleSubmit,
@@ -29,7 +34,7 @@ export function LoginForm() {
 
   const submit = handleSubmit((values) => {
     loginMutation.mutate(values, {
-      onSuccess: ({ token }) => {
+      onSuccess: ({ token }: { token: string }) => {
         setToken(token)
         router.push("/vendor/dashboard")
       },
@@ -37,45 +42,26 @@ export function LoginForm() {
   })
 
   return (
-    <form onSubmit={submit} className="border rounded-md p-4">
-      <h2 className="font-medium mb-4">Vendor log in</h2>
-      <div className="flex flex-col gap-2">
-        <label className="text-sm">
-          Email
-          <input
-            type="email"
-            className="w-full border rounded px-2 py-1"
-            {...register("email")}
-          />
-          {errors.email && (
-            <span className="block text-sm text-red-600">
-              {errors.email.message}
-            </span>
-          )}
-        </label>
-        <label className="text-sm">
-          Password
-          <input
-            type="password"
-            className="w-full border rounded px-2 py-1"
-            {...register("password")}
-          />
-          {errors.password && (
-            <span className="block text-sm text-red-600">
-              {errors.password.message}
-            </span>
-          )}
-        </label>
-      </div>
-      <button
-        type="submit"
-        disabled={loginMutation.isPending}
-        className="mt-4 w-full bg-black text-white rounded px-3 py-2 text-sm disabled:opacity-50"
-      >
+    <form onSubmit={submit} className="flex flex-col gap-4">
+      <TextField
+        id="vendor-email"
+        label="Email"
+        type="email"
+        error={errors.email?.message}
+        {...register("email")}
+      />
+      <TextField
+        id="vendor-password"
+        label="Password"
+        type="password"
+        error={errors.password?.message}
+        {...register("password")}
+      />
+      <Button type="submit" disabled={loginMutation.isPending}>
         {loginMutation.isPending ? "Logging in…" : "Log in"}
-      </button>
+      </Button>
       {loginMutation.isError && (
-        <p className="text-sm text-red-600 mt-2">
+        <p className="text-sm text-destructive">
           {loginMutation.error.message}
         </p>
       )}

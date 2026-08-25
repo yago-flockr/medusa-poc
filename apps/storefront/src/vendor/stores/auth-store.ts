@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
-type VendorAuthState = {
+export type VendorAuthState = {
   token: string | null
   setToken: (token: string) => void
   clearToken: () => void

@@ -4,6 +4,13 @@ import { LoginForm } from "@/vendor/forms/login-form"
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export default function VendorHomePage() {
   const router = useRouter()
@@ -23,7 +30,17 @@ export default function VendorHomePage() {
 
   return (
     <div className="max-w-sm">
-      <LoginForm />
+      <Card>
+        <CardHeader>
+          <CardTitle>Vendor log in</CardTitle>
+          <CardDescription>
+            Sign in with the credentials staff created for you.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LoginForm />
+        </CardContent>
+      </Card>
     </div>
   )
 }
