@@ -1,19 +1,19 @@
 "use client"
 
+import { convertToLocale } from "@/store/lib/util/money"
+import DeleteButton from "@/store/modules/common/components/delete-button"
+import LineItemOptions from "@/store/modules/common/components/line-item-options"
+import LineItemPrice from "@/store/modules/common/components/line-item-price"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import { Button } from "@/store/modules/common/components/ui"
+import Thumbnail from "@/store/modules/products/components/thumbnail"
 import {
   Popover,
   PopoverButton,
   PopoverPanel,
   Transition,
 } from "@headlessui/react"
-import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@modules/common/components/ui"
-import DeleteButton from "@modules/common/components/delete-button"
-import LineItemOptions from "@modules/common/components/line-item-options"
-import LineItemPrice from "@modules/common/components/line-item-price"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
@@ -23,7 +23,7 @@ const CartDropdown = ({
   cart?: HttpTypes.StoreCart | null
 }) => {
   const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
-    undefined
+    undefined,
   )
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
 

@@ -1,5 +1,5 @@
+import { clx } from "@/store/modules/common/components/ui"
 import { ChevronUpDown } from "@medusajs/icons"
-import { clx } from "@modules/common/components/ui"
 import {
   SelectHTMLAttributes,
   forwardRef,
@@ -18,14 +18,14 @@ export type NativeSelectProps = {
 const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
   (
     { placeholder = "Select...", defaultValue, className, children, ...props },
-    ref
+    ref,
   ) => {
     const innerRef = useRef<HTMLSelectElement>(null)
     const [isPlaceholder, setIsPlaceholder] = useState(false)
 
     useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
       ref,
-      () => innerRef.current
+      () => innerRef.current,
     )
 
     useEffect(() => {
@@ -46,7 +46,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             className,
             {
               "text-ui-fg-muted": isPlaceholder,
-            }
+            },
           )}
         >
           <select
@@ -66,7 +66,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
         </div>
       </div>
     )
-  }
+  },
 )
 
 NativeSelect.displayName = "NativeSelect"

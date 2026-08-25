@@ -1,10 +1,10 @@
-import repeat from "@lib/util/repeat"
+import repeat from "@/store/lib/util/repeat"
+import { Table } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { Table } from "@modules/common/components/ui"
 
-import Divider from "@modules/common/components/divider"
-import Item from "@modules/order/components/item"
-import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
+import Divider from "@/store/modules/common/components/divider"
+import Item from "@/store/modules/order/components/item"
+import SkeletonLineItem from "@/store/modules/skeletons/components/skeleton-line-item"
 
 type ItemsProps = {
   order: HttpTypes.StoreOrder

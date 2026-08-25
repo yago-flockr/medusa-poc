@@ -1,6 +1,6 @@
-import { declineTransferRequest } from "@lib/data/orders"
-import { Heading, Text } from "@modules/common/components/ui"
-import TransferImage from "@modules/order/components/transfer-image"
+import { declineTransferRequest } from "@/store/lib/data/orders"
+import { Heading, Text } from "@/store/modules/common/components/ui"
+import TransferImage from "@/store/modules/order/components/transfer-image"
 
 export default async function TransferPage({
   params,

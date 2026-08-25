@@ -1,5 +1,5 @@
+import { Container } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { Container } from "@modules/common/components/ui"
 import Image from "next/image"
 
 type ImageGalleryProps = {

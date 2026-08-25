@@ -1,7 +1,7 @@
 "use client"
 
-import { LoginForm } from "@vendor/forms/login-form"
-import { useVendorAuthStore } from "@vendor/stores/auth-store"
+import { LoginForm } from "@/vendor/forms/login-form"
+import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 

@@ -1,8 +1,8 @@
-import { Container, clx } from "@modules/common/components/ui"
+import { Container, clx } from "@/store/modules/common/components/ui"
 import Image from "next/image"
 import React from "react"
 
-import PlaceholderImage from "@modules/common/icons/placeholder-image"
+import PlaceholderImage from "@/store/modules/common/icons/placeholder-image"
 
 type ThumbnailProps = {
   thumbnail?: string | null
@@ -36,7 +36,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
           "w-[290px]": size === "medium",
           "w-[440px]": size === "large",
           "w-full": size === "full",
-        }
+        },
       )}
       data-testid={dataTestid}
     >

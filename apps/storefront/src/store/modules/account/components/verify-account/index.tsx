@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { confirmEmailVerification } from "@/store/lib/data/customer"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import { Button } from "@/store/modules/common/components/ui"
 import { useSearchParams } from "next/navigation"
-import { Button } from "@modules/common/components/ui"
-import { confirmEmailVerification } from "@lib/data/customer"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { useEffect, useRef, useState } from "react"
 
 type VerificationState = "verifying" | "success" | "error"
 
@@ -28,7 +28,7 @@ const VerifyAccount = () => {
     }
 
     confirmEmailVerification(token).then(({ success }) =>
-      setState(success ? "success" : "error")
+      setState(success ? "success" : "error"),
     )
   }, [token])
 

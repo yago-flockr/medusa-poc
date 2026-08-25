@@ -1,17 +1,17 @@
 "use client"
 
-import { Table, Text, clx } from "@modules/common/components/ui"
-import { updateLineItem } from "@lib/data/cart"
+import { updateLineItem } from "@/store/lib/data/cart"
+import CartItemSelect from "@/store/modules/cart/components/cart-item-select"
+import ErrorMessage from "@/store/modules/checkout/components/error-message"
+import DeleteButton from "@/store/modules/common/components/delete-button"
+import LineItemOptions from "@/store/modules/common/components/line-item-options"
+import LineItemPrice from "@/store/modules/common/components/line-item-price"
+import LineItemUnitPrice from "@/store/modules/common/components/line-item-unit-price"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import { Table, Text, clx } from "@/store/modules/common/components/ui"
+import Spinner from "@/store/modules/common/icons/spinner"
+import Thumbnail from "@/store/modules/products/components/thumbnail"
 import { HttpTypes } from "@medusajs/types"
-import CartItemSelect from "@modules/cart/components/cart-item-select"
-import ErrorMessage from "@modules/checkout/components/error-message"
-import DeleteButton from "@modules/common/components/delete-button"
-import LineItemOptions from "@modules/common/components/line-item-options"
-import LineItemPrice from "@modules/common/components/line-item-price"
-import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import Spinner from "@modules/common/icons/spinner"
-import Thumbnail from "@modules/products/components/thumbnail"
 import { useState } from "react"
 
 type ItemProps = {
@@ -91,7 +91,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
                   <option value={i + 1} key={i}>
                     {i + 1}
                   </option>
-                )
+                ),
               )}
 
               <option value={1} key={1}>

@@ -1,8 +1,8 @@
-import { Container, Heading, Text } from "@modules/common/components/ui"
+import { Container, Heading, Text } from "@/store/modules/common/components/ui"
 
-import { isStripeLike, paymentInfoMap } from "@lib/constants"
-import Divider from "@modules/common/components/divider"
-import { convertToLocale } from "@lib/util/money"
+import { isStripeLike, paymentInfoMap } from "@/store/lib/constants"
+import { convertToLocale } from "@/store/lib/util/money"
+import Divider from "@/store/modules/common/components/divider"
 import { HttpTypes } from "@medusajs/types"
 
 type PaymentDetailsProps = {
@@ -46,7 +46,7 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
                         amount: payment.amount,
                         currency_code: order.currency_code,
                       })} paid at ${new Date(
-                        payment.created_at ?? ""
+                        payment.created_at ?? "",
                       ).toLocaleString()}`}
                 </Text>
               </div>

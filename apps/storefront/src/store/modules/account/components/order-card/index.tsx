@@ -1,9 +1,9 @@
-import { Button } from "@modules/common/components/ui"
+import { Button } from "@/store/modules/common/components/ui"
 import { useMemo } from "react"
 
-import Thumbnail from "@modules/products/components/thumbnail"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { convertToLocale } from "@lib/util/money"
+import { convertToLocale } from "@/store/lib/util/money"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import Thumbnail from "@/store/modules/products/components/thumbnail"
 import { HttpTypes } from "@medusajs/types"
 
 type OrderCardProps = {

@@ -1,11 +1,11 @@
 "use client"
 
-import Back from "@modules/common/icons/back"
-import FastDelivery from "@modules/common/icons/fast-delivery"
-import Refresh from "@modules/common/icons/refresh"
+import Back from "@/store/modules/common/icons/back"
+import FastDelivery from "@/store/modules/common/icons/fast-delivery"
+import Refresh from "@/store/modules/common/icons/refresh"
 
-import Accordion from "./accordion"
 import { HttpTypes } from "@medusajs/types"
+import Accordion from "./accordion"
 
 type ProductTabsProps = {
   product: HttpTypes.StoreProduct

@@ -1,12 +1,18 @@
 "use client"
 
-import { Badge, Heading, Input, Label, Text } from "@modules/common/components/ui"
+import {
+  Badge,
+  Heading,
+  Input,
+  Label,
+  Text,
+} from "@/store/modules/common/components/ui"
 import React from "react"
 
-import { applyPromotions } from "@lib/data/cart"
-import { convertToLocale } from "@lib/util/money"
+import { applyPromotions } from "@/store/lib/data/cart"
+import { convertToLocale } from "@/store/lib/util/money"
+import Trash from "@/store/modules/common/icons/trash"
 import { HttpTypes } from "@medusajs/types"
-import Trash from "@modules/common/icons/trash"
 import ErrorMessage from "../error-message"
 import { SubmitButton } from "../submit-button"
 
@@ -21,11 +27,11 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   const { promotions = [] } = cart
   const removePromotionCode = async (code: string) => {
     const validPromotions = promotions.filter(
-      (promotion) => promotion.code !== code
+      (promotion) => promotion.code !== code,
     )
 
     await applyPromotions(
-      validPromotions.filter((p) => p.code !== undefined).map((p) => p.code!)
+      validPromotions.filter((p) => p.code !== undefined).map((p) => p.code!),
     )
   }
 

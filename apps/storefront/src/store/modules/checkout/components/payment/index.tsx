@@ -1,20 +1,20 @@
 "use client"
-import { RadioGroup } from "@headlessui/react"
-import { isStripeLike, paymentInfoMap } from "@lib/constants"
-import { initiatePaymentSession } from "@lib/data/cart"
-import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
-import ErrorMessage from "@modules/checkout/components/error-message"
+import { isStripeLike, paymentInfoMap } from "@/store/lib/constants"
+import { initiatePaymentSession } from "@/store/lib/data/cart"
+import ErrorMessage from "@/store/modules/checkout/components/error-message"
 import PaymentContainer, {
   StripeCardContainer,
-} from "@modules/checkout/components/payment-container"
-import Divider from "@modules/common/components/divider"
+} from "@/store/modules/checkout/components/payment-container"
+import Divider from "@/store/modules/common/components/divider"
 import {
   Button,
   Container,
   Heading,
   Text,
   clx,
-} from "@modules/common/components/ui"
+} from "@/store/modules/common/components/ui"
+import { RadioGroup } from "@headlessui/react"
+import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
@@ -27,7 +27,7 @@ const Payment = ({
   availablePaymentMethods: { id: string }[]
 }) => {
   const activeSession = cart.payment_collection?.payment_sessions?.find(
-    (paymentSession) => paymentSession.status === "pending"
+    (paymentSession) => paymentSession.status === "pending",
   )
 
   const [isLoading, setIsLoading] = useState(false)
@@ -35,7 +35,7 @@ const Payment = ({
   const [cardBrand, setCardBrand] = useState<string | null>(null)
   const [cardComplete, setCardComplete] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    activeSession?.provider_id ?? ""
+    activeSession?.provider_id ?? "",
   )
 
   const searchParams = useSearchParams()
@@ -55,11 +55,15 @@ const Payment = ({
   }
 
   const paidByGiftcard = !!(
-    (cart as unknown as Record<string, unknown>)?.gift_cards && ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && cart?.total === 0
+    (cart as unknown as Record<string, unknown>)?.gift_cards &&
+    ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])
+      ?.length > 0 &&
+    cart?.total === 0
   )
 
   const paymentReady =
-    (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0) || paidByGiftcard
+    (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0) ||
+    paidByGiftcard
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -68,7 +72,7 @@ const Payment = ({
 
       return params.toString()
     },
-    [searchParams]
+    [searchParams],
   )
 
   const handleEdit = () => {
@@ -97,7 +101,7 @@ const Payment = ({
           pathname + "?" + createQueryString("step", "review"),
           {
             scroll: false,
-          }
+          },
         )
       }
     } catch (err) {
@@ -121,7 +125,7 @@ const Payment = ({
             {
               "opacity-50 pointer-events-none select-none":
                 !isOpen && !paymentReady,
-            }
+            },
           )}
         >
           Payment

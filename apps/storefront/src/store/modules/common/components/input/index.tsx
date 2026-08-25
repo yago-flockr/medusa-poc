@@ -1,8 +1,8 @@
-import { Label } from "@modules/common/components/ui"
+import { Label } from "@/store/modules/common/components/ui"
 import React, { useEffect, useImperativeHandle, useState } from "react"
 
-import Eye from "@modules/common/icons/eye"
-import EyeOff from "@modules/common/icons/eye-off"
+import Eye from "@/store/modules/common/icons/eye"
+import EyeOff from "@/store/modules/common/icons/eye-off"
 
 type InputProps = Omit<
   Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
@@ -16,7 +16,10 @@ type InputProps = Omit<
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ type, name, label, touched: _touched, required, topLabel, ...props }, ref) => {
+  (
+    { type, name, label, touched: _touched, required, topLabel, ...props },
+    ref,
+  ) => {
     const inputRef = React.useRef<HTMLInputElement>(null)
     const [showPassword, setShowPassword] = useState(false)
     const [inputType, setInputType] = useState(type)
@@ -68,7 +71,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
       </div>
     )
-  }
+  },
 )
 
 Input.displayName = "Input"

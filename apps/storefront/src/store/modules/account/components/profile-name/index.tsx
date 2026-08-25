@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useEffect, useActionState } from "react";
+import React, { useActionState, useEffect } from "react"
 
-import Input from "@modules/common/components/input"
+import Input from "@/store/modules/common/components/input"
 
-import AccountInfo from "../account-info"
+import { updateCustomer } from "@/store/lib/data/customer"
 import { HttpTypes } from "@medusajs/types"
-import { updateCustomer } from "@lib/data/customer"
+import AccountInfo from "../account-info"
 
 type MyInformationProps = {
   customer: HttpTypes.StoreCustomer
@@ -17,7 +17,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
 
   const updateCustomerName = async (
     _currentState: Record<string, unknown>,
-    formData: FormData
+    formData: FormData,
   ) => {
     const customer = {
       first_name: formData.get("first_name") as string,

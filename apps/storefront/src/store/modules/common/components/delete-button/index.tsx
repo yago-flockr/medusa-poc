@@ -1,6 +1,6 @@
-import { deleteLineItem } from "@lib/data/cart"
+import { deleteLineItem } from "@/store/lib/data/cart"
+import { clx } from "@/store/modules/common/components/ui"
 import { Spinner, Trash } from "@medusajs/icons"
-import { clx } from "@modules/common/components/ui"
 import { useState } from "react"
 
 const DeleteButton = ({
@@ -25,7 +25,7 @@ const DeleteButton = ({
     <div
       className={clx(
         "flex items-center justify-between text-small-regular",
-        className
+        className,
       )}
     >
       <button

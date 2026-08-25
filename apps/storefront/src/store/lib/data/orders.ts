@@ -1,9 +1,9 @@
 "use server"
 
-import { sdk } from "@lib/config"
-import medusaError from "@lib/util/medusa-error"
-import { getAuthHeaders, getCacheOptions } from "./cookies"
+import { sdk } from "@/store/lib/config"
+import medusaError from "@/store/lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
+import { getAuthHeaders, getCacheOptions } from "./cookies"
 
 export const retrieveOrder = async (id: string) => {
   const headers = {
@@ -32,7 +32,7 @@ export const retrieveOrder = async (id: string) => {
 export const listOrders = async (
   limit: number = 10,
   offset: number = 0,
-  filters?: Record<string, unknown>
+  filters?: Record<string, unknown>,
 ) => {
   const headers = {
     ...(await getAuthHeaders()),
@@ -66,7 +66,7 @@ export const createTransferRequest = async (
     error: string | null
     order: HttpTypes.StoreOrder | null
   },
-  formData: FormData
+  formData: FormData,
 ): Promise<{
   success: boolean
   error: string | null
@@ -87,7 +87,7 @@ export const createTransferRequest = async (
       {
         fields: "id, email",
       },
-      headers
+      headers,
     )
     .then(({ order }) => ({ success: true, error: null, order }))
     .catch((err) => ({ success: false, error: err.message, order: null }))

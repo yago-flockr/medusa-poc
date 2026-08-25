@@ -1,13 +1,13 @@
 import { Metadata } from "next"
 
-import { listCartOptions, retrieveCart } from "@lib/data/cart"
-import { retrieveCustomer } from "@lib/data/customer"
-import { getBaseURL } from "@lib/util/env"
+import { listCartOptions, retrieveCart } from "@/store/lib/data/cart"
+import { retrieveCustomer } from "@/store/lib/data/customer"
+import { getBaseURL } from "@/store/lib/util/env"
+import CartMismatchBanner from "@/store/modules/layout/components/cart-mismatch-banner"
+import Footer from "@/store/modules/layout/templates/footer"
+import Nav from "@/store/modules/layout/templates/nav"
+import FreeShippingPriceNudge from "@/store/modules/shipping/components/free-shipping-price-nudge"
 import { StoreCartShippingOption } from "@medusajs/types"
-import CartMismatchBanner from "@modules/layout/components/cart-mismatch-banner"
-import Footer from "@modules/layout/templates/footer"
-import Nav from "@modules/layout/templates/nav"
-import FreeShippingPriceNudge from "@modules/shipping/components/free-shipping-price-nudge"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),

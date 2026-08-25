@@ -1,7 +1,7 @@
 "use client"
 
-import { VendorApiError } from "@vendor/lib/client"
-import { useVendorAuthStore } from "@vendor/stores/auth-store"
+import { VendorApiError } from "@/vendor/lib/client"
+import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 

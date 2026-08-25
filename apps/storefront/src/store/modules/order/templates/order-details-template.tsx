@@ -1,13 +1,13 @@
 "use client"
 
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import Help from "@/store/modules/order/components/help"
+import Items from "@/store/modules/order/components/items"
+import OrderDetails from "@/store/modules/order/components/order-details"
+import OrderSummary from "@/store/modules/order/components/order-summary"
+import ShippingDetails from "@/store/modules/order/components/shipping-details"
 import { XMark } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import Help from "@modules/order/components/help"
-import Items from "@modules/order/components/items"
-import OrderDetails from "@modules/order/components/order-details"
-import OrderSummary from "@modules/order/components/order-summary"
-import ShippingDetails from "@modules/order/components/shipping-details"
 import React from "react"
 
 type OrderDetailsTemplateProps = {

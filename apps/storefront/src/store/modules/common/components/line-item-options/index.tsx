@@ -1,5 +1,5 @@
+import { Text } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { Text } from "@modules/common/components/ui"
 
 type LineItemOptionsProps = {
   variant: HttpTypes.StoreProductVariant | undefined

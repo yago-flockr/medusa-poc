@@ -2,10 +2,13 @@
 
 import React, { useActionState, useEffect, useMemo } from "react"
 
-import Input from "@modules/common/components/input"
-import NativeSelect from "@modules/common/components/native-select"
+import Input from "@/store/modules/common/components/input"
+import NativeSelect from "@/store/modules/common/components/native-select"
 
-import { addCustomerAddress, updateCustomerAddress } from "@lib/data/customer"
+import {
+  addCustomerAddress,
+  updateCustomerAddress,
+} from "@/store/lib/data/customer"
 import { HttpTypes } from "@medusajs/types"
 import AccountInfo from "../account-info"
 
@@ -34,7 +37,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
   const [successState, setSuccessState] = React.useState(false)
 
   const billingAddress = customer.addresses?.find(
-    (addr) => addr.is_default_billing
+    (addr) => addr.is_default_billing,
   )
 
   const initialState: Record<string, unknown> = {
@@ -50,7 +53,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
 
   const [state, formAction] = useActionState(
     billingAddress ? updateCustomerAddress : addCustomerAddress,
-    initialState
+    initialState,
   )
 
   const clearState = () => {
@@ -68,7 +71,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
 
     const country =
       regionOptions?.find(
-        (country) => country?.value === billingAddress.country_code
+        (country) => country?.value === billingAddress.country_code,
       )?.label || billingAddress.country_code?.toUpperCase()
 
     return (

@@ -1,8 +1,8 @@
 "use client"
 
+import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
+import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useLoginVendor } from "@vendor/hooks/mutations/auth"
-import { useVendorAuthStore } from "@vendor/stores/auth-store"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import z from "zod"

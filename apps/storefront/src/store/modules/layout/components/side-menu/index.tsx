@@ -1,16 +1,15 @@
 "use client"
 
+import { Locale } from "@/store/lib/data/locales"
+import useToggleState from "@/store/lib/hooks/use-toggle-state"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import { Text, clx } from "@/store/modules/common/components/ui"
 import { Popover, PopoverPanel, Transition } from "@headlessui/react"
-import useToggleState from "@lib/hooks/use-toggle-state"
 import { ArrowRightMini, XMark } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Text, clx } from "@modules/common/components/ui"
 import { Fragment } from "react"
 import CountrySelect from "../country-select"
 import LanguageSelect from "../language-select"
-import { Locale } from "@lib/data/locales"
-
 
 const SideMenuItems = {
   Home: "/",
@@ -103,7 +102,7 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
                           <ArrowRightMini
                             className={clx(
                               "transition-transform duration-150",
-                              languageToggleState.state ? "-rotate-90" : ""
+                              languageToggleState.state ? "-rotate-90" : "",
                             )}
                           />
                         </div>
@@ -122,7 +121,7 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
                         <ArrowRightMini
                           className={clx(
                             "transition-transform duration-150",
-                            countryToggleState.state ? "-rotate-90" : ""
+                            countryToggleState.state ? "-rotate-90" : "",
                           )}
                         />
                       </div>

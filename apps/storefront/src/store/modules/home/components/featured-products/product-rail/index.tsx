@@ -1,9 +1,9 @@
-import { listProducts } from "@lib/data/products"
+import { listProducts } from "@/store/lib/data/products"
+import { Text } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { Text } from "@modules/common/components/ui"
 
-import InteractiveLink from "@modules/common/components/interactive-link"
-import ProductPreview from "@modules/products/components/product-preview"
+import InteractiveLink from "@/store/modules/common/components/interactive-link"
+import ProductPreview from "@/store/modules/products/components/product-preview"
 
 export default async function ProductRail({
   collection,

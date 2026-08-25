@@ -1,16 +1,16 @@
 "use client"
 
+import { clx } from "@/store/modules/common/components/ui"
 import { ArrowRightOnRectangle } from "@medusajs/icons"
-import { clx } from "@modules/common/components/ui"
 import { useParams, usePathname } from "next/navigation"
 
-import { signout } from "@lib/data/customer"
+import { signout } from "@/store/lib/data/customer"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import ChevronDown from "@/store/modules/common/icons/chevron-down"
+import MapPin from "@/store/modules/common/icons/map-pin"
+import Package from "@/store/modules/common/icons/package"
+import User from "@/store/modules/common/icons/user"
 import { HttpTypes } from "@medusajs/types"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import ChevronDown from "@modules/common/icons/chevron-down"
-import MapPin from "@modules/common/icons/map-pin"
-import Package from "@modules/common/icons/package"
-import User from "@modules/common/icons/user"
 
 const AccountNav = ({
   customer,

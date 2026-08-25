@@ -1,5 +1,5 @@
+import { clx } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { clx } from "@modules/common/components/ui"
 import React from "react"
 
 type OptionSelectProps = {
@@ -39,7 +39,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
                   "border-ui-border-interactive": v === current,
                   "hover:shadow-elevation-card-rest transition-shadow ease-in-out duration-150":
                     v !== current,
-                }
+                },
               )}
               disabled={disabled}
               data-testid="option-button"

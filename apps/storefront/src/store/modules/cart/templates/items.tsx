@@ -1,9 +1,9 @@
-import repeat from "@lib/util/repeat"
+import repeat from "@/store/lib/util/repeat"
+import { Heading, Table } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Table } from "@modules/common/components/ui"
 
-import Item from "@modules/cart/components/item"
-import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
+import Item from "@/store/modules/cart/components/item"
+import SkeletonLineItem from "@/store/modules/skeletons/components/skeleton-line-item"
 
 type ItemsTemplateProps = {
   cart?: HttpTypes.StoreCart

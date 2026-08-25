@@ -1,12 +1,15 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import { getCollectionByHandle, listCollections } from "@lib/data/collections"
-import { listRegions } from "@lib/data/regions"
+import {
+  getCollectionByHandle,
+  listCollections,
+} from "@/store/lib/data/collections"
+import { listRegions } from "@/store/lib/data/regions"
+import { parseOptionValueIds } from "@/store/lib/util/product-option-filters"
+import CollectionTemplate from "@/store/modules/collections/templates"
+import { SortOptions } from "@/store/modules/store/components/refinement-list/sort-products"
 import { StoreCollection, StoreRegion } from "@medusajs/types"
-import CollectionTemplate from "@modules/collections/templates"
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import { parseOptionValueIds } from "@lib/util/product-option-filters"
 
 type Props = {
   params: Promise<{ handle: string; countryCode: string }>
@@ -35,11 +38,11 @@ export async function generateStaticParams() {
       regions
         ?.map((r) => r.countries?.map((c) => c.iso_2))
         .flat()
-        .filter(Boolean) as string[]
+        .filter(Boolean) as string[],
   )
 
   const collectionHandles = collections.map(
-    (collection: StoreCollection) => collection.handle
+    (collection: StoreCollection) => collection.handle,
   )
 
   const staticParams = countryCodes
@@ -47,7 +50,7 @@ export async function generateStaticParams() {
       collectionHandles.map((handle: string | undefined) => ({
         countryCode,
         handle,
-      }))
+      })),
     )
     .flat()
 
@@ -77,7 +80,7 @@ export default async function CollectionPage(props: Props) {
   const optionValueIds = parseOptionValueIds(searchParams)
 
   const collection = await getCollectionByHandle(params.handle).then(
-    (collection) => collection
+    (collection) => collection,
   )
 
   if (!collection) {

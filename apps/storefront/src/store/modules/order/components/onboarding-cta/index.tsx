@@ -1,7 +1,7 @@
 "use client"
 
-import { resetOnboardingState } from "@lib/data/onboarding"
-import { Button, Container, Text } from "@modules/common/components/ui"
+import { resetOnboardingState } from "@/store/lib/data/onboarding"
+import { Button, Container, Text } from "@/store/modules/common/components/ui"
 
 const OnboardingCta = ({ orderId }: { orderId: string }) => {
   return (

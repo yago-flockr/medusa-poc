@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@modules/common/components/ui"
+import { Button } from "@/store/modules/common/components/ui"
 import React from "react"
 import { useFormStatus } from "react-dom"
 

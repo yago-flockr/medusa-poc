@@ -1,9 +1,9 @@
 "use client"
 
-import { transferCart } from "@lib/data/customer"
+import { transferCart } from "@/store/lib/data/customer"
+import { Button } from "@/store/modules/common/components/ui"
 import { ExclamationCircleSolid } from "@medusajs/icons"
 import { StoreCart, StoreCustomer } from "@medusajs/types"
-import { Button } from "@modules/common/components/ui"
 import { useState } from "react"
 function CartMismatchBanner(props: {
   customer: StoreCustomer

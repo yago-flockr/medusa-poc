@@ -1,9 +1,9 @@
-import { Heading } from "@modules/common/components/ui"
+import { Heading } from "@/store/modules/common/components/ui"
 
-import ItemsPreviewTemplate from "@modules/cart/templates/preview"
-import DiscountCode from "@modules/checkout/components/discount-code"
-import CartTotals from "@modules/common/components/cart-totals"
-import Divider from "@modules/common/components/divider"
+import ItemsPreviewTemplate from "@/store/modules/cart/templates/preview"
+import DiscountCode from "@/store/modules/checkout/components/discount-code"
+import CartTotals from "@/store/modules/common/components/cart-totals"
+import Divider from "@/store/modules/common/components/divider"
 import { HttpTypes } from "@medusajs/types"
 
 const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {

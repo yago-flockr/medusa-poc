@@ -1,4 +1,4 @@
-import { Badge } from "@modules/common/components/ui"
+import { Badge } from "@/store/modules/common/components/ui"
 
 const PaymentTest = ({ className }: { className?: string }) => {
   return (

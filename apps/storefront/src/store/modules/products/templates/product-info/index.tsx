@@ -1,6 +1,6 @@
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import { Heading, Text } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Text } from "@modules/common/components/ui"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 type ProductInfoProps = {
   product: HttpTypes.StoreProduct

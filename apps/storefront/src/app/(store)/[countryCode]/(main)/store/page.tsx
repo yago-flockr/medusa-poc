@@ -1,8 +1,8 @@
 import { Metadata } from "next"
 
-import { parseOptionValueIds } from "@lib/util/product-option-filters"
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import StoreTemplate from "@modules/store/templates"
+import { parseOptionValueIds } from "@/store/lib/util/product-option-filters"
+import { SortOptions } from "@/store/modules/store/components/refinement-list/sort-products"
+import StoreTemplate from "@/store/modules/store/templates"
 
 export const metadata: Metadata = {
   title: "Store",
@@ -23,8 +23,8 @@ type Params = {
 }
 
 export default async function StorePage(props: Params) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
+  const params = await props.params
+  const searchParams = await props.searchParams
   const { sortBy, page } = searchParams
   const optionValueIds = parseOptionValueIds(searchParams)
 

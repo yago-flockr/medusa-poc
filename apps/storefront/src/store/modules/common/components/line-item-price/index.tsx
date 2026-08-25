@@ -1,7 +1,7 @@
-import { getPercentageDiff } from "@lib/util/get-percentage-diff"
-import { convertToLocale } from "@lib/util/money"
+import { getPercentageDiff } from "@/store/lib/util/get-percentage-diff"
+import { convertToLocale } from "@/store/lib/util/money"
+import { clx } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { clx } from "@modules/common/components/ui"
 
 type LineItemPriceProps = {
   item: HttpTypes.StoreCartLineItem | HttpTypes.StoreOrderLineItem

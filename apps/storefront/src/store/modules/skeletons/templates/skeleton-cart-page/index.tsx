@@ -1,9 +1,9 @@
-import { Table } from "@modules/common/components/ui"
+import { Table } from "@/store/modules/common/components/ui"
 
-import repeat from "@lib/util/repeat"
-import SkeletonCartItem from "@modules/skeletons/components/skeleton-cart-item"
-import SkeletonCodeForm from "@modules/skeletons/components/skeleton-code-form"
-import SkeletonOrderSummary from "@modules/skeletons/components/skeleton-order-summary"
+import repeat from "@/store/lib/util/repeat"
+import SkeletonCartItem from "@/store/modules/skeletons/components/skeleton-cart-item"
+import SkeletonCodeForm from "@/store/modules/skeletons/components/skeleton-code-form"
+import SkeletonOrderSummary from "@/store/modules/skeletons/components/skeleton-order-summary"
 
 const SkeletonCartPage = () => {
   return (

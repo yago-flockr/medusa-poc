@@ -6,7 +6,7 @@ import { useCallback, useMemo } from "react"
 import {
   OPTION_VALUE_QUERY_KEY,
   parseOptionValueIds,
-} from "@lib/util/product-option-filters"
+} from "@/store/lib/util/product-option-filters"
 import OptionsPicker from "./options-picker"
 import SortProducts, { SortOptions } from "./sort-products"
 
@@ -44,7 +44,7 @@ const RefinementList = ({
         router.push(nextPath)
       }
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   )
 
   const setQueryParams = (name: string, value: string) =>
@@ -52,14 +52,14 @@ const RefinementList = ({
 
   const selectedOptionValueIds = useMemo(
     () => parseOptionValueIds(searchParams),
-    [searchParams]
+    [searchParams],
   )
 
   const setOptionValueIds = (valueIds: string[]) =>
     updateQueryParams((params) => {
       params.delete(OPTION_VALUE_QUERY_KEY)
       valueIds.forEach((valueId) =>
-        params.append(OPTION_VALUE_QUERY_KEY, valueId)
+        params.append(OPTION_VALUE_QUERY_KEY, valueId),
       )
     })
 

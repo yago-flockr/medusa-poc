@@ -1,10 +1,10 @@
 "use client"
 
-import { Button } from "@modules/common/components/ui"
+import { Button } from "@/store/modules/common/components/ui"
 
-import OrderCard from "../order-card"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
+import OrderCard from "../order-card"
 
 const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
   if (orders?.length) {

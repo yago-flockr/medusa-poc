@@ -1,18 +1,18 @@
+import { clx } from "@/store/modules/common/components/ui"
 import { Listbox, Transition } from "@headlessui/react"
 import { ChevronUpDown } from "@medusajs/icons"
-import { clx } from "@modules/common/components/ui"
 import { Fragment, useMemo } from "react"
 
-import compareAddresses from "@lib/util/compare-addresses"
+import compareAddresses from "@/store/lib/util/compare-addresses"
+import Radio from "@/store/modules/common/components/radio"
 import { HttpTypes } from "@medusajs/types"
-import Radio from "@modules/common/components/radio"
 
 type AddressSelectProps = {
   addresses: HttpTypes.StoreCustomerAddress[]
   addressInput: HttpTypes.StoreCartAddress | null
   onSelect: (
     address: HttpTypes.StoreCartAddress | undefined,
-    email?: string
+    email?: string,
   ) => void
 }
 
@@ -29,7 +29,9 @@ const AddressSelect = ({
   }
 
   const selectedAddress = useMemo(() => {
-    return addresses.find((a) => addressInput && compareAddresses(a, addressInput))
+    return addresses.find(
+      (a) => addressInput && compareAddresses(a, addressInput),
+    )
   }, [addresses, addressInput])
 
   return (

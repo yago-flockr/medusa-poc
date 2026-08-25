@@ -1,12 +1,12 @@
 "use client"
 
+import { signup } from "@/store/lib/data/customer"
+import { LOGIN_VIEW } from "@/store/modules/account/templates/login-template"
+import ErrorMessage from "@/store/modules/checkout/components/error-message"
+import { SubmitButton } from "@/store/modules/checkout/components/submit-button"
+import Input from "@/store/modules/common/components/input"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { useActionState } from "react"
-import Input from "@modules/common/components/input"
-import { LOGIN_VIEW } from "@modules/account/templates/login-template"
-import ErrorMessage from "@modules/checkout/components/error-message"
-import { SubmitButton } from "@modules/checkout/components/submit-button"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { signup } from "@lib/data/customer"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void

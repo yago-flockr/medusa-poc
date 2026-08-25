@@ -3,8 +3,8 @@
 import * as Accordion from "@radix-ui/react-accordion"
 import { useEffect, useState } from "react"
 
+import { sdk } from "@/store/lib/config"
 import { ChevronDownMini } from "@medusajs/icons"
-import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 import clsx from "clsx"
 
@@ -76,7 +76,7 @@ const OptionsPicker = ({
               }))
               .filter(
                 (value): value is { id: string; label: string } =>
-                  !!value.id && !!value.label
+                  !!value.id && !!value.label,
               ) || []
 
           if (!values.length) {
@@ -94,7 +94,7 @@ const OptionsPicker = ({
 
           const isOpen = openItems.includes(option.id)
           const selectedCount = values.filter((value) =>
-            selectedValueIds.includes(value.id)
+            selectedValueIds.includes(value.id),
           ).length
 
           return (
@@ -118,7 +118,7 @@ const OptionsPicker = ({
                       "flex h-7 w-7 items-center justify-center text-ui-fg-muted transition-transform duration-150",
                       {
                         "rotate-180": isOpen,
-                      }
+                      },
                     )}
                   >
                     <ChevronDownMini />
@@ -141,7 +141,7 @@ const OptionsPicker = ({
                               isSelected,
                             "text-ui-fg-muted hover:text-ui-fg-base":
                               !isSelected,
-                          }
+                          },
                         )}
                         aria-pressed={isSelected}
                       >

@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { Suspense } from "react"
 
-import VerifyAccount from "@modules/account/components/verify-account"
+import VerifyAccount from "@/store/modules/account/components/verify-account"
 
 export const metadata: Metadata = {
   title: "Verify your email",

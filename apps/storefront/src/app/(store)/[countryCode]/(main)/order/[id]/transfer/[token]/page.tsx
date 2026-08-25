@@ -1,6 +1,6 @@
-import { Heading, Text } from "@modules/common/components/ui"
-import TransferActions from "@modules/order/components/transfer-actions"
-import TransferImage from "@modules/order/components/transfer-image"
+import { Heading, Text } from "@/store/modules/common/components/ui"
+import TransferActions from "@/store/modules/order/components/transfer-actions"
+import TransferImage from "@/store/modules/order/components/transfer-image"
 
 export default async function TransferPage({
   params,
@@ -17,9 +17,9 @@ export default async function TransferPage({
           Transfer request for order {id}
         </Heading>
         <Text className="text-zinc-600">
-          You&#39;ve received a request to transfer ownership of your order ({id}).
-          If you agree to this request, you can approve the transfer by clicking
-          the button below.
+          You&#39;ve received a request to transfer ownership of your order (
+          {id}). If you agree to this request, you can approve the transfer by
+          clicking the button below.
         </Text>
         <div className="w-full h-px bg-zinc-200" />
         <Text className="text-zinc-600">

@@ -1,12 +1,12 @@
 import { Metadata } from "next"
 
-import ProfilePhone from "@modules/account//components/profile-phone"
-import ProfileBillingAddress from "@modules/account/components/profile-billing-address"
-import ProfileEmail from "@modules/account/components/profile-email"
-import ProfileName from "@modules/account/components/profile-name"
+import { retrieveCustomer } from "@/store/lib/data/customer"
+import { listRegions } from "@/store/lib/data/regions"
+import ProfilePhone from "@/store/modules/account//components/profile-phone"
+import ProfileBillingAddress from "@/store/modules/account/components/profile-billing-address"
+import ProfileEmail from "@/store/modules/account/components/profile-email"
+import ProfileName from "@/store/modules/account/components/profile-name"
 import { notFound } from "next/navigation"
-import { listRegions } from "@lib/data/regions"
-import { retrieveCustomer } from "@lib/data/customer"
 
 export const metadata: Metadata = {
   title: "Profile",

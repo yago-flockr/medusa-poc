@@ -1,9 +1,9 @@
-import { listProductsWithSort } from "@lib/data/products"
-import { getRegion } from "@lib/data/regions"
-import { OptionValueIds } from "@lib/util/product-option-filters"
-import ProductPreview from "@modules/products/components/product-preview"
-import { Pagination } from "@modules/store/components/pagination"
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import { listProductsWithSort } from "@/store/lib/data/products"
+import { getRegion } from "@/store/lib/data/regions"
+import { OptionValueIds } from "@/store/lib/util/product-option-filters"
+import ProductPreview from "@/store/modules/products/components/product-preview"
+import { Pagination } from "@/store/modules/store/components/pagination"
+import { SortOptions } from "@/store/modules/store/components/refinement-list/sort-products"
 
 const PRODUCT_LIMIT = 12
 

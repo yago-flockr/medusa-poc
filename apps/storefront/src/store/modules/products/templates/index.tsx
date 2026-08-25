@@ -1,14 +1,14 @@
 import React, { Suspense } from "react"
 
-import ImageGallery from "@modules/products/components/image-gallery"
-import ProductActions from "@modules/products/components/product-actions"
-import ProductOnboardingCta from "@modules/products/components/product-onboarding-cta"
-import ProductTabs from "@modules/products/components/product-tabs"
-import RelatedProducts from "@modules/products/components/related-products"
-import ProductInfo from "@modules/products/templates/product-info"
-import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
-import { notFound } from "next/navigation"
+import ImageGallery from "@/store/modules/products/components/image-gallery"
+import ProductActions from "@/store/modules/products/components/product-actions"
+import ProductOnboardingCta from "@/store/modules/products/components/product-onboarding-cta"
+import ProductTabs from "@/store/modules/products/components/product-tabs"
+import RelatedProducts from "@/store/modules/products/components/related-products"
+import ProductInfo from "@/store/modules/products/templates/product-info"
+import SkeletonRelatedProducts from "@/store/modules/skeletons/templates/skeleton-related-products"
 import { HttpTypes } from "@medusajs/types"
+import { notFound } from "next/navigation"
 
 import ProductActionsWrapper from "./product-actions-wrapper"
 

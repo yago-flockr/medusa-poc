@@ -1,6 +1,6 @@
 "use client"
 
-import { IconBadge, clx } from "@modules/common/components/ui"
+import { IconBadge, clx } from "@/store/modules/common/components/ui"
 import {
   SelectHTMLAttributes,
   forwardRef,
@@ -10,7 +10,7 @@ import {
   useState,
 } from "react"
 
-import ChevronDown from "@modules/common/icons/chevron-down"
+import ChevronDown from "@/store/modules/common/icons/chevron-down"
 
 type NativeSelectProps = {
   placeholder?: string
@@ -25,7 +25,7 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
 
     useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
       ref,
-      () => innerRef.current
+      () => innerRef.current,
     )
 
     useEffect(() => {
@@ -46,7 +46,7 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             className,
             {
               "text-ui-fg-subtle": isPlaceholder,
-            }
+            },
           )}
         >
           <select
@@ -65,7 +65,7 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
         </IconBadge>
       </div>
     )
-  }
+  },
 )
 
 CartItemSelect.displayName = "CartItemSelect"

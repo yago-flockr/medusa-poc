@@ -1,11 +1,11 @@
+import { Text, clx } from "@/store/modules/common/components/ui"
 import { Radio as RadioGroupOption } from "@headlessui/react"
-import { Text, clx } from "@modules/common/components/ui"
 import React, { useContext, useMemo, type JSX } from "react"
 
-import Radio from "@modules/common/components/radio"
+import Radio from "@/store/modules/common/components/radio"
 
-import { isManual } from "@lib/constants"
-import SkeletonCardDetails from "@modules/skeletons/components/skeleton-card-details"
+import { isManual } from "@/store/lib/constants"
+import SkeletonCardDetails from "@/store/modules/skeletons/components/skeleton-card-details"
 import { CardElement } from "@stripe/react-stripe-js"
 import { StripeCardElementOptions } from "@stripe/stripe-js"
 import PaymentTest from "../payment-test"
@@ -38,7 +38,7 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
         {
           "border-ui-border-interactive":
             selectedPaymentOptionId === paymentProviderId,
-        }
+        },
       )}
     >
       <div className="flex items-center justify-between ">
@@ -114,7 +114,7 @@ export const StripeCardContainer = ({
               options={useOptions as StripeCardElementOptions}
               onChange={(e) => {
                 setCardBrand(
-                  e.brand && e.brand.charAt(0).toUpperCase() + e.brand.slice(1)
+                  e.brand && e.brand.charAt(0).toUpperCase() + e.brand.slice(1),
                 )
                 setError(e.error?.message || null)
                 setCardComplete(e.complete)

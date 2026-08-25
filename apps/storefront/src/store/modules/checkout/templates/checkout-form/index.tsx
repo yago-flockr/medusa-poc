@@ -1,10 +1,10 @@
-import { listCartShippingMethods } from "@lib/data/fulfillment"
-import { listCartPaymentMethods } from "@lib/data/payment"
+import { listCartShippingMethods } from "@/store/lib/data/fulfillment"
+import { listCartPaymentMethods } from "@/store/lib/data/payment"
+import Addresses from "@/store/modules/checkout/components/addresses"
+import Payment from "@/store/modules/checkout/components/payment"
+import Review from "@/store/modules/checkout/components/review"
+import Shipping from "@/store/modules/checkout/components/shipping"
 import { HttpTypes } from "@medusajs/types"
-import Addresses from "@modules/checkout/components/addresses"
-import Payment from "@modules/checkout/components/payment"
-import Review from "@modules/checkout/components/review"
-import Shipping from "@modules/checkout/components/shipping"
 
 export default async function CheckoutForm({
   cart,

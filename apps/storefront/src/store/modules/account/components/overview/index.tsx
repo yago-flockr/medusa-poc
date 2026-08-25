@@ -1,8 +1,8 @@
-import { Container } from "@modules/common/components/ui"
+import { Container } from "@/store/modules/common/components/ui"
 
-import ChevronDown from "@modules/common/icons/chevron-down"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { convertToLocale } from "@lib/util/money"
+import { convertToLocale } from "@/store/lib/util/money"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import ChevronDown from "@/store/modules/common/icons/chevron-down"
 import { HttpTypes } from "@medusajs/types"
 
 type OverviewProps = {
@@ -155,7 +155,7 @@ const getProfileCompletion = (customer: HttpTypes.StoreCustomer | null) => {
   }
 
   const billingAddress = customer.addresses?.find(
-    (addr) => addr.is_default_billing
+    (addr) => addr.is_default_billing,
   )
 
   if (billingAddress) {

@@ -1,12 +1,12 @@
 "use client"
-import { setAddresses } from "@lib/data/cart"
-import useToggleState from "@lib/hooks/use-toggle-state"
-import compareAddresses from "@lib/util/compare-addresses"
+import { setAddresses } from "@/store/lib/data/cart"
+import useToggleState from "@/store/lib/hooks/use-toggle-state"
+import compareAddresses from "@/store/lib/util/compare-addresses"
+import Divider from "@/store/modules/common/components/divider"
+import { Heading, Text } from "@/store/modules/common/components/ui"
+import Spinner from "@/store/modules/common/icons/spinner"
 import { CheckCircleSolid } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import Divider from "@modules/common/components/divider"
-import { Heading, Text } from "@modules/common/components/ui"
-import Spinner from "@modules/common/icons/spinner"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useActionState } from "react"
 import BillingAddress from "../billing_address"
@@ -30,7 +30,7 @@ const Addresses = ({
   const { state: sameAsBilling, toggle: toggleSameAsBilling } = useToggleState(
     cart?.shipping_address && cart?.billing_address
       ? compareAddresses(cart?.shipping_address, cart?.billing_address)
-      : true
+      : true,
   )
 
   const handleEdit = () => {

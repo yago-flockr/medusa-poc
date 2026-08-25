@@ -1,6 +1,6 @@
-import { listProducts } from "@lib/data/products"
+import { listProducts } from "@/store/lib/data/products"
+import ProductActions from "@/store/modules/products/components/product-actions"
 import { HttpTypes } from "@medusajs/types"
-import ProductActions from "@modules/products/components/product-actions"
 
 /**
  * Fetches real time pricing for a product and renders the product actions component.

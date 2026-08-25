@@ -1,6 +1,6 @@
-import { convertToLocale } from "@lib/util/money"
+import { convertToLocale } from "@/store/lib/util/money"
+import { clx } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { clx } from "@modules/common/components/ui"
 
 type LineItemUnitPriceProps = {
   item: HttpTypes.StoreCartLineItem | HttpTypes.StoreOrderLineItem
@@ -18,7 +18,7 @@ const LineItemUnitPrice = ({
   const hasReducedPrice = total < original_total
 
   const percentage_diff = Math.round(
-    ((original_total - total) / original_total) * 100
+    ((original_total - total) / original_total) * 100,
   )
 
   return (

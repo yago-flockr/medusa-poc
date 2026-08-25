@@ -1,8 +1,8 @@
-import { convertToLocale } from "@lib/util/money"
+import { convertToLocale } from "@/store/lib/util/money"
+import { Heading, Text } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Text } from "@modules/common/components/ui"
 
-import Divider from "@modules/common/components/divider"
+import Divider from "@/store/modules/common/components/divider"
 
 type ShippingDetailsProps = {
   order: HttpTypes.StoreOrder

@@ -1,5 +1,10 @@
+import {
+  Label,
+  RadioGroup,
+  Text,
+  clx,
+} from "@/store/modules/common/components/ui"
 import { EllipseMiniSolid } from "@medusajs/icons"
-import { Label, RadioGroup, Text, clx } from "@modules/common/components/ui"
 type FilterRadioGroupProps = {
   title: string
   items: {
@@ -43,7 +48,7 @@ const FilterRadioGroup = ({
                 "!txt-compact-small !transform-none text-ui-fg-subtle hover:cursor-pointer",
                 {
                   "text-ui-fg-base": i.value === value,
-                }
+                },
               )}
               data-testid="radio-label"
               data-active={i.value === value}

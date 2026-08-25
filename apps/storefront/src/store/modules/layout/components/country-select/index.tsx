@@ -10,10 +10,10 @@ import {
 import { Fragment, useEffect, useMemo, useState } from "react"
 import ReactCountryFlag from "react-country-flag"
 
-import { StateType } from "@lib/hooks/use-toggle-state"
-import { useParams, usePathname } from "next/navigation"
-import { updateRegion } from "@lib/data/cart"
+import { updateRegion } from "@/store/lib/data/cart"
+import { StateType } from "@/store/lib/hooks/use-toggle-state"
 import { HttpTypes } from "@medusajs/types"
+import { useParams, usePathname } from "next/navigation"
 
 type CountryOption = {
   country: string

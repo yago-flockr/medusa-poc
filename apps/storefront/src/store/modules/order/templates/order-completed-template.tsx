@@ -1,13 +1,13 @@
-import { Heading } from "@modules/common/components/ui"
+import { Heading } from "@/store/modules/common/components/ui"
 import { cookies as nextCookies } from "next/headers"
 
-import CartTotals from "@modules/common/components/cart-totals"
-import Help from "@modules/order/components/help"
-import Items from "@modules/order/components/items"
-import OnboardingCta from "@modules/order/components/onboarding-cta"
-import OrderDetails from "@modules/order/components/order-details"
-import ShippingDetails from "@modules/order/components/shipping-details"
-import PaymentDetails from "@modules/order/components/payment-details"
+import CartTotals from "@/store/modules/common/components/cart-totals"
+import Help from "@/store/modules/order/components/help"
+import Items from "@/store/modules/order/components/items"
+import OnboardingCta from "@/store/modules/order/components/onboarding-cta"
+import OrderDetails from "@/store/modules/order/components/order-details"
+import PaymentDetails from "@/store/modules/order/components/payment-details"
+import ShippingDetails from "@/store/modules/order/components/shipping-details"
 import { HttpTypes } from "@medusajs/types"
 
 type OrderCompletedTemplateProps = {

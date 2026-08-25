@@ -1,7 +1,10 @@
 "use client"
 
-import { acceptTransferRequest, declineTransferRequest } from "@lib/data/orders"
-import { Button, Text } from "@modules/common/components/ui"
+import {
+  acceptTransferRequest,
+  declineTransferRequest,
+} from "@/store/lib/data/orders"
+import { Button, Text } from "@/store/modules/common/components/ui"
 import { useState } from "react"
 
 type TransferStatus = "pending" | "success" | "error"

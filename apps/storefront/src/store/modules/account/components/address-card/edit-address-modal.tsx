@@ -3,16 +3,21 @@
 import {
   deleteCustomerAddress,
   updateCustomerAddress,
-} from "@lib/data/customer"
-import useToggleState from "@lib/hooks/use-toggle-state"
+} from "@/store/lib/data/customer"
+import useToggleState from "@/store/lib/hooks/use-toggle-state"
+import CountrySelect from "@/store/modules/checkout/components/country-select"
+import { SubmitButton } from "@/store/modules/checkout/components/submit-button"
+import Input from "@/store/modules/common/components/input"
+import Modal from "@/store/modules/common/components/modal"
+import {
+  Button,
+  Heading,
+  Text,
+  clx,
+} from "@/store/modules/common/components/ui"
+import Spinner from "@/store/modules/common/icons/spinner"
 import { PencilSquare as Edit, Trash } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import CountrySelect from "@modules/checkout/components/country-select"
-import { SubmitButton } from "@modules/checkout/components/submit-button"
-import Input from "@modules/common/components/input"
-import Modal from "@modules/common/components/modal"
-import { Button, Heading, Text, clx } from "@modules/common/components/ui"
-import Spinner from "@modules/common/icons/spinner"
 import React, { useActionState, useEffect, useState } from "react"
 
 type EditAddressProps = {
@@ -66,7 +71,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
           "border rounded-rounded p-5 min-h-[220px] h-full w-full flex flex-col justify-between transition-colors",
           {
             "border-gray-900": isActive,
-          }
+          },
         )}
         data-testid="address-container"
       >

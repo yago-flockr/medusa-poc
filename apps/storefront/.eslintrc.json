@@ -35,7 +35,7 @@
           {
             "patterns": [
               {
-                "group": ["@vendor/*", "**/vendor/*", "**/vendor"],
+                "group": ["@/vendor/*", "**/vendor/*", "**/vendor"],
                 "message": "store/ must never import from vendor/ — these are isolated actor boundaries."
               }
             ]

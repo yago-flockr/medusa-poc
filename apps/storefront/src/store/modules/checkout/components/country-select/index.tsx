@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useMemo, useRef } from "react"
 
 import NativeSelect, {
   NativeSelectProps,
-} from "@modules/common/components/native-select"
+} from "@/store/modules/common/components/native-select"
 import { HttpTypes } from "@medusajs/types"
 
 const CountrySelect = forwardRef<
@@ -15,7 +15,7 @@ const CountrySelect = forwardRef<
 
   useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
     ref,
-    () => innerRef.current
+    () => innerRef.current,
   )
 
   const countryOptions = useMemo(() => {

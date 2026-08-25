@@ -1,4 +1,4 @@
-import { clx } from "@modules/common/components/ui"
+import { clx } from "@/store/modules/common/components/ui"
 
 const Divider = ({ className }: { className?: string }) => (
   <div
