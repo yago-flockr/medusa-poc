@@ -19,7 +19,7 @@
           {
             "patterns": [
               {
-                "group": ["@modules/*", "**/store/*", "**/store"],
+                "group": ["@/store/*", "**/store/*", "**/store"],
                 "message": "vendor/ must never import from store/ — these are isolated actor boundaries."
               }
             ]
