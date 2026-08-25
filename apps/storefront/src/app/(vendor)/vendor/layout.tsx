@@ -1,6 +1,6 @@
 import { Metadata } from "next"
+import "@/styles/globals.css"
 import { VendorQueryClientProvider } from "./query-client-provider"
-import "styles/globals.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL(

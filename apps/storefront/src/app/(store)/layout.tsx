@@ -1,6 +1,6 @@
 import { getBaseURL } from "@/store/lib/util/env"
+import "@/styles/globals.css"
 import { Metadata } from "next"
-import "styles/globals.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
