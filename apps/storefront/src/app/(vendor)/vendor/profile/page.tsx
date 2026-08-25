@@ -1,7 +1,6 @@
 "use client"
 
 import { useFindOneVendor } from "@/vendor/hooks/queries/vendor"
-import { VendorNav } from "@/vendor/components/nav"
 import {
   Card,
   CardContent,
@@ -23,42 +22,39 @@ export default function VendorProfilePage() {
   const { data, isLoading } = useFindOneVendor()
 
   return (
-    <div>
-      <VendorNav />
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading || !data ? (
-            <p className="text-sm text-muted-foreground">Loading…</p>
-          ) : (
-            <>
-              <ProfileRow label="Vendor name" value={data.vendor.name} />
-              <ProfileRow label="Handle" value={data.vendor.handle} />
-              <Separator className="my-2" />
-              <ProfileRow
-                label="Your name"
-                value={
-                  [data.vendor_user.first_name, data.vendor_user.last_name]
-                    .filter(Boolean)
-                    .join(" ") || "—"
-                }
-              />
-              <ProfileRow label="Email" value={data.vendor_user.email} />
-              <Separator className="my-2" />
-              <ProfileRow
-                label="Shopify connection"
-                value={
-                  data.vendor.shopify_connected
-                    ? (data.vendor.shopify_store_domain ?? "Connected")
-                    : "Not connected"
-                }
-              />
-            </>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Profile</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isLoading || !data ? (
+          <p className="text-sm text-muted-foreground">Loading…</p>
+        ) : (
+          <>
+            <ProfileRow label="Vendor name" value={data.vendor.name} />
+            <ProfileRow label="Handle" value={data.vendor.handle} />
+            <Separator className="my-2" />
+            <ProfileRow
+              label="Your name"
+              value={
+                [data.vendor_user.first_name, data.vendor_user.last_name]
+                  .filter(Boolean)
+                  .join(" ") || "—"
+              }
+            />
+            <ProfileRow label="Email" value={data.vendor_user.email} />
+            <Separator className="my-2" />
+            <ProfileRow
+              label="Shopify connection"
+              value={
+                data.vendor.shopify_connected
+                  ? (data.vendor.shopify_store_domain ?? "Connected")
+                  : "Not connected"
+              }
+            />
+          </>
+        )}
+      </CardContent>
+    </Card>
   )
 }

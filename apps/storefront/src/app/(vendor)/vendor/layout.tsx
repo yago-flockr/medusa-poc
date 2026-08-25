@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import "@/styles/globals.css"
-import { VendorQueryClientProvider } from "./query-client-provider"
-import { VendorAuthGate } from "./vendor-auth-gate"
+import { VendorQueryClientProvider } from "./_components/query-client-provider"
+import { VendorAuthGate } from "./_components/vendor-auth-gate"
 
 export const metadata: Metadata = {
   metadataBase: new URL(

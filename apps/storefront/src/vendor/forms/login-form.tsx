@@ -2,10 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
-import {
-  useVendorAuthStore,
-  type VendorAuthState,
-} from "@/vendor/stores/auth-store"
+import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useForm } from "react-hook-form"
 import z from "zod"
 import { Button } from "@/components/ui/button"
@@ -20,7 +17,7 @@ export type LoginVendorInput = z.infer<typeof loginVendorSchema>
 
 export function LoginForm() {
   const loginMutation = useLoginVendor()
-  const setToken = useVendorAuthStore((s: VendorAuthState) => s.setToken)
+  const setToken = useVendorAuthStore((state) => state.setToken)
   const {
     register,
     handleSubmit,

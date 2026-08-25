@@ -1,10 +1,8 @@
 "use client"
 
 import { LoginForm } from "@/vendor/forms/login-form"
-import {
-  useVendorAuthStore,
-  type VendorAuthState,
-} from "@/vendor/stores/auth-store"
+import { VendorNav } from "@/vendor/components/nav"
+import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useEffect, useState } from "react"
 import {
   Card,
@@ -16,7 +14,7 @@ import {
 
 export function VendorAuthGate({ children }: { children: React.ReactNode }) {
   const [checked, setChecked] = useState(false)
-  const token = useVendorAuthStore((s: VendorAuthState) => s.token)
+  const token = useVendorAuthStore((state) => state.token)
 
   useEffect(() => {
     setChecked(true)
@@ -44,5 +42,10 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
     )
   }
 
-  return <div className="max-w-3xl mx-auto px-4 py-8">{children}</div>
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <VendorNav />
+      {children}
+    </div>
+  )
 }

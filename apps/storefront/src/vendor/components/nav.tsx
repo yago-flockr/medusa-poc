@@ -1,9 +1,6 @@
 "use client"
 
-import {
-  useVendorAuthStore,
-  type VendorAuthState,
-} from "@/vendor/stores/auth-store"
+import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -16,7 +13,7 @@ const NAV_ITEMS = [
 
 export function VendorNav() {
   const router = useRouter()
-  const clearToken = useVendorAuthStore((s: VendorAuthState) => s.clearToken)
+  const clearToken = useVendorAuthStore((state) => state.clearToken)
 
   return (
     <nav className="flex items-center justify-between border-b pb-4 mb-6">
