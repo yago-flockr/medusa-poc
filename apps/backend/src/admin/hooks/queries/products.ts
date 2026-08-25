@@ -3,7 +3,7 @@ import type {
   Product,
   ProductQuery,
 } from "../../../api/admin/products/contract"
-import { queryKeys } from "../../lib/query-keys"
+import { queryKeys } from "./query-keys"
 import { sdk } from "../../lib/sdk"
 
 export const useAdminProductRetrieve = (id: string, query?: ProductQuery) =>

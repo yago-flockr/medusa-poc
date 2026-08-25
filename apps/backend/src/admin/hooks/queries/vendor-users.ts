@@ -3,7 +3,7 @@ import type {
   VendorUserListResponse,
 } from "../../../api/admin/vendor-users/contract"
 import { createResourceQueryHook } from "../../lib/create-resource-query"
-import { queryKeys } from "../../lib/query-keys"
+import { queryKeys } from "./query-keys"
 import { sdk } from "../../lib/sdk"
 
 export const useFindManyVendorUsers = createResourceQueryHook<

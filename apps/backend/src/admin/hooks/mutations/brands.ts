@@ -5,8 +5,8 @@ import type {
   UpdateBrand,
 } from "../../../api/admin/brands/contract"
 import { createResourceMutationHook } from "../../lib/create-resource-mutation"
-import { mutationKeys } from "../../lib/mutation-keys"
-import { queryKeys } from "../../lib/query-keys"
+import { mutationKeys } from "./mutation-keys"
+import { queryKeys } from "../queries/query-keys"
 import { sdk } from "../../lib/sdk"
 
 export const useCreateOneBrand = createResourceMutationHook<

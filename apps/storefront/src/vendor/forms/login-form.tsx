@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
-import { setVendorToken } from "@vendor/lib/client"
+import { useVendorAuthStore } from "@vendor/lib/auth-store"
 import { useLoginVendor } from "@vendor/hooks/mutations/auth"
 import z from "zod"
 
@@ -17,6 +17,7 @@ export type LoginVendorInput = z.infer<typeof loginVendorSchema>
 export function LoginForm() {
   const router = useRouter()
   const loginMutation = useLoginVendor()
+  const setToken = useVendorAuthStore((s) => s.setToken)
   const {
     register,
     handleSubmit,
@@ -29,7 +30,7 @@ export function LoginForm() {
   const submit = handleSubmit((values) => {
     loginMutation.mutate(values, {
       onSuccess: ({ token }) => {
-        setVendorToken(token)
+        setToken(token)
         router.push("/vendor/dashboard")
       },
     })

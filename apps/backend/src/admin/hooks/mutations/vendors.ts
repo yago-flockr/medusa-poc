@@ -6,8 +6,8 @@ import type {
 } from "../../../api/admin/vendors/contract"
 import type { ShopifyProductsPullResult } from "../../../lib/shopify-products"
 import { createResourceMutationHook } from "../../lib/create-resource-mutation"
-import { mutationKeys } from "../../lib/mutation-keys"
-import { queryKeys } from "../../lib/query-keys"
+import { mutationKeys } from "./mutation-keys"
+import { queryKeys } from "../queries/query-keys"
 import { sdk } from "../../lib/sdk"
 
 export const useCreateOneVendor = createResourceMutationHook<

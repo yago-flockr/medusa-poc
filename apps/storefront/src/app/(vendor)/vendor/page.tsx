@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { getVendorToken } from "@vendor/lib/client"
+import { useVendorAuthStore } from "@vendor/lib/auth-store"
 import { LoginForm } from "@vendor/forms/login-form"
 
 export default function VendorHomePage() {
@@ -10,7 +10,7 @@ export default function VendorHomePage() {
   const [checked, setChecked] = useState(false)
 
   useEffect(() => {
-    if (getVendorToken()) {
+    if (useVendorAuthStore.getState().token) {
       router.replace("/vendor/dashboard")
       return
     }

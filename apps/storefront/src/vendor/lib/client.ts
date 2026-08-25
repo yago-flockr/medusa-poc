@@ -1,22 +1,7 @@
+import { useVendorAuthStore } from "./auth-store"
+
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? "http://localhost:9000"
-
-const TOKEN_KEY = "vendor_token"
-
-export const getVendorToken = (): string | null => {
-  if (typeof window === "undefined") {
-    return null
-  }
-  return localStorage.getItem(TOKEN_KEY)
-}
-
-export const setVendorToken = (token: string) => {
-  localStorage.setItem(TOKEN_KEY, token)
-}
-
-export const clearVendorToken = () => {
-  localStorage.removeItem(TOKEN_KEY)
-}
 
 export class VendorApiError extends Error {
   status: number
@@ -33,7 +18,7 @@ export async function request<T>(
   path: string,
   options: { method?: string; authToken?: string; body?: unknown } = {},
 ): Promise<T> {
-  const token = options.authToken ?? getVendorToken()
+  const token = options.authToken ?? useVendorAuthStore.getState().token
 
   const res = await fetch(`${BACKEND_URL}${path}`, {
     method: options.method ?? "GET",

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { request } from "@vendor/lib/client"
-import { mutationKeys } from "@vendor/lib/mutation-keys"
+import { mutationKeys } from "./mutation-keys"
 import type { LoginVendorInput } from "@vendor/forms/login-form"
 
 export const useLoginVendor = () =>

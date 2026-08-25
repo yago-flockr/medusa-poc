@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { clearVendorToken, getVendorToken } from "@vendor/lib/client"
+import { useVendorAuthStore } from "@vendor/lib/auth-store"
 
 export default function VendorDashboardPage() {
   const router = useRouter()
   const [checked, setChecked] = useState(false)
+  const clearToken = useVendorAuthStore((s) => s.clearToken)
 
   useEffect(() => {
-    if (!getVendorToken()) {
+    if (!useVendorAuthStore.getState().token) {
       router.replace("/vendor")
       return
     }
@@ -26,10 +27,10 @@ export default function VendorDashboardPage() {
       <button
         type="button"
         onClick={() => {
-          clearVendorToken()
+          clearToken()
           router.replace("/vendor")
         }}
-        className="border rounded px-3 py-2 text-sm"
+        className="border rounded-sm px-3 py-2 text-sm"
       >
         Log out
       </button>

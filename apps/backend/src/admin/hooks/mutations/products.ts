@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import type { HttpTypes } from "@medusajs/framework/types"
 import type { BrandAdditionalData } from "../../../api/admin/brands/additional-data"
-import { queryKeys } from "../../lib/query-keys"
+import { queryKeys } from "../queries/query-keys"
 import { sdk } from "../../lib/sdk"
 
 type AdminProductUpdateBody = HttpTypes.AdminUpdateProduct & {
