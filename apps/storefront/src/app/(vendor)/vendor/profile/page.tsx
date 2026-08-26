@@ -1,73 +1,61 @@
 "use client"
 
 import { useFindOneVendor } from "@/vendor/hooks/queries/vendor"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { ProfileForm } from "@/vendor/forms/profile-form"
 import { Separator } from "@/components/ui/separator"
-
-function ProfileRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between py-2 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
-    </div>
-  )
-}
+import { VendorSection } from "@/vendor/components/section"
+import { InfoList } from "@/components/display/info-list"
+import { DataState } from "@/components/display/data-state"
 
 export default function VendorProfilePage() {
   const findOneVendor = useFindOneVendor()
+  const vendor = findOneVendor.data?.vendor
+  const vendorUser = findOneVendor.data?.vendor_user
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Profile</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {findOneVendor.isLoading || !findOneVendor.data ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
-        ) : (
-          <>
-            <ProfileRow
-              label="Vendor name"
-              value={findOneVendor.data.vendor.name}
-            />
-            <ProfileRow
-              label="Handle"
-              value={findOneVendor.data.vendor.handle}
-            />
-            <Separator className="my-2" />
-            <ProfileRow
-              label="Your name"
-              value={
-                [
-                  findOneVendor.data.vendor_user.first_name,
-                  findOneVendor.data.vendor_user.last_name,
-                ]
-                  .filter(Boolean)
-                  .join(" ") || "—"
-              }
-            />
-            <ProfileRow
-              label="Email"
-              value={findOneVendor.data.vendor_user.email}
-            />
-            <Separator className="my-2" />
-            <ProfileRow
-              label="Shopify connection"
-              value={
-                findOneVendor.data.vendor.shopify_connected
-                  ? (findOneVendor.data.vendor.shopify_store_domain ??
-                    "Connected")
-                  : "Not connected"
-              }
-            />
-          </>
-        )}
-      </CardContent>
-    </Card>
+    <VendorSection
+      title="Profile"
+      description={vendor ? `Signed in as ${vendorUser?.email}` : undefined}
+    >
+      <DataState isLoading={findOneVendor.isLoading || !findOneVendor.data}>
+        <DataState.Loading />
+        <DataState.Content>
+          <InfoList.Root>
+            <InfoList.Row>
+              <InfoList.Label>Vendor name</InfoList.Label>
+              <InfoList.Text>{vendor?.name ?? ""}</InfoList.Text>
+            </InfoList.Row>
+            <InfoList.Row>
+              <InfoList.Label>Handle</InfoList.Label>
+              <InfoList.Text>{vendor?.handle ?? ""}</InfoList.Text>
+            </InfoList.Row>
+            <InfoList.Row>
+              <InfoList.Label>Shopify connection</InfoList.Label>
+              {vendor?.shopify_connected && vendor.shopify_store_domain ? (
+                <InfoList.Link
+                  href={`https://${vendor.shopify_store_domain}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {vendor.shopify_store_domain}
+                </InfoList.Link>
+              ) : (
+                <InfoList.Text>
+                  {vendor?.shopify_connected ? "Connected" : "Not connected"}
+                </InfoList.Text>
+              )}
+            </InfoList.Row>
+          </InfoList.Root>
+          <Separator className="my-4" />
+          <ProfileForm
+            defaultValues={{
+              first_name: vendorUser?.first_name ?? "",
+              last_name: vendorUser?.last_name ?? "",
+            }}
+            onSaved={() => findOneVendor.refetch()}
+          />
+        </DataState.Content>
+      </DataState>
+    </VendorSection>
   )
 }

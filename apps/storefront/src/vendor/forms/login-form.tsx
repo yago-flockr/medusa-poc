@@ -3,7 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
+import { cn } from "@/lib/utils"
 import { useForm } from "react-hook-form"
+import type { ComponentProps } from "react"
 import z from "zod"
 import { Button } from "@/components/ui/button"
 import { TextField } from "./fields/text-field"
@@ -15,7 +17,9 @@ export const loginVendorSchema = z.object({
 
 export type LoginVendorInput = z.infer<typeof loginVendorSchema>
 
-export function LoginForm() {
+type LoginFormProps = Omit<ComponentProps<"form">, "onSubmit" | "children">
+
+export function LoginForm({ className, ...props }: LoginFormProps) {
   const loginVendor = useLoginVendor()
   const setToken = useVendorAuthStore((state) => state.setToken)
   const {
@@ -36,7 +40,7 @@ export function LoginForm() {
   })
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4">
+    <form onSubmit={submit} className={cn("flex flex-col gap-4", className)} {...props}>
       <TextField
         id="vendor-email"
         label="Email"

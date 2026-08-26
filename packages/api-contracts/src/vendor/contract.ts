@@ -5,6 +5,10 @@ import {
   vendorOrdersQuerySchema,
 } from "./orders"
 import {
+  updateVendorProfileResponseSchema,
+  updateVendorProfileSchema,
+} from "./profile"
+import {
   setVendorShopifyConnectionResponseSchema,
   setVendorShopifyConnectionSchema,
   vendorShopifyInstallLinkResponseSchema,
@@ -19,6 +23,14 @@ export const vendorContract = c.router({
     path: "/vendors/me",
     responses: {
       200: vendorMeResponseSchema,
+    },
+  },
+  updateProfile: {
+    method: "PATCH",
+    path: "/vendors/me",
+    body: updateVendorProfileSchema,
+    responses: {
+      200: updateVendorProfileResponseSchema,
     },
   },
   setShopifyConnection: {

@@ -2,8 +2,9 @@
 
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
   { href: "/vendor", label: "Dashboard" },
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
 
 export function VendorNav() {
   const router = useRouter()
+  const pathname = usePathname()
   const clearToken = useVendorAuthStore((state) => state.clearToken)
 
   return (
@@ -23,7 +25,10 @@ export function VendorNav() {
           <Link
             key={item.href}
             href={item.href}
-            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+            className={cn(
+              "text-sm font-medium text-muted-foreground hover:text-foreground",
+              pathname === item.href && "text-foreground font-bold",
+            )}
           >
             {item.label}
           </Link>

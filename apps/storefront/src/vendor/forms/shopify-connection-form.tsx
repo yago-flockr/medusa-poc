@@ -7,19 +7,25 @@ import {
   type SetVendorShopifyConnectionInput,
 } from "@dtc/api-contracts/vendor/shopify-connection"
 import { useForm } from "react-hook-form"
+import type { ComponentProps } from "react"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { TextField } from "./fields/text-field"
+
+type ShopifyConnectionFormProps = Omit<
+  ComponentProps<"form">,
+  "onSubmit" | "children"
+> & {
+  defaultValues?: Partial<SetVendorShopifyConnectionInput>
+  onSaved?: () => void
+}
 
 export function ShopifyConnectionForm({
   defaultValues,
   onSaved,
-}: {
-  defaultValues?: {
-    shopify_store_domain: string
-    shopify_client_id: string
-  }
-  onSaved?: () => void
-}) {
+  className,
+  ...props
+}: ShopifyConnectionFormProps) {
   const setVendorShopifyConnection = useSetVendorShopifyConnection()
   const {
     register,
@@ -28,9 +34,10 @@ export function ShopifyConnectionForm({
   } = useForm<SetVendorShopifyConnectionInput>({
     resolver: zodResolver(setVendorShopifyConnectionSchema),
     defaultValues: {
-      shopify_store_domain: defaultValues?.shopify_store_domain ?? "",
-      shopify_client_id: defaultValues?.shopify_client_id ?? "",
+      shopify_store_domain: "",
+      shopify_client_id: "",
       shopify_client_secret: "",
+      ...defaultValues,
     },
   })
 
@@ -39,7 +46,11 @@ export function ShopifyConnectionForm({
   })
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4">
+    <form
+      onSubmit={submit}
+      className={cn("flex flex-col gap-4", className)}
+      {...props}
+    >
       <TextField
         id="shopify-store-domain"
         label="Store domain"

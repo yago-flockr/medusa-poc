@@ -45,7 +45,7 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <VendorNav />
-      {children}
+      <div className="flex flex-col gap-6">{children}</div>
     </div>
   )
 }
