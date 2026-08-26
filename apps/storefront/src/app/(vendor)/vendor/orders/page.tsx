@@ -1,9 +1,7 @@
 "use client"
 
-import {
-  useFindManyVendorOrders,
-  type VendorOrder,
-} from "@/vendor/hooks/queries/orders"
+import { useFindManyVendorOrders } from "@/vendor/hooks/queries/orders"
+import type { VendorOrder } from "@dtc/api-contracts/vendor/orders"
 import {
   Card,
   CardContent,

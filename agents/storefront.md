@@ -20,26 +20,36 @@ This is the **customer** surface only. Brand/theme config is a later concern.
 - Medusa JS SDK (`@medusajs/js-sdk`) with publishable key
 - Tailwind-based UI from the starter
 
-## `/vendor` — removed
+## `/vendor` — vendor panel (deleted once, then reinstated)
 
-This app used to host a vendor-facing UI at `src/app/vendor/**` (register/log
-in, manage its own products, view its own orders, SPA-style with a
-`localStorage` JWT). It's deleted — Sensus's answers confirmed a vendor
-manages their own catalogue through their own Shopify store, not through
-us, so there was never a real need for a vendor to log into anything of
-ours to manage products. See `docs/plan.md` Decisions for the full
-reasoning (including why it was built SPA-style in the first place) and
-what's replacing it (Shopify sync). `src/middleware.ts` still excludes
-`/vendor` from the region-redirect as a harmless no-op, in case a vendor
-panel comes back later as a deliberate alternative to Shopify — not
-because anything currently lives there.
+This app hosts a vendor-facing UI at `src/app/(vendor)/vendor/**` (login,
+Shopify connection, staff-parity profile, own orders/statements) plus its
+supporting code under `src/vendor/**` (`forms/`, `hooks/{queries,mutations}/`,
+`lib/`, `stores/`, `components/`). It was deleted once — Sensus's answers
+initially confirmed a vendor manages their own catalogue through their own
+Shopify store, not through us — then reinstated once hands-on testing of the
+Shopify OAuth flow showed the connection step is unavoidably vendor-driven
+(only someone with access to the *installing* store's own org can complete a
+custom-distribution app install, so staff can't do this step on a vendor's
+behalf). See `docs/plan.md` Decisions, "A full vendor panel is back", for the
+full history. **This is not a return to manual catalogue entry**: the
+panel's job is connection management (a vendor connects and picks what to
+import from their own Shopify) and viewing its own orders/statements — a
+Shopify-connected product's own data (title, price, images, variants) still
+comes from Shopify only, never edited by hand on either side.
+`src/vendor/lib/contract-client.ts` (a ts-rest client built from
+`@dtc/api-contracts/vendor/contract`) is the current convention for every
+`/vendors/*` call — `src/vendor/lib/client.ts`'s older `request()` helper
+still exists only for the one endpoint not in that contract
+(`/auth/vendor/emailpass`, a core Medusa auth route, not a custom
+`/vendors/*` resource); don't add new `/vendors/*` calls through it.
 
 ## Patterns to follow when extending
 
 1. Always send `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` (SDK config). Missing key causes opaque store API failures.
 2. Prefer URL-driven listing/filter state for shareable facet UX.
 3. Keep brand tokens out of core cart/checkout logic when you introduce a config layer.
-4. **Mandatory:** never import backend models or `InferTypeOf` of models. Use JS SDK / `HttpTypes` for core commerce; for custom resources use the HTTP contract (`api/.../contract.ts` or a shared contracts package), never a second hand-copied type.
+4. **Mandatory:** never import backend models or `InferTypeOf` of models. Use JS SDK / `HttpTypes` for core commerce; for `/vendors/*` resources use `@dtc/api-contracts` (`packages/api-contracts/README.md`) via `src/vendor/lib/contract-client.ts` — never hand-copy a response type into a hook file again.
 
 ## Environment variables
 

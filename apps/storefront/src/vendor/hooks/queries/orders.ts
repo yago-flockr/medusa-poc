@@ -1,27 +1,18 @@
-import { request } from "@/vendor/lib/client"
+import { vendorClient } from "@/vendor/lib/contract-client"
+import type { VendorOrdersListResponse } from "@dtc/api-contracts/vendor/orders"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
-
-export type VendorOrder = {
-  id: string
-  display_id: number
-  status: string
-  total: number
-  currency_code: string
-  items: Array<{ id: string; title: string; quantity: number }>
-}
-
-export type VendorOrdersListResponse = {
-  orders: VendorOrder[]
-  count: number
-  limit: number
-  offset: number
-}
 
 export const useFindManyVendorOrders = createResourceQueryHook<
   void,
   VendorOrdersListResponse
 >({
   queryKey: () => queryKeys.orders.findMany,
-  queryFn: () => request<VendorOrdersListResponse>("/vendors/orders"),
+  queryFn: async () => {
+    const response = await vendorClient.getOrders({ query: {} })
+    if (response.status !== 200) {
+      throw new Error(`Unexpected response status ${response.status}`)
+    }
+    return response.body
+  },
 })

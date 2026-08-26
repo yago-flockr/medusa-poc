@@ -1,60 +1,40 @@
-import { request } from "@/vendor/lib/client"
+import { vendorClient } from "@/vendor/lib/contract-client"
+import type { SetVendorShopifyConnectionInput } from "@dtc/api-contracts/vendor/shopify-connection"
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
-
-export type SetVendorShopifyConnectionInput = {
-  shopify_store_domain: string
-  shopify_client_id: string
-  shopify_client_secret: string
-}
 
 export const useSetVendorShopifyConnection = () =>
   useMutation({
     mutationKey: mutationKeys.shopify.setConnection,
-    mutationFn: (input: SetVendorShopifyConnectionInput) =>
-      request<{ vendor: { id: string; shopify_store_domain: string | null } }>(
-        "/vendors/me/shopify-connection",
-        { method: "PATCH", body: input },
-      ),
+    mutationFn: async (input: SetVendorShopifyConnectionInput) => {
+      const response = await vendorClient.setShopifyConnection({ body: input })
+      if (response.status !== 200) {
+        throw new Error(`Unexpected response status ${response.status}`)
+      }
+      return response.body
+    },
   })
 
 export const useGetVendorShopifyInstallLink = () =>
   useMutation({
     mutationKey: mutationKeys.shopify.getInstallLink,
-    mutationFn: () =>
-      request<{ installLink: string }>(
-        "/vendors/me/shopify-connection/install-link",
-      ),
+    mutationFn: async () => {
+      const response = await vendorClient.getShopifyInstallLink()
+      if (response.status !== 200) {
+        throw new Error(`Unexpected response status ${response.status}`)
+      }
+      return response.body
+    },
   })
-
-export type ShopifyPulledProduct = {
-  shopify_id: string
-  title: string
-  handle: string
-  description: string
-  status: string
-  options: { name: string; values: string[] }[]
-  image_urls: string[]
-  variants: {
-    title: string
-    sku: string | null
-    price: string
-    inventoryQuantity: number | null
-    options: { name: string; value: string }[]
-  }[]
-  collections: string[]
-}
-
-export type PullVendorShopifyProductsResult = {
-  currencyCode: string
-  requestedQueryCost?: number
-  hasNextPage: boolean
-  products: ShopifyPulledProduct[]
-}
 
 export const usePullVendorShopifyProducts = () =>
   useMutation({
     mutationKey: mutationKeys.shopify.pullProducts,
-    mutationFn: () =>
-      request<PullVendorShopifyProductsResult>("/vendors/me/shopify-products"),
+    mutationFn: async () => {
+      const response = await vendorClient.pullShopifyProducts()
+      if (response.status !== 200) {
+        throw new Error(`Unexpected response status ${response.status}`)
+      }
+      return response.body
+    },
   })

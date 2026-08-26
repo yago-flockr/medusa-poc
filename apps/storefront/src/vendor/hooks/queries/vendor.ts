@@ -1,26 +1,15 @@
-import { request } from "@/vendor/lib/client"
+import { vendorClient } from "@/vendor/lib/contract-client"
+import type { VendorMeResponse } from "@dtc/api-contracts/vendor/me"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export type VendorMeResponse = {
-  vendor_user: {
-    id: string
-    first_name: string | null
-    last_name: string | null
-    email: string
-  }
-  vendor: {
-    id: string
-    name: string
-    handle: string
-    shopify_store_domain: string | null
-    shopify_client_id: string | null
-    shopify_connected_at: string | null
-    shopify_connected: boolean
-  }
-}
-
 export const useFindOneVendor = createResourceQueryHook<void, VendorMeResponse>({
   queryKey: () => queryKeys.vendor.findOne,
-  queryFn: () => request<VendorMeResponse>("/vendors/me"),
+  queryFn: async () => {
+    const response = await vendorClient.getMe()
+    if (response.status !== 200) {
+      throw new Error(`Unexpected response status ${response.status}`)
+    }
+    return response.body
+  },
 })

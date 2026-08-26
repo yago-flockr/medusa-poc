@@ -3,29 +3,33 @@ import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
+import {
+  setVendorShopifyConnectionSchema,
+  setVendorShopifyConnectionResponseSchema,
+  type SetVendorShopifyConnectionInput,
+  type SetVendorShopifyConnectionResponse,
+} from "@dtc/api-contracts/vendor/shopify-connection"
 import { resolveVendorUser } from "../../resolve-vendor-user"
 import { updateVendorWorkflow } from "../../../../workflows/update-vendor"
 
-type SetVendorShopifyConnectionBody = {
-  shopify_store_domain?: string
-  shopify_client_id?: string
-  shopify_client_secret?: string
-}
-
 export const PATCH = async (
-  req: AuthenticatedMedusaRequest<SetVendorShopifyConnectionBody>,
+  req: AuthenticatedMedusaRequest<SetVendorShopifyConnectionInput>,
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const { shopify_store_domain, shopify_client_id, shopify_client_secret } =
-    req.body
+  const parsed = setVendorShopifyConnectionSchema.safeParse(req.body)
 
-  if (!shopify_store_domain || !shopify_client_id || !shopify_client_secret) {
+  if (!parsed.success) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
-      "shopify_store_domain, shopify_client_id and shopify_client_secret are all required.",
+      `Invalid Shopify connection payload: ${parsed.error.issues
+        .map((issue) => `${issue.path.join(".")} ${issue.message}`)
+        .join("; ")}`,
     )
   }
+
+  const { shopify_store_domain, shopify_client_id, shopify_client_secret } =
+    parsed.data
 
   const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
     "vendor.id",
@@ -44,10 +48,12 @@ export const PATCH = async (
     shopify_store_domain: string | null
   }
 
-  res.json({
+  const response: SetVendorShopifyConnectionResponse = {
     vendor: {
       id: vendor.id,
       shopify_store_domain: vendor.shopify_store_domain,
     },
-  })
+  }
+
+  res.json(setVendorShopifyConnectionResponseSchema.parse(response))
 }

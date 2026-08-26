@@ -4,6 +4,11 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { getOrdersListWorkflow } from "@medusajs/medusa/core-flows"
+import {
+  vendorOrdersListResponseSchema,
+  type VendorOrder,
+  type VendorOrdersListResponse,
+} from "@dtc/api-contracts/vendor/orders"
 import { parseVendorListQuery } from "../list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 
@@ -42,9 +47,16 @@ export const GET = async (
   })
 
   const { rows: orders, metadata } = result as {
-    rows: unknown[]
+    rows: VendorOrder[]
     metadata: { count: number }
   }
 
-  res.json({ orders, count: metadata.count, limit, offset })
+  const response: VendorOrdersListResponse = {
+    orders,
+    count: metadata.count,
+    limit,
+    offset,
+  }
+
+  res.json(vendorOrdersListResponseSchema.parse(response))
 }

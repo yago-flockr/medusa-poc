@@ -1,0 +1,16 @@
+{
+  "name": "@dtc/api-contracts",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./vendor/me": "./src/vendor/me.ts",
+    "./vendor/shopify-connection": "./src/vendor/shopify-connection.ts",
+    "./vendor/shopify-products": "./src/vendor/shopify-products.ts",
+    "./vendor/orders": "./src/vendor/orders.ts",
+    "./vendor/contract": "./src/vendor/contract.ts"
+  },
+  "dependencies": {
+    "@ts-rest/core": "3.53.0-rc.1",
+    "zod": "4.2.0"
+  }
+}

@@ -1,5 +1,6 @@
 packages:
   - "apps/**"
+  - "packages/**"
   - "!apps/backend/.medusa/**"
 
 # Trust the starter lockfile so pnpm 11 does not re-verify every entry
@@ -9,6 +10,11 @@ trustLockfile: true
 overrides:
   "@types/react": "19.0.5"
   "@types/react-dom": "19.0.5"
+  # Engines require node >=22 (see root/backend package.json); pinning one
+  # @types/node instance workspace-wide avoids duplicate installs that make
+  # cross-package generic types (e.g. @ts-rest/core's branded types) go
+  # structurally incompatible between packages.
+  "@types/node": "22.19.2"
 
 allowBuilds:
   '@medusajs/telemetry': true

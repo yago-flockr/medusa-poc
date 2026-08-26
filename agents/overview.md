@@ -113,15 +113,27 @@ Current but replaceable:
 ## Module / directory breakdown
 
 - `apps/backend/` → `agents/backend.md`
-- `apps/storefront/` → `agents/storefront.md`. Used to also host a
-  vendor-facing UI at `/vendor` — deleted once Sensus's answers confirmed a
-  vendor manages their own catalogue through their own Shopify store, not
-  through us; see `docs/plan.md` Decisions for the full reasoning and what
-  replaces it (Shopify sync). Still true and worth keeping in mind for
-  whatever comes next: any new UI surface goes inside the storefront as an
+- `apps/storefront/` → `agents/storefront.md`. Hosts a vendor-facing UI at
+  `/vendor` (login, Shopify connection, staff-parity profile, own
+  orders/statements) — this was deleted once, then reinstated; see
+  `docs/plan.md` Decisions "A full vendor panel is back — superseding 'no
+  vendor-facing panel for v1'... and the earlier deletion of `/vendor`" for
+  the full history. It is **not** a return to manual catalogue entry: a
+  vendor connects their own Shopify and picks what to import, never types a
+  product in by hand. Any new UI surface goes inside the storefront as an
   isolated route segment (own token, own layout, never sharing session
   state with other actor types) unless a real requirement rules that out —
   exactly two deployables (backend+Admin, storefront) is the standing rule.
+- `packages/` → shared workspace packages consumed by more than one app
+  (`pnpm-workspace.yaml`). Currently one: `api-contracts`
+  (`packages/api-contracts/README.md`) — ts-rest + Zod contracts for
+  backend↔frontend HTTP boundaries, one domain per `src/<domain>/`
+  subfolder (currently just `vendor`, covering every `/vendors/*` route),
+  the single source of truth for request/response types on both
+  `apps/backend` and `apps/storefront`. See its own README for the pattern,
+  when a route needs an entry here, and what stays out of scope (core
+  Medusa resources, and anything that's a Module Link rather than an HTTP
+  boundary — see `agents/backend.md` "Patterns to follow when extending").
 - `docs/plan.md`: what the product must do, what is **Fixed** and **Decided**, and what is **Not decided** — read before assuming a host or a provider (hosting itself is decided; see Decisions)
 - `docs/study/`: Medusa study stages with done criteria; notes per stage
 - `docs/features/`: intent briefs (what we want + likely Medusa primitives); `_template.md` is the shape

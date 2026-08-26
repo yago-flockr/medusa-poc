@@ -1,30 +1,12 @@
 import { MedusaError } from "@medusajs/framework/utils"
+import type {
+  ShopifyPulledProduct,
+  PullVendorShopifyProductsResponse,
+} from "@dtc/api-contracts/vendor/shopify-products"
 import type { ShopifyProductsPullQuery } from "./generated/admin.generated"
 
-export interface ShopifyProduct {
-  shopify_id: string
-  title: string
-  handle: string
-  description: string
-  status: string
-  options: { name: string; values: string[] }[]
-  image_urls: string[]
-  variants: {
-    title: string
-    sku: string | null
-    price: string
-    inventoryQuantity: number | null
-    options: { name: string; value: string }[]
-  }[]
-  collections: string[]
-}
-
-export interface ShopifyProductsPullResult {
-  currencyCode: string
-  requestedQueryCost?: number
-  hasNextPage: boolean
-  products: ShopifyProduct[]
-}
+export type ShopifyProduct = ShopifyPulledProduct
+export type ShopifyProductsPullResult = PullVendorShopifyProductsResponse
 
 const PRODUCTS_QUERY = `#graphql
   query ShopifyProductsPull($first: Int!) {

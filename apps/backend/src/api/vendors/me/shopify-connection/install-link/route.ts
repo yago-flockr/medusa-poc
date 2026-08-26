@@ -4,6 +4,10 @@ import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
+import {
+  vendorShopifyInstallLinkResponseSchema,
+  type VendorShopifyInstallLinkResponse,
+} from "@dtc/api-contracts/vendor/shopify-connection"
 import { resolveVendorUser } from "../../../resolve-vendor-user"
 import { updateVendorWorkflow } from "../../../../../workflows/update-vendor"
 
@@ -47,5 +51,7 @@ export const GET = async (
     },
   ).toString()}`
 
-  res.json({ installLink })
+  const response: VendorShopifyInstallLinkResponse = { installLink }
+
+  res.json(vendorShopifyInstallLinkResponseSchema.parse(response))
 }

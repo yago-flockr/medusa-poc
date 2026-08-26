@@ -3,6 +3,10 @@ import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
+import {
+  pullVendorShopifyProductsResponseSchema,
+  type PullVendorShopifyProductsResponse,
+} from "@dtc/api-contracts/vendor/shopify-products"
 import { resolveVendorUser } from "../../resolve-vendor-user"
 import { pullShopifyProducts } from "../../../../lib/shopify-products"
 
@@ -27,7 +31,7 @@ export const GET = async (
     )
   }
 
-  const result = await pullShopifyProducts({
+  const result: PullVendorShopifyProductsResponse = await pullShopifyProducts({
     storeDomain: vendor.shopify_store_domain,
     accessToken: vendor.shopify_access_token,
   })
@@ -37,5 +41,5 @@ export const GET = async (
     JSON.stringify(result.products, null, 2),
   )
 
-  res.json(result)
+  res.json(pullVendorShopifyProductsResponseSchema.parse(result))
 }

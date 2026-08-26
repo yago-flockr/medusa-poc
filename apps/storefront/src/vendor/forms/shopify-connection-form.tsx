@@ -2,18 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSetVendorShopifyConnection } from "@/vendor/hooks/mutations/shopify"
+import {
+  setVendorShopifyConnectionSchema,
+  type SetVendorShopifyConnectionInput,
+} from "@dtc/api-contracts/vendor/shopify-connection"
 import { useForm } from "react-hook-form"
-import z from "zod"
 import { Button } from "@/components/ui/button"
 import { TextField } from "./fields/text-field"
-
-export const shopifyConnectionSchema = z.object({
-  shopify_store_domain: z.string().min(1),
-  shopify_client_id: z.string().min(1),
-  shopify_client_secret: z.string().min(1),
-})
-
-export type ShopifyConnectionInput = z.infer<typeof shopifyConnectionSchema>
 
 export function ShopifyConnectionForm({
   defaultValues,
@@ -30,8 +25,8 @@ export function ShopifyConnectionForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ShopifyConnectionInput>({
-    resolver: zodResolver(shopifyConnectionSchema),
+  } = useForm<SetVendorShopifyConnectionInput>({
+    resolver: zodResolver(setVendorShopifyConnectionSchema),
     defaultValues: {
       shopify_store_domain: defaultValues?.shopify_store_domain ?? "",
       shopify_client_id: defaultValues?.shopify_client_id ?? "",

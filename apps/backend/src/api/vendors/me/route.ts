@@ -3,6 +3,10 @@ import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
+import {
+  vendorMeResponseSchema,
+  type VendorMeResponse,
+} from "@dtc/api-contracts/vendor/me"
 import { resolveVendorUser } from "../resolve-vendor-user"
 
 export const GET = async (
@@ -25,7 +29,7 @@ export const GET = async (
     "vendor.shopify_access_token",
   ])
 
-  res.json({
+  const response: VendorMeResponse = {
     vendor_user: {
       id: vendorUser.id,
       first_name: vendorUser.first_name,
@@ -38,8 +42,12 @@ export const GET = async (
       handle: vendorUser.vendor.handle,
       shopify_store_domain: vendorUser.vendor.shopify_store_domain,
       shopify_client_id: vendorUser.vendor.shopify_client_id,
-      shopify_connected_at: vendorUser.vendor.shopify_connected_at,
+      shopify_connected_at: vendorUser.vendor.shopify_connected_at
+        ? new Date(vendorUser.vendor.shopify_connected_at).toISOString()
+        : null,
       shopify_connected: Boolean(vendorUser.vendor.shopify_access_token),
     },
-  })
+  }
+
+  res.json(vendorMeResponseSchema.parse(response))
 }
