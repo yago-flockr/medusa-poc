@@ -15,6 +15,12 @@ conventions for each already live in `agents/storefront.md` and
 - Avoid prop drilling more than one or two levels. If a prop is only being
   passed through to reach a distant descendant, that's a signal to use
   `children`/composition or context — not to keep threading it deeper.
+- A component wrapping a JSX spread of rest props always places `{...props}`
+  last among that element's attributes, never first — so a caller-supplied
+  prop can never silently clobber one the component sets itself
+  (`onSubmit`, `className`). If a specific prop must never be overridable at
+  all, exclude that key from the prop type via `Omit<...>` — don't rely on
+  spread order alone to protect it.
 
 ## Composition over flags
 
@@ -22,6 +28,18 @@ conventions for each already live in `agents/storefront.md` and
   layout or behavior (`showHeader`, `isCompact`). A flag prop means the
   component secretly renders two different things depending on a hidden
   input; composition makes both shapes explicit at the call site.
+- The same principle extends to **content that needs consistent styling
+  across many call sites** inside a slot-based component: prefer small named
+  subcomponents (`InfoList.Label`, `InfoList.Text`, `InfoList.Link`) over
+  either a single component with a style-only `variant` prop, or fully
+  freeform children. Freeform children push the risk of visual drift onto
+  every call site (someone eventually forgets the muted-text class on a
+  label); a `variant` prop is unnecessary indirection when the repo already
+  composes this way elsewhere (`Card`'s own `CardTitle`/`CardDescription`/
+  `CardAction` are separate named parts, not one part with a variant enum).
+  Only add a new named subcomponent once a real field needs its behavior —
+  see YAGNI in `agents/patterns/dry-kiss-yagni.md` for the `InfoList.Link`
+  vs. speculative `InfoList.Copy` example.
 - Keep visual components presentation-only. Side effects and Medusa SDK/JS
   SDK calls belong in a hook, not inline in a component body — this repo's
   own convention: Admin query/mutation hooks live in

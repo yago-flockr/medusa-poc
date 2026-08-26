@@ -9,6 +9,18 @@ every change without being asked.
   narrow it instead. This repo already validates request bodies with Zod
   (`api/admin/<resource>/contract.ts`, `validators.ts`) — reuse that schema
   to narrow, don't re-type by hand.
+- **Never hand-declare a type that duplicates or narrows one already
+  derivable from a canonical source.** Two shapes this repo's UI code keeps
+  needing: a component's own prop type (`ComponentProps<typeof Input>`,
+  `ComponentProps<typeof CardContent>`) when wrapping a single underlying
+  element or primitive — extend that instead of hand-picking which native
+  attributes to expose (`apps/storefront/src/vendor/forms/fields/text-field.tsx`'s
+  `TextFieldProps` is the reference shape); and a form's `defaultValues`/input
+  prop type when the same shape is already the Zod schema's `z.infer` used by
+  that form's own `zodResolver` — use `Partial<InferredType>`/`Pick<...>`,
+  not a separately hand-typed object literal. Either hand-rolled version can
+  silently drift from the real one the moment the wrapped component or
+  schema changes.
 - **Package strictness differs on purpose, don't "fix" it into uniformity:**
   `apps/backend/tsconfig.json` only enables `strictNullChecks` (Medusa's
   decorator-metadata shape hasn't been verified against full `strict`);

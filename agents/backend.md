@@ -132,7 +132,21 @@ starts.
   anyone; vendors and vendor users are both staff-created from
   `/admin/vendors` and `/admin/vendor-users` (mirrored two-page Admin UI,
   same as Brand's page, `src/admin/routes/vendors/`,
-  `src/admin/routes/vendor-users/`). A vendor also owns its own products: `POST
+  `src/admin/routes/vendor-users/`). **The Vendor/VendorUser split also
+  governs what a vendor's own self-service UI is allowed to touch:**
+  `PATCH /vendors/me` (`src/api/vendors/me/route.ts`) lets a vendor edit only
+  their own `VendorUser` fields (`first_name`, `last_name`) via the existing
+  `updateVendorUserWorkflow` — never `Vendor`-level fields (`name`, `handle`,
+  Shopify store domain/credentials), which stay staff-only through
+  `/admin/vendors`. This was a real correction mid-build: the first version
+  let a vendor edit both through one endpoint, one workflow call each. If a
+  future self-service form ever needs to touch both `Vendor` and `VendorUser`
+  fields atomically in one request, compose a small workflow that calls both
+  existing steps (`updateVendorStep` + `updateVendorUserStep`) together
+  rather than two independent top-level workflow runs from the route — that
+  gets automatic saga-style compensation for free if the second call fails
+  after the first succeeds — but don't reach for that until a real field
+  actually needs it on both sides at once. A vendor also owns its own products: `POST
 /vendors/products` creates a product forced to `status: "proposed"` and
   linked to the caller's vendor (never a client-supplied `vendor_id`) via the
   `productsCreated` hook in `src/workflows/hooks/created-product.ts` — the

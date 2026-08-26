@@ -49,6 +49,15 @@ not on the first hint of similarity.
   separate, independent CRUDs" note. That's the shape of YAGNI to apply here:
   cut speculative coupling, keep it split until a real requirement forces
   otherwise.
+- Same judgment applies to a composable component's set of named
+  subcomponents (`agents/patterns/ui-state.md`, "Composition over flags"):
+  when the storefront's `InfoList` needed a way to render a real hyperlink,
+  `InfoList.Link` was added because a field (the connected Shopify store
+  domain) genuinely needed an `<a href>`, not just label/value styling.
+  `InfoList.Copy` (a copy-to-clipboard variant) was deliberately *not* added
+  alongside it — nothing in the codebase needs that behavior yet. Build the
+  subcomponent a real field needs today; don't pre-build the rest of a
+  plausible-sounding set on the assumption something will need it later.
 
 ## Example (this repo's shape)
 
