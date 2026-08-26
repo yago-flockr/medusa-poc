@@ -233,6 +233,24 @@ fresh rather than resolved against the shared/filterable option rows
 composition, so sharing options across a whole paginated pull needs a different
 shape — worth solving once pagination itself is built, not before).
 
+**Update: create-only and no-vendor-link are resolved for real vendor-triggered
+use, not just this spike workflow.** A separate, real workflow —
+`src/workflows/import-vendor-shopify-products/`, triggered from the vendor
+panel's own "Import products" checklist (`agents/backend.md` has the full
+shape) — creates new products (linked to the vendor via
+`additional_data.vendor_id`) and updates already-imported ones (matched by
+`external_id`), forcing `status: proposed` on either path so staff re-approves
+a re-synced product exactly like a new one. This workflow above
+(`sync-shopify-products/`) stays as it was — create-only, no vendor link — 
+since it's now only what the Admin debug widget calls, not a real trigger.
+Variant handling on update is a full replace (Shopify's current variant set
+wins entirely), not a preserve-by-identity merge — deliberate, since no
+per-variant Shopify id is tracked and this store's own real variants have
+null SKUs (see "What the real data showed" above), so there's no key to match
+an old Medusa variant against its Shopify counterpart on a second sync.
+Image re-hosting through the File Module is still deferred, same as
+originally here — carried forward deliberately again, not forgotten.
+
 ## Trigger surface — corrected mid-spike
 
 **Superseded — file paths below are stale, kept for the reasoning only.**

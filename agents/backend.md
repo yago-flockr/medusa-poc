@@ -293,18 +293,54 @@ starts.
   ignores that folder (`eslint.config.mjs`) — the codegen emits
   `eslint-comments/*` disable directives that our Medusa ESLint setup does not
   ship, and `medusa develop` would otherwise refuse to start.
-  Deliberately spike-shaped still: create-only (no update path for an
-  already-synced product), no vendor link, images left pointing at Shopify's own
-  CDN instead of re-hosted through the File Module. The CLI exec script that used
-  to trigger this was removed; there's now a debug-only "Log a vendor's Shopify
-  products" widget on the Admin Products list page (vendor ID input → console.log
-  the raw pull, nothing is created) — explicitly a manual verification tool, not
-  a production trigger. An earlier staff-facing button that actually *created*
-  products from that same shared-across-vendors surface was built then
-  deliberately removed for being the wrong surface for that; the real
-  product-import trigger still belongs to a vendor-facing panel that doesn't
-  exist yet (see `docs/plan.md`'s open question on who manages a vendor's
-  Shopify connection after staff originates it).
+  The CLI exec script that used to trigger this was removed; there's now a
+  debug-only "Log a vendor's Shopify products" widget on the Admin Products
+  list page (vendor ID input → console.log the raw pull, nothing is created)
+  — explicitly a manual verification tool, not a production trigger. An
+  earlier staff-facing button that actually *created* products from that
+  same shared-across-vendors surface was built then deliberately removed for
+  being the wrong surface for that.
+
+  **The real product-import trigger now exists, on the vendor panel itself
+  (`apps/storefront`'s `/vendor/shopify` page, "Import products" section):**
+  the vendor pulls their catalogue (`GET /vendors/me/shopify-products`, each
+  product flagged `already_imported` by matching `external_id`), checks
+  which ones to bring in or re-sync (pre-checked if already imported), and
+  `POST /vendors/me/shopify-products/import` (`src/api/vendors/me/
+  shopify-products/import/route.ts`) runs a new, separate workflow —
+  `src/workflows/import-vendor-shopify-products/` — that re-fetches exactly
+  those checked products fresh from Shopify (`pullShopifyProductsByIds` in
+  `lib/shopify-products.ts`; never trusts the product payload the frontend
+  already displayed), splits them into create vs. update by `external_id`
+  (`lib/resolve-existing-shopify-products.ts`, also reused by the pull
+  route's `already_imported` flag and by `filterNewShopifyProductsStep`
+  below — one seam for "does this Shopify product already exist here"), and
+  runs `createProductsWorkflow`/`updateProductsWorkflow` as steps. This
+  closed two of the three gaps the spike workflow below still has: products
+  now link to the connecting vendor via `additional_data.vendor_id` (same
+  `productsCreated` hook every other vendor product uses), and an
+  already-imported product gets updated rather than silently skipped — every
+  create or update lands as `status: proposed`, forcing re-approval even if
+  the product was already live, since staff review applies identically
+  regardless of source or whether it's a first import or a re-sync
+  (`docs/features/vendor-shopify-sync.md` "Approval"). Deliberately still
+  not done: variants are always fully replaced to match Shopify's current
+  set exactly rather than preserved by identity across a re-sync — no
+  per-variant Shopify id is tracked yet, and real store data even has null
+  SKUs, so there's no safe way to map an old Medusa variant to its Shopify
+  counterpart on a second sync (`docs/spikes/vendor-shopify-sync.md`); and
+  images still point at Shopify's own CDN rather than being re-hosted
+  through the File Module (deliberately deferred again, same tradeoff as
+  the original spike).
+
+  **`src/workflows/sync-shopify-products/` (the original spike workflow,
+  below) is now superseded for real use** by the workflow above — it's kept
+  only as what the Admin debug widget calls, still create-only (skips
+  anything already imported rather than updating it) and still has no
+  vendor link, since nothing currently needs it to do more than prove the
+  pull mechanics. Don't extend the spike workflow to match the new one's
+  behavior; if a shared need arises, extract the common parts instead of
+  letting two workflows drift.
 - **Vendor's Shopify connection uses OAuth authorization-code-grant, one
   Shopify app per vendor, credentials stored on the Vendor record — see
   `shopify-app-config.md` and `docs/vendor-shopify-connection-guide.md`.**

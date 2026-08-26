@@ -77,11 +77,14 @@ export function ShopifyProductsChecklist({
         </p>
       )}
       {importShopifyProducts.isSuccess && (
-        <p className="text-sm text-muted-foreground">
-          Created {importShopifyProducts.data.created_count}, updated{" "}
-          {importShopifyProducts.data.updated_count} — waiting for staff
-          approval.
-        </p>
+        <div className="flex items-center gap-2 text-sm justify-between text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span>created {importShopifyProducts.data.created_count}</span>
+            {" • "}
+            <span>updated {importShopifyProducts.data.updated_count}</span>
+          </div>
+          <span>waiting for staff approval</span>
+        </div>
       )}
     </div>
   )

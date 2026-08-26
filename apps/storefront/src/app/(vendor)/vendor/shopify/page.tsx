@@ -40,6 +40,7 @@ export default function VendorShopifyPage() {
             <Badge variant="outline">Not connected</Badge>
           )
         }
+        className="flex flex-col gap-2"
       >
         <DataState isLoading={getMe.isLoading || !getMe.data}>
           <DataState.Loading />
@@ -55,11 +56,11 @@ export default function VendorShopifyPage() {
               }
               onSaved={() => getMe.refetch()}
             />
-            <Separator className="my-4" />
             <Button
               type="button"
               disabled={getShopifyInstallLink.isPending}
               className="w-full"
+              variant="outline"
               onClick={() => {
                 getShopifyInstallLink.mutate(undefined, {
                   onSuccess: ({ installLink }) => {
@@ -85,7 +86,7 @@ export default function VendorShopifyPage() {
         <VendorSection
           title="Import products"
           description="Choose what to bring in from your Shopify catalogue. Anything imported waits for staff approval before customers can see it — re-importing an already-imported product updates it and sends it back for approval."
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-2"
         >
           <Button
             type="button"

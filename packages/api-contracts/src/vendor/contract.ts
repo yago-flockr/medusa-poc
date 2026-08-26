@@ -13,7 +13,11 @@ import {
   setVendorShopifyConnectionSchema,
   vendorShopifyInstallLinkResponseSchema,
 } from "./shopify-connection"
-import { pullVendorShopifyProductsResponseSchema } from "./shopify-products"
+import {
+  importVendorShopifyProductsResponseSchema,
+  importVendorShopifyProductsSchema,
+  pullVendorShopifyProductsResponseSchema,
+} from "./shopify-products"
 
 const c = initContract()
 
@@ -53,6 +57,14 @@ export const vendorContract = c.router({
     path: "/vendors/me/shopify-products",
     responses: {
       200: pullVendorShopifyProductsResponseSchema,
+    },
+  },
+  importShopifyProducts: {
+    method: "POST",
+    path: "/vendors/me/shopify-products/import",
+    body: importVendorShopifyProductsSchema,
+    responses: {
+      200: importVendorShopifyProductsResponseSchema,
     },
   },
   getOrders: {
