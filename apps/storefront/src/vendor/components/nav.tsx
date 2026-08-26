@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: "/vendor", label: "Dashboard" },
   { href: "/vendor/profile", label: "Profile" },
   { href: "/vendor/orders", label: "Orders" },
+  { href: "/vendor/shopify", label: "Shopify" },
 ]
 
 export function VendorNav() {

@@ -16,7 +16,7 @@ export const loginVendorSchema = z.object({
 export type LoginVendorInput = z.infer<typeof loginVendorSchema>
 
 export function LoginForm() {
-  const loginMutation = useLoginVendor()
+  const loginVendor = useLoginVendor()
   const setToken = useVendorAuthStore((state) => state.setToken)
   const {
     register,
@@ -28,7 +28,7 @@ export function LoginForm() {
   })
 
   const submit = handleSubmit((values) => {
-    loginMutation.mutate(values, {
+    loginVendor.mutate(values, {
       onSuccess: ({ token }: { token: string }) => {
         setToken(token)
       },
@@ -51,12 +51,12 @@ export function LoginForm() {
         error={errors.password?.message}
         {...register("password")}
       />
-      <Button type="submit" disabled={loginMutation.isPending}>
-        {loginMutation.isPending ? "Logging in…" : "Log in"}
+      <Button type="submit" disabled={loginVendor.isPending}>
+        {loginVendor.isPending ? "Logging in…" : "Log in"}
       </Button>
-      {loginMutation.isError && (
+      {loginVendor.isError && (
         <p className="text-sm text-destructive">
-          {loginMutation.error.message}
+          {loginVendor.error.message}
         </p>
       )}
     </form>

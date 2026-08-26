@@ -14,6 +14,7 @@ export type VendorMeResponse = {
     name: string
     handle: string
     shopify_store_domain: string | null
+    shopify_client_id: string | null
     shopify_connected_at: string | null
     shopify_connected: boolean
   }

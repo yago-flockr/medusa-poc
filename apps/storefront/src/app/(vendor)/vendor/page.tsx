@@ -10,13 +10,15 @@ import {
 } from "@/components/ui/card"
 
 export default function VendorDashboardPage() {
-  const { data, isLoading } = useFindOneVendor()
+  const findOneVendor = useFindOneVendor()
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          {isLoading ? "Loading…" : `Welcome, ${data?.vendor.name ?? ""}`}
+          {findOneVendor.isLoading
+            ? "Loading…"
+            : `Welcome, ${findOneVendor.data?.vendor.name ?? ""}`}
         </CardTitle>
         <CardDescription>
           This is your vendor dashboard. See your profile and orders in the

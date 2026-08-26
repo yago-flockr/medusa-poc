@@ -20,6 +20,7 @@ export const GET = async (
     "vendor.name",
     "vendor.handle",
     "vendor.shopify_store_domain",
+    "vendor.shopify_client_id",
     "vendor.shopify_connected_at",
     "vendor.shopify_access_token",
   ])
@@ -36,6 +37,7 @@ export const GET = async (
       name: vendorUser.vendor.name,
       handle: vendorUser.vendor.handle,
       shopify_store_domain: vendorUser.vendor.shopify_store_domain,
+      shopify_client_id: vendorUser.vendor.shopify_client_id,
       shopify_connected_at: vendorUser.vendor.shopify_connected_at,
       shopify_connected: Boolean(vendorUser.vendor.shopify_access_token),
     },

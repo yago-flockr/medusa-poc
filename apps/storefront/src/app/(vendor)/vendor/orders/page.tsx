@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card"
 
 export default function VendorOrdersPage() {
-  const { data, isLoading } = useFindManyVendorOrders()
+  const findManyVendorOrders = useFindManyVendorOrders()
 
   return (
     <Card>
@@ -20,11 +20,14 @@ export default function VendorOrdersPage() {
         <CardTitle>Orders</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        {isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
-        {!isLoading && data?.orders.length === 0 && (
-          <p className="text-sm text-muted-foreground">No orders yet.</p>
+        {findManyVendorOrders.isLoading && (
+          <p className="text-sm text-muted-foreground">Loading…</p>
         )}
-        {data?.orders.map((order: VendorOrder) => (
+        {!findManyVendorOrders.isLoading &&
+          findManyVendorOrders.data?.orders.length === 0 && (
+            <p className="text-sm text-muted-foreground">No orders yet.</p>
+          )}
+        {findManyVendorOrders.data?.orders.map((order: VendorOrder) => (
           <div
             key={order.id}
             className="flex items-center justify-between border rounded-md px-4 py-3 text-sm"

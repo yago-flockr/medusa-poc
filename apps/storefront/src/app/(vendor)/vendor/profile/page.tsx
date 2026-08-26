@@ -19,7 +19,7 @@ function ProfileRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function VendorProfilePage() {
-  const { data, isLoading } = useFindOneVendor()
+  const findOneVendor = useFindOneVendor()
 
   return (
     <Card>
@@ -27,28 +27,41 @@ export default function VendorProfilePage() {
         <CardTitle>Profile</CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading || !data ? (
+        {findOneVendor.isLoading || !findOneVendor.data ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
           <>
-            <ProfileRow label="Vendor name" value={data.vendor.name} />
-            <ProfileRow label="Handle" value={data.vendor.handle} />
+            <ProfileRow
+              label="Vendor name"
+              value={findOneVendor.data.vendor.name}
+            />
+            <ProfileRow
+              label="Handle"
+              value={findOneVendor.data.vendor.handle}
+            />
             <Separator className="my-2" />
             <ProfileRow
               label="Your name"
               value={
-                [data.vendor_user.first_name, data.vendor_user.last_name]
+                [
+                  findOneVendor.data.vendor_user.first_name,
+                  findOneVendor.data.vendor_user.last_name,
+                ]
                   .filter(Boolean)
                   .join(" ") || "—"
               }
             />
-            <ProfileRow label="Email" value={data.vendor_user.email} />
+            <ProfileRow
+              label="Email"
+              value={findOneVendor.data.vendor_user.email}
+            />
             <Separator className="my-2" />
             <ProfileRow
               label="Shopify connection"
               value={
-                data.vendor.shopify_connected
-                  ? (data.vendor.shopify_store_domain ?? "Connected")
+                findOneVendor.data.vendor.shopify_connected
+                  ? (findOneVendor.data.vendor.shopify_store_domain ??
+                    "Connected")
                   : "Not connected"
               }
             />
