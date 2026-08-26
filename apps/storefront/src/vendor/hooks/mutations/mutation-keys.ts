@@ -8,5 +8,6 @@ export const mutationKeys = {
   shopify: {
     setShopifyConnection: ["setShopifyConnection"] as const,
     getShopifyInstallLink: ["getShopifyInstallLink"] as const,
+    importShopifyProducts: ["importShopifyProducts"] as const,
   },
 }

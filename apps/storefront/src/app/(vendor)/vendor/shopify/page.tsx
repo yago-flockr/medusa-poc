@@ -6,20 +6,22 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { VendorSection } from "@/vendor/components/section"
 import { ShopifyConnectionForm } from "@/vendor/forms/shopify-connection-form"
+import { ShopifyProductsChecklist } from "@/vendor/forms/shopify-products-checklist"
 import { useGetShopifyInstallLink } from "@/vendor/hooks/mutations/shopify"
 import { usePullShopifyProducts } from "@/vendor/hooks/queries/shopify-products"
 import { useGetMe } from "@/vendor/hooks/queries/vendor"
-import JsonView from "@uiw/react-json-view"
+import { useState } from "react"
 
 export default function VendorShopifyPage() {
   const getMe = useGetMe()
   const getShopifyInstallLink = useGetShopifyInstallLink()
+  const [isImporting, setIsImporting] = useState(false)
 
   const vendor = getMe.data?.vendor
   const isConnected = vendor?.shopify_connected ?? false
 
   const pullShopifyProducts = usePullShopifyProducts(undefined, {
-    enabled: isConnected,
+    enabled: isConnected && isImporting,
   })
 
   return (
@@ -33,9 +35,7 @@ export default function VendorShopifyPage() {
         }
         action={
           isConnected ? (
-            <Badge className="border-transparent bg-green-100 text-green-700">
-              Connected
-            </Badge>
+            <Badge variant="success">Connected</Badge>
           ) : (
             <Badge variant="outline">Not connected</Badge>
           )
@@ -83,20 +83,33 @@ export default function VendorShopifyPage() {
 
       {isConnected && (
         <VendorSection
-          title="Pull products"
-          description="Fetches your Shopify catalogue — nothing is imported yet."
+          title="Import products"
+          description="Choose what to bring in from your Shopify catalogue. Anything imported waits for staff approval before customers can see it — re-importing an already-imported product updates it and sends it back for approval."
           className="flex flex-col gap-3"
         >
           <Button
             type="button"
             variant="outline"
             disabled={pullShopifyProducts.isFetching}
-            onClick={() => pullShopifyProducts.refetch()}
+            onClick={() => {
+              setIsImporting(true)
+              pullShopifyProducts.refetch()
+            }}
           >
-            {pullShopifyProducts.isFetching ? "Pulling…" : "Pull products"}
+            {pullShopifyProducts.isFetching
+              ? "Refreshing…"
+              : "Refresh catalogue"}
           </Button>
-          <DataState isLoading={pullShopifyProducts.isLoading}>
+          <DataState
+            isLoading={pullShopifyProducts.isLoading}
+            isEmpty={pullShopifyProducts.data?.products.length === 0}
+          >
             <DataState.Loading />
+            <DataState.Empty>
+              <p className="text-sm text-muted-foreground">
+                No products found in your Shopify store.
+              </p>
+            </DataState.Empty>
             <DataState.Content>
               {pullShopifyProducts.isError && (
                 <p className="text-sm text-destructive">
@@ -104,17 +117,10 @@ export default function VendorShopifyPage() {
                 </p>
               )}
               {pullShopifyProducts.data && (
-                <>
-                  <p className="text-sm text-muted-foreground">
-                    Pulled {pullShopifyProducts.data.products.length}{" "}
-                    product(s).
-                  </p>
-                  <JsonView
-                    value={pullShopifyProducts.data}
-                    collapsed={2}
-                    className="text-sm"
-                  />
-                </>
+                <ShopifyProductsChecklist
+                  products={pullShopifyProducts.data.products}
+                  onImported={() => pullShopifyProducts.refetch()}
+                />
               )}
             </DataState.Content>
           </DataState>
