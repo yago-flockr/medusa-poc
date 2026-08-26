@@ -1,6 +1,37 @@
 import crypto from "node:crypto"
 import { MedusaError } from "@medusajs/framework/utils"
 
+export const SHOPIFY_OAUTH_SCOPES = "read_products,read_inventory"
+
+const LOCALHOST_HOSTNAMES = new Set(["localhost", "127.0.0.1"])
+
+export function buildShopifyOauthRedirectUri(protocol: string, host: string): string {
+  const hostname = host.split(":")[0]
+
+  if (LOCALHOST_HOSTNAMES.has(hostname)) {
+    return "https://localhost.invalid/hooks/shopify/oauth/callback"
+  }
+
+  return `${protocol}://${host}/hooks/shopify/oauth/callback`
+}
+
+export function buildShopifyInstallLink(params: {
+  storeDomain: string
+  clientId: string
+  state: string
+  protocol: string
+  host: string
+}): string {
+  const redirectUri = buildShopifyOauthRedirectUri(params.protocol, params.host)
+
+  return `https://${params.storeDomain}/admin/oauth/authorize?${new URLSearchParams({
+    client_id: params.clientId,
+    scope: SHOPIFY_OAUTH_SCOPES,
+    redirect_uri: redirectUri,
+    state: params.state,
+  }).toString()}`
+}
+
 export function parseRawQuery(rawQuery: string): Record<string, string> {
   const result: Record<string, string> = {}
 

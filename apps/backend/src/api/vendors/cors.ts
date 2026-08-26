@@ -5,6 +5,8 @@ const allowedOrigins = (process.env.VENDOR_CORS ?? "")
   .map((origin) => origin.trim())
   .filter(Boolean)
 
+export const vendorPanelOrigin = allowedOrigins[0]
+
 export const vendorCors: MedusaRequestHandler = (req, res, next) => {
   const origin = req.headers.origin
 

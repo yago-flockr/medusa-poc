@@ -1,8 +1,10 @@
 "use client"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -21,16 +23,27 @@ export default function VendorShopifyPage() {
   const getVendorShopifyInstallLink = useGetVendorShopifyInstallLink()
   const pullVendorShopifyProducts = usePullVendorShopifyProducts()
 
+  const isConnected = findOneVendor.data?.vendor.shopify_connected ?? false
+
   return (
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
           <CardTitle>Shopify connection</CardTitle>
           <CardDescription>
-            {findOneVendor.data?.vendor.shopify_connected
-              ? `Connected to ${findOneVendor.data.vendor.shopify_store_domain}`
+            {isConnected
+              ? findOneVendor.data?.vendor.shopify_store_domain
               : "Enter your store's credentials, then connect."}
           </CardDescription>
+          <CardAction>
+            {isConnected ? (
+              <Badge className="border-transparent bg-green-100 text-green-700">
+                Connected
+              </Badge>
+            ) : (
+              <Badge variant="outline">Not connected</Badge>
+            )}
+          </CardAction>
         </CardHeader>
         <CardContent>
           {findOneVendor.isLoading || !findOneVendor.data ? (

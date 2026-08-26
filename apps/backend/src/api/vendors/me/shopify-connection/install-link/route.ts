@@ -10,8 +10,7 @@ import {
 } from "@dtc/api-contracts/vendor/shopify-connection"
 import { resolveVendorUser } from "../../../resolve-vendor-user"
 import { updateVendorWorkflow } from "../../../../../workflows/update-vendor"
-
-const SHOPIFY_OAUTH_SCOPES = "read_products,read_inventory"
+import { buildShopifyInstallLink } from "../../../../../lib/shopify-oauth"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -38,18 +37,18 @@ export const GET = async (
     input: { id: vendor.id, shopify_oauth_state: state },
   })
 
-  const protocol = req.get("x-forwarded-proto") ?? req.protocol
   const host = req.get("x-forwarded-host") ?? req.get("host")
-  const redirectUri = `${protocol}://${host}/hooks/shopify/oauth/callback`
+  if (!host) {
+    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "Request is missing a Host header")
+  }
 
-  const installLink = `https://${vendor.shopify_store_domain}/admin/oauth/authorize?${new URLSearchParams(
-    {
-      client_id: vendor.shopify_client_id,
-      scope: SHOPIFY_OAUTH_SCOPES,
-      redirect_uri: redirectUri,
-      state,
-    },
-  ).toString()}`
+  const installLink = buildShopifyInstallLink({
+    storeDomain: vendor.shopify_store_domain,
+    clientId: vendor.shopify_client_id,
+    state,
+    protocol: req.get("x-forwarded-proto") ?? req.protocol,
+    host,
+  })
 
   const response: VendorShopifyInstallLinkResponse = { installLink }
 

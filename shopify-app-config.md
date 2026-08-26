@@ -63,8 +63,12 @@ external store to complete OAuth with this app at all:
 
 Don't send the vendor the link this dashboard generates — in testing, it
 routes through the App URL launch described in Step 3 and doesn't work
-without a redirector we don't have. Instead, construct the real
-authorization URL directly:
+without a redirector we don't have. Instead, our backend builds the real
+authorization URL for you — in Admin → Vendors, use the **Copy Shopify
+install link** row action (see `docs/vendor-shopify-connection-guide.md`
+Step 3). It already handles the local-testing redirect quirk below
+automatically, so you don't need to build the URL by hand; the shape is
+shown here for reference:
 
 ```
 https://<their-store>.myshopify.com/admin/oauth/authorize?client_id=<client id from Settings>&scope=read_products,read_inventory&redirect_uri=<url-encoded redirect uri>&state=<any random string>
@@ -92,12 +96,23 @@ link — otherwise the callback has nothing to match against and fails.
 
 ## Local-testing-only note
 
-Shopify requires `https://` redirect URLs, so `http://localhost:...`
-can't be used directly during local development. `https://localhost.invalid`
-is a safe placeholder — that TLD is reserved to never resolve, so the
-browser fails to load it but still shows the full URL (including `code=`)
-in the address bar, and nothing is ever sent to a real third-party server.
-Copy that URL and replay its query string against the real local callback
+Shopify rejects any `http://` redirect_uri outright — it's not just a
+whitelist-exact-match issue, `https://` is required unconditionally, so
+`http://localhost:...` can never be whitelisted or used directly during
+local development. `https://localhost.invalid` is the safe placeholder —
+that TLD is reserved to never resolve, so the browser fails to load it but
+still shows the full URL (including `code=`) in the address bar, and
+nothing is ever sent to a real third-party server.
+
+Both install-link routes (`buildShopifyInstallLink` in
+`apps/backend/src/lib/shopify-oauth.ts`) detect a `localhost`/`127.0.0.1`
+request and substitute this placeholder automatically, so the **Copy
+Shopify install link** button already generates a working link locally —
+no manual URL edits needed. What still can't be automated (no public
+tunnel for local dev, by design — see `docs/plan.md`): after approving,
+copy the query string from the dead `localhost.invalid` page and replay
+it against the real local callback
 (`http://localhost:9000/hooks/shopify/oauth/callback?...`) to finish the
-connection. This whole step is unnecessary once testing against a real
-deployed `https://` backend — just use that URL as the redirect directly.
+connection. This replay step is unnecessary once testing against a real
+deployed `https://` backend — the install link then points straight at
+that URL and Shopify's redirect lands on it directly.

@@ -57,6 +57,15 @@ const VendorsPage = () => {
           <StatusBadge color="red">Disabled</StatusBadge>
         ),
     }),
+    columnHelper.accessor("shopify_connected_at", {
+      header: "Shopify",
+      cell: ({ getValue }) =>
+        getValue() ? (
+          <StatusBadge color="green">Connected</StatusBadge>
+        ) : (
+          <StatusBadge color="grey">Not connected</StatusBadge>
+        ),
+    }),
     columnHelper.action({
       actions: (ctx) => [
         {

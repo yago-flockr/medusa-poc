@@ -8,9 +8,7 @@ app can't cover multiple independent vendors. This is annoying but free
 **Step 1 — Configure the Shopify app.** Follow `shopify-app-config.md` at
 the repo root, start to finish — it covers app creation, scopes, the
 redirect URLs, and a couple of non-obvious Shopify dashboard gotchas
-(an app-naming restriction, an "embed" toggle that has to be off). Come
-back here once you've built the authorization URL described in that
-doc's Step 5, but don't open it yet.
+(an app-naming restriction, an "embed" toggle that has to be off).
 
 **Step 2 — Save the vendor's app credentials in our system**
 
@@ -26,13 +24,21 @@ can't do that if it isn't saved yet.
 
 **Step 3 — Send the vendor the link**
 
-Send the vendor the authorization URL you built in `shopify-app-config.md`
-Step 5 (not the link Shopify's Distribution tab generates — that one
-doesn't work for us, see that doc for why). They open it, click
-**Install**/**Approve** on Shopify's real consent screen, and land on a
-page confirming they're connected — nothing else for them to do. That
-approval automatically saves their access token on our side
-(`complete-vendor-shopify-connection` workflow).
+In our Admin (`/app/vendors`), click the vendor's row action **Copy
+Shopify install link** — this calls our backend, which builds the real
+authorization URL for you (not the link Shopify's Distribution tab
+generates — that one doesn't work for us, see `shopify-app-config.md`
+for why). Send that link to the vendor. They open it, click
+**Install**/**Approve** on Shopify's real consent screen, and land back
+on their own vendor panel (`/vendor/shopify`), which now shows "You're
+connected!" — nothing else for them to do. That title/description come
+straight from the vendor record (`shopify_connected`, derived from
+`shopify_access_token`), not from anything in the redirect URL, so it's
+accurate even if they land there in an already-open tab or a fresh one.
+That approval automatically saves the access token on our side
+(`complete-vendor-shopify-connection` workflow). A vendor can also start
+this themselves from their panel's **Connect to Shopify** button instead
+of waiting for staff to send a link — same flow, opened in a new tab.
 
 **Step 4 (optional) — Verify the connection**
 
