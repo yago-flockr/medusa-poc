@@ -3,11 +3,10 @@ export const mutationKeys = {
     login: ["loginVendor"] as const,
   },
   profile: {
-    update: ["updateVendorProfile"] as const,
+    updateProfile: ["updateProfile"] as const,
   },
   shopify: {
-    setConnection: ["setVendorShopifyConnection"] as const,
-    getInstallLink: ["getVendorShopifyInstallLink"] as const,
-    pullProducts: ["pullVendorShopifyProducts"] as const,
+    setShopifyConnection: ["setShopifyConnection"] as const,
+    getShopifyInstallLink: ["getShopifyInstallLink"] as const,
   },
 }

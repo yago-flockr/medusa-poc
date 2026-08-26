@@ -3,9 +3,9 @@ import type { SetVendorShopifyConnectionInput } from "@dtc/api-contracts/vendor/
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
 
-export const useSetVendorShopifyConnection = () =>
+export const useSetShopifyConnection = () =>
   useMutation({
-    mutationKey: mutationKeys.shopify.setConnection,
+    mutationKey: mutationKeys.shopify.setShopifyConnection,
     mutationFn: async (input: SetVendorShopifyConnectionInput) => {
       const response = await vendorClient.setShopifyConnection({ body: input })
       if (response.status !== 200) {
@@ -15,23 +15,11 @@ export const useSetVendorShopifyConnection = () =>
     },
   })
 
-export const useGetVendorShopifyInstallLink = () =>
+export const useGetShopifyInstallLink = () =>
   useMutation({
-    mutationKey: mutationKeys.shopify.getInstallLink,
+    mutationKey: mutationKeys.shopify.getShopifyInstallLink,
     mutationFn: async () => {
       const response = await vendorClient.getShopifyInstallLink()
-      if (response.status !== 200) {
-        throw new Error(`Unexpected response status ${response.status}`)
-      }
-      return response.body
-    },
-  })
-
-export const usePullVendorShopifyProducts = () =>
-  useMutation({
-    mutationKey: mutationKeys.shopify.pullProducts,
-    mutationFn: async () => {
-      const response = await vendorClient.pullShopifyProducts()
       if (response.status !== 200) {
         throw new Error(`Unexpected response status ${response.status}`)
       }

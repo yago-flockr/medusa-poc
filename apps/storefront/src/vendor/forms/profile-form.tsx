@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useUpdateVendorProfile } from "@/vendor/hooks/mutations/profile"
+import { useUpdateProfile } from "@/vendor/hooks/mutations/profile"
 import {
   updateVendorProfileSchema,
   type UpdateVendorProfileInput,
@@ -26,7 +26,7 @@ export function ProfileForm({
   className,
   ...props
 }: ProfileFormProps) {
-  const updateVendorProfile = useUpdateVendorProfile()
+  const updateProfile = useUpdateProfile()
   const {
     register,
     handleSubmit,
@@ -37,7 +37,7 @@ export function ProfileForm({
   })
 
   const submit = handleSubmit((values) => {
-    updateVendorProfile.mutate(values, { onSuccess: onSaved })
+    updateProfile.mutate(values, { onSuccess: onSaved })
   })
 
   return (
@@ -58,12 +58,12 @@ export function ProfileForm({
         error={errors.last_name?.message}
         {...register("last_name")}
       />
-      <Button type="submit" disabled={updateVendorProfile.isPending}>
-        {updateVendorProfile.isPending ? "Saving…" : "Save"}
+      <Button type="submit" disabled={updateProfile.isPending}>
+        {updateProfile.isPending ? "Saving…" : "Save"}
       </Button>
-      {updateVendorProfile.isError && (
+      {updateProfile.isError && (
         <p className="text-sm text-destructive">
-          {updateVendorProfile.error.message}
+          {updateProfile.error.message}
         </p>
       )}
     </form>

@@ -3,9 +3,9 @@ import type { UpdateVendorProfileInput } from "@dtc/api-contracts/vendor/profile
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
 
-export const useUpdateVendorProfile = () =>
+export const useUpdateProfile = () =>
   useMutation({
-    mutationKey: mutationKeys.profile.update,
+    mutationKey: mutationKeys.profile.updateProfile,
     mutationFn: async (input: UpdateVendorProfileInput) => {
       const response = await vendorClient.updateProfile({ body: input })
       if (response.status !== 200) {

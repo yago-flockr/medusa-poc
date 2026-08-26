@@ -1,6 +1,6 @@
 "use client"
 
-import { useFindOneVendor } from "@/vendor/hooks/queries/vendor"
+import { useGetMe } from "@/vendor/hooks/queries/vendor"
 import { ProfileForm } from "@/vendor/forms/profile-form"
 import { Separator } from "@/components/ui/separator"
 import { VendorSection } from "@/vendor/components/section"
@@ -8,16 +8,16 @@ import { InfoList } from "@/components/display/info-list"
 import { DataState } from "@/components/display/data-state"
 
 export default function VendorProfilePage() {
-  const findOneVendor = useFindOneVendor()
-  const vendor = findOneVendor.data?.vendor
-  const vendorUser = findOneVendor.data?.vendor_user
+  const getMe = useGetMe()
+  const vendor = getMe.data?.vendor
+  const vendorUser = getMe.data?.vendor_user
 
   return (
     <VendorSection
       title="Profile"
       description={vendor ? `Signed in as ${vendorUser?.email}` : undefined}
     >
-      <DataState isLoading={findOneVendor.isLoading || !findOneVendor.data}>
+      <DataState isLoading={getMe.isLoading || !getMe.data}>
         <DataState.Loading />
         <DataState.Content>
           <InfoList.Root>
@@ -52,7 +52,7 @@ export default function VendorProfilePage() {
               first_name: vendorUser?.first_name ?? "",
               last_name: vendorUser?.last_name ?? "",
             }}
-            onSaved={() => findOneVendor.refetch()}
+            onSaved={() => getMe.refetch()}
           />
         </DataState.Content>
       </DataState>

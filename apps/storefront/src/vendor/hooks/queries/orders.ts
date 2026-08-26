@@ -3,11 +3,11 @@ import type { VendorOrdersListResponse } from "@dtc/api-contracts/vendor/orders"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export const useFindManyVendorOrders = createResourceQueryHook<
+export const useGetOrders = createResourceQueryHook<
   void,
   VendorOrdersListResponse
 >({
-  queryKey: () => queryKeys.orders.findMany,
+  queryKey: () => queryKeys.orders.getOrders,
   queryFn: async () => {
     const response = await vendorClient.getOrders({ query: {} })
     if (response.status !== 200) {

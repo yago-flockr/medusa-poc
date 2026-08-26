@@ -1,8 +1,11 @@
 export const queryKeys = {
   vendor: {
-    findOne: ["findOneVendor"] as const,
+    getMe: ["getMe"] as const,
   },
   orders: {
-    findMany: ["findManyVendorOrders"] as const,
+    getOrders: ["getOrders"] as const,
+  },
+  shopifyProducts: {
+    pullShopifyProducts: ["pullShopifyProducts"] as const,
   },
 }

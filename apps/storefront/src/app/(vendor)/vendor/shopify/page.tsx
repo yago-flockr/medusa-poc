@@ -1,24 +1,26 @@
 "use client"
 
+import { DataState } from "@/components/display/data-state"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ShopifyConnectionForm } from "@/vendor/forms/shopify-connection-form"
-import {
-  useGetVendorShopifyInstallLink,
-  usePullVendorShopifyProducts,
-} from "@/vendor/hooks/mutations/shopify"
-import { useFindOneVendor } from "@/vendor/hooks/queries/vendor"
+import { Separator } from "@/components/ui/separator"
 import { VendorSection } from "@/vendor/components/section"
-import { DataState } from "@/components/display/data-state"
+import { ShopifyConnectionForm } from "@/vendor/forms/shopify-connection-form"
+import { useGetShopifyInstallLink } from "@/vendor/hooks/mutations/shopify"
+import { usePullShopifyProducts } from "@/vendor/hooks/queries/shopify-products"
+import { useGetMe } from "@/vendor/hooks/queries/vendor"
 import JsonView from "@uiw/react-json-view"
 
 export default function VendorShopifyPage() {
-  const findOneVendor = useFindOneVendor()
-  const getVendorShopifyInstallLink = useGetVendorShopifyInstallLink()
-  const pullVendorShopifyProducts = usePullVendorShopifyProducts()
+  const getMe = useGetMe()
+  const getShopifyInstallLink = useGetShopifyInstallLink()
 
-  const vendor = findOneVendor.data?.vendor
+  const vendor = getMe.data?.vendor
   const isConnected = vendor?.shopify_connected ?? false
+
+  const pullShopifyProducts = usePullShopifyProducts(undefined, {
+    enabled: isConnected,
+  })
 
   return (
     <>
@@ -39,7 +41,7 @@ export default function VendorShopifyPage() {
           )
         }
       >
-        <DataState isLoading={findOneVendor.isLoading || !findOneVendor.data}>
+        <DataState isLoading={getMe.isLoading || !getMe.data}>
           <DataState.Loading />
           <DataState.Content>
             <ShopifyConnectionForm
@@ -51,79 +53,73 @@ export default function VendorShopifyPage() {
                     }
                   : undefined
               }
-              onSaved={() => findOneVendor.refetch()}
+              onSaved={() => getMe.refetch()}
             />
+            <Separator className="my-4" />
+            <Button
+              type="button"
+              disabled={getShopifyInstallLink.isPending}
+              className="w-full"
+              onClick={() => {
+                getShopifyInstallLink.mutate(undefined, {
+                  onSuccess: ({ installLink }) => {
+                    window.open(installLink, "_blank")
+                  },
+                })
+              }}
+            >
+              {getShopifyInstallLink.isPending
+                ? "Generating link…"
+                : "Connect to Shopify"}
+            </Button>
+            {getShopifyInstallLink.isError && (
+              <p className="text-sm text-destructive">
+                {getShopifyInstallLink.error.message}
+              </p>
+            )}
           </DataState.Content>
         </DataState>
       </VendorSection>
 
-      <VendorSection
-        title="Connect"
-        description="Authorize our app on your Shopify store."
-        className="flex flex-col gap-3"
-      >
-        <Button
-          type="button"
-          disabled={getVendorShopifyInstallLink.isPending}
-          onClick={() => {
-            getVendorShopifyInstallLink.mutate(undefined, {
-              onSuccess: ({ installLink }) => {
-                window.open(installLink, "_blank")
-              },
-            })
-          }}
+      {isConnected && (
+        <VendorSection
+          title="Pull products"
+          description="Fetches your Shopify catalogue — nothing is imported yet."
+          className="flex flex-col gap-3"
         >
-          {getVendorShopifyInstallLink.isPending
-            ? "Generating link…"
-            : "Connect to Shopify"}
-        </Button>
-        {getVendorShopifyInstallLink.isError && (
-          <p className="text-sm text-destructive">
-            {getVendorShopifyInstallLink.error.message}
-          </p>
-        )}
-      </VendorSection>
-
-      <VendorSection
-        title="Pull products"
-        description="Fetches your Shopify catalogue and logs it — nothing is imported yet."
-        className="flex flex-col gap-3"
-      >
-        <Button
-          type="button"
-          variant="outline"
-          disabled={pullVendorShopifyProducts.isPending}
-          onClick={() => {
-            pullVendorShopifyProducts.mutate(undefined, {
-              onSuccess: (result) => {
-                console.log("Pulled Shopify:", result)
-              },
-            })
-          }}
-        >
-          {pullVendorShopifyProducts.isPending ? "Pulling…" : "Pull products"}
-        </Button>
-        {pullVendorShopifyProducts.isError && (
-          <p className="text-sm text-destructive">
-            {pullVendorShopifyProducts.error.message}
-          </p>
-        )}
-        {pullVendorShopifyProducts.isSuccess && (
-          <>
-            <p className="text-sm text-muted-foreground">
-              Pulled {pullVendorShopifyProducts.data.products.length}{" "}
-              product(s) — check the console.
-            </p>
-            {pullVendorShopifyProducts.data && (
-              <JsonView
-                value={pullVendorShopifyProducts.data}
-                collapsed={2}
-                className="text-sm"
-              />
-            )}
-          </>
-        )}
-      </VendorSection>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pullShopifyProducts.isFetching}
+            onClick={() => pullShopifyProducts.refetch()}
+          >
+            {pullShopifyProducts.isFetching ? "Pulling…" : "Pull products"}
+          </Button>
+          <DataState isLoading={pullShopifyProducts.isLoading}>
+            <DataState.Loading />
+            <DataState.Content>
+              {pullShopifyProducts.isError && (
+                <p className="text-sm text-destructive">
+                  {pullShopifyProducts.error.message}
+                </p>
+              )}
+              {pullShopifyProducts.data && (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Pulled {pullShopifyProducts.data.products.length}{" "}
+                    product(s).
+                  </p>
+                  <JsonView
+                    value={pullShopifyProducts.data}
+                    collapsed={2}
+                    className="text-sm"
+                  />
+                </>
+              )}
+            </DataState.Content>
+          </DataState>
+        </VendorSection>
+      )}
     </>
   )
 }

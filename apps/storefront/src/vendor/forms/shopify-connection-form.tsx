@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useSetVendorShopifyConnection } from "@/vendor/hooks/mutations/shopify"
+import { useSetShopifyConnection } from "@/vendor/hooks/mutations/shopify"
 import {
   setVendorShopifyConnectionSchema,
   type SetVendorShopifyConnectionInput,
@@ -26,7 +26,7 @@ export function ShopifyConnectionForm({
   className,
   ...props
 }: ShopifyConnectionFormProps) {
-  const setVendorShopifyConnection = useSetVendorShopifyConnection()
+  const setShopifyConnection = useSetShopifyConnection()
   const {
     register,
     handleSubmit,
@@ -42,7 +42,7 @@ export function ShopifyConnectionForm({
   })
 
   const submit = handleSubmit((values) => {
-    setVendorShopifyConnection.mutate(values, { onSuccess: onSaved })
+    setShopifyConnection.mutate(values, { onSuccess: onSaved })
   })
 
   return (
@@ -71,12 +71,12 @@ export function ShopifyConnectionForm({
         error={errors.shopify_client_secret?.message}
         {...register("shopify_client_secret")}
       />
-      <Button type="submit" disabled={setVendorShopifyConnection.isPending}>
-        {setVendorShopifyConnection.isPending ? "Saving…" : "Save"}
+      <Button type="submit" disabled={setShopifyConnection.isPending}>
+        {setShopifyConnection.isPending ? "Saving…" : "Save"}
       </Button>
-      {setVendorShopifyConnection.isError && (
+      {setShopifyConnection.isError && (
         <p className="text-sm text-destructive">
-          {setVendorShopifyConnection.error.message}
+          {setShopifyConnection.error.message}
         </p>
       )}
     </form>
