@@ -1,7 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import type { AuthenticationInput } from "@medusajs/framework/types"
-import { generateRandomPassword } from "../generate-random-password"
+import { generateRandomPassword } from "../../../lib/generate-random-password"
 
 export type RegisterVendorAuthIdentityStepInput = {
   email: string

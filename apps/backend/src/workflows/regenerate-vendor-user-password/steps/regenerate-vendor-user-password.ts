@@ -2,7 +2,7 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { VENDOR_MODULE } from "../../../modules/vendor"
 import VendorModuleService from "../../../modules/vendor/service"
-import { generateRandomPassword } from "../../create-vendor-user/generate-random-password"
+import { generateRandomPassword } from "../../../lib/generate-random-password"
 
 export type RegenerateVendorUserPasswordStepInput = {
   vendorUserId: string

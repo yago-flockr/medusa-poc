@@ -6,13 +6,18 @@ export type ShopifyStoreCredentials = {
   apiVersion?: string
 }
 
+export type ShopifyQueryResult<TData> = {
+  data: TData
+  cost?: { requestedQueryCost: number }
+}
+
 const DEFAULT_API_VERSION = "2026-01"
 
 export async function runShopifyQuery<TData>(
   credentials: ShopifyStoreCredentials,
   query: string,
   variables: Record<string, unknown>,
-) {
+): Promise<ShopifyQueryResult<TData>> {
   const { storeDomain: domain, accessToken } = credentials
   const apiVersion = credentials.apiVersion ?? DEFAULT_API_VERSION
 
@@ -25,16 +30,37 @@ export async function runShopifyQuery<TData>(
     body: JSON.stringify({ query, variables }),
   })
 
-  const payload = (await res.json()) as {
+  const rawBody = await res.text()
+
+  if (!res.ok) {
+    throw new MedusaError(
+      MedusaError.Types.UNEXPECTED_STATE,
+      `Shopify GraphQL request failed: ${res.status} ${rawBody}`,
+    )
+  }
+
+  let payload: {
     data?: TData
-    errors?: { message: string }[]
+    errors?: { message: string }[] | string
     extensions?: { cost?: { requestedQueryCost: number } }
   }
 
-  if (payload.errors?.length) {
+  try {
+    payload = JSON.parse(rawBody)
+  } catch {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
-      `Shopify GraphQL errors: ${payload.errors.map((e) => e.message).join("; ")}`,
+      `Shopify GraphQL response was not valid JSON: ${rawBody}`,
+    )
+  }
+
+  if (payload.errors) {
+    const message = Array.isArray(payload.errors)
+      ? payload.errors.map((e) => e.message).join("; ")
+      : payload.errors
+    throw new MedusaError(
+      MedusaError.Types.UNEXPECTED_STATE,
+      `Shopify GraphQL errors: ${message}`,
     )
   }
 

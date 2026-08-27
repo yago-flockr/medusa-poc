@@ -10,6 +10,7 @@ export default function VendorProfilePage() {
   const getMe = useGetMe()
   const vendor = getMe.data?.vendor
   const vendorUser = getMe.data?.vendor_user
+  const isLoading = getMe.isLoading || !getMe.data
 
   return (
     <>
@@ -17,7 +18,7 @@ export default function VendorProfilePage() {
         title="Vendor information"
         description="View your vendor information"
       >
-        <DataState isLoading={getMe.isLoading || !getMe.data}>
+        <DataState isLoading={isLoading}>
           <DataState.Loading />
           <DataState.Content>
             <InfoList.Root>
@@ -51,9 +52,9 @@ export default function VendorProfilePage() {
       </VendorSection>
       <VendorSection
         title="User information"
-        description={`Signed in as ${vendorUser?.email}`}
+        description={vendorUser ? `Signed in as ${vendorUser.email}` : undefined}
       >
-        <DataState isLoading={getMe.isLoading || !getMe.data}>
+        <DataState isLoading={isLoading}>
           <DataState.Loading />
           <DataState.Content>
             <ProfileForm

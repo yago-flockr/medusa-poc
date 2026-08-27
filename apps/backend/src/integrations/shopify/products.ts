@@ -58,6 +58,24 @@ const PRODUCTS_BY_ID_QUERY = `#graphql
 
 type ShopifyProductFieldsNode = ShopifyProductsPullQuery["products"]["edges"][number]["node"]
 
+// A non-Product id still resolves to a non-null node with the fragment's
+// fields simply absent, not null — `media` only appears when it matched.
+function isShopifyProductNode(
+  node: ShopifyProductsByIdsQuery["nodes"][number],
+): node is ShopifyProductFieldsNode {
+  return node !== null && "media" in node
+}
+
+const NODES_BATCH_SIZE = 100
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = []
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size))
+  }
+  return chunks
+}
+
 function mapShopifyProductNode(p: ShopifyProductFieldsNode): ShopifyProduct {
   return {
     shopify_id: p.id,
@@ -107,16 +125,27 @@ export async function pullShopifyProductsByIds(
   credentials: ShopifyStoreCredentials,
   shopifyIds: string[],
 ): Promise<ShopifyProductsByIdsResult> {
-  const { data } = await runShopifyQuery<ShopifyProductsByIdsQuery>(
-    credentials,
-    PRODUCTS_BY_ID_QUERY,
-    { ids: shopifyIds },
+  if (shopifyIds.length === 0) {
+    return { currencyCode: "", products: [] }
+  }
+
+  // Shopify caps how many ids `nodes(ids:)` accepts per call.
+  const batches = await Promise.all(
+    chunk(shopifyIds, NODES_BATCH_SIZE).map((batchIds) =>
+      runShopifyQuery<ShopifyProductsByIdsQuery>(
+        credentials,
+        PRODUCTS_BY_ID_QUERY,
+        { ids: batchIds },
+      ),
+    ),
   )
 
   return {
-    currencyCode: data.shop.currencyCode,
-    products: data.nodes
-      .filter((node): node is ShopifyProductFieldsNode => node !== null)
-      .map((node) => mapShopifyProductNode(node)),
+    currencyCode: batches[0].data.shop.currencyCode,
+    products: batches.flatMap((batch) =>
+      batch.data.nodes
+        .filter(isShopifyProductNode)
+        .map((node) => mapShopifyProductNode(node)),
+    ),
   }
 }

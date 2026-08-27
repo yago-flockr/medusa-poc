@@ -5,11 +5,11 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
-import { ProductStatus } from "@medusajs/framework/utils"
 import { pullShopifyProductsStep } from "./steps/pull-shopify-products"
-import { resolveShopifyProductPrerequisitesStep } from "./steps/resolve-shopify-product-prerequisites"
+import { resolveShopifyProductPrerequisitesStep } from "../shared/steps/resolve-shopify-product-prerequisites"
 import { filterNewShopifyProductsStep } from "./steps/filter-new-shopify-products"
 import type { ShopifyStoreCredentials } from "../../integrations/shopify/client"
+import { buildCreateShopifyProductInput } from "../../integrations/shopify/mappers/product-input.mapper"
 
 export type SyncShopifyProductsWorkflowInput = {
   credentials: ShopifyStoreCredentials
@@ -40,49 +40,9 @@ export const syncShopifyProductsWorkflow = createWorkflow(
     const createInput = transform(
       { filtered, prerequisites },
       (data) => ({
-        products: data.filtered.created.map((product) => ({
-          external_id: product.shopify_id,
-          title: product.title,
-          description: product.description,
-          handle: product.handle,
-          status: ProductStatus.PROPOSED,
-          shipping_profile_id: data.prerequisites.shippingProfileId,
-          sales_channels: data.prerequisites.salesChannelId
-            ? [{ id: data.prerequisites.salesChannelId }]
-            : [],
-          images: product.image_urls.map((url) => ({ url })),
-          options: product.options.length
-            ? product.options.map((option) => ({
-                title: option.name,
-                values: option.values,
-              }))
-            : [{ title: "Default", values: ["Default"] }],
-          variants: product.variants.length
-            ? product.variants.map((variant) => ({
-                title: variant.title,
-                sku: variant.sku,
-                manage_inventory: variant.inventoryQuantity !== null,
-                options: variant.options.length
-                  ? Object.fromEntries(
-                      variant.options.map((o) => [o.name, o.value]),
-                    )
-                  : { Default: "Default" },
-                prices: [
-                  {
-                    amount: Number(variant.price),
-                    currency_code: data.prerequisites.currencyCode,
-                  },
-                ],
-              }))
-            : [
-                {
-                  title: "Default",
-                  sku: null,
-                  manage_inventory: false,
-                  options: { Default: "Default" },
-                },
-              ],
-        })),
+        products: data.filtered.created.map((product) =>
+          buildCreateShopifyProductInput(product, data.prerequisites),
+        ),
       }),
     )
 

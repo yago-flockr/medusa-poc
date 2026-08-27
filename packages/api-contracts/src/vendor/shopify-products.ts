@@ -44,7 +44,12 @@ export type PullVendorShopifyProductsResponse = z.infer<
 >
 
 export const importVendorShopifyProductsSchema = z.object({
-  shopify_product_ids: z.array(z.string()).min(1),
+  shopify_product_ids: z
+    .array(z.string())
+    .min(1)
+    .refine((ids) => new Set(ids).size === ids.length, {
+      message: "shopify_product_ids must not contain duplicates",
+    }),
 })
 
 export type ImportVendorShopifyProductsInput = z.infer<

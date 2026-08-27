@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useImportShopifyProducts } from "@/vendor/hooks/mutations/shopify"
 import type { PulledShopifyProductWithStatus } from "@dtc/api-contracts/vendor/shopify-products"
 import { RiCheckLine } from "@remixicon/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export function ShopifyProductsChecklist({
   products,
@@ -15,7 +15,17 @@ export function ShopifyProductsChecklist({
   onImported?: () => void
 }) {
   const importShopifyProducts = useImportShopifyProducts()
-  const [checkedIds, setCheckedIds] = useState<string[]>([])
+  const [checkedIds, setCheckedIds] = useState<string[]>(() =>
+    products
+      .filter((product) => product.already_imported)
+      .map((product) => product.shopify_id),
+  )
+
+  useEffect(() => {
+    setCheckedIds((prev) =>
+      prev.filter((id) => products.some((product) => product.shopify_id === id)),
+    )
+  }, [products])
 
   const submit = () => {
     importShopifyProducts.mutate(

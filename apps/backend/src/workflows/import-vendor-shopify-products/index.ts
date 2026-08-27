@@ -2,6 +2,7 @@ import {
   createWorkflow,
   parallelize,
   transform,
+  when,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import {
@@ -10,7 +11,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import { pullShopifyProductsByIdsStep } from "./steps/pull-shopify-products-by-ids"
 import { matchExistingShopifyProductsStep } from "./steps/match-existing-shopify-products"
-import { resolveShopifyProductPrerequisitesStep } from "../sync-shopify-products/steps/resolve-shopify-product-prerequisites"
+import { resolveShopifyProductPrerequisitesStep } from "../shared/steps/resolve-shopify-product-prerequisites"
 import {
   buildCreateShopifyProductInput,
   buildUpdateShopifyProductInput,
@@ -70,12 +71,22 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
       ),
     }))
 
-    const created = createProductsWorkflow.runAsStep({ input: createInput })
-    const updated = updateProductsWorkflow.runAsStep({ input: updateInput })
+    const [created, updated] = parallelize(
+      when(
+        "should-create-shopify-products",
+        { createInput },
+        ({ createInput }) => createInput.products.length > 0,
+      ).then(() => createProductsWorkflow.runAsStep({ input: createInput })),
+      when(
+        "should-update-shopify-products",
+        { updateInput },
+        ({ updateInput }) => updateInput.products.length > 0,
+      ).then(() => updateProductsWorkflow.runAsStep({ input: updateInput })),
+    )
 
     const result = transform({ created, updated }, (data) => ({
-      created_count: data.created.length,
-      updated_count: data.updated.length,
+      created_count: data.created?.length ?? 0,
+      updated_count: data.updated?.length ?? 0,
     }))
 
     return new WorkflowResponse(result)

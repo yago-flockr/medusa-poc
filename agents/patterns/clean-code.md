@@ -11,7 +11,7 @@ change without being asked. This file exists so nobody has to keep repeating
 - **No comment blocks or docstrings on internal, unexported helpers.**
 - **Comment only the *why*:** a hidden constraint, a workaround for a specific
   framework quirk, an invariant that isn't obvious from the code around it.
-  Example from this repo: `create-vendor-user/steps/generate-random-password.ts`
+  Example from this repo: `lib/generate-random-password.ts`
   is worth a one-line comment saying *why* the password must be
   server-generated (security, not UX — see `agents/backend.md`), because that
   reasoning isn't visible from the code alone. It would not be worth a

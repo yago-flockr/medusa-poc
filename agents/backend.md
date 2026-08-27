@@ -39,7 +39,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
   - Per Admin feature: `validators.ts`, `query-config.ts` (when the feature has list/retrieve), `middlewares.ts` (wire that feature’s matchers only).
   - Product `additional_data`: each feature that extends product create/update exports a fragment from `api/admin/<feature>/additional-data.ts` (e.g. `brands`) — or, for a feature with no `/admin/*` CRUD surface of its own, from `api/<feature>/additional-data.ts` (e.g. `vendors`, since there is no `/admin/vendors`). Compose them in `api/admin/products/additional-data.ts` and pass the result from `products/middlewares.ts`. Do not put foreign-route matchers in the feature’s middlewares, and do not bury cross-route fields inside CRUD validators. Every fragment is a one-property `nullish()` zod object (string to set/change, `null` to clear) — copy that shape, don't invent a new one per feature.
 - `modules/`: custom domain modules (models, services, migrations)
-- `workflows/`: orchestration; prefer over fat route handlers. **Every workflow is a folder, never a flat file**: `workflows/<name>/index.ts` holds only the `createWorkflow` composition (read top-to-bottom as the actual sequence of operations); `workflows/<name>/steps/<step-name>.ts` holds one `createStep` per file, each with its own input type (don't borrow a slice of the workflow's input type — a step should read standalone). No `steps/index.ts` barrel — `index.ts` imports each step from its own path. Applies even to a single-step workflow (e.g. `create-brand/`, `create-vendor/`) — consistency of shape matters more than saving one file for the smallest cases. `workflows/hooks/*.ts` is a different thing (callbacks registered onto an *existing* core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat — it was never a workflow of its own.
+- `workflows/`: orchestration; prefer over fat route handlers. **Every workflow is a folder, never a flat file**: `workflows/<name>/index.ts` holds only the `createWorkflow` composition (read top-to-bottom as the actual sequence of operations); `workflows/<name>/steps/<step-name>.ts` holds one `createStep` per file, each with its own input type (don't borrow a slice of the workflow's input type — a step should read standalone). No `steps/index.ts` barrel — `index.ts` imports each step from its own path. Applies even to a single-step workflow (e.g. `create-brand/`, `create-vendor/`) — consistency of shape matters more than saving one file for the smallest cases. `workflows/hooks/*.ts` is a different thing (callbacks registered onto an *existing* core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat — it was never a workflow of its own. `workflows/shared/steps/<step-name>.ts` is for a step genuinely used by more than one workflow (e.g. `resolve-shopify-product-prerequisites`, used by both `sync-shopify-products` and `import-vendor-shopify-products`) — extract it here the moment a second workflow needs it, rather than having one workflow reach into a sibling's private `steps/` folder. A step's home in `workflows/shared/` doesn't imply it's more "special" than a single-workflow step — same `createStep` shape, same one-file-per-step rule — it only means more than one workflow currently composes it.
 - `links/`: links between module data models
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
@@ -47,7 +47,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `migration-scripts/`: one-off DB data-migration scripts — Medusa-recognized location, auto-run once as part of `db:migrate` (tracked so it never reruns). Not for demo/seed data — see `scripts/`.
 - `scripts/`: CLI exec helpers — demo-data seeding (`seed.ts`, `pnpm run seed`, not idempotent — re-running duplicates rather than updates), publishable key sync
 - `integrations/`: one folder per external, non-Medusa system this app talks to (currently just `shopify`) — owns that system's client, auth, and mapper code, and nothing outside it should reach past the folder's public exports into another external system's internals. Not for Medusa-internal cross-module concerns (that's `links/`). The URL surface for a given integration mirrors this: every vendor- or admin-facing route touching it nests under a **static** `.../shopify/...` segment (`/vendors/me/shopify/products`, `/vendors/me/shopify/connection`, `/admin/vendors/:id/shopify/products`) rather than a dynamic `[integration]` catch-all. A second integration gets its own sibling static segment when it's real, with its own `middlewares.ts`/contract entries — deliberately not a shared generic dispatcher, since that would force every future integration's routing to be decided by a runtime string switch instead of Medusa's own file-based routing, and would bet on a shape for an integration that doesn't exist yet. Inside one integration's folder, split by role, not by convenience: `client.ts` is the generic transport for that external API (auth headers, request/response envelope, error mapping — zero resource-specific knowledge, e.g. `runShopifyQuery` + `ShopifyStoreCredentials`), and `oauth.ts` covers connection/auth flow the same way; both stay flat at the folder root. A resource-specific file per thing being synced (`products.ts` today; a future `orders.ts`/`stock.ts` once two-way sync grows beyond products, per the marketplace constraints below) holds that resource's queries/mutations and shape-mapping, built on top of `client.ts` rather than duplicating it. `mappers/` holds shape-translation functions that convert an external resource into a Medusa create/update input (kept separate from the resource file itself since it's translating *into* our domain, not just querying the external one). `helpers/` holds pure, local support logic that never leaves this app — assertions, dedupe-by-`external_id` lookups against our own DB, anything that isn't itself a call to the external API. Copy this shape (`client`/`oauth` at root, one file per resource, `mappers/`, `helpers/`) for a second integration or a new resource within this one, rather than inventing a new split.
-- `lib/`: shared helpers with no domain/vendor ownership (default markets seed config, generic store-prerequisite resolution). If a helper is specific to one external integration, it belongs in `integrations/<name>/`, not here — `lib/` drifting into an integration's dumping ground is exactly the mess this rule exists to prevent.
+- `lib/`: shared helpers with no domain/vendor ownership (default markets seed config, generic store-prerequisite resolution, random password generation). If a helper is specific to one external integration, it belongs in `integrations/<name>/`, not here — `lib/` drifting into an integration's dumping ground is exactly the mess this rule exists to prevent.
 
 ## Patterns to follow when extending
 
@@ -115,8 +115,12 @@ starts.
   first user to succeed-or-fail as one unit) while making every piece harder
   to read, test, and extend independently. Security is not treated as
   cuttable, though: every `VendorUser` is created with a **server-generated
-  random password** (`generateRandomPassword` in
-  `create-vendor-user/generate-random-password.ts`), never one staff or a
+  random password** (`generateRandomPassword` in `lib/generate-random-password.ts`
+  — a plain helper with zero Medusa/workflow coupling, so it belongs in `lib/`
+  rather than `workflows/shared/steps/`, which is only for `createStep`-wrapped
+  steps; shared by both `create-vendor-user` and `regenerate-vendor-user-password`,
+  which is exactly why it doesn't live inside either workflow's own folder),
+  never one staff or a
   form types in, returned once in the create response for staff to copy and
   share manually (no invite-email flow yet). Staff can regenerate a fresh
   random password later (`regenerate-vendor-user-password/` — calls
@@ -287,14 +291,21 @@ starts.
   off a Vendor record. Nothing Shopify-specific lives in `.env`/`.env.template`.
   The GraphQL response types (`TestPullQuery`) are generated from Shopify's own
   Admin API schema via `@shopify/api-codegen-preset` (`.graphqlrc.ts`,
-  `pnpm run shopify-codegen`), not hand-typed. `src/integrations/shopify/generated/` is
-  gitignored (~9.6MB of generated schema types, deliberately not committed) —
-  `prebuild`/`predev` scripts in `package.json` regenerate it automatically
-  (npm/pnpm's lifecycle convention: `pnpm run build`/`pnpm run dev` runs
-  `graphql-codegen` first on its own), including on a Cloud deploy, so a
-  missing `src/integrations/shopify/generated/` never breaks the build. Only run
-  `pnpm run shopify-codegen` by hand if you changed `PRODUCTS_QUERY` and want
-  updated types without a full build/dev restart. ESLint also
+  `pnpm run shopify-codegen`), not hand-typed. `src/integrations/shopify/generated/`
+  holds one committed file, `admin-<version>.schema.json` (~6MB, Shopify's full
+  Admin schema for the pinned `apiVersion` in `.graphqlrc.ts`) — everything
+  else in that folder (`admin.types.d.ts`, `admin.generated.d.ts`) is gitignored
+  and regenerated on every `pnpm run build`/`pnpm run dev` via the
+  `prebuild`/`predev` scripts (npm/pnpm's lifecycle convention). Committing the
+  schema file matters because `@shopify/api-codegen-preset` only hits the
+  network (`shopify.dev`) when that file is *absent* — with it committed, a
+  fresh clone, CI run, or Cloud deploy generates types purely locally, no
+  network dependency on Shopify's schema proxy at build time. Run
+  `pnpm run shopify-codegen:refresh-schema` (deletes the committed schema file,
+  then regenerates — forces a fresh network fetch) after bumping `apiVersion`;
+  plain `pnpm run shopify-codegen` reuses the committed schema and only picks
+  up query-document changes (e.g. editing `PRODUCTS_QUERY`) without a full
+  build/dev restart. ESLint also
   ignores that folder (`eslint.config.mjs`) — the codegen emits
   `eslint-comments/*` disable directives that our Medusa ESLint setup does not
   ship, and `medusa develop` would otherwise refuse to start.
@@ -344,8 +355,15 @@ starts.
   anything already imported rather than updating it) and still has no
   vendor link, since nothing currently needs it to do more than prove the
   pull mechanics. Don't extend the spike workflow to match the new one's
-  behavior; if a shared need arises, extract the common parts instead of
-  letting two workflows drift.
+  behavior. It does share the product-input mapping and prerequisite-resolution
+  logic with the real workflow now — both call `integrations/shopify/mappers/
+  product-input.mapper.ts` and `workflows/shared/steps/
+  resolve-shopify-product-prerequisites.ts` rather than each hand-rolling its
+  own copy — since that shared need materialized (the two had drifted into
+  duplicate, silently-diverging logic) and got extracted per the rule above.
+  Still don't extend the spike workflow's own create-only/no-vendor-link
+  behavior to match the real one's; that's a deliberate, separate difference,
+  not drift.
 - **Vendor's Shopify connection uses OAuth authorization-code-grant, one
   Shopify app per vendor, credentials stored on the Vendor record — see
   `shopify-app-config.md` and `docs/vendor-shopify-connection-guide.md`.**

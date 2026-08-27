@@ -1,5 +1,6 @@
 import crypto from "node:crypto"
 import { MedusaError } from "@medusajs/framework/utils"
+import { runShopifyQuery } from "./client"
 
 export const SHOPIFY_OAUTH_SCOPES = "read_products,read_inventory"
 
@@ -97,14 +98,20 @@ export async function exchangeShopifyCodeForToken(
 }
 
 export async function uninstallShopifyApp(shop: string, accessToken: string): Promise<void> {
-  await fetch(`https://${shop}/admin/api/2026-01/graphql.json`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": accessToken,
-    },
-    body: JSON.stringify({
-      query: `mutation { appUninstall { userErrors { field message } } }`,
-    }),
-  })
+  const { data } = await runShopifyQuery<{
+    appUninstall: { userErrors: { field: string[] | null; message: string }[] }
+  }>(
+    { storeDomain: shop, accessToken },
+    `mutation { appUninstall { userErrors { field message } } }`,
+    {},
+  )
+
+  if (data.appUninstall.userErrors.length) {
+    throw new MedusaError(
+      MedusaError.Types.UNEXPECTED_STATE,
+      `Shopify app uninstall failed: ${data.appUninstall.userErrors
+        .map((e) => e.message)
+        .join("; ")}`,
+    )
+  }
 }

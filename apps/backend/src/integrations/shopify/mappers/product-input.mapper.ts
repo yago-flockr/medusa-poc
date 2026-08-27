@@ -1,42 +1,102 @@
 import { ProductStatus } from "@medusajs/framework/utils"
 import type { ShopifyProduct } from "../products"
-import type { ShopifyProductPrerequisites } from "../../../workflows/sync-shopify-products/steps/resolve-shopify-product-prerequisites"
 
-function buildOptionsAndVariants(product: ShopifyProduct, currencyCode: string) {
+export type ShopifyProductPrerequisites = {
+  shippingProfileId: string
+  salesChannelId: string | null
+  currencyCode: string
+}
+
+type ShopifyMappedOption = { title: string; values: string[] }
+
+type ShopifyMappedVariant = {
+  title: string
+  sku: string | null
+  manage_inventory: boolean
+  options: Record<string, string>
+  prices: { amount: number; currency_code: string }[]
+}
+
+type ShopifyProductInputBase = {
+  title: string
+  description: string
+  status: ProductStatus
+  images: { url: string }[]
+  options: ShopifyMappedOption[]
+  variants: ShopifyMappedVariant[]
+}
+
+export type CreateShopifyProductInput = ShopifyProductInputBase & {
+  external_id: string
+  handle: string
+  shipping_profile_id: string
+  sales_channels: { id: string }[]
+}
+
+export type UpdateShopifyProductInput = ShopifyProductInputBase & {
+  id: string
+}
+
+function toMedusaOptions(product: ShopifyProduct): ShopifyMappedOption[] {
+  if (!product.options.length) {
+    return [{ title: "Default", values: ["Default"] }]
+  }
+
+  return product.options.map((option) => ({
+    title: option.name,
+    values: option.values,
+  }))
+}
+
+function toMedusaVariantOptions(
+  variant: ShopifyProduct["variants"][number],
+): Record<string, string> {
+  if (!variant.options.length) {
+    return { Default: "Default" }
+  }
+
+  return Object.fromEntries(variant.options.map((o) => [o.name, o.value]))
+}
+
+function toMedusaVariants(
+  product: ShopifyProduct,
+  currencyCode: string,
+): ShopifyMappedVariant[] {
+  if (!product.variants.length) {
+    return [
+      {
+        title: "Default",
+        sku: null,
+        manage_inventory: false,
+        options: { Default: "Default" },
+        prices: [{ amount: 0, currency_code: currencyCode }],
+      },
+    ]
+  }
+
+  return product.variants.map((variant) => ({
+    title: variant.title,
+    sku: variant.sku,
+    manage_inventory: variant.inventoryQuantity !== null,
+    options: toMedusaVariantOptions(variant),
+    prices: [{ amount: Number(variant.price), currency_code: currencyCode }],
+  }))
+}
+
+function buildOptionsAndVariants(
+  product: ShopifyProduct,
+  currencyCode: string,
+): { options: ShopifyMappedOption[]; variants: ShopifyMappedVariant[] } {
   return {
-    options: product.options.length
-      ? product.options.map((option) => ({
-          title: option.name,
-          values: option.values,
-        }))
-      : [{ title: "Default", values: ["Default"] }],
-    variants: product.variants.length
-      ? product.variants.map((variant) => ({
-          title: variant.title,
-          sku: variant.sku,
-          manage_inventory: variant.inventoryQuantity !== null,
-          options: variant.options.length
-            ? Object.fromEntries(
-                variant.options.map((o) => [o.name, o.value]),
-              )
-            : { Default: "Default" },
-          prices: [{ amount: Number(variant.price), currency_code: currencyCode }],
-        }))
-      : [
-          {
-            title: "Default",
-            sku: null,
-            manage_inventory: false,
-            options: { Default: "Default" },
-          },
-        ],
+    options: toMedusaOptions(product),
+    variants: toMedusaVariants(product, currencyCode),
   }
 }
 
 export function buildCreateShopifyProductInput(
   product: ShopifyProduct,
   prerequisites: ShopifyProductPrerequisites,
-) {
+): CreateShopifyProductInput {
   return {
     external_id: product.shopify_id,
     title: product.title,
@@ -67,7 +127,7 @@ export function buildUpdateShopifyProductInput(
   medusaProductId: string,
   product: ShopifyProduct,
   prerequisites: ShopifyProductPrerequisites,
-) {
+): UpdateShopifyProductInput {
   return {
     id: medusaProductId,
     title: product.title,
