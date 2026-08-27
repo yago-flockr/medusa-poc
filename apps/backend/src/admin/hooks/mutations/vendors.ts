@@ -4,7 +4,7 @@ import type {
   UpdateVendor,
   VendorResponse,
 } from "../../../api/admin/vendors/contract"
-import type { ShopifyProductsPullResult } from "../../../lib/shopify-products"
+import type { ShopifyProductsPullResult } from "../../../integrations/shopify/products"
 import { createResourceMutationHook } from "../../lib/create-resource-mutation"
 import { mutationKeys } from "./mutation-keys"
 import { queryKeys } from "../queries/query-keys"
@@ -28,7 +28,7 @@ export const usePullVendorShopifyProducts = () =>
     mutationKey: mutationKeys.vendors.pullShopifyProducts,
     mutationFn: (vendorId: string) =>
       sdk.client.fetch<ShopifyProductsPullResult>(
-        `/admin/vendors/${vendorId}/shopify-products`,
+        `/admin/vendors/${vendorId}/shopify/products`,
       ),
   })
 
@@ -37,7 +37,7 @@ export const useGenerateVendorShopifyInstallLink = () =>
     mutationKey: mutationKeys.vendors.generateShopifyInstallLink,
     mutationFn: (vendorId: string) =>
       sdk.client.fetch<{ installLink: string }>(
-        `/admin/vendors/${vendorId}/shopify-connection/install-link`,
+        `/admin/vendors/${vendorId}/shopify/connection/install-link`,
       ),
   })
 

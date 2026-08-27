@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import type { ShopifyProduct } from "../../../lib/shopify-products"
+import type { ShopifyProduct } from "../../../integrations/shopify/products"
+import { findExistingShopifyProductIds } from "../../../integrations/shopify/helpers/resolve-existing-products"
 
 export type FilterNewShopifyProductsStepInput = {
   products: ShopifyProduct[]
@@ -18,14 +19,10 @@ export const filterNewShopifyProductsStep = createStep(
   async (input: FilterNewShopifyProductsStepInput, { container }) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const shopifyIds = input.products.map((product) => product.shopify_id)
-    const { data: existing } = await query.graph({
-      entity: "product",
-      fields: ["external_id"],
-      filters: { external_id: shopifyIds },
-    })
-
-    const existingIds = new Set(existing.map((product) => product.external_id))
+    const existingIds = await findExistingShopifyProductIds(
+      query,
+      input.products.map((product) => product.shopify_id),
+    )
 
     return new StepResponse({
       created: input.products.filter(

@@ -4,7 +4,7 @@ import prettier from "eslint-config-prettier"
 
 export default defineConfig([
   {
-    ignores: ["src/lib/generated/**"],
+    ignores: ["src/integrations/shopify/generated/**"],
   },
   ...medusa.configs.recommended,
   prettier,

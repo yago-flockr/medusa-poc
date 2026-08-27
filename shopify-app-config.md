@@ -105,7 +105,7 @@ still shows the full URL (including `code=`) in the address bar, and
 nothing is ever sent to a real third-party server.
 
 Both install-link routes (`buildShopifyInstallLink` in
-`apps/backend/src/lib/shopify-oauth.ts`) detect a `localhost`/`127.0.0.1`
+`apps/backend/src/integrations/shopify/oauth.ts`) detect a `localhost`/`127.0.0.1`
 request and substitute this placeholder automatically, so the **Copy
 Shopify install link** button already generates a working link locally —
 no manual URL edits needed. What still can't be automated (no public

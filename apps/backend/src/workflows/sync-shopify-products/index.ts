@@ -9,7 +9,7 @@ import { ProductStatus } from "@medusajs/framework/utils"
 import { pullShopifyProductsStep } from "./steps/pull-shopify-products"
 import { resolveShopifyProductPrerequisitesStep } from "./steps/resolve-shopify-product-prerequisites"
 import { filterNewShopifyProductsStep } from "./steps/filter-new-shopify-products"
-import type { ShopifyStoreCredentials } from "../../lib/shopify-products"
+import type { ShopifyStoreCredentials } from "../../integrations/shopify/client"
 
 export type SyncShopifyProductsWorkflowInput = {
   credentials: ShopifyStoreCredentials

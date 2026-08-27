@@ -1,5 +1,5 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { exchangeShopifyCodeForToken, uninstallShopifyApp } from "../../../lib/shopify-oauth"
+import { exchangeShopifyCodeForToken, uninstallShopifyApp } from "../../../integrations/shopify/oauth"
 
 export type ExchangeShopifyOAuthCodeStepInput = {
   shop: string

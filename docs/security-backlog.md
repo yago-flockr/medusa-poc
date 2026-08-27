@@ -83,7 +83,7 @@ each was found while building or adversarially testing the marketplace spine
   (`verify-shopify-oauth-state` step). Previously generated but never
   checked — a real gap, not just theoretical, since it looked like CSRF
   protection existed when it didn't.
-- **The install-link route (`.../shopify-connection/install-link`) builds
+- **The install-link route (`.../shopify/connection/install-link`) builds
   the callback's `redirect_uri` from `X-Forwarded-Proto`/`X-Forwarded-Host`
   request headers, with no Express `trust proxy` configured anywhere in the
   repo (confirmed via grep).** Those headers are ordinary client-supplied

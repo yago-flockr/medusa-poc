@@ -1,8 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import {
-  pullShopifyProducts,
-  type ShopifyStoreCredentials,
-} from "../../../lib/shopify-products"
+import type { ShopifyStoreCredentials } from "../../../integrations/shopify/client"
+import { pullShopifyProducts } from "../../../integrations/shopify/products"
 
 export type PullShopifyProductsStepInput = {
   credentials: ShopifyStoreCredentials

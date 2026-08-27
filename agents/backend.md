@@ -46,7 +46,8 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `admin/`: Admin dashboard widgets and routes. Query hooks in `admin/hooks/queries/`, mutation hooks in `admin/hooks/mutations/`.
 - `migration-scripts/`: one-off DB data-migration scripts — Medusa-recognized location, auto-run once as part of `db:migrate` (tracked so it never reruns). Not for demo/seed data — see `scripts/`.
 - `scripts/`: CLI exec helpers — demo-data seeding (`seed.ts`, `pnpm run seed`, not idempotent — re-running duplicates rather than updates), publishable key sync
-- `lib/`: shared helpers (including default markets seed config)
+- `integrations/`: one folder per external, non-Medusa system this app talks to (currently just `shopify`) — owns that system's client, auth, and mapper code, and nothing outside it should reach past the folder's public exports into another external system's internals. Not for Medusa-internal cross-module concerns (that's `links/`). The URL surface for a given integration mirrors this: every vendor- or admin-facing route touching it nests under a **static** `.../shopify/...` segment (`/vendors/me/shopify/products`, `/vendors/me/shopify/connection`, `/admin/vendors/:id/shopify/products`) rather than a dynamic `[integration]` catch-all. A second integration gets its own sibling static segment when it's real, with its own `middlewares.ts`/contract entries — deliberately not a shared generic dispatcher, since that would force every future integration's routing to be decided by a runtime string switch instead of Medusa's own file-based routing, and would bet on a shape for an integration that doesn't exist yet. Inside one integration's folder, split by role, not by convenience: `client.ts` is the generic transport for that external API (auth headers, request/response envelope, error mapping — zero resource-specific knowledge, e.g. `runShopifyQuery` + `ShopifyStoreCredentials`), and `oauth.ts` covers connection/auth flow the same way; both stay flat at the folder root. A resource-specific file per thing being synced (`products.ts` today; a future `orders.ts`/`stock.ts` once two-way sync grows beyond products, per the marketplace constraints below) holds that resource's queries/mutations and shape-mapping, built on top of `client.ts` rather than duplicating it. `mappers/` holds shape-translation functions that convert an external resource into a Medusa create/update input (kept separate from the resource file itself since it's translating *into* our domain, not just querying the external one). `helpers/` holds pure, local support logic that never leaves this app — assertions, dedupe-by-`external_id` lookups against our own DB, anything that isn't itself a call to the external API. Copy this shape (`client`/`oauth` at root, one file per resource, `mappers/`, `helpers/`) for a second integration or a new resource within this one, rather than inventing a new split.
+- `lib/`: shared helpers with no domain/vendor ownership (default markets seed config, generic store-prerequisite resolution). If a helper is specific to one external integration, it belongs in `integrations/<name>/`, not here — `lib/` drifting into an integration's dumping ground is exactly the mess this rule exists to prevent.
 
 ## Patterns to follow when extending
 
@@ -64,7 +65,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
    - **Create a new standalone module that's also linked to Medusa** (Vendor's shape) → the same, plus one `links/<core>-<name>.ts` per relationship (Vendor has two: `product-vendor.ts`, `vendor-order.ts`). Decide `isList` deliberately per direction; `db:migrate` again after the link file.
    - **Update a standalone or linked model's fields** → edit `models/<name>.ts` → `db:generate <module>` (review the generated migration) → `db:migrate` → propagate the field through every workflow step / validator / `@dtc/api-contracts` schema that touches it → `docs/ER_MODEL.md`. Identical whether or not the model has links — a link lives in its own file and is untouched by a field-only change; only touch a `links/` file if the relationship itself changes.
    - **Assign a linked entity at core-model create/update time** (write side, the complement to the first bullet) → `additional_data` fragment + workflow hook. Copy `api/vendors/additional-data.ts` → composed into `api/admin/products/additional-data.ts` → consumed in `workflows/hooks/created-product.ts` (`createProductsWorkflow.hooks.productsCreated`). One handler per hook name — extend the existing handler for a new module, never register a second one.
-   - **Sync external, non-Medusa data into a local model** (the Shopify shape) → not a link, not a hook: a typed external client (`lib/shopify-products.ts`, generated via codegen, not hand-typed) feeding a workflow that pulls → resolves Medusa prerequisites → dedupes by `external_id` → calls the real core workflow (e.g. `createProductsWorkflow`) as a step. Never bypass workflows because the source of truth is external.
+   - **Sync external, non-Medusa data into a local model** (the Shopify shape) → not a link, not a hook: a typed external client (`integrations/shopify/client.ts` for the transport + `integrations/shopify/products.ts` for the resource-specific queries, generated via codegen, not hand-typed) feeding a workflow that pulls → resolves Medusa prerequisites → dedupes by `external_id` → calls the real core workflow (e.g. `createProductsWorkflow`) as a step. Never bypass workflows because the source of truth is external.
    - **Filter or sort by a linked field** (e.g. "products for vendor X") is a different capability from the above — `query.graph`'s `fields` only expands, it cannot filter cross-module. Needs `filterable` on the link + the Index Module + `query.index`. None of the current links declare `filterable`; add it deliberately if this need ever comes up, don't assume `fields` covers it.
 
 ## Marketplace implementation constraints
@@ -271,9 +272,13 @@ starts.
   over child orders, but the consignment-record alternative hasn't been built
   to confirm it — treat this as a lean, not the settled answer.
 - **Shopify pull is spiked, not settled — `docs/spikes/vendor-shopify-sync.md`.**
-  `src/lib/shopify-products.ts` (raw Shopify Admin GraphQL client: takes an
-  already-issued offline access token + product query — it no longer does its
-  own token exchange, see the connection entry below) and
+  `src/integrations/shopify/client.ts` (the generic Admin GraphQL transport —
+  `runShopifyQuery` + `ShopifyStoreCredentials`, no resource-specific knowledge;
+  takes an already-issued offline access token — it no longer does its own
+  token exchange, see the connection entry below) with
+  `src/integrations/shopify/products.ts` (product queries/mapping, built on
+  that transport — the pattern a future `orders.ts`/`stock.ts` copies once
+  two-way sync grows beyond products) and
   `src/workflows/sync-shopify-products/` (pull → resolve shipping-profile/
   sales-channel prerequisites → skip-if-already-imported by `external_id` →
   `createProductsWorkflow`) are real, verified-against-a-real-store code, not
@@ -282,12 +287,12 @@ starts.
   off a Vendor record. Nothing Shopify-specific lives in `.env`/`.env.template`.
   The GraphQL response types (`TestPullQuery`) are generated from Shopify's own
   Admin API schema via `@shopify/api-codegen-preset` (`.graphqlrc.ts`,
-  `pnpm run shopify-codegen`), not hand-typed. `src/lib/generated/` is
+  `pnpm run shopify-codegen`), not hand-typed. `src/integrations/shopify/generated/` is
   gitignored (~9.6MB of generated schema types, deliberately not committed) —
   `prebuild`/`predev` scripts in `package.json` regenerate it automatically
   (npm/pnpm's lifecycle convention: `pnpm run build`/`pnpm run dev` runs
   `graphql-codegen` first on its own), including on a Cloud deploy, so a
-  missing `src/lib/generated/` never breaks the build. Only run
+  missing `src/integrations/shopify/generated/` never breaks the build. Only run
   `pnpm run shopify-codegen` by hand if you changed `PRODUCTS_QUERY` and want
   updated types without a full build/dev restart. ESLint also
   ignores that folder (`eslint.config.mjs`) — the codegen emits
@@ -303,16 +308,16 @@ starts.
 
   **The real product-import trigger now exists, on the vendor panel itself
   (`apps/storefront`'s `/vendor/shopify` page, "Import products" section):**
-  the vendor pulls their catalogue (`GET /vendors/me/shopify-products`, each
+  the vendor pulls their catalogue (`GET /vendors/me/shopify/products`, each
   product flagged `already_imported` by matching `external_id`), checks
   which ones to bring in or re-sync (pre-checked if already imported), and
-  `POST /vendors/me/shopify-products/import` (`src/api/vendors/me/
-  shopify-products/import/route.ts`) runs a new, separate workflow —
+  `POST /vendors/me/shopify/products/import` (`src/api/vendors/me/
+  shopify/products/import/route.ts`) runs a new, separate workflow —
   `src/workflows/import-vendor-shopify-products/` — that re-fetches exactly
   those checked products fresh from Shopify (`pullShopifyProductsByIds` in
-  `lib/shopify-products.ts`; never trusts the product payload the frontend
+  `integrations/shopify/products.ts`; never trusts the product payload the frontend
   already displayed), splits them into create vs. update by `external_id`
-  (`lib/resolve-existing-shopify-products.ts`, also reused by the pull
+  (`integrations/shopify/helpers/resolve-existing-products.ts`, also reused by the pull
   route's `already_imported` flag and by `filterNewShopifyProductsStep`
   below — one seam for "does this Shopify product already exist here"), and
   runs `createProductsWorkflow`/`updateProductsWorkflow` as steps. This

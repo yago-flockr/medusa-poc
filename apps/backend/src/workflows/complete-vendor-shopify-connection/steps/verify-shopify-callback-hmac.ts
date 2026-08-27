@@ -1,6 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { MedusaError } from "@medusajs/framework/utils"
-import { verifyShopifyCallbackHmac } from "../../../lib/shopify-oauth"
+import { verifyShopifyCallbackHmac } from "../../../integrations/shopify/oauth"
 
 export type VerifyShopifyCallbackHmacStepInput = {
   query: Record<string, string>

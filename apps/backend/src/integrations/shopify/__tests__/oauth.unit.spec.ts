@@ -5,7 +5,7 @@ import {
   buildShopifyOauthRedirectUri,
   parseRawQuery,
   verifyShopifyCallbackHmac,
-} from "../shopify-oauth"
+} from "../oauth"
 
 function sign(params: Record<string, string>, secret: string): string {
   const message = Object.keys(params)

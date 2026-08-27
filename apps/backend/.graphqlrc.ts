@@ -5,8 +5,8 @@ export default {
     default: shopifyApiProject({
       apiType: ApiType.Admin,
       apiVersion: "2026-01",
-      documents: ["./src/lib/shopify-products.ts"],
-      outputDir: "./src/lib/generated",
+      documents: ["./src/integrations/shopify/*.ts"],
+      outputDir: "./src/integrations/shopify/generated",
     }),
   },
 }

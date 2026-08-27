@@ -24,13 +24,38 @@ export const shopifyPulledProductSchema = z.object({
 
 export type ShopifyPulledProduct = z.infer<typeof shopifyPulledProductSchema>
 
+export const pulledShopifyProductWithStatusSchema = shopifyPulledProductSchema.extend({
+  already_imported: z.boolean(),
+})
+
+export type PulledShopifyProductWithStatus = z.infer<
+  typeof pulledShopifyProductWithStatusSchema
+>
+
 export const pullVendorShopifyProductsResponseSchema = z.object({
   currencyCode: z.string(),
   requestedQueryCost: z.number().optional(),
   hasNextPage: z.boolean(),
-  products: z.array(shopifyPulledProductSchema),
+  products: z.array(pulledShopifyProductWithStatusSchema),
 })
 
 export type PullVendorShopifyProductsResponse = z.infer<
   typeof pullVendorShopifyProductsResponseSchema
+>
+
+export const importVendorShopifyProductsSchema = z.object({
+  shopify_product_ids: z.array(z.string()).min(1),
+})
+
+export type ImportVendorShopifyProductsInput = z.infer<
+  typeof importVendorShopifyProductsSchema
+>
+
+export const importVendorShopifyProductsResponseSchema = z.object({
+  created_count: z.number(),
+  updated_count: z.number(),
+})
+
+export type ImportVendorShopifyProductsResponse = z.infer<
+  typeof importVendorShopifyProductsResponseSchema
 >

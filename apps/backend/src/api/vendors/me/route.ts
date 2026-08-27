@@ -1,4 +1,4 @@
-import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
@@ -9,7 +9,6 @@ import {
 } from "@dtc/api-contracts/vendor/me"
 import {
   updateVendorProfileResponseSchema,
-  updateVendorProfileSchema,
   type UpdateVendorProfileInput,
   type UpdateVendorProfileResponse,
 } from "@dtc/api-contracts/vendor/profile"
@@ -64,18 +63,7 @@ export const PATCH = async (
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const parsed = updateVendorProfileSchema.safeParse(req.body)
-
-  if (!parsed.success) {
-    throw new MedusaError(
-      MedusaError.Types.INVALID_DATA,
-      `Invalid profile payload: ${parsed.error.issues
-        .map((issue) => `${issue.path.join(".")} ${issue.message}`)
-        .join("; ")}`,
-    )
-  }
-
-  const { first_name, last_name } = parsed.data
+  const { first_name, last_name } = req.validatedBody
 
   const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
     "id",

@@ -1,10 +1,10 @@
 import crypto from "node:crypto"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
-import { VENDOR_MODULE } from "../../../../../../modules/vendor"
-import type VendorModuleService from "../../../../../../modules/vendor/service"
-import { updateVendorWorkflow } from "../../../../../../workflows/update-vendor"
-import { buildShopifyInstallLink } from "../../../../../../lib/shopify-oauth"
+import { VENDOR_MODULE } from "../../../../../../../modules/vendor"
+import type VendorModuleService from "../../../../../../../modules/vendor/service"
+import { updateVendorWorkflow } from "../../../../../../../workflows/update-vendor"
+import { buildShopifyInstallLink } from "../../../../../../../integrations/shopify/oauth"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params

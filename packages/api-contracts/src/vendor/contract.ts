@@ -39,7 +39,7 @@ export const vendorContract = c.router({
   },
   setShopifyConnection: {
     method: "PATCH",
-    path: "/vendors/me/shopify-connection",
+    path: "/vendors/me/shopify/connection",
     body: setVendorShopifyConnectionSchema,
     responses: {
       200: setVendorShopifyConnectionResponseSchema,
@@ -47,21 +47,21 @@ export const vendorContract = c.router({
   },
   getShopifyInstallLink: {
     method: "GET",
-    path: "/vendors/me/shopify-connection/install-link",
+    path: "/vendors/me/shopify/connection/install-link",
     responses: {
       200: vendorShopifyInstallLinkResponseSchema,
     },
   },
   pullShopifyProducts: {
     method: "GET",
-    path: "/vendors/me/shopify-products",
+    path: "/vendors/me/shopify/products",
     responses: {
       200: pullVendorShopifyProductsResponseSchema,
     },
   },
   importShopifyProducts: {
     method: "POST",
-    path: "/vendors/me/shopify-products/import",
+    path: "/vendors/me/shopify/products/import",
     body: importVendorShopifyProductsSchema,
     responses: {
       200: importVendorShopifyProductsResponseSchema,

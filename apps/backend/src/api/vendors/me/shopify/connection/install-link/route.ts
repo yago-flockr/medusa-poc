@@ -8,9 +8,9 @@ import {
   vendorShopifyInstallLinkResponseSchema,
   type VendorShopifyInstallLinkResponse,
 } from "@dtc/api-contracts/vendor/shopify-connection"
-import { resolveVendorUser } from "../../../resolve-vendor-user"
-import { updateVendorWorkflow } from "../../../../../workflows/update-vendor"
-import { buildShopifyInstallLink } from "../../../../../lib/shopify-oauth"
+import { resolveVendorUser } from "../../../../resolve-vendor-user"
+import { updateVendorWorkflow } from "../../../../../../workflows/update-vendor"
+import { buildShopifyInstallLink } from "../../../../../../integrations/shopify/oauth"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -28,7 +28,7 @@ export const GET = async (
   if (!vendor.shopify_store_domain || !vendor.shopify_client_id) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
-      "Set your Shopify store domain and client ID first (PATCH /vendors/me/shopify-connection).",
+      "Set your Shopify store domain and client ID first (PATCH /vendors/me/shopify/connection).",
     )
   }
 

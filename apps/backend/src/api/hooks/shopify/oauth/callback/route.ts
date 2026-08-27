@@ -1,7 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
 import { completeVendorShopifyConnectionWorkflow } from "../../../../../workflows/complete-vendor-shopify-connection"
-import { parseRawQuery } from "../../../../../lib/shopify-oauth"
+import { parseRawQuery } from "../../../../../integrations/shopify/oauth"
 import { vendorPanelOrigin } from "../../../../vendors/cors"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
