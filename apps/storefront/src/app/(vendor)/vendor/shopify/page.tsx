@@ -3,7 +3,6 @@
 import { DataState } from "@/components/display/data-state"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { VendorSection } from "@/vendor/components/section"
 import { ShopifyConnectionForm } from "@/vendor/forms/shopify-connection-form"
 import { ShopifyProductsChecklist } from "@/vendor/forms/shopify-products-checklist"
