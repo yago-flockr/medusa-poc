@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import type { ComponentProps, ReactNode } from "react"
 
 interface VendorSectionProps extends ComponentProps<typeof CardContent> {
@@ -28,6 +29,7 @@ export function VendorSection({
         {description && <CardDescription>{description}</CardDescription>}
         {action && <CardAction>{action}</CardAction>}
       </CardHeader>
+      <Separator />
       {children && <CardContent {...props}>{children}</CardContent>}
     </Card>
   )
