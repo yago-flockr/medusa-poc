@@ -28,10 +28,9 @@ store — you can't reuse an app from anywhere else.
    link this screen generates (your vendor panel builds the real one).
 4. **Settings** → copy **Client ID** and **Client secret**.
 5. On your vendor panel's **Shopify** page: paste your store domain,
-   Client ID, and Client secret, and save.
-6. Click **Connect to Shopify** on that same page — it opens Shopify's
-   real approval screen. Approve it, and you're back on your panel,
-   connected.
+   Client ID, and Client secret, and click **Connect to Shopify** — it
+   saves them and opens Shopify's real approval screen in one step.
+   Approve it, and you're back on your panel, connected.
 
 That's it — nothing else to do, and no one else needs to be involved.
 
@@ -42,7 +41,7 @@ That's it — nothing else to do, and no one else needs to be involved.
   on to Shopify's consent screen — that redirector doesn't exist, so
   you'd land on a dead page (no `code` in the URL) and the connection
   would silently never happen. Unchecked, your panel sends you straight
-  to the real consent screen itself (step 6 above).
+  to the real consent screen itself (step 5 above).
 - **Why not the Distribution tab's own link?** It routes through the same
   App URL launch described above and fails the same way. Your vendor
   panel's **Connect to Shopify** button builds the real

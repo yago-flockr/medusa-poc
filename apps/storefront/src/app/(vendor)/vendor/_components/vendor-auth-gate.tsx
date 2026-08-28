@@ -1,7 +1,8 @@
 "use client"
 
-import { LoginForm } from "@/vendor/forms/login-form"
+import { LoginForm, type LoginVendorInput } from "@/vendor/forms/login-form"
 import { VendorNav } from "@/vendor/components/nav"
+import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useEffect, useState } from "react"
 import {
@@ -15,6 +16,8 @@ import {
 export function VendorAuthGate({ children }: { children: React.ReactNode }) {
   const [checked, setChecked] = useState(false)
   const token = useVendorAuthStore((state) => state.token)
+  const setToken = useVendorAuthStore((state) => state.setToken)
+  const loginVendor = useLoginVendor()
 
   useEffect(() => {
     setChecked(true)
@@ -25,6 +28,12 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
   }
 
   if (!token) {
+    const handleLogin = (values: LoginVendorInput) => {
+      loginVendor.mutate(values, {
+        onSuccess: ({ token }) => setToken(token),
+      })
+    }
+
     return (
       <div className="max-w-sm mx-auto px-4 py-8">
         <Card>
@@ -35,7 +44,11 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LoginForm />
+            <LoginForm
+              isLoading={loginVendor.isPending}
+              error={loginVendor.error?.message}
+              onSubmit={handleLogin}
+            />
           </CardContent>
         </Card>
       </div>

@@ -6,13 +6,18 @@ import { Button } from "@/components/ui/button"
 import { VendorSection } from "@/vendor/components/section"
 import { ShopifyConnectionForm } from "@/vendor/forms/shopify-connection-form"
 import { ShopifyProductsChecklist } from "@/vendor/forms/shopify-products-checklist"
-import { useGetShopifyInstallLink } from "@/vendor/hooks/mutations/shopify"
+import {
+  useGetShopifyInstallLink,
+  useSetShopifyConnection,
+} from "@/vendor/hooks/mutations/shopify"
 import { usePullShopifyProducts } from "@/vendor/hooks/queries/shopify-products"
 import { useGetMe } from "@/vendor/hooks/queries/vendor"
+import type { SetVendorShopifyConnectionInput } from "@dtc/api-contracts/vendor/shopify-connection"
 import { useState } from "react"
 
 export default function VendorShopifyPage() {
   const getMe = useGetMe()
+  const setShopifyConnection = useSetShopifyConnection()
   const getShopifyInstallLink = useGetShopifyInstallLink()
   const [isImporting, setIsImporting] = useState(false)
 
@@ -22,6 +27,25 @@ export default function VendorShopifyPage() {
   const pullShopifyProducts = usePullShopifyProducts(undefined, {
     enabled: isConnected && isImporting,
   })
+
+  const handleConnect = (values: SetVendorShopifyConnectionInput) => {
+    setShopifyConnection.mutate(values, {
+      onSuccess: () => {
+        getMe.refetch()
+        getShopifyInstallLink.mutate(undefined, {
+          onSuccess: ({ installLink }) => {
+            window.open(installLink, "_blank")
+          },
+        })
+      },
+    })
+  }
+
+  const connectSubmitLabel = setShopifyConnection.isPending
+    ? "Saving…"
+    : getShopifyInstallLink.isPending
+      ? "Opening Shopify…"
+      : "Connect to Shopify"
 
   return (
     <>
@@ -53,30 +77,14 @@ export default function VendorShopifyPage() {
                     }
                   : undefined
               }
-              onSaved={() => getMe.refetch()}
+              isLoading={setShopifyConnection.isPending || getShopifyInstallLink.isPending}
+              submitLabel={connectSubmitLabel}
+              error={
+                setShopifyConnection.error?.message ??
+                getShopifyInstallLink.error?.message
+              }
+              onSubmit={handleConnect}
             />
-            <Button
-              type="button"
-              disabled={getShopifyInstallLink.isPending}
-              className="w-full"
-              variant="outline"
-              onClick={() => {
-                getShopifyInstallLink.mutate(undefined, {
-                  onSuccess: ({ installLink }) => {
-                    window.open(installLink, "_blank")
-                  },
-                })
-              }}
-            >
-              {getShopifyInstallLink.isPending
-                ? "Generating link…"
-                : "Connect to Shopify"}
-            </Button>
-            {getShopifyInstallLink.isError && (
-              <p className="text-sm text-destructive">
-                {getShopifyInstallLink.error.message}
-              </p>
-            )}
           </DataState.Content>
         </DataState>
       </VendorSection>

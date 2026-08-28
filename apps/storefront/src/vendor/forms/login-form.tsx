@@ -1,14 +1,12 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
-import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { cn } from "@/lib/utils"
 import { useForm } from "react-hook-form"
-import type { ComponentProps } from "react"
 import z from "zod"
 import { Button } from "@/components/ui/button"
 import { TextField } from "./fields/text-field"
+import type { CommonFormProps } from "./form-type"
 
 export const loginVendorSchema = z.object({
   email: z.email(),
@@ -17,11 +15,17 @@ export const loginVendorSchema = z.object({
 
 export type LoginVendorInput = z.infer<typeof loginVendorSchema>
 
-type LoginFormProps = Omit<ComponentProps<"form">, "onSubmit" | "children">
+type LoginFormProps = CommonFormProps<LoginVendorInput> & {
+  error?: string
+  className?: string
+}
 
-export function LoginForm({ className, ...props }: LoginFormProps) {
-  const loginVendor = useLoginVendor()
-  const setToken = useVendorAuthStore((state) => state.setToken)
+export function LoginForm({
+  isLoading,
+  onSubmit,
+  error,
+  className,
+}: LoginFormProps) {
   const {
     register,
     handleSubmit,
@@ -31,16 +35,10 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     defaultValues: { email: "", password: "" },
   })
 
-  const submit = handleSubmit((values) => {
-    loginVendor.mutate(values, {
-      onSuccess: ({ token }: { token: string }) => {
-        setToken(token)
-      },
-    })
-  })
+  const submit = handleSubmit((values) => onSubmit(values))
 
   return (
-    <form onSubmit={submit} className={cn("flex flex-col gap-4", className)} {...props}>
+    <form onSubmit={submit} className={cn("flex flex-col gap-4", className)}>
       <TextField
         id="vendor-email"
         label="Email"
@@ -55,14 +53,10 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         error={errors.password?.message}
         {...register("password")}
       />
-      <Button type="submit" disabled={loginVendor.isPending}>
-        {loginVendor.isPending ? "Logging in…" : "Log in"}
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Logging in…" : "Log in"}
       </Button>
-      {loginVendor.isError && (
-        <p className="text-sm text-destructive">
-          {loginVendor.error.message}
-        </p>
-      )}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </form>
   )
 }
