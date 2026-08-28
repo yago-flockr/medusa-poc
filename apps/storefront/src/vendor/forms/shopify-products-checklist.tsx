@@ -23,7 +23,9 @@ export function ShopifyProductsChecklist({
 
   useEffect(() => {
     setCheckedIds((prev) =>
-      prev.filter((id) => products.some((product) => product.shopify_id === id)),
+      prev.filter((id) =>
+        products.some((product) => product.shopify_id === id),
+      ),
     )
   }, [products])
 
@@ -62,7 +64,7 @@ export function ShopifyProductsChecklist({
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>{product.variants.length} variant(s)</span>
                 {product.already_imported && (
-                  <div className="flex items-center text-success font-medium">
+                  <div className="flex items-center text-success font-medium gap-1">
                     <RiCheckLine size={16} />
                     <span>Already Imported</span>
                   </div>

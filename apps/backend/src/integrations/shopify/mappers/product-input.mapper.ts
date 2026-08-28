@@ -123,14 +123,7 @@ export function buildCreateShopifyProductInput(
  * existing Medusa variant ids across a re-sync — see
  * docs/spikes/vendor-shopify-sync.md.
  *
- * Also deliberately omits `options`, unlike the create input — confirmed by
- * reproducing it directly against Medusa core: passing `options` into
- * `updateProductsWorkflow` at all, even re-declaring values that already
- * match what's persisted, corrupts the option's in-memory value list before
- * that same call validates the variants being attached against it, throwing
- * `Option value X does not exist for option Y` for a value that
- * demonstrably already exists. `sync-product-option-values.ts` is what
- * actually keeps an existing option's values current before this call runs.
+ * Also omits `options`, unlike the create input — see agents/backend.md.
  */
 export function buildUpdateShopifyProductInput(
   medusaProductId: string,

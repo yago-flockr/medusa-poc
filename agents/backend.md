@@ -368,35 +368,46 @@ starts.
   through the File Module (deliberately deferred again, same tradeoff as
   the original spike).
 
-  **Re-sync must never pass `options` into `updateProductsWorkflow` — confirmed
-  by reproducing it directly against Medusa core, not just reading source.**
-  The first hypothesis (a genuinely *new* option value introduced since the
-  last import, e.g. Shopify adding "Navy" to a product's Color option) turned
-  out to be wrong: reproducing the exact failure via `medusa exec` against
-  the real data showed every option's values already matched, zero missing,
-  yet `updateProductsWorkflow` still threw `Option value Navy does not exist
-  for option Color`. The actual cause: passing `options` in the *same* update
-  call at all — even re-declaring values that already match what's
-  persisted — corrupts the option's in-memory value list before that same
-  call validates the attached variants against it
-  (`resolveAllowedOptionValues` in `@medusajs/product`, invoked from
-  `ProductRepository.deepUpdate`). The fix has two parts, both in
-  `import-vendor-shopify-products`: `buildUpdateShopifyProductInput` never
-  includes `options` at all (only `buildCreateShopifyProductInput` does,
-  where it's the one call establishing them for the first time); and
-  `steps/sync-product-option-values.ts` runs before
-  `updateProductsWorkflow.runAsStep` to keep an existing option's values
-  current by diffing Shopify's values against what's persisted and calling
-  `productModuleService.updateProductOptions(id, {values})` for any that are
-  genuinely missing — the exact same primitive
-  `create-vendor-product/steps/resolve-shared-product-options.ts` already
-  uses to solve the analogous problem on create, just scoped to one
-  product's own option instead of a title-matched shared one (a
-  Shopify-imported product's options aren't shared across products the way
-  a vendor-manual-create product's are, so no cross-product locking is
-  needed here). Without this step, a value Shopify genuinely added since the
-  last sync would still fail, now for the more ordinary reason that nothing
-  ever registers it.
+  **Option values have two levels in Medusa, not one — an option's global
+  value pool (`product_option_value`) and a separate per-product allowlist
+  (`product_product_option_value`) — and re-sync has to manage both,
+  confirmed by direct reproduction against real data, not by reading source
+  alone.** Three false leads got ruled out first, each with a real repro: a
+  genuinely new value (Shopify adding "Navy") looked missing but wasn't
+  (every value already matched, zero missing, yet the update still failed);
+  passing `options` in the same call as `variants` looked like it corrupted
+  Medusa's in-memory state (removing `options` from the update payload made
+  the symptom go away, but only because it also stopped the update from
+  attempting to attach a value at all); and an identity-map/staleness theory
+  (a step's write not being visible to a later step) looked plausible but was
+  ruled out the same way — a genuinely separate, later HTTP request to the
+  real running server, with the earlier write already confirmed durable via
+  direct SQL, still failed with the identical error.
+  The actual mechanism, found by checking the schema directly:
+  `product_option_value` rows are NOT scoped to one product by themselves
+  (an option can be shared across products, `is_exclusive: false`, with a
+  wider value pool than any single product uses) — a THIRD table,
+  `product_product_option_value`, links a specific product's option to only
+  the subset of that pool it's allowed to use, and that's what Medusa's
+  variant-attach validation (`resolveAllowedOptionValues`'s `allowedValueIds`
+  filter, in `@medusajs/product`) actually checks. Adding "Red" to the
+  option's global pool via `productModuleService.updateProductOptions()`
+  (what `sync-product-option-values.ts` did at first) never touches that
+  per-product allowlist, so the value existed but wasn't "allowed" for this
+  product yet. The fix: both `sync-product-option-values.ts` (adds, before
+  `updateProductsWorkflow.runAsStep`) and
+  `prune-stale-product-option-values.ts` (removes, after — a stale value
+  needs unlinking from a product before the option can consider it unused)
+  call `productModuleService.updateProductOptionValuesOnProduct()` instead —
+  the one method that manages the per-product link directly, and (per its
+  own source) transparently creates-and-links a genuinely new value string
+  in one call. Verified against real data end to end, not just reasoned
+  about: seeded a stale value the live Shopify data no longer has alongside
+  one it now has that Medusa didn't yet, ran the real import route over a
+  real HTTP request, confirmed the stale one was gone and the new one usable
+  afterward — matching the actual product decision this exists to serve
+  (Shopify drops a color, the vendor's product stops offering it, full stop,
+  not a value lingering forever because nothing ever cleaned it up).
 
   **`src/workflows/sync-shopify-products/` (the original spike workflow,
   below) is now superseded for real use** by the workflow above — it's kept

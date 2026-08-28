@@ -2,19 +2,19 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { Modules } from "@medusajs/framework/utils"
 import type { MatchedShopifyProduct } from "./match-existing-shopify-products"
 
-export type SyncProductOptionValuesStepInput = {
+export type PruneStaleProductOptionValuesStepInput = {
   updates: MatchedShopifyProduct[]
 }
 
 type OptionValueLinkCompensation = {
   product_id: string
   product_option_id: string
-  addedValueIds: string[]
+  removedValueIds: string[]
 }
 
-export const syncProductOptionValuesStep = createStep(
-  "sync-product-option-values",
-  async (input: SyncProductOptionValuesStepInput, { container }) => {
+export const pruneStaleProductOptionValuesStep = createStep(
+  "prune-stale-product-option-values",
+  async (input: PruneStaleProductOptionValuesStepInput, { container }) => {
     const productModuleService = container.resolve(Modules.PRODUCT)
 
     const compensation: OptionValueLinkCompensation[] = []
@@ -35,21 +35,18 @@ export const syncProductOptionValuesStep = createStep(
             return null
           }
 
-          const existingValues = new Set(
-            (existing.values ?? []).map((value) => value.value),
-          )
-          const missingValues = option.values.filter(
-            (value) => !existingValues.has(value),
-          )
+          const staleValueIds = (existing.values ?? [])
+            .filter((value) => !option.values.includes(value.value))
+            .map((value) => value.id)
 
-          if (!missingValues.length) {
+          if (!staleValueIds.length) {
             return null
           }
 
           return {
             product_id: medusaProductId,
             product_option_id: existing.id,
-            add: missingValues.map((value) => ({ value })),
+            remove: staleValueIds,
           }
         })
         .filter((update): update is NonNullable<typeof update> => update !== null)
@@ -60,25 +57,11 @@ export const syncProductOptionValuesStep = createStep(
 
       await productModuleService.updateProductOptionValuesOnProduct(linkUpdates)
 
-      const updatedProduct = await productModuleService.retrieveProduct(
-        medusaProductId,
-        { relations: ["options", "options.values"] },
-      )
-
       for (const update of linkUpdates) {
-        const option = updatedProduct.options?.find(
-          (o) => o.id === update.product_option_id,
-        )
-        const addedValueIds = (option?.values ?? [])
-          .filter((value) =>
-            update.add.some((added) => added.value === value.value),
-          )
-          .map((value) => value.id)
-
         compensation.push({
           product_id: update.product_id,
           product_option_id: update.product_option_id,
-          addedValueIds,
+          removedValueIds: update.remove,
         })
       }
     }
@@ -99,7 +82,7 @@ export const syncProductOptionValuesStep = createStep(
       compensation.map((entry) => ({
         product_id: entry.product_id,
         product_option_id: entry.product_option_id,
-        remove: entry.addedValueIds,
+        add: entry.removedValueIds,
       })),
     )
   },

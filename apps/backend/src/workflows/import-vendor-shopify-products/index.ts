@@ -12,6 +12,7 @@ import {
 import { pullShopifyProductsByIdsStep } from "./steps/pull-shopify-products-by-ids"
 import { matchExistingShopifyProductsStep } from "./steps/match-existing-shopify-products"
 import { syncProductOptionValuesStep } from "./steps/sync-product-option-values"
+import { pruneStaleProductOptionValuesStep } from "./steps/prune-stale-product-option-values"
 import { resolveShopifyProductPrerequisitesStep } from "../shared/steps/resolve-shopify-product-prerequisites"
 import {
   buildCreateShopifyProductInput,
@@ -25,21 +26,6 @@ export type ImportVendorShopifyProductsWorkflowInput = {
   shopifyProductIds: string[]
 }
 
-/**
- * The vendor's checkbox-driven import: re-fetches exactly the Shopify
- * products the vendor selected, creates the new ones (linked to the vendor
- * via `additional_data.vendor_id`, same as any other vendor-created
- * product) and updates the ones already imported (matched by
- * `external_id`) — every create or update lands as `status: proposed`,
- * since staff must approve a product regardless of whether it's brand new
- * or a re-sync of one already live. docs/features/vendor-shopify-sync.md
- * "Approval"; docs/spikes/vendor-shopify-sync.md for the variant-replace
- * caveat. The update path also passes `additional_data.vendor_id`, same as
- * create — `updateProductsWorkflow.hooks.productsUpdated` (shared with the
- * brand feature) only touches the link when it's actually missing or wrong,
- * so this is a no-op on every normal re-sync and only repairs a product
- * that somehow lost its vendor link.
- */
 export const importVendorShopifyProductsWorkflow = createWorkflow(
   "import-vendor-shopify-products",
   function (input: ImportVendorShopifyProductsWorkflowInput) {
@@ -94,6 +80,11 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
         ({ updateInput }) => updateInput.products.length > 0,
       ).then(() => updateProductsWorkflow.runAsStep({ input: updateInput })),
     )
+
+    const pruneInput = transform({ matched, updated }, (data) => ({
+      updates: data.matched.updated,
+    }))
+    pruneStaleProductOptionValuesStep(pruneInput)
 
     const result = transform({ created, updated }, (data) => ({
       created_count: data.created?.length ?? 0,

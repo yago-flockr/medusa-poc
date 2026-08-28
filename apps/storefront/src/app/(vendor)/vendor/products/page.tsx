@@ -12,7 +12,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Select,
@@ -31,7 +30,7 @@ import type {
   VendorProduct,
   VendorProductStatus,
 } from "@dtc/api-contracts/vendor/products"
-import { RiDeleteBinLine } from "@remixicon/react"
+import { RiDeleteBinLine, RiLinksLine } from "@remixicon/react"
 
 const STATUS_OPTIONS: VendorProductStatus[] = [
   "draft",
@@ -90,7 +89,10 @@ export default function VendorProductsPage() {
                         {product.variant_count === 1 ? "" : "s"}
                       </span>
                       {product.external_id && (
-                        <Badge variant="outline">Shopify</Badge>
+                        <div className="flex items-center text-muted-foreground font-medium gap-1">
+                          <RiLinksLine size={16} />
+                          <span>Imported</span>
+                        </div>
                       )}
                     </div>
                   </div>
