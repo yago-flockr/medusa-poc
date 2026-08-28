@@ -452,6 +452,46 @@ starts.
   recognized as already-existing and will attempt to create it again —
   wipe/reseed rather than trying to backfill their metadata.
 
+  **Staff-facing display of the generalized connection storage: the Admin
+  Vendors table shows an "Integrations" count instead of a Shopify-specific
+  badge, and the Admin Product detail page shows the owning vendor. The
+  Admin Vendor contract has no flat `shopify_*` fields at all anymore —
+  the array is the only shape, for both display and editing.**
+  `admin/vendors/contract.ts`'s `vendorSchema` carries
+  `integration_connections: {provider, external_account_identifier,
+  client_id, connected}[]` (`connected` = has a non-null `connected_at`;
+  `client_secret` is never round-tripped back — write-only). The Vendors
+  table's "Integrations" column counts connected entries the same way its
+  own "Users" column already counts `users.length` — copy that accessor
+  shape for any future per-vendor count column, don't reintroduce a
+  status-badge-per-provider approach that doesn't scale past one
+  integration. The edit drawer (`admin/forms/vendors/update-vendor.tsx`)
+  submits a matching nested `integration_connection: {provider: "shopify",
+  external_account_identifier, client_id, client_secret}` — `provider` is a
+  literal `"shopify"` in `updateVendorSchema` today (honest about there
+  being exactly one real integration; widening it to more literals or a
+  bare string is a one-line change once a second provider exists, not a
+  redesign) — and reads the current values back from
+  `vendor.integration_connections.find(c => c.provider === "shopify")`
+  rather than flat fields. The nested schema carries its own `.refine()`
+  requiring at least one of its three writable fields to be present after
+  transform, mirroring the outer schema's "at least one field changed"
+  check one level deeper — a bare `{provider: "shopify"}` with everything
+  else blank must fail the same way an all-blank top-level body already did
+  (verified in `admin/vendors/__tests__/contract.unit.spec.ts`, including a
+  case for `client_secret` alone being blank meaning "unchanged," not
+  "clear"). `map-vendor-response.ts`'s `mapVendorConnectionFields` is the
+  one place a raw `query.graph` `integration_connections` read (which can
+  contain `null` entries from the join) becomes this array — it no longer
+  special-cases Shopify at all, so a route doesn't need touching to support
+  a second provider's connections appearing in the same list. Separately,
+  `admin/widgets/product-vendor.tsx` is a read-only Card on the product
+  detail page showing the linked vendor's name/handle, following
+  `admin/widgets/product-brand.tsx`'s exact shape (`+vendor.*` via the
+  `product-vendor` link, per the Module Link fields pattern above) minus
+  the edit affordance — nothing currently needs staff to reassign a
+  product's vendor from here, so don't add that without a real need.
+
   **`src/workflows/sync-shopify-products/` (the original spike workflow,
   below) is now superseded for real use** by the workflow above — it's kept
   only as what the Admin debug widget calls, still create-only (skips

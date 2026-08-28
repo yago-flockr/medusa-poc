@@ -12,28 +12,42 @@ export const UPDATE_VENDOR_FORM_ID = "update-vendor-form"
 const updateVendorFormSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   handle: z.string().trim().min(1, "Handle is required"),
-  shopify_store_domain: z
-    .string()
-    .trim()
-    .refine(
-      (value) => !value.includes("://"),
-      "Enter just the domain, without https:// (e.g. your-store.myshopify.com)",
-    ),
-  shopify_client_id: z.string().trim(),
-  shopify_client_secret: z.string().trim(),
+  integration_connection: z.object({
+    provider: z.literal("shopify"),
+    external_account_identifier: z
+      .string()
+      .trim()
+      .refine(
+        (value) => !value.includes("://"),
+        "Enter just the domain, without https:// (e.g. your-store.myshopify.com)",
+      ),
+    client_id: z.string().trim(),
+    client_secret: z.string().trim(),
+  }),
 })
 
 export type UpdateVendorFormValues = z.infer<typeof updateVendorFormSchema>
 export type UpdateVendorFormProps = CommonFormProps<UpdateVendorFormValues>
 
-export function vendorToForm(vendor: Vendor): UpdateVendorFormValues {
+function defaultValuesFromVendor(vendor?: Vendor): UpdateVendorFormValues {
+  const shopifyConnection = vendor?.integration_connections?.find(
+    (connection) => connection.provider === "shopify",
+  )
+
   return {
-    name: vendor.name,
-    handle: vendor.handle,
-    shopify_store_domain: vendor.shopify_store_domain ?? "",
-    shopify_client_id: vendor.shopify_client_id ?? "",
-    shopify_client_secret: "",
+    name: vendor?.name ?? "",
+    handle: vendor?.handle ?? "",
+    integration_connection: {
+      provider: "shopify",
+      external_account_identifier: shopifyConnection?.external_account_identifier ?? "",
+      client_id: shopifyConnection?.client_id ?? "",
+      client_secret: "",
+    },
   }
+}
+
+export function vendorToForm(vendor: Vendor): UpdateVendorFormValues {
+  return defaultValuesFromVendor(vendor)
 }
 
 export const UpdateVendorForm = ({
@@ -49,31 +63,12 @@ export const UpdateVendorForm = ({
     formState: { errors },
   } = useForm<UpdateVendorFormValues>({
     resolver: zodResolver(updateVendorFormSchema),
-    defaultValues: {
-      name: "",
-      handle: "",
-      shopify_store_domain: "",
-      shopify_client_id: "",
-      shopify_client_secret: "",
-      ...defaultValues,
-    },
+    defaultValues: defaultValuesFromVendor(),
   })
 
   useEffect(() => {
-    reset({
-      name: defaultValues?.name ?? "",
-      handle: defaultValues?.handle ?? "",
-      shopify_store_domain: defaultValues?.shopify_store_domain ?? "",
-      shopify_client_id: defaultValues?.shopify_client_id ?? "",
-      shopify_client_secret: "",
-    })
-  }, [
-    defaultValues?.name,
-    defaultValues?.handle,
-    defaultValues?.shopify_store_domain,
-    defaultValues?.shopify_client_id,
-    reset,
-  ])
+    reset(defaultValues ?? defaultValuesFromVendor())
+  }, [defaultValues, reset])
 
   const submit = handleSubmit(async (values) => {
     await onSubmit?.(values)
@@ -106,17 +101,17 @@ export const UpdateVendorForm = ({
         label="Store Domain"
         optional
         placeholder="their-store.myshopify.com"
-        error={errors.shopify_store_domain?.message}
+        error={errors.integration_connection?.external_account_identifier?.message}
         disabled={isDisabled || isLoading}
-        {...register("shopify_store_domain")}
+        {...register("integration_connection.external_account_identifier")}
       />
       <TextField
         id="update-vendor-shopify-client-id"
         label="Client ID"
         optional
-        error={errors.shopify_client_id?.message}
+        error={errors.integration_connection?.client_id?.message}
         disabled={isDisabled || isLoading}
-        {...register("shopify_client_id")}
+        {...register("integration_connection.client_id")}
       />
       <TextField
         id="update-vendor-shopify-client-secret"
@@ -124,9 +119,9 @@ export const UpdateVendorForm = ({
         optional
         type="password"
         placeholder="Leave blank to keep the current secret"
-        error={errors.shopify_client_secret?.message}
+        error={errors.integration_connection?.client_secret?.message}
         disabled={isDisabled || isLoading}
-        {...register("shopify_client_secret")}
+        {...register("integration_connection.client_secret")}
       />
     </form>
   )

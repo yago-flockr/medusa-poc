@@ -1,10 +1,6 @@
 import { z } from "@medusajs/framework/zod"
 
-function trimOrUndefined(value?: string) {
-  if (value === undefined) {
-    return undefined
-  }
-
+function trimOrUndefined(value: string) {
   const trimmed = value.trim()
   return trimmed.length > 0 ? trimmed : undefined
 }
@@ -14,18 +10,14 @@ export function requiredTrimmedString(message: string) {
 }
 
 export function optionalTrimmedString() {
-  return z.string().optional().transform(trimOrUndefined)
+  return z.string().transform(trimOrUndefined).optional()
 }
 
-function trimOrNull(value?: string) {
-  if (value === undefined) {
-    return undefined
-  }
-
+function trimOrNull(value: string) {
   const trimmed = value.trim()
   return trimmed.length > 0 ? trimmed : null
 }
 
 export function optionalTrimmedStringOrNull() {
-  return z.string().optional().transform(trimOrNull)
+  return z.string().transform(trimOrNull).optional()
 }

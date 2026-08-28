@@ -15,18 +15,27 @@ export const vendorUserSchema = z.object({
 
 export type VendorUser = z.infer<typeof vendorUserSchema>
 
+export const vendorIntegrationConnectionSchema = z.object({
+  provider: z.string(),
+  external_account_identifier: z.string().nullable(),
+  client_id: z.string().nullable(),
+  connected: z.boolean(),
+})
+
+export type VendorIntegrationConnection = z.infer<
+  typeof vendorIntegrationConnectionSchema
+>
+
 export const vendorSchema = z.object({
   id: z.string(),
   name: z.string(),
   handle: z.string(),
   is_active: z.boolean(),
-  shopify_store_domain: z.string().nullable(),
-  shopify_client_id: z.string().nullable(),
-  shopify_connected_at: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
   deleted_at: z.string().nullable(),
   users: z.array(vendorUserSchema).optional(),
+  integration_connections: z.array(vendorIntegrationConnectionSchema).optional(),
 })
 
 export type Vendor = z.infer<typeof vendorSchema>
@@ -48,10 +57,10 @@ export type VendorResponse = {
 
 const name = requiredTrimmedString("Name is required")
 const handle = optionalTrimmedString()
-const shopifyStoreDomain = optionalTrimmedStringOrNull().transform((value) =>
+const externalAccountIdentifier = optionalTrimmedStringOrNull().transform((value) =>
   value ? value.replace(/^https?:\/\//i, "").replace(/\/+$/, "").toLowerCase() : value,
 )
-const shopifyClientId = optionalTrimmedStringOrNull()
+const connectionClientId = optionalTrimmedStringOrNull()
 
 export const createVendorSchema = z
   .object({
@@ -62,14 +71,30 @@ export const createVendorSchema = z
 
 export type CreateVendor = z.infer<typeof createVendorSchema>
 
+export const updateVendorIntegrationConnectionSchema = z
+  .object({
+    provider: z.literal("shopify"),
+    external_account_identifier: externalAccountIdentifier,
+    client_id: connectionClientId,
+    client_secret: optionalTrimmedString(),
+  })
+  .refine(
+    (data) =>
+      data.external_account_identifier !== undefined ||
+      data.client_id !== undefined ||
+      data.client_secret !== undefined,
+    {
+      message:
+        "At least one of external_account_identifier, client_id, or client_secret is required",
+    },
+  )
+
 export const updateVendorSchema = z
   .object({
     name: name.optional(),
     handle,
     is_active: z.boolean().optional(),
-    shopify_store_domain: shopifyStoreDomain,
-    shopify_client_id: shopifyClientId,
-    shopify_client_secret: optionalTrimmedString(),
+    integration_connection: updateVendorIntegrationConnectionSchema.optional(),
   })
   .strict()
   .refine(
@@ -77,12 +102,10 @@ export const updateVendorSchema = z
       data.name !== undefined ||
       data.handle !== undefined ||
       data.is_active !== undefined ||
-      data.shopify_store_domain !== undefined ||
-      data.shopify_client_id !== undefined ||
-      data.shopify_client_secret !== undefined,
+      data.integration_connection !== undefined,
     {
       message:
-        "At least one of name, handle, is_active, shopify_store_domain, shopify_client_id, or shopify_client_secret is required",
+        "At least one of name, handle, is_active, or integration_connection is required",
     },
   )
 

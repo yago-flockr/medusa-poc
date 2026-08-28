@@ -57,15 +57,15 @@ const VendorsPage = () => {
           <StatusBadge color="red">Disabled</StatusBadge>
         ),
     }),
-    columnHelper.accessor("shopify_connected_at", {
-      header: "Shopify",
-      cell: ({ getValue }) =>
-        getValue() ? (
-          <StatusBadge color="green">Connected</StatusBadge>
-        ) : (
-          <StatusBadge color="grey">Not connected</StatusBadge>
-        ),
-    }),
+    columnHelper.accessor(
+      (row) =>
+        row.integration_connections?.filter((connection) => connection.connected)
+          .length ?? 0,
+      {
+        id: "integrations",
+        header: "Integrations",
+      },
+    ),
     columnHelper.action({
       actions: (ctx) => [
         {
@@ -98,13 +98,7 @@ const VendorsPage = () => {
             updateOneVendor.mutate(
               {
                 vendorId: vendor.id,
-                body: {
-                  is_active: !vendor.is_active,
-                  handle: undefined,
-                  shopify_store_domain: undefined,
-                  shopify_client_id: undefined,
-                  shopify_client_secret: undefined,
-                },
+                body: { is_active: !vendor.is_active },
               },
               {
                 onError: (error) => {
