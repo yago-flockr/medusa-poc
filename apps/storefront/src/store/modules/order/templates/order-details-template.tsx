@@ -1,7 +1,6 @@
 "use client"
 
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import Help from "@/store/modules/order/components/help"
 import Items from "@/store/modules/order/components/items"
 import OrderDetails from "@/store/modules/order/components/order-details"
 import OrderSummary from "@/store/modules/order/components/order-summary"
@@ -37,7 +36,6 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
         <Items order={order} />
         <ShippingDetails order={order} />
         <OrderSummary order={order} />
-        <Help />
       </div>
     </div>
   )

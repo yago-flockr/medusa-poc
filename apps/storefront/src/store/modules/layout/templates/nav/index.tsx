@@ -4,7 +4,7 @@ import { getLocale } from "@/store/lib/data/locale-actions"
 import { listLocales } from "@/store/lib/data/locales"
 import { listRegions } from "@/store/lib/data/regions"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import CartButton from "@/store/modules/layout/components/cart-button"
+import CartDropdownServer from "@/store/modules/layout/components/cart-dropdown/server"
 import SideMenu from "@/store/modules/layout/components/side-menu"
 import { StoreRegion } from "@medusajs/types"
 
@@ -59,7 +59,7 @@ export default async function Nav() {
                   </LocalizedClientLink>
                 }
               >
-                <CartButton />
+                <CartDropdownServer />
               </Suspense>
             </div>
           </div>

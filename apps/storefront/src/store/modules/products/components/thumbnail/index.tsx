@@ -26,15 +26,15 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-lg border bg-muted p-4 shadow-sm transition-shadow duration-150 ease-in-out group-hover:shadow-md",
+        "relative w-full overflow-hidden rounded-lg border bg-muted shadow-sm transition-shadow duration-150 ease-in-out group-hover:shadow-md",
         className,
         {
-          "aspect-[11/14]": isFeatured,
-          "aspect-[9/16]": !isFeatured && size !== "square",
+          "aspect-11/14": isFeatured,
+          "aspect-9/16": !isFeatured && size !== "square",
           "aspect-square": size === "square",
-          "w-[180px]": size === "small",
-          "w-[290px]": size === "medium",
-          "w-[440px]": size === "large",
+          "w-45": size === "small",
+          "w-72.5": size === "medium",
+          "w-110": size === "large",
           "w-full": size === "full",
         },
       )}

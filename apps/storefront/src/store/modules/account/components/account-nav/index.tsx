@@ -1,15 +1,17 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { RiLogoutBoxRLine } from "@remixicon/react"
+import {
+  RiArrowDownSLine,
+  RiBox3Line,
+  RiLogoutBoxRLine,
+  RiMapPinLine,
+  RiUserLine,
+} from "@remixicon/react"
 import { useParams, usePathname } from "next/navigation"
 
 import { signout } from "@/store/lib/data/customer"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import ChevronDown from "@/store/modules/common/icons/chevron-down"
-import MapPin from "@/store/modules/common/icons/map-pin"
-import Package from "@/store/modules/common/icons/package"
-import User from "@/store/modules/common/icons/user"
 import { HttpTypes } from "@medusajs/types"
 
 const AccountNav = ({
@@ -34,7 +36,7 @@ const AccountNav = ({
             data-testid="account-main-link"
           >
             <>
-              <ChevronDown className="rotate-90 transform" />
+              <RiArrowDownSLine className="rotate-90 transform" />
               <span>Account</span>
             </>
           </LocalizedClientLink>
@@ -53,10 +55,10 @@ const AccountNav = ({
                   >
                     <>
                       <div className="flex items-center gap-x-2">
-                        <User size={20} />
+                        <RiUserLine size={20} />
                         <span>Profile</span>
                       </div>
-                      <ChevronDown className="-rotate-90 transform" />
+                      <RiArrowDownSLine className="-rotate-90 transform" />
                     </>
                   </LocalizedClientLink>
                 </li>
@@ -68,10 +70,10 @@ const AccountNav = ({
                   >
                     <>
                       <div className="flex items-center gap-x-2">
-                        <MapPin size={20} />
+                        <RiMapPinLine size={20} />
                         <span>Addresses</span>
                       </div>
-                      <ChevronDown className="-rotate-90 transform" />
+                      <RiArrowDownSLine className="-rotate-90 transform" />
                     </>
                   </LocalizedClientLink>
                 </li>
@@ -82,10 +84,10 @@ const AccountNav = ({
                     data-testid="orders-link"
                   >
                     <div className="flex items-center gap-x-2">
-                      <Package size={20} />
+                      <RiBox3Line size={20} />
                       <span>Orders</span>
                     </div>
-                    <ChevronDown className="-rotate-90 transform" />
+                    <RiArrowDownSLine className="-rotate-90 transform" />
                   </LocalizedClientLink>
                 </li>
                 <li>
@@ -99,7 +101,7 @@ const AccountNav = ({
                       <RiLogoutBoxRLine size={18} />
                       <span>Log out</span>
                     </div>
-                    <ChevronDown className="-rotate-90 transform" />
+                    <RiArrowDownSLine className="-rotate-90 transform" />
                   </button>
                 </li>
               </ul>

@@ -7,9 +7,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
-import Back from "@/store/modules/common/icons/back"
 import FastDelivery from "@/store/modules/common/icons/fast-delivery"
-import Refresh from "@/store/modules/common/icons/refresh"
+import { RiArrowGoBackLine, RiRefreshLine } from "@remixicon/react"
 
 import { HttpTypes } from "@medusajs/types"
 
@@ -95,7 +94,7 @@ const ShippingInfoTab = () => {
           </div>
         </div>
         <div className="flex items-start gap-x-2">
-          <Refresh />
+          <RiRefreshLine size={16} />
           <div>
             <span className="font-semibold">Simple exchanges</span>
             <p className="max-w-sm">
@@ -105,7 +104,7 @@ const ShippingInfoTab = () => {
           </div>
         </div>
         <div className="flex items-start gap-x-2">
-          <Back />
+          <RiArrowGoBackLine size={16} />
           <div>
             <span className="font-semibold">Easy returns</span>
             <p className="max-w-sm">

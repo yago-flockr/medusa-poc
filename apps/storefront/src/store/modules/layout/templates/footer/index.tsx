@@ -3,7 +3,6 @@ import { listCollections } from "@/store/lib/data/collections"
 import { cn } from "@/lib/utils"
 
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import MedusaCTA from "@/store/modules/layout/components/medusa-cta"
 
 export default async function Footer() {
   const { collections } = await listCollections({
@@ -110,11 +109,10 @@ export default async function Footer() {
             )}
           </div>
         </div>
-        <div className="mb-16 flex w-full justify-between text-muted-foreground">
+        <div className="mb-16 flex w-full text-muted-foreground">
           <span className="text-sm">
             © {new Date().getFullYear()} Store. All rights reserved.
           </span>
-          <MedusaCTA />
         </div>
       </div>
     </footer>

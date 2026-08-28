@@ -1,9 +1,5 @@
-import { cookies as nextCookies } from "next/headers"
-
 import CartTotals from "@/store/modules/common/components/cart-totals"
-import Help from "@/store/modules/order/components/help"
 import Items from "@/store/modules/order/components/items"
-import OnboardingCta from "@/store/modules/order/components/onboarding-cta"
 import OrderDetails from "@/store/modules/order/components/order-details"
 import PaymentDetails from "@/store/modules/order/components/payment-details"
 import ShippingDetails from "@/store/modules/order/components/shipping-details"
@@ -13,17 +9,12 @@ type OrderCompletedTemplateProps = {
   order: HttpTypes.StoreOrder
 }
 
-export default async function OrderCompletedTemplate({
+export default function OrderCompletedTemplate({
   order,
 }: OrderCompletedTemplateProps) {
-  const cookies = await nextCookies()
-
-  const isOnboarding = cookies.get("_medusa_onboarding")?.value === "true"
-
   return (
     <div className="min-h-[calc(100vh-64px)] py-6">
       <div className="mx-auto flex h-full w-full max-w-4xl flex-col items-center justify-center gap-y-10 px-4">
-        {isOnboarding && <OnboardingCta orderId={order.id} />}
         <div
           className="flex h-full w-full max-w-4xl flex-col gap-4 py-10"
           data-testid="order-complete-container"
@@ -38,7 +29,6 @@ export default async function OrderCompletedTemplate({
           <CartTotals totals={order} />
           <ShippingDetails order={order} />
           <PaymentDetails order={order} />
-          <Help />
         </div>
       </div>
     </div>
