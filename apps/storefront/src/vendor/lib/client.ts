@@ -14,6 +14,19 @@ export class VendorApiError extends Error {
 
 type ApiErrorBody = { message?: string }
 
+export function assertOkResponse(res: Response, data: unknown, path: string): void {
+  if (res.ok) {
+    return
+  }
+
+  if (res.status === 401) {
+    useVendorAuthStore.getState().clearToken()
+  }
+
+  const message = (data as ApiErrorBody)?.message
+  throw new VendorApiError(message ?? `Request to ${path} failed (${res.status})`, res.status)
+}
+
 export async function request<T>(
   path: string,
   options: { method?: string; authToken?: string; body?: unknown } = {},
@@ -30,14 +43,7 @@ export async function request<T>(
   })
 
   const data: unknown = await res.json().catch(() => ({}))
-
-  if (!res.ok) {
-    const message = (data as ApiErrorBody)?.message
-    throw new VendorApiError(
-      message ?? `Request to ${path} failed (${res.status})`,
-      res.status,
-    )
-  }
+  assertOkResponse(res, data, path)
 
   return data as T
 }

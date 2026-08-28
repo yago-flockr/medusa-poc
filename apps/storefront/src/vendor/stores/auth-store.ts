@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { vendorQueryClient } from "../lib/query-client"
 
 export type VendorAuthState = {
   token: string | null
@@ -14,7 +15,10 @@ export const useVendorAuthStore = create<VendorAuthState>()(
     (set) => ({
       token: null,
       setToken: (token) => set({ token }),
-      clearToken: () => set({ token: null }),
+      clearToken: () => {
+        set({ token: null })
+        vendorQueryClient.clear()
+      },
     }),
     { name: "vendor_token" },
   ),
