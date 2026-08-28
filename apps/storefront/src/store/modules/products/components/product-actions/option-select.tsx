@@ -1,4 +1,4 @@
-import { clx } from "@/store/modules/common/components/ui"
+import { cn } from "@/lib/utils"
 import { HttpTypes } from "@medusajs/types"
 import React from "react"
 
@@ -33,11 +33,11 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
             <button
               onClick={() => updateOption(option.id, v)}
               key={v}
-              className={clx(
-                "border-ui-border-base bg-ui-bg-subtle border text-small-regular h-10 rounded-rounded p-2 flex-1 ",
+              className={cn(
+                "h-10 flex-1 rounded-md border border-input bg-background p-2 text-sm",
                 {
-                  "border-ui-border-interactive": v === current,
-                  "hover:shadow-elevation-card-rest transition-shadow ease-in-out duration-150":
+                  "border-primary": v === current,
+                  "transition-shadow duration-150 ease-in-out hover:shadow-sm":
                     v !== current,
                 },
               )}

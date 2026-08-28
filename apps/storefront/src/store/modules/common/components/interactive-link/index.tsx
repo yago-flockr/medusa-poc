@@ -1,6 +1,6 @@
-import { Text } from "@/store/modules/common/components/ui"
-import { ArrowUpRightMini } from "@medusajs/icons"
+import { RiArrowRightUpLine } from "@remixicon/react"
 import LocalizedClientLink from "../localized-client-link"
+
 type InteractiveLinkProps = {
   href: string
   children?: React.ReactNode
@@ -15,15 +15,15 @@ const InteractiveLink = ({
 }: InteractiveLinkProps) => {
   return (
     <LocalizedClientLink
-      className="flex gap-x-1 items-center group"
+      className="group flex items-center gap-x-1"
       href={href}
       onClick={onClick}
       {...props}
     >
-      <Text className="text-ui-fg-interactive">{children}</Text>
-      <ArrowUpRightMini
-        className="group-hover:rotate-45 ease-in-out duration-150"
-        color="var(--fg-interactive)"
+      <span className="text-primary">{children}</span>
+      <RiArrowRightUpLine
+        size={16}
+        className="text-primary duration-150 ease-in-out group-hover:rotate-45"
       />
     </LocalizedClientLink>
   )

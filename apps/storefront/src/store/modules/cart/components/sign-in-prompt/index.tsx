@@ -1,16 +1,14 @@
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import { Button, Heading, Text } from "@/store/modules/common/components/ui"
+import { Button } from "@/components/ui/button"
 
 const SignInPrompt = () => {
   return (
-    <div className="bg-white flex items-center justify-between">
+    <div className="flex items-center justify-between bg-background">
       <div>
-        <Heading level="h2" className="txt-xlarge">
-          Already have an account?
-        </Heading>
-        <Text className="txt-medium text-ui-fg-subtle mt-2">
+        <h2 className="text-xl font-medium">Already have an account?</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
           Sign in for a better experience.
-        </Text>
+        </p>
       </div>
       <div>
         <LocalizedClientLink href="/account">

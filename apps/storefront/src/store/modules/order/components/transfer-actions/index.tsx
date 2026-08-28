@@ -4,7 +4,7 @@ import {
   acceptTransferRequest,
   declineTransferRequest,
 } from "@/store/lib/data/orders"
-import { Button, Text } from "@/store/modules/common/components/ui"
+import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
 type TransferStatus = "pending" | "success" | "error"
@@ -42,21 +42,20 @@ const TransferActions = ({ id, token }: { id: string; token: string }) => {
   return (
     <div className="flex flex-col gap-y-4">
       {status?.accept === "success" && (
-        <Text className="text-emerald-500">
+        <span className="text-success">
           Order transferred successfully!
-        </Text>
+        </span>
       )}
       {status?.decline === "success" && (
-        <Text className="text-emerald-500">
+        <span className="text-success">
           Order transfer declined successfully!
-        </Text>
+        </span>
       )}
       {status?.accept !== "success" && status?.decline !== "success" && (
         <div className="flex gap-x-4">
           <Button
-            size="large"
+            size="lg"
             onClick={acceptTransfer}
-            isLoading={status?.accept === "pending"}
             disabled={
               status?.accept === "pending" || status?.decline === "pending"
             }
@@ -64,10 +63,9 @@ const TransferActions = ({ id, token }: { id: string; token: string }) => {
             Accept transfer
           </Button>
           <Button
-            size="large"
+            size="lg"
             variant="secondary"
             onClick={declineTransfer}
-            isLoading={status?.decline === "pending"}
             disabled={
               status?.accept === "pending" || status?.decline === "pending"
             }
@@ -76,7 +74,9 @@ const TransferActions = ({ id, token }: { id: string; token: string }) => {
           </Button>
         </div>
       )}
-      {errorMessage && <Text className="text-red-500">{errorMessage}</Text>}
+      {errorMessage && (
+        <span className="text-destructive">{errorMessage}</span>
+      )}
     </div>
   )
 }

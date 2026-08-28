@@ -11,24 +11,24 @@ export default function CollectionTemplate({
   sortBy,
   collection,
   page,
-  countryCode,
+  country,
   optionValueIds,
 }: {
   sortBy?: SortOptions
   collection: HttpTypes.StoreCollection
   page?: string
-  countryCode: string
+  country: string
   optionValueIds?: OptionValueIds
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
 
   return (
-    <div className="flex flex-col small:flex-row small:items-start py-6 content-container">
+    <div className="container flex flex-col py-6 sm:flex-row sm:items-start">
       <RefinementList sortBy={sort} hideOptionsPicker />
       <div className="w-full">
-        <div className="mb-8 text-2xl-semi">
-          <h1>{collection.title}</h1>
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold">{collection.title}</h1>
         </div>
         <Suspense
           fallback={
@@ -41,7 +41,7 @@ export default function CollectionTemplate({
             sortBy={sort}
             page={pageNumber}
             collectionId={collection.id}
-            countryCode={countryCode}
+            country={country}
             optionValueIds={optionValueIds}
           />
         </Suspense>

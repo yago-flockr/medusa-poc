@@ -1,4 +1,3 @@
-import { Text } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
 
 type OrderDetailsProps = {
@@ -14,45 +13,45 @@ const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
   }
 
   return (
-    <div>
-      <Text>
+    <div className="text-sm">
+      <p>
         We have sent the order confirmation details to{" "}
-        <span
-          className="text-ui-fg-medium-plus font-semibold"
-          data-testid="order-email"
-        >
+        <span className="font-semibold" data-testid="order-email">
           {order.email}
         </span>
         .
-      </Text>
-      <Text className="mt-2">
+      </p>
+      <p className="mt-2">
         Order date:{" "}
         <span data-testid="order-date">
           {new Date(order.created_at).toDateString()}
         </span>
-      </Text>
-      <Text className="mt-2 text-ui-fg-interactive">
+      </p>
+      <p className="mt-2 text-primary">
         Order number: <span data-testid="order-id">{order.display_id}</span>
-      </Text>
+      </p>
 
-      <div className="flex items-center text-compact-small gap-x-4 mt-4">
+      <div className="mt-4 flex items-center gap-x-4 text-sm">
         {showStatus && (
           <>
-            <Text>
+            <p>
               Order status:{" "}
-              <span className="text-ui-fg-subtle " data-testid="order-status">
+              <span
+                className="text-muted-foreground"
+                data-testid="order-status"
+              >
                 {formatStatus(order.fulfillment_status)}
               </span>
-            </Text>
-            <Text>
+            </p>
+            <p>
               Payment status:{" "}
               <span
-                className="text-ui-fg-subtle "
-                sata-testid="order-payment-status"
+                className="text-muted-foreground"
+                data-testid="order-payment-status"
               >
                 {formatStatus(order.payment_status)}
               </span>
-            </Text>
+            </p>
           </>
         )}
       </div>

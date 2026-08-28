@@ -1,27 +1,28 @@
 "use client"
 
 import { resetOnboardingState } from "@/store/lib/data/onboarding"
-import { Button, Container, Text } from "@/store/modules/common/components/ui"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 
 const OnboardingCta = ({ orderId }: { orderId: string }) => {
   return (
-    <Container className="max-w-4xl h-full bg-ui-bg-subtle w-full">
-      <div className="flex flex-col gap-y-4 center p-4 md:items-center">
-        <Text className="text-ui-fg-base text-xl">
+    <Card className="h-full w-full max-w-4xl bg-muted">
+      <div className="center flex flex-col gap-y-4 p-4 md:items-center">
+        <span className="text-xl">
           Your test order was successfully created! 🎉
-        </Text>
-        <Text className="text-ui-fg-subtle text-small-regular">
+        </span>
+        <span className="text-sm text-muted-foreground">
           You can now complete setting up your store in the admin.
-        </Text>
+        </span>
         <Button
           className="w-fit"
-          size="large"
+          size="lg"
           onClick={() => resetOnboardingState(orderId)}
         >
           Complete setup in admin
         </Button>
       </div>
-    </Container>
+    </Card>
   )
 }
 

@@ -1,6 +1,7 @@
 import { deleteLineItem } from "@/store/lib/data/cart"
-import { clx } from "@/store/modules/common/components/ui"
-import { Spinner, Trash } from "@medusajs/icons"
+import { cn } from "@/lib/utils"
+import { Spinner } from "@/components/ui/spinner"
+import { RiDeleteBinLine } from "@remixicon/react"
 import { useState } from "react"
 
 const DeleteButton = ({
@@ -22,17 +23,12 @@ const DeleteButton = ({
   }
 
   return (
-    <div
-      className={clx(
-        "flex items-center justify-between text-small-regular",
-        className,
-      )}
-    >
+    <div className={cn("flex items-center justify-between text-sm", className)}>
       <button
-        className="flex gap-x-1 text-ui-fg-subtle hover:text-ui-fg-base cursor-pointer"
+        className="flex cursor-pointer gap-x-1 text-muted-foreground hover:text-foreground"
         onClick={() => handleDelete(id)}
       >
-        {isDeleting ? <Spinner className="animate-spin" /> : <Trash />}
+        {isDeleting ? <Spinner /> : <RiDeleteBinLine size={16} />}
         <span>{children}</span>
       </button>
     </div>

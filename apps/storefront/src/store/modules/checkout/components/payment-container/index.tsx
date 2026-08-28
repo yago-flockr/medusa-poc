@@ -1,8 +1,6 @@
-import { Text, clx } from "@/store/modules/common/components/ui"
-import { Radio as RadioGroupOption } from "@headlessui/react"
+import { cn } from "@/lib/utils"
+import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 import React, { useContext, useMemo, type JSX } from "react"
-
-import Radio from "@/store/modules/common/components/radio"
 
 import { isManual } from "@/store/lib/constants"
 import SkeletonCardDetails from "@/store/modules/skeletons/components/skeleton-card-details"
@@ -27,39 +25,37 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
   children,
 }) => {
   const isDevelopment = process.env.NODE_ENV === "development"
+  const isSelected = selectedPaymentOptionId === paymentProviderId
 
   return (
-    <RadioGroupOption
+    <RadioPrimitive.Root
       key={paymentProviderId}
       value={paymentProviderId}
       disabled={disabled}
-      className={clx(
-        "flex flex-col gap-y-2 text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
-        {
-          "border-ui-border-interactive":
-            selectedPaymentOptionId === paymentProviderId,
-        },
+      className={cn(
+        "mb-2 flex cursor-pointer flex-col gap-y-2 rounded-md border px-8 py-4 text-sm hover:shadow-sm",
+        isSelected && "border-primary",
       )}
     >
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-4">
-          <Radio checked={selectedPaymentOptionId === paymentProviderId} />
-          <Text className="text-base-regular">
-            {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
-          </Text>
+          <span className="flex size-4 items-center justify-center rounded-full border border-input">
+            <RadioPrimitive.Indicator className="size-2 rounded-full bg-primary" />
+          </span>
+          <span>{paymentInfoMap[paymentProviderId]?.title || paymentProviderId}</span>
           {isManual(paymentProviderId) && isDevelopment && (
-            <PaymentTest className="hidden small:block" />
+            <PaymentTest className="hidden sm:block" />
           )}
         </div>
-        <span className="justify-self-end text-ui-fg-base">
+        <span className="justify-self-end text-foreground">
           {paymentInfoMap[paymentProviderId]?.icon}
         </span>
       </div>
       {isManual(paymentProviderId) && isDevelopment && (
-        <PaymentTest className="small:hidden text-[10px]" />
+        <PaymentTest className="text-[10px] sm:hidden" />
       )}
       {children}
-    </RadioGroupOption>
+    </RadioPrimitive.Root>
   )
 }
 
@@ -92,7 +88,7 @@ export const StripeCardContainer = ({
         },
       },
       classes: {
-        base: "pt-3 pb-1 block w-full h-11 px-4 mt-0 bg-ui-bg-field border rounded-md appearance-none focus:outline-none focus:ring-0 focus:shadow-borders-interactive-with-active border-ui-border-base hover:bg-ui-bg-field-hover transition-all duration-300 ease-in-out",
+        base: "mt-0 block h-11 w-full appearance-none rounded-md border border-input bg-input/50 px-4 pt-3 pb-1 transition-all duration-300 ease-in-out focus:outline-none focus:ring-0",
       },
     }
   }, [])
@@ -107,9 +103,9 @@ export const StripeCardContainer = ({
       {selectedPaymentOptionId === paymentProviderId &&
         (stripeReady ? (
           <div className="my-4 transition-all duration-150 ease-in-out">
-            <Text className="txt-medium-plus text-ui-fg-base mb-1">
+            <span className="mb-1 block font-medium text-foreground">
               Enter your card details:
-            </Text>
+            </span>
             <CardElement
               options={useOptions as StripeCardElementOptions}
               onChange={(e) => {

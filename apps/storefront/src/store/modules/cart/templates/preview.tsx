@@ -1,7 +1,8 @@
 "use client"
 
 import repeat from "@/store/lib/util/repeat"
-import { Table, clx } from "@/store/modules/common/components/ui"
+import { Table, TableBody } from "@/components/ui/table"
+import { cn } from "@/lib/utils"
 import { HttpTypes } from "@medusajs/types"
 
 import Item from "@/store/modules/cart/components/item"
@@ -17,13 +18,13 @@ const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
 
   return (
     <div
-      className={clx({
-        "pl-[1px] overflow-y-scroll overflow-x-hidden no-scrollbar max-h-[420px]":
+      className={cn({
+        "max-h-[420px] overflow-x-hidden overflow-y-scroll pl-[1px]":
           hasOverflow,
       })}
     >
       <Table>
-        <Table.Body data-testid="items-table">
+        <TableBody data-testid="items-table">
           {items
             ? items
                 .sort((a, b) => {
@@ -42,7 +43,7 @@ const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
             : repeat(5).map((i) => {
                 return <SkeletonLineItem key={i} />
               })}
-        </Table.Body>
+        </TableBody>
       </Table>
     </div>
   )

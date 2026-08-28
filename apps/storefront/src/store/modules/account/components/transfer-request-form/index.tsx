@@ -1,14 +1,9 @@
 "use client"
 import { createTransferRequest } from "@/store/lib/data/orders"
-import {
-  Heading,
-  IconButton,
-  Input,
-  Text,
-} from "@/store/modules/common/components/ui"
-import { CheckCircleMiniSolid, XCircleSolid } from "@medusajs/icons"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { RiCheckboxCircleFill, RiCloseCircleLine } from "@remixicon/react"
 import { useActionState } from "react"
-// TODO: Re-add Toaster component when needed
 import { SubmitButton } from "@/store/modules/checkout/components/submit-button"
 import { useEffect, useState } from "react"
 
@@ -28,16 +23,11 @@ export default function TransferRequestForm() {
   }, [state.success, state.order])
 
   return (
-    <div className="flex flex-col gap-y-4 w-full">
-      <div className="grid sm:grid-cols-2 items-center gap-x-8 gap-y-4 w-full">
+    <div className="flex w-full flex-col gap-y-4">
+      <div className="grid w-full items-center gap-x-8 gap-y-4 sm:grid-cols-2">
         <div className="flex flex-col gap-y-1">
-          <Heading
-            level="h3"
-            className="!text-sm font-semibold text-neutral-950"
-          >
-            Order transfers
-          </Heading>
-          <p className="text-small-regular text-neutral-500">
+          <h3 className="text-sm font-semibold">Order transfers</h3>
+          <p className="text-sm text-muted-foreground">
             Can&apos;t find the order you are looking for?
             <br /> Connect an order to your account.
           </p>
@@ -46,12 +36,12 @@ export default function TransferRequestForm() {
           action={formAction}
           className="flex flex-col gap-y-1 sm:items-end"
         >
-          <div className="flex flex-col gap-y-2 w-full">
+          <div className="flex w-full flex-col gap-y-2">
             <Input className="w-full" name="order_id" placeholder="Order ID" />
             <SubmitButton
               variant="secondary"
-              size="small"
-              className="w-fit whitespace-nowrap self-end"
+              size="sm"
+              className="w-fit self-end whitespace-nowrap"
             >
               Request transfer
             </SubmitButton>
@@ -59,26 +49,29 @@ export default function TransferRequestForm() {
         </form>
       </div>
       {!state.success && state.error && (
-        <Text className="text-base-regular text-rose-500 text-right">
-          {state.error}
-        </Text>
+        <p className="text-right text-sm text-destructive">{state.error}</p>
       )}
       {showSuccess && (
-        <div className="flex justify-between p-4 bg-neutral-50 shadow-borders-base w-full self-stretch items-center">
-          <div className="flex gap-x-2 items-center">
-            <CheckCircleMiniSolid className="w-4 h-4 text-emerald-500" />
+        <div className="flex w-full items-center justify-between self-stretch rounded-md border bg-muted p-4">
+          <div className="flex items-center gap-x-2">
+            <RiCheckboxCircleFill className="text-success" size={16} />
             <div className="flex flex-col gap-y-1">
-              <Text className="text-medim-pl text-neutral-950">
+              <span className="text-sm font-medium">
                 Transfer for order {state.order?.id} requested
-              </Text>
-              <Text className="text-base-regular text-neutral-600">
+              </span>
+              <span className="text-sm text-muted-foreground">
                 Transfer request email sent to {state.order?.email}
-              </Text>
+              </span>
             </div>
           </div>
-          <IconButton className="h-fit" onClick={() => setShowSuccess(false)}>
-            <XCircleSolid className="w-4 h-4 text-neutral-500" />
-          </IconButton>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-fit"
+            onClick={() => setShowSuccess(false)}
+          >
+            <RiCloseCircleLine className="text-muted-foreground" size={16} />
+          </Button>
         </div>
       )}
     </div>

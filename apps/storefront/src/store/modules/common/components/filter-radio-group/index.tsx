@@ -1,10 +1,6 @@
-import {
-  Label,
-  RadioGroup,
-  Text,
-  clx,
-} from "@/store/modules/common/components/ui"
-import { EllipseMiniSolid } from "@medusajs/icons"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+
 type FilterRadioGroupProps = {
   title: string
   items: {
@@ -24,32 +20,21 @@ const FilterRadioGroup = ({
   "data-testid": dataTestId,
 }: FilterRadioGroupProps) => {
   return (
-    <div className="flex gap-x-3 flex-col gap-y-3">
-      <Text className="txt-compact-small-plus text-ui-fg-muted">{title}</Text>
-      <RadioGroup data-testid={dataTestId}>
+    <div className="flex flex-col gap-y-3 gap-x-3">
+      <span className="text-sm font-medium text-muted-foreground">
+        {title}
+      </span>
+      <RadioGroup
+        data-testid={dataTestId}
+        value={value}
+        onValueChange={(v) => handleChange(v as string)}
+      >
         {items?.map((i) => (
-          <div
-            key={i.value}
-            className={clx("flex gap-x-2 items-center", {
-              "ml-[-23px]": i.value === value,
-            })}
-          >
-            {i.value === value && <EllipseMiniSolid />}
-            <RadioGroup.Item
-              checked={i.value === value}
-              onChange={() => handleChange(i.value)}
-              className="hidden peer"
-              id={i.value}
-              value={i.value}
-            />
+          <div key={i.value} className="flex items-center gap-x-2">
+            <RadioGroupItem value={i.value} id={i.value} />
             <Label
               htmlFor={i.value}
-              className={clx(
-                "!txt-compact-small !transform-none text-ui-fg-subtle hover:cursor-pointer",
-                {
-                  "text-ui-fg-base": i.value === value,
-                },
-              )}
+              className="cursor-pointer text-muted-foreground data-[active=true]:text-foreground"
               data-testid="radio-label"
               data-active={i.value === value}
             >

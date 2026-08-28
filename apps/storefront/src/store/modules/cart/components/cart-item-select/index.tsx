@@ -1,6 +1,7 @@
 "use client"
 
-import { IconBadge, clx } from "@/store/modules/common/components/ui"
+import { cn } from "@/lib/utils"
+import { RiArrowDownSLine } from "@remixicon/react"
 import {
   SelectHTMLAttributes,
   forwardRef,
@@ -9,8 +10,6 @@ import {
   useRef,
   useState,
 } from "react"
-
-import ChevronDown from "@/store/modules/common/icons/chevron-down"
 
 type NativeSelectProps = {
   placeholder?: string
@@ -37,32 +36,30 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
     }, [innerRef.current?.value])
 
     return (
-      <div>
-        <IconBadge
-          onFocus={() => innerRef.current?.focus()}
-          onBlur={() => innerRef.current?.blur()}
-          className={clx(
-            "relative flex items-center txt-compact-small border text-ui-fg-base group",
-            className,
-            {
-              "text-ui-fg-subtle": isPlaceholder,
-            },
-          )}
+      <div
+        onFocus={() => innerRef.current?.focus()}
+        onBlur={() => innerRef.current?.blur()}
+        className={cn(
+          "group relative flex items-center rounded-md border bg-background text-sm text-foreground",
+          className,
+          {
+            "text-muted-foreground": isPlaceholder,
+          },
+        )}
+      >
+        <select
+          ref={innerRef}
+          {...props}
+          className="h-16 w-16 items-center justify-center appearance-none border-none bg-transparent px-4 outline-none transition-colors duration-150"
         >
-          <select
-            ref={innerRef}
-            {...props}
-            className="appearance-none bg-transparent border-none px-4 transition-colors duration-150 focus:border-gray-700 outline-none w-16 h-16 items-center justify-center"
-          >
-            <option disabled value="">
-              {placeholder}
-            </option>
-            {children}
-          </select>
-          <span className="absolute flex pointer-events-none justify-end w-8 group-hover:animate-pulse">
-            <ChevronDown />
-          </span>
-        </IconBadge>
+          <option disabled value="">
+            {placeholder}
+          </option>
+          {children}
+        </select>
+        <span className="pointer-events-none absolute flex w-8 justify-end group-hover:animate-pulse">
+          <RiArrowDownSLine size={16} />
+        </span>
       </div>
     )
   },

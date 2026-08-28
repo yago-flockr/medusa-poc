@@ -2,7 +2,6 @@ import React, { Suspense } from "react"
 
 import ImageGallery from "@/store/modules/products/components/image-gallery"
 import ProductActions from "@/store/modules/products/components/product-actions"
-import ProductOnboardingCta from "@/store/modules/products/components/product-onboarding-cta"
 import ProductTabs from "@/store/modules/products/components/product-tabs"
 import RelatedProducts from "@/store/modules/products/components/related-products"
 import ProductInfo from "@/store/modules/products/templates/product-info"
@@ -15,14 +14,14 @@ import ProductActionsWrapper from "./product-actions-wrapper"
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
-  countryCode: string
+  country: string
   images: HttpTypes.StoreProductImage[]
 }
 
 const ProductTemplate: React.FC<ProductTemplateProps> = ({
   product,
   region,
-  countryCode,
+  country,
   images,
 }) => {
   if (!product || !product.id) {
@@ -32,18 +31,17 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <>
       <div
-        className="content-container  flex flex-col small:flex-row small:items-start py-6 relative"
+        className="container relative flex flex-col py-6 sm:flex-row sm:items-start"
         data-testid="product-container"
       >
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6">
+        <div className="flex w-full flex-col gap-y-6 py-8 sm:sticky sm:top-48 sm:max-w-[300px] sm:py-0">
           <ProductInfo product={product} />
           <ProductTabs product={product} />
         </div>
-        <div className="block w-full relative">
+        <div className="relative block w-full">
           <ImageGallery images={images} />
         </div>
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
-          <ProductOnboardingCta />
+        <div className="flex w-full flex-col gap-y-12 py-8 sm:sticky sm:top-48 sm:max-w-[300px] sm:py-0">
           <Suspense
             fallback={
               <ProductActions
@@ -58,11 +56,11 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         </div>
       </div>
       <div
-        className="content-container my-16 small:my-32"
+        className="container my-16 sm:my-32"
         data-testid="related-products-container"
       >
         <Suspense fallback={<SkeletonRelatedProducts />}>
-          <RelatedProducts product={product} countryCode={countryCode} />
+          <RelatedProducts product={product} country={country} />
         </Suspense>
       </div>
     </>

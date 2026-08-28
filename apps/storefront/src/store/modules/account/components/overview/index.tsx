@@ -1,8 +1,8 @@
-import { Container } from "@/store/modules/common/components/ui"
+import { Card } from "@/components/ui/card"
 
 import { convertToLocale } from "@/store/lib/util/money"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import ChevronDown from "@/store/modules/common/icons/chevron-down"
+import { RiArrowDownSLine } from "@remixicon/react"
 import { HttpTypes } from "@medusajs/types"
 
 type OverviewProps = {
@@ -13,12 +13,12 @@ type OverviewProps = {
 const Overview = ({ customer, orders }: OverviewProps) => {
   return (
     <div data-testid="overview-page-wrapper">
-      <div className="hidden small:block">
-        <div className="text-xl-semi flex justify-between items-center mb-4">
+      <div className="hidden sm:block">
+        <div className="mb-4 flex items-center justify-between text-xl font-semibold">
           <span data-testid="welcome-message" data-value={customer?.first_name}>
             Hello {customer?.first_name}
           </span>
-          <span className="text-small-regular text-ui-fg-base">
+          <span className="text-sm text-foreground">
             Signed in as:{" "}
             <span
               className="font-semibold"
@@ -29,36 +29,36 @@ const Overview = ({ customer, orders }: OverviewProps) => {
             </span>
           </span>
         </div>
-        <div className="flex flex-col py-8 border-t border-gray-200">
-          <div className="flex flex-col gap-y-4 h-full col-span-1 row-span-2 flex-1">
-            <div className="flex items-start gap-x-16 mb-6">
+        <div className="flex flex-col border-t py-8">
+          <div className="col-span-1 row-span-2 flex h-full flex-1 flex-col gap-y-4">
+            <div className="mb-6 flex items-start gap-x-16">
               <div className="flex flex-col gap-y-4">
-                <h3 className="text-large-semi">Profile</h3>
+                <h3 className="text-lg font-semibold">Profile</h3>
                 <div className="flex items-end gap-x-2">
                   <span
-                    className="text-3xl-semi leading-none"
+                    className="text-3xl leading-none font-semibold"
                     data-testid="customer-profile-completion"
                     data-value={getProfileCompletion(customer)}
                   >
                     {getProfileCompletion(customer)}%
                   </span>
-                  <span className="uppercase text-base-regular text-ui-fg-subtle">
+                  <span className="text-sm text-muted-foreground uppercase">
                     Completed
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-y-4">
-                <h3 className="text-large-semi">Addresses</h3>
+                <h3 className="text-lg font-semibold">Addresses</h3>
                 <div className="flex items-end gap-x-2">
                   <span
-                    className="text-3xl-semi leading-none"
+                    className="text-3xl leading-none font-semibold"
                     data-testid="addresses-count"
                     data-value={customer?.addresses?.length || 0}
                   >
                     {customer?.addresses?.length || 0}
                   </span>
-                  <span className="uppercase text-base-regular text-ui-fg-subtle">
+                  <span className="text-sm text-muted-foreground uppercase">
                     Saved
                   </span>
                 </div>
@@ -67,7 +67,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
 
             <div className="flex flex-col gap-y-4">
               <div className="flex items-center gap-x-2">
-                <h3 className="text-large-semi">Recent orders</h3>
+                <h3 className="text-lg font-semibold">Recent orders</h3>
               </div>
               <ul
                 className="flex flex-col gap-y-4"
@@ -84,8 +84,8 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                         <LocalizedClientLink
                           href={`/account/orders/details/${order.id}`}
                         >
-                          <Container className="bg-gray-50 flex justify-between items-center p-4">
-                            <div className="grid grid-cols-3 grid-rows-2 text-small-regular gap-x-4 flex-1">
+                          <Card className="flex items-center justify-between bg-muted p-4">
+                            <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-x-4 text-sm">
                               <span className="font-semibold">Date placed</span>
                               <span className="font-semibold">
                                 Order number
@@ -116,9 +116,9 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                               <span className="sr-only">
                                 Go to order #{order.display_id}
                               </span>
-                              <ChevronDown className="-rotate-90" />
+                              <RiArrowDownSLine className="-rotate-90" />
                             </button>
-                          </Container>
+                          </Card>
                         </LocalizedClientLink>
                       </li>
                     )

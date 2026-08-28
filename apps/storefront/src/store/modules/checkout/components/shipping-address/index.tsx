@@ -1,6 +1,5 @@
 import Checkbox from "@/store/modules/common/components/checkbox"
 import Input from "@/store/modules/common/components/input"
-import { Container } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
 import { mapKeys } from "lodash"
 import React, { useEffect, useMemo, useState } from "react"
@@ -97,8 +96,8 @@ const ShippingAddress = ({
   return (
     <>
       {customer && (addressesInRegion?.length || 0) > 0 && (
-        <Container className="mb-6 flex flex-col gap-y-4 p-5">
-          <p className="text-small-regular">
+        <div className="mb-6 flex flex-col gap-y-4 rounded-lg border bg-muted/30 p-5">
+          <p className="text-sm">
             {`Hi ${customer.first_name}, do you want to use one of your saved addresses?`}
           </p>
           <AddressSelect
@@ -110,7 +109,7 @@ const ShippingAddress = ({
             }
             onSelect={setFormAddress}
           />
-        </Container>
+        </div>
       )}
       <div className="grid grid-cols-2 gap-4">
         <Input

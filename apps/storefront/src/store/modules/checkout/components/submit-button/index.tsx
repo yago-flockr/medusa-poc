@@ -1,19 +1,20 @@
 "use client"
 
-import { Button } from "@/store/modules/common/components/ui"
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import React from "react"
 import { useFormStatus } from "react-dom"
 
 export function SubmitButton({
   children,
-  variant = "primary",
-  size = "medium",
+  variant = "default",
+  size = "default",
   className,
   "data-testid": dataTestId,
 }: {
   children: React.ReactNode
-  variant?: "primary" | "secondary" | "transparent" | null
-  size?: "small" | "medium" | "large"
+  variant?: "default" | "secondary" | "ghost" | null
+  size?: "sm" | "default" | "lg"
   className?: string
   "data-testid"?: string
 }) {
@@ -24,11 +25,11 @@ export function SubmitButton({
       size={size}
       className={className}
       type="submit"
-      isLoading={pending}
-      variant={variant || "primary"}
+      disabled={pending}
+      variant={variant || "default"}
       data-testid={dataTestId}
     >
-      {children}
+      {pending ? <Spinner /> : children}
     </Button>
   )
 }

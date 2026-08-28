@@ -1,7 +1,7 @@
 import Bancontact from "@/store/modules/common/icons/bancontact"
 import Ideal from "@/store/modules/common/icons/ideal"
 import PayPal from "@/store/modules/common/icons/paypal"
-import { CreditCard } from "@medusajs/icons"
+import { RiBankCardLine } from "@remixicon/react"
 import React from "react"
 
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
@@ -11,11 +11,11 @@ export const paymentInfoMap: Record<
 > = {
   pp_stripe_stripe: {
     title: "Credit card",
-    icon: <CreditCard />,
+    icon: <RiBankCardLine />,
   },
   "pp_medusa-payments_default": {
     title: "Credit card",
-    icon: <CreditCard />,
+    icon: <RiBankCardLine />,
   },
   "pp_stripe-ideal_stripe": {
     title: "iDeal",
@@ -31,7 +31,7 @@ export const paymentInfoMap: Record<
   },
   pp_system_default: {
     title: "Manual Payment",
-    icon: <CreditCard />,
+    icon: <RiBankCardLine />,
   },
   // Add more payment providers here
 }

@@ -1,11 +1,17 @@
 "use client"
 
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
 import Back from "@/store/modules/common/icons/back"
 import FastDelivery from "@/store/modules/common/icons/fast-delivery"
 import Refresh from "@/store/modules/common/icons/refresh"
 
 import { HttpTypes } from "@medusajs/types"
-import Accordion from "./accordion"
 
 type ProductTabsProps = {
   product: HttpTypes.StoreProduct
@@ -25,16 +31,12 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
 
   return (
     <div className="w-full">
-      <Accordion type="multiple">
-        {tabs.map((tab, i) => (
-          <Accordion.Item
-            key={i}
-            title={tab.label}
-            headingSize="medium"
-            value={tab.label}
-          >
-            {tab.component}
-          </Accordion.Item>
+      <Accordion>
+        {tabs.map((tab) => (
+          <AccordionItem key={tab.label} value={tab.label}>
+            <AccordionTrigger>{tab.label}</AccordionTrigger>
+            <AccordionPanel>{tab.component}</AccordionPanel>
+          </AccordionItem>
         ))}
       </Accordion>
     </div>
@@ -43,7 +45,7 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
 
 const ProductInfoTab = ({ product }: ProductTabsProps) => {
   return (
-    <div className="text-small-regular py-8">
+    <div className="text-sm">
       <div className="grid grid-cols-2 gap-x-8">
         <div className="flex flex-col gap-y-4">
           <div>
@@ -80,7 +82,7 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
 
 const ShippingInfoTab = () => {
   return (
-    <div className="text-small-regular py-8">
+    <div className="text-sm">
       <div className="grid grid-cols-1 gap-y-8">
         <div className="flex items-start gap-x-2">
           <FastDelivery />

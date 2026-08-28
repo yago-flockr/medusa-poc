@@ -1,4 +1,5 @@
-import { Checkbox, Label } from "@/store/modules/common/components/ui"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import React from "react"
 
 type CheckboxProps = {
@@ -17,19 +18,15 @@ const CheckboxWithLabel: React.FC<CheckboxProps> = ({
   "data-testid": dataTestId,
 }) => {
   return (
-    <div className="flex items-center space-x-2 ">
+    <div className="flex items-center gap-x-2">
       <Checkbox
-        className="text-base-regular flex items-center gap-x-2"
         id="checkbox"
-        role="checkbox"
         checked={checked}
-        readOnly
-        aria-checked={checked}
-        onClick={onChange}
+        onCheckedChange={() => onChange?.()}
         name={name}
         data-testid={dataTestId}
       />
-      <Label htmlFor="checkbox" className="!transform-none !txt-medium">
+      <Label htmlFor="checkbox" className="cursor-pointer">
         {label}
       </Label>
     </div>

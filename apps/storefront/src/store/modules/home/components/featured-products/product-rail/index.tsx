@@ -1,5 +1,4 @@
 import { listProducts } from "@/store/lib/data/products"
-import { Text } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
 
 import InteractiveLink from "@/store/modules/common/components/interactive-link"
@@ -27,14 +26,14 @@ export default async function ProductRail({
   }
 
   return (
-    <div className="content-container py-12 small:py-24">
-      <div className="flex justify-between mb-8">
-        <Text className="txt-xlarge">{collection.title}</Text>
+    <div className="container py-12 sm:py-24">
+      <div className="mb-8 flex justify-between">
+        <span className="text-xl font-medium">{collection.title}</span>
         <InteractiveLink href={`/collections/${collection.handle}`}>
           View all
         </InteractiveLink>
       </div>
-      <ul className="flex gap-4 flex-wrap">
+      <ul className="flex flex-wrap gap-4">
         {pricedProducts &&
           pricedProducts.map((product) => (
             <li key={product.id}>

@@ -1,6 +1,5 @@
 import { getProductPrice } from "@/store/lib/util/get-product-price"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import { Text } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
@@ -36,10 +35,10 @@ export default async function ProductPreview({
           size="full"
           isFeatured={isFeatured}
         />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
+        <div className="mt-4 flex justify-between text-sm">
+          <span className="text-muted-foreground" data-testid="product-title">
             {product.title}
-          </Text>
+          </span>
           <div className="flex items-center gap-x-2">
             {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
           </div>

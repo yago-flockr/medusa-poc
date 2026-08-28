@@ -1,4 +1,3 @@
-import { Container } from "@/store/modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
 import Image from "next/image"
 
@@ -8,20 +7,20 @@ type ImageGalleryProps = {
 
 const ImageGallery = ({ images }: ImageGalleryProps) => {
   return (
-    <div className="flex items-start relative">
-      <div className="flex flex-1 small:mx-16 gap-4">
+    <div className="relative flex items-start">
+      <div className="flex flex-1 gap-4 sm:mx-16">
         {images.map((image, index) => {
           return (
-            <Container
+            <div
               key={image.id}
-              className="relative w-full h-96 overflow-hidden bg-ui-bg-subtle"
+              className="relative h-96 w-full overflow-hidden rounded-lg bg-muted"
               id={image.id}
             >
               {!!image.url && (
                 <Image
                   src={image.url}
                   priority={index <= 2 ? true : false}
-                  className="absolute inset-0 rounded-rounded"
+                  className="absolute inset-0"
                   alt={`Product image ${index + 1}`}
                   fill
                   sizes="(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"
@@ -30,7 +29,7 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
                   }}
                 />
               )}
-            </Container>
+            </div>
           )
         })}
       </div>

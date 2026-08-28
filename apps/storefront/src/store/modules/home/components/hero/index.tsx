@@ -1,28 +1,15 @@
-import { Button, Heading } from "@/store/modules/common/components/ui"
-import { Github } from "@medusajs/icons"
 const Hero = () => {
   return (
-    <div className="h-[75vh] w-full border-b border-ui-border-base relative bg-ui-bg-subtle">
-      <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center small:p-32 gap-6">
+    <div className="relative h-[75vh] w-full border-b bg-muted">
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 p-8 text-center sm:p-32">
         <span>
-          <Heading
-            level="h1"
-            className="text-3xl leading-10 text-ui-fg-base font-normal"
-          >
-            Ecommerce Starter Template
-          </Heading>
-          <Heading
-            level="h2"
-            className="text-3xl leading-10 text-ui-fg-subtle font-normal"
-          >
-            Powered by Medusa and Next.js
-          </Heading>
+          <h1 className="text-3xl leading-10 font-normal text-foreground">
+            Store
+          </h1>
+          <h2 className="text-3xl leading-10 font-normal text-muted-foreground">
+            Shop the collection
+          </h2>
         </span>
-        <a href="https://github.com/medusajs/dtc-starter" target="_blank">
-          <Button variant="secondary">
-            View on GitHub <Github />
-          </Button>
-        </a>
       </div>
     </div>
   )

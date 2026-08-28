@@ -5,14 +5,14 @@ import Product from "../product-preview"
 
 type RelatedProductsProps = {
   product: HttpTypes.StoreProduct
-  countryCode: string
+  country: string
 }
 
 export default async function RelatedProducts({
   product,
-  countryCode,
+  country,
 }: RelatedProductsProps) {
-  const region = await getRegion(countryCode)
+  const region = await getRegion(country)
 
   if (!region) {
     return null
@@ -35,7 +35,7 @@ export default async function RelatedProducts({
 
   const products = await listProducts({
     queryParams,
-    countryCode,
+    countryCode: country,
   }).then(({ response }) => {
     return response.products.filter(
       (responseProduct) => responseProduct.id !== product.id,
@@ -47,17 +47,17 @@ export default async function RelatedProducts({
   }
 
   return (
-    <div className="product-page-constraint">
-      <div className="flex flex-col items-center text-center mb-16">
-        <span className="text-base-regular text-gray-600 mb-6">
+    <div>
+      <div className="mb-16 flex flex-col items-center text-center">
+        <span className="mb-6 text-sm text-muted-foreground">
           Related products
         </span>
-        <p className="text-2xl-regular text-ui-fg-base max-w-lg">
+        <p className="max-w-lg text-2xl text-foreground">
           You might also want to check out these products.
         </p>
       </div>
 
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
+      <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
         {products.map((product) => (
           <li key={product.id}>
             <Product region={region} product={product} />

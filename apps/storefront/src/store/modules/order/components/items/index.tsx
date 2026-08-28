@@ -1,5 +1,5 @@
 import repeat from "@/store/lib/util/repeat"
-import { Table } from "@/store/modules/common/components/ui"
+import { Table, TableBody } from "@/components/ui/table"
 import { HttpTypes } from "@medusajs/types"
 
 import Divider from "@/store/modules/common/components/divider"
@@ -17,7 +17,7 @@ const Items = ({ order }: ItemsProps) => {
     <div className="flex flex-col">
       <Divider className="!mb-0" />
       <Table>
-        <Table.Body data-testid="products-table">
+        <TableBody data-testid="products-table">
           {items?.length
             ? items
                 .sort((a, b) => {
@@ -35,7 +35,7 @@ const Items = ({ order }: ItemsProps) => {
             : repeat(5).map((i) => {
                 return <SkeletonLineItem key={i} />
               })}
-        </Table.Body>
+        </TableBody>
       </Table>
     </div>
   )

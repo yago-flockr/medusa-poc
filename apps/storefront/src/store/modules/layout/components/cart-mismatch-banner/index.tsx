@@ -1,10 +1,11 @@
 "use client"
 
 import { transferCart } from "@/store/lib/data/customer"
-import { Button } from "@/store/modules/common/components/ui"
-import { ExclamationCircleSolid } from "@medusajs/icons"
+import { Button } from "@/components/ui/button"
+import { RiErrorWarningLine } from "@remixicon/react"
 import { StoreCart, StoreCustomer } from "@medusajs/types"
 import { useState } from "react"
+
 function CartMismatchBanner(props: {
   customer: StoreCustomer
   cart: StoreCart
@@ -30,19 +31,18 @@ function CartMismatchBanner(props: {
   }
 
   return (
-    <div className="flex items-center justify-center small:p-4 p-2 text-center bg-orange-300 small:gap-2 gap-1 text-sm mt-2 text-orange-800">
-      <div className="flex flex-col small:flex-row small:gap-2 gap-1 items-center">
+    <div className="mt-2 flex items-center justify-center gap-1 bg-warning/15 p-2 text-center text-sm text-foreground sm:gap-2 sm:p-4">
+      <div className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
         <span className="flex items-center gap-1">
-          <ExclamationCircleSolid className="inline" />
+          <RiErrorWarningLine className="inline" size={16} />
           Something went wrong when we tried to transfer your cart
         </span>
 
         <span>·</span>
 
         <Button
-          variant="transparent"
-          className="hover:bg-transparent active:bg-transparent focus:bg-transparent disabled:text-orange-500 text-orange-950 p-0 bg-transparent"
-          size="medium"
+          variant="link"
+          className="h-auto p-0"
           disabled={isPending}
           onClick={handleSubmit}
         >

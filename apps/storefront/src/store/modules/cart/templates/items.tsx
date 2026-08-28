@@ -1,5 +1,11 @@
 import repeat from "@/store/lib/util/repeat"
-import { Heading, Table } from "@/store/modules/common/components/ui"
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { HttpTypes } from "@medusajs/types"
 
 import Item from "@/store/modules/cart/components/item"
@@ -13,24 +19,20 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   const items = cart?.items
   return (
     <div>
-      <div className="pb-3 flex items-center">
-        <Heading className="text-[2rem] leading-[2.75rem]">Cart</Heading>
+      <div className="flex items-center pb-3">
+        <h1 className="text-[2rem] leading-[2.75rem] font-semibold">Cart</h1>
       </div>
       <Table>
-        <Table.Header className="border-t-0">
-          <Table.Row className="text-ui-fg-subtle txt-medium-plus">
-            <Table.HeaderCell className="!pl-0">Item</Table.HeaderCell>
-            <Table.HeaderCell></Table.HeaderCell>
-            <Table.HeaderCell>Quantity</Table.HeaderCell>
-            <Table.HeaderCell className="hidden small:table-cell">
-              Price
-            </Table.HeaderCell>
-            <Table.HeaderCell className="!pr-0 text-right">
-              Total
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
+        <TableHeader className="border-t-0">
+          <TableRow className="font-medium text-muted-foreground">
+            <TableHead className="!pl-0">Item</TableHead>
+            <TableHead></TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead className="hidden sm:table-cell">Price</TableHead>
+            <TableHead className="!pr-0 text-right">Total</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {items
             ? items
                 .sort((a, b) => {
@@ -48,7 +50,7 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
             : repeat(5).map((i) => {
                 return <SkeletonLineItem key={i} />
               })}
-        </Table.Body>
+        </TableBody>
       </Table>
     </div>
   )

@@ -10,12 +10,12 @@ import PaginatedProducts from "./paginated-products"
 const StoreTemplate = ({
   sortBy,
   page,
-  countryCode,
+  country,
   optionValueIds,
 }: {
   sortBy?: SortOptions
   page?: string
-  countryCode: string
+  country: string
   optionValueIds?: OptionValueIds
 }) => {
   const pageNumber = page ? parseInt(page) : 1
@@ -23,19 +23,21 @@ const StoreTemplate = ({
 
   return (
     <div
-      className="flex flex-col small:flex-row small:items-start py-6 content-container"
+      className="container flex flex-col py-6 sm:flex-row sm:items-start"
       data-testid="category-container"
     >
       <RefinementList sortBy={sort} />
       <div className="w-full">
-        <div className="mb-8 text-2xl-semi">
-          <h1 data-testid="store-page-title">All products</h1>
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold" data-testid="store-page-title">
+            All products
+          </h1>
         </div>
         <Suspense fallback={<SkeletonProductGrid />}>
           <PaginatedProducts
             sortBy={sort}
             page={pageNumber}
-            countryCode={countryCode}
+            country={country}
             optionValueIds={optionValueIds}
           />
         </Suspense>

@@ -3,7 +3,8 @@
 import { addToCart } from "@/store/lib/data/cart"
 import { useIntersection } from "@/store/lib/hooks/use-in-view"
 import Divider from "@/store/modules/common/components/divider"
-import { Button } from "@/store/modules/common/components/ui"
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import OptionSelect from "@/store/modules/products/components/product-actions/option-select"
 import { HttpTypes } from "@medusajs/types"
 import { isEqual } from "lodash"
@@ -42,7 +43,7 @@ export default function ProductActions({
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
-  const countryCode = useParams().countryCode as string
+  const country = useParams().country as string
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -133,7 +134,7 @@ export default function ProductActions({
     await addToCart({
       variantId: selectedVariant.id,
       quantity: 1,
-      countryCode,
+      countryCode: country,
     })
 
     setIsAdding(false)
@@ -175,11 +176,10 @@ export default function ProductActions({
             isAdding ||
             !isValidVariant
           }
-          variant="primary"
-          className="w-full h-10"
-          isLoading={isAdding}
+          className="h-10 w-full"
           data-testid="add-product-button"
         >
+          {isAdding && <Spinner />}
           {!selectedVariant && !options
             ? "Select variant"
             : !inStock || !isValidVariant

@@ -16,52 +16,52 @@ export default async function Nav() {
   ])
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
-          <div className="flex-1 basis-0 h-full flex items-center">
-            <div className="h-full">
-              <SideMenu
-                regions={regions}
-                locales={locales}
-                currentLocale={currentLocale}
-              />
-            </div>
+    <div className="sticky top-0 inset-x-0 z-50">
+      <header className="relative h-16 border-b bg-background">
+        <nav className="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-4 text-sm text-muted-foreground sm:px-6">
+          <div className="flex h-full flex-1 basis-0 items-center">
+            <SideMenu
+              regions={regions}
+              locales={locales}
+              currentLocale={currentLocale}
+            />
           </div>
 
-          <div className="flex items-center h-full">
+          <div className="flex h-full items-center">
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
+              className="text-lg font-semibold uppercase hover:text-foreground"
               data-testid="nav-store-link"
             >
-              Medusa Store POC Navbar
+              Store
             </LocalizedClientLink>
           </div>
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
-            <div className="hidden small:flex items-center gap-x-6 h-full">
+          <div className="flex h-full flex-1 basis-0 items-center justify-end gap-x-6">
+            <div className="hidden sm:flex h-full items-center gap-x-6">
               <LocalizedClientLink
-                className="hover:text-ui-fg-base"
+                className="hover:text-foreground"
                 href="/account"
                 data-testid="nav-account-link"
               >
                 Account
               </LocalizedClientLink>
             </div>
-            <Suspense
-              fallback={
-                <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
-                  href="/cart"
-                  data-testid="nav-cart-link"
-                >
-                  Cart (0)
-                </LocalizedClientLink>
-              }
-            >
-              <CartButton />
-            </Suspense>
+            <div className="flex items-center h-full">
+              <Suspense
+                fallback={
+                  <LocalizedClientLink
+                    className="flex gap-2 hover:text-foreground"
+                    href="/cart"
+                    data-testid="nav-cart-link"
+                  >
+                    Cart (0)
+                  </LocalizedClientLink>
+                }
+              >
+                <CartButton />
+              </Suspense>
+            </div>
           </div>
         </nav>
       </header>

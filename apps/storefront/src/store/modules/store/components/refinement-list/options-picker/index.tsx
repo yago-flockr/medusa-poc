@@ -1,12 +1,16 @@
 "use client"
 
-import * as Accordion from "@radix-ui/react-accordion"
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { useEffect, useState } from "react"
 
 import { sdk } from "@/store/lib/config"
-import { ChevronDownMini } from "@medusajs/icons"
+import { cn } from "@/lib/utils"
 import { HttpTypes } from "@medusajs/types"
-import clsx from "clsx"
 
 type OptionsPickerProps = {
   selectedValueIds: string[]
@@ -57,12 +61,11 @@ const OptionsPicker = ({
   return (
     <div className="flex flex-col gap-y-4">
       <div className="flex items-center justify-between px-1">
-        <span className="txt-compact-small-plus text-ui-fg-subtle">
+        <span className="text-sm font-medium text-muted-foreground">
           Options
         </span>
       </div>
-      <Accordion.Root
-        type="multiple"
+      <Accordion
         value={openItems}
         onValueChange={(values) => setOpenItems(values as string[])}
         className="flex flex-col gap-y-3 pr-6"
@@ -92,40 +95,23 @@ const OptionsPicker = ({
             setOptionValueIds(Array.from(new Set(nextSelections)))
           }
 
-          const isOpen = openItems.includes(option.id)
           const selectedCount = values.filter((value) =>
             selectedValueIds.includes(value.id),
           ).length
 
           return (
-            <Accordion.Item
-              key={option.id}
-              value={option.id}
-              className="overflow-hidden"
-            >
-              <Accordion.Header>
-                <Accordion.Trigger className="flex w-full items-center justify-between py-3 text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="txt-compact-small-plus text-ui-fg-base">
-                      {option.title || "Option"}
-                    </span>
-                    <span className="txt-compact-small-plus text-ui-fg-muted">
-                      ({selectedCount})
-                    </span>
-                  </div>
-                  <span
-                    className={clsx(
-                      "flex h-7 w-7 items-center justify-center text-ui-fg-muted transition-transform duration-150",
-                      {
-                        "rotate-180": isOpen,
-                      },
-                    )}
-                  >
-                    <ChevronDownMini />
+            <AccordionItem key={option.id} value={option.id}>
+              <AccordionTrigger>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-foreground">
+                    {option.title || "Option"}
                   </span>
-                </Accordion.Trigger>
-              </Accordion.Header>
-              <Accordion.Content className="pb-4 pt-1">
+                  <span className="text-muted-foreground">
+                    ({selectedCount})
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionPanel>
                 <div className="flex flex-wrap gap-2">
                   {values.map((value) => {
                     const isSelected = selectedValueIds.includes(value.id)
@@ -134,12 +120,11 @@ const OptionsPicker = ({
                       <button
                         key={value.id}
                         onClick={() => toggleValue(value.id)}
-                        className={clsx(
-                          "border-ui-border-base border text-small-regular h-10 rounded-rounded px-3 flex items-center transition-colors duration-150",
+                        className={cn(
+                          "flex h-10 items-center rounded-md border border-input px-3 text-sm transition-colors duration-150",
                           {
-                            "border-ui-border-interactive text-ui-fg-base":
-                              isSelected,
-                            "text-ui-fg-muted hover:text-ui-fg-base":
+                            "border-primary text-foreground": isSelected,
+                            "text-muted-foreground hover:text-foreground":
                               !isSelected,
                           },
                         )}
@@ -150,11 +135,11 @@ const OptionsPicker = ({
                     )
                   })}
                 </div>
-              </Accordion.Content>
-            </Accordion.Item>
+              </AccordionPanel>
+            </AccordionItem>
           )
         })}
-      </Accordion.Root>
+      </Accordion>
     </div>
   )
 }

@@ -1,5 +1,3 @@
-import { Container, Heading, Text } from "@/store/modules/common/components/ui"
-
 import { isStripeLike, paymentInfoMap } from "@/store/lib/constants"
 import { convertToLocale } from "@/store/lib/util/money"
 import Divider from "@/store/modules/common/components/divider"
@@ -14,32 +12,26 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
 
   return (
     <div>
-      <Heading level="h2" className="flex flex-row text-3xl-regular my-6">
-        Payment
-      </Heading>
+      <h2 className="my-6 flex flex-row text-2xl font-medium">Payment</h2>
       <div>
         {payment && (
-          <div className="flex items-start gap-x-1 w-full">
-            <div className="flex flex-col w-1/3">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
-              </Text>
-              <Text
-                className="txt-medium text-ui-fg-subtle"
+          <div className="flex w-full items-start gap-x-1">
+            <div className="flex w-1/3 flex-col">
+              <span className="mb-1 font-medium">Payment method</span>
+              <span
+                className="text-sm text-muted-foreground"
                 data-testid="payment-method"
               >
                 {paymentInfoMap[payment.provider_id].title}
-              </Text>
+              </span>
             </div>
-            <div className="flex flex-col w-2/3">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment details
-              </Text>
-              <div className="flex gap-2 txt-medium text-ui-fg-subtle items-center">
-                <Container className="flex items-center h-7 w-fit p-2 bg-ui-button-neutral-hover">
+            <div className="flex w-2/3 flex-col">
+              <span className="mb-1 font-medium">Payment details</span>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex h-7 w-fit items-center rounded-md bg-muted p-2">
                   {paymentInfoMap[payment.provider_id].icon}
-                </Container>
-                <Text data-testid="payment-amount">
+                </div>
+                <span data-testid="payment-amount">
                   {isStripeLike(payment.provider_id) && payment.data?.card_last4
                     ? `**** **** **** ${payment.data.card_last4}`
                     : `${convertToLocale({
@@ -48,7 +40,7 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
                       })} paid at ${new Date(
                         payment.created_at ?? "",
                       ).toLocaleString()}`}
-                </Text>
+                </span>
               </div>
             </div>
           </div>

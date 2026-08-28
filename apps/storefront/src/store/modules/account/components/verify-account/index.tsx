@@ -2,7 +2,7 @@
 
 import { confirmEmailVerification } from "@/store/lib/data/customer"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import { Button } from "@/store/modules/common/components/ui"
+import { Button } from "@/components/ui/button"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
@@ -34,31 +34,29 @@ const VerifyAccount = () => {
 
   return (
     <div
-      className="max-w-sm w-full flex flex-col items-center text-center gap-y-4"
+      className="flex w-full max-w-sm flex-col items-center gap-y-4 text-center"
       data-testid="verify-account-page"
     >
-      <h1 className="text-large-semi uppercase">Email verification</h1>
+      <h1 className="text-lg font-semibold uppercase">Email verification</h1>
 
       {state === "verifying" && (
-        <p className="text-base-regular text-ui-fg-base">
-          Verifying your email...
-        </p>
+        <p className="text-sm text-foreground">Verifying your email...</p>
       )}
 
       {state === "success" && (
         <>
-          <p className="text-base-regular text-ui-fg-base">
+          <p className="text-sm text-foreground">
             Your email is verified. You can now sign in to your account.
           </p>
           <LocalizedClientLink href="/account">
-            <Button variant="primary">Go to sign in</Button>
+            <Button>Go to sign in</Button>
           </LocalizedClientLink>
         </>
       )}
 
       {state === "error" && (
         <>
-          <p className="text-base-regular text-ui-fg-base">
+          <p className="text-sm text-foreground">
             This verification link is invalid or has expired. Sign in to receive
             a new verification email.
           </p>

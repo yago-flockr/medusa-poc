@@ -1,26 +1,18 @@
 "use client"
 
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions,
-  Transition,
-} from "@headlessui/react"
 import { useRouter } from "next/navigation"
-import { Fragment, useEffect, useMemo, useState, useTransition } from "react"
+import { useMemo, useTransition } from "react"
 import ReactCountryFlag from "react-country-flag"
 
 import { updateLocale } from "@/store/lib/data/locale-actions"
 import { Locale } from "@/store/lib/data/locales"
-import { StateType } from "@/store/lib/hooks/use-toggle-state"
-
-type LanguageOption = {
-  code: string
-  name: string
-  localizedName: string
-  countryCode: string
-}
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const getCountryCodeFromLocale = (localeCode: string): string => {
   try {
@@ -34,12 +26,6 @@ const getCountryCodeFromLocale = (localeCode: string): string => {
     const parts = localeCode.split(/[-_]/)
     return parts.length > 1 ? parts[1].toUpperCase() : parts[0].toUpperCase()
   }
-}
-
-type LanguageSelectProps = {
-  toggleState: StateType
-  locales: Locale[]
-  currentLocale: string | null
 }
 
 /**
@@ -61,128 +47,61 @@ const getLocalizedLanguageName = (
   }
 }
 
-const DEFAULT_OPTION: LanguageOption = {
-  code: "",
-  name: "Default",
-  localizedName: "Default",
-  countryCode: "",
+type LanguageSelectProps = {
+  locales: Locale[]
+  currentLocale: string | null
 }
 
-const LanguageSelect = ({
-  toggleState,
-  locales,
-  currentLocale,
-}: LanguageSelectProps) => {
-  const [current, setCurrent] = useState<LanguageOption | undefined>(undefined)
+const LanguageSelect = ({ locales, currentLocale }: LanguageSelectProps) => {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
-  const { state, close } = toggleState
-
   const options = useMemo(() => {
-    const localeOptions = locales.map((locale) => ({
+    return locales.map((locale) => ({
       code: locale.code,
-      name: locale.name,
+      countryCode: getCountryCodeFromLocale(locale.code),
       localizedName: getLocalizedLanguageName(
         locale.code,
         locale.name,
         currentLocale ?? "en-US",
       ),
-      countryCode: getCountryCodeFromLocale(locale.code),
     }))
-    return [DEFAULT_OPTION, ...localeOptions]
   }, [locales, currentLocale])
 
-  useEffect(() => {
-    if (currentLocale) {
-      const option = options.find(
-        (o) => o.code.toLowerCase() === currentLocale.toLowerCase(),
-      )
-      setCurrent(option ?? DEFAULT_OPTION)
-    } else {
-      setCurrent(DEFAULT_OPTION)
-    }
-  }, [options, currentLocale])
-
-  const handleChange = (option: LanguageOption) => {
+  const handleChange = (code: string) => {
     startTransition(async () => {
-      await updateLocale(option.code)
-      close()
+      await updateLocale(code)
       router.refresh()
     })
   }
 
   return (
-    <div>
-      <Listbox
-        as="span"
-        onChange={handleChange}
-        defaultValue={
-          currentLocale
-            ? (options.find(
-                (o) => o.code.toLowerCase() === currentLocale.toLowerCase(),
-              ) ?? DEFAULT_OPTION)
-            : DEFAULT_OPTION
-        }
+    <div className="flex items-center gap-x-2 text-sm">
+      <span className="text-muted-foreground">Language:</span>
+      <Select
+        value={currentLocale ?? ""}
+        onValueChange={(value) => handleChange(value as string)}
         disabled={isPending}
       >
-        <ListboxButton className="py-1 w-full">
-          <div className="txt-compact-small flex items-start gap-x-2">
-            <span>Language:</span>
-            {current && (
-              <span className="txt-compact-small flex items-center gap-x-2">
-                {current.countryCode && (
-                  <ReactCountryFlag
-                    svg
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                    }}
-                    countryCode={current.countryCode}
-                  />
-                )}
-                {isPending ? "..." : current.localizedName}
+        <SelectTrigger className="w-full min-w-[180px]">
+          <SelectValue placeholder="Default" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">Default</SelectItem>
+          {options.map((o) => (
+            <SelectItem key={o.code} value={o.code}>
+              <span className="flex items-center gap-x-2">
+                <ReactCountryFlag
+                  svg
+                  style={{ width: "16px", height: "16px" }}
+                  countryCode={o.countryCode}
+                />
+                {o.localizedName}
               </span>
-            )}
-          </div>
-        </ListboxButton>
-        <div className="flex relative w-full min-w-[320px]">
-          <Transition
-            show={state}
-            as={Fragment}
-            leave="transition ease-in duration-150"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <ListboxOptions
-              className="absolute -bottom-[calc(100%-36px)] left-0 xsmall:left-auto xsmall:right-0 max-h-[442px] overflow-y-scroll z-[900] bg-white drop-shadow-md text-small-regular uppercase text-black no-scrollbar rounded-rounded w-full"
-              static
-            >
-              {options.map((o) => (
-                <ListboxOption
-                  key={o.code || "default"}
-                  value={o}
-                  className="py-2 hover:bg-gray-200 px-3 cursor-pointer flex items-center gap-x-2"
-                >
-                  {o.countryCode ? (
-                    <ReactCountryFlag
-                      svg
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                      }}
-                      countryCode={o.countryCode}
-                    />
-                  ) : (
-                    <span style={{ width: "16px", height: "16px" }} />
-                  )}
-                  {o.localizedName}
-                </ListboxOption>
-              ))}
-            </ListboxOptions>
-          </Transition>
-        </div>
-      </Listbox>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }

@@ -2,7 +2,8 @@
 
 import { isManual, isStripeLike } from "@/store/lib/constants"
 import { placeOrder } from "@/store/lib/data/cart"
-import { Button } from "@/store/modules/common/components/ui"
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { HttpTypes } from "@medusajs/types"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
 import React, { useState } from "react"
@@ -135,13 +136,12 @@ const StripePaymentButton = ({
   return (
     <>
       <Button
-        disabled={disabled || notReady}
+        disabled={disabled || notReady || submitting}
         onClick={handlePayment}
-        size="large"
-        isLoading={submitting}
+        size="lg"
         data-testid={dataTestId}
       >
-        Place order
+        {submitting ? <Spinner /> : "Place order"}
       </Button>
       <ErrorMessage
         error={errorMessage}
@@ -174,13 +174,12 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
   return (
     <>
       <Button
-        disabled={notReady}
-        isLoading={submitting}
+        disabled={notReady || submitting}
         onClick={handlePayment}
-        size="large"
+        size="lg"
         data-testid="submit-order-button"
       >
-        Place order
+        {submitting ? <Spinner /> : "Place order"}
       </Button>
       <ErrorMessage
         error={errorMessage}

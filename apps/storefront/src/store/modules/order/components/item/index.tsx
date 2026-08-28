@@ -1,4 +1,4 @@
-import { Table, Text } from "@/store/modules/common/components/ui"
+import { TableCell, TableRow } from "@/components/ui/table"
 import { HttpTypes } from "@medusajs/types"
 
 import LineItemOptions from "@/store/modules/common/components/line-item-options"
@@ -13,29 +13,26 @@ type ItemProps = {
 
 const Item = ({ item, currencyCode }: ItemProps) => {
   return (
-    <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
+    <TableRow className="w-full" data-testid="product-row">
+      <TableCell className="w-24 p-4 !pl-0">
         <div className="flex w-16">
           <Thumbnail thumbnail={item.thumbnail} size="square" />
         </div>
-      </Table.Cell>
+      </TableCell>
 
-      <Table.Cell className="text-left">
-        <Text
-          className="txt-medium-plus text-ui-fg-base"
-          data-testid="product-name"
-        >
+      <TableCell className="text-left">
+        <span className="font-medium" data-testid="product-name">
           {item.product_title}
-        </Text>
+        </span>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
-      </Table.Cell>
+      </TableCell>
 
-      <Table.Cell className="!pr-0">
-        <span className="!pr-0 flex flex-col items-end h-full justify-center">
-          <span className="flex gap-x-1 ">
-            <Text className="text-ui-fg-muted">
+      <TableCell className="!pr-0">
+        <span className="flex h-full flex-col items-end justify-center !pr-0">
+          <span className="flex gap-x-1">
+            <span className="text-muted-foreground">
               <span data-testid="product-quantity">{item.quantity}</span>x{" "}
-            </Text>
+            </span>
             <LineItemUnitPrice
               item={item}
               style="tight"
@@ -49,8 +46,8 @@ const Item = ({ item, currencyCode }: ItemProps) => {
             currencyCode={currencyCode}
           />
         </span>
-      </Table.Cell>
-    </Table.Row>
+      </TableCell>
+    </TableRow>
   )
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { clx } from "@/store/modules/common/components/ui"
+import { cn } from "@/lib/utils"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 export function Pagination({
@@ -35,8 +35,8 @@ export function Pagination({
   ) => (
     <button
       key={p}
-      className={clx("txt-xlarge-plus text-ui-fg-muted", {
-        "text-ui-fg-base hover:text-ui-fg-subtle": isCurrent,
+      className={cn("text-xl font-semibold text-muted-foreground", {
+        "text-foreground hover:text-muted-foreground": isCurrent,
       })}
       disabled={isCurrent}
       onClick={() => handlePageChange(p)}
@@ -49,7 +49,7 @@ export function Pagination({
   const renderEllipsis = (key: string) => (
     <span
       key={key}
-      className="txt-xlarge-plus text-ui-fg-muted items-center cursor-default"
+      className="cursor-default items-center text-xl font-semibold text-muted-foreground"
     >
       ...
     </span>
