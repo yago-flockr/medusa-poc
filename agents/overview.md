@@ -87,6 +87,19 @@ section's wording is the one that governs for this repo.
   consistency without checking framework compatibility first; treat the gap
   as a decision, not an oversight.
 
+## Data policy at this stage (POC)
+
+If a problem is caused by **stale or inconsistent rows already in the
+database** (leftover from an earlier bug now fixed, an abandoned test, a
+retried failed action) rather than by the current code's own logic, do not
+write cleanup scripts, repair migrations, or defensive code to tolerate the
+bad data. Name it as a legacy data issue and wipe/reseed the DB instead — at
+this stage no data has lasting value, so a full reset is always safe and
+free. The test: would retrying the same action today, against a freshly
+seeded DB, still fail? If yes, it's a real code bug — fix it in code, the
+normal way. If it only fails because of leftover rows from past runs, it's
+legacy data — say so and reset, don't engineer around it.
+
 ## Architecture and flow
 
 1. Customer uses `apps/storefront` (Next.js).

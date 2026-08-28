@@ -11,6 +11,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import { pullShopifyProductsByIdsStep } from "./steps/pull-shopify-products-by-ids"
 import { matchExistingShopifyProductsStep } from "./steps/match-existing-shopify-products"
+import { syncProductOptionValuesStep } from "./steps/sync-product-option-values"
 import { resolveShopifyProductPrerequisitesStep } from "../shared/steps/resolve-shopify-product-prerequisites"
 import {
   buildCreateShopifyProductInput,
@@ -33,7 +34,11 @@ export type ImportVendorShopifyProductsWorkflowInput = {
  * since staff must approve a product regardless of whether it's brand new
  * or a re-sync of one already live. docs/features/vendor-shopify-sync.md
  * "Approval"; docs/spikes/vendor-shopify-sync.md for the variant-replace
- * caveat.
+ * caveat. The update path also passes `additional_data.vendor_id`, same as
+ * create — `updateProductsWorkflow.hooks.productsUpdated` (shared with the
+ * brand feature) only touches the link when it's actually missing or wrong,
+ * so this is a no-op on every normal re-sync and only repairs a product
+ * that somehow lost its vendor link.
  */
 export const importVendorShopifyProductsWorkflow = createWorkflow(
   "import-vendor-shopify-products",
@@ -50,6 +55,8 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
       }),
     )
 
+    syncProductOptionValuesStep({ updates: matched.updated })
+
     const createInput = transform(
       { matched, prerequisites, vendorId: input.vendorId },
       (data) => ({
@@ -60,16 +67,20 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
       }),
     )
 
-    const updateInput = transform({ matched, prerequisites }, (data) => ({
-      products: data.matched.updated.map(
-        ({ shopifyProduct, medusaProductId }) =>
-          buildUpdateShopifyProductInput(
-            medusaProductId,
-            shopifyProduct,
-            data.prerequisites,
-          ),
-      ),
-    }))
+    const updateInput = transform(
+      { matched, prerequisites, vendorId: input.vendorId },
+      (data) => ({
+        products: data.matched.updated.map(
+          ({ shopifyProduct, medusaProductId }) =>
+            buildUpdateShopifyProductInput(
+              medusaProductId,
+              shopifyProduct,
+              data.prerequisites,
+            ),
+        ),
+        additional_data: { vendor_id: data.vendorId },
+      }),
+    )
 
     const [created, updated] = parallelize(
       when(

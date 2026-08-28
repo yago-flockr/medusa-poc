@@ -10,4 +10,8 @@ export const mutationKeys = {
     getShopifyInstallLink: ["getShopifyInstallLink"] as const,
     importShopifyProducts: ["importShopifyProducts"] as const,
   },
+  products: {
+    updateProductStatus: ["updateProductStatus"] as const,
+    deleteProduct: ["deleteProduct"] as const,
+  },
 }

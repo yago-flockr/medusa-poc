@@ -1,4 +1,5 @@
 import { z } from "@medusajs/framework/zod"
+import { ProductStatus } from "@medusajs/framework/utils"
 
 const title = z.string().trim().min(1, "Title is required")
 const subtitle = z.string().trim().min(1).optional()
@@ -57,6 +58,7 @@ export const updateVendorProductSchema = z
     description,
     handle,
     images,
+    status: z.nativeEnum(ProductStatus).optional(),
   })
   .strict()
   .refine((data) => Object.keys(data).length > 0, {

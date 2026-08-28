@@ -8,4 +8,7 @@ export const queryKeys = {
   shopifyProducts: {
     pullShopifyProducts: ["pullShopifyProducts"] as const,
   },
+  products: {
+    getProducts: ["getProducts"] as const,
+  },
 }

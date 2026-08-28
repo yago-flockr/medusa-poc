@@ -8,6 +8,7 @@
     "./vendor/shopify-connection": "./src/vendor/shopify-connection.ts",
     "./vendor/shopify-products": "./src/vendor/shopify-products.ts",
     "./vendor/orders": "./src/vendor/orders.ts",
+    "./vendor/products": "./src/vendor/products.ts",
     "./vendor/contract": "./src/vendor/contract.ts"
   },
   "dependencies": {

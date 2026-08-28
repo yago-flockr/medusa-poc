@@ -18,6 +18,13 @@ import {
   importVendorShopifyProductsSchema,
   pullVendorShopifyProductsResponseSchema,
 } from "./shopify-products"
+import {
+  deleteVendorProductResponseSchema,
+  updateVendorProductStatusResponseSchema,
+  updateVendorProductStatusSchema,
+  vendorProductsListResponseSchema,
+  vendorProductsQuerySchema,
+} from "./products"
 
 const c = initContract()
 
@@ -73,6 +80,29 @@ export const vendorContract = c.router({
     query: vendorOrdersQuerySchema,
     responses: {
       200: vendorOrdersListResponseSchema,
+    },
+  },
+  getProducts: {
+    method: "GET",
+    path: "/vendors/products",
+    query: vendorProductsQuerySchema,
+    responses: {
+      200: vendorProductsListResponseSchema,
+    },
+  },
+  updateProductStatus: {
+    method: "POST",
+    path: "/vendors/products/:id",
+    body: updateVendorProductStatusSchema,
+    responses: {
+      200: updateVendorProductStatusResponseSchema,
+    },
+  },
+  deleteProduct: {
+    method: "DELETE",
+    path: "/vendors/products/:id",
+    responses: {
+      200: deleteVendorProductResponseSchema,
     },
   },
 })

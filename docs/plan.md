@@ -64,8 +64,7 @@ belongs.
 
 Who processes payments · who pays vendors · who calculates tax and duty · which
 carrier prints labels · where editorial content is authored · which search
-service · who sends email · which UI component library · how many countries a
-clone opens in.
+service · who sends email · how many countries a clone opens in.
 
 Hosting itself is no longer on this list — see Decisions below. What stays
 open per clone is only the account/billing specifics (custom domains, plan
@@ -321,6 +320,15 @@ in short form, with what's genuinely still open flagged as such:
 ## Decisions
 
 - **ESLint + Prettier** for lint and format (keep `@medusajs/eslint-plugin`; no Biome).
+- **UI component library for `apps/storefront`: shadcn-style components in
+  `src/components/ui/*`, each a thin wrapper around a `@base-ui/react/*`
+  primitive** (Base UI, not Radix). This was already the pattern in place
+  (`button.tsx`, `checkbox.tsx`, `badge.tsx`, `separator.tsx` before this
+  entry was written down) — this just makes it a stated decision instead of
+  an implicit one, same as the Cloud-deploy entry below. When a page needs a
+  primitive this app doesn't have yet, build it the same way rather than
+  falling back to a native HTML element or a one-off implementation; see
+  `agents/storefront.md`.
 - **Backend first.** Frontend tooling is a separate track and does not gate
   progress on the commerce model.
 - **The order container is still open** — one order per vendor, or one order holding

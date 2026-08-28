@@ -79,13 +79,17 @@ is still real, working code, but Sensus's answers mean it's no longer the
 intended path for a vendor's catalogue to arrive. A vendor's own Shopify
 store is meant to be the source of that data, synced in, not typed into
 this API by the vendor themselves. See `docs/plan.md` Decisions for the
-full reasoning. Nothing below has been deleted or changed for this yet —
-the vendor-facing UI that called this API was removed (it's genuinely
-obsolete, a vendor never manages products through us), but this API itself
-is untouched pending the actual Shopify sync design, since staff or an
-internal tool may still want a manual-entry path for something a vendor
-can't get into their own Shopify. Don't extend this API assuming it's the
-long-term ingestion path — extend the sync design instead when that work
+full reasoning. The vendor-facing UI that *created/edited product content* through this API
+(title, description, images, variants — typed in by hand) was removed and
+stays removed — a vendor's catalogue content comes from their Shopify store,
+not from typing it into this API. What did come back, on a separate
+`/vendor/products` page, is a narrower view/status/delete UI (see the
+self-approval entry below) — that's not a reversal of the "don't type
+products in by hand" decision, it's a different capability (manage an
+already-arrived product's visibility) layered on the same untouched API.
+Don't extend the create/update surface's *content* fields (title/images/
+variants) assuming it's the long-term ingestion path — extend the sync
+design instead when that work
 starts.
 
 - **Vendor isolation cannot come from Admin.** The User Module gives users and
@@ -193,12 +197,27 @@ starts.
   choosing their own is still a real, undone follow-up — deliberately
   deferred as UX polish, not a security gap, since password generation and
   regeneration themselves are already handled server-side (see above).
-  Staff approval of a vendor's products is done, and it turned out cheap: a
-  vendor-created product is forced to `status: "proposed"`
-  (`src/api/vendors/products/route.ts`) using Medusa's own `ProductStatus`
-  enum (`draft`/`proposed`/`published`/`rejected`) — staff review and
-  publish/reject it from the **existing, unmodified** core Admin product
-  page. No new model, workflow, or UI was needed for this. Variant/option
+  **Reversed: staff approval is no longer the only path to publish — a
+  vendor can now self-approve their own products.** Creation/import still
+  lands as `status: "proposed"` (`src/api/vendors/products/route.ts`,
+  `integrations/shopify/mappers/product-input.mapper.ts`) using Medusa's own
+  `ProductStatus` enum (`draft`/`proposed`/`published`/`rejected`) — nothing
+  changed about what a product's status is on arrival. What changed is who
+  can move it from there: `updateVendorProductSchema` now accepts an
+  optional `status` field (any of the four values — deliberately not
+  narrowed to `published`/`draft` only, so a vendor has the same status
+  vocabulary Admin's own product page does), consumed directly by
+  `POST /vendors/products/:id`'s existing call to Medusa's
+  `updateProductsWorkflow` — no new workflow needed, since that update path
+  already accepted arbitrary product fields. The vendor-facing `/vendor/products`
+  page (`apps/storefront`) is the self-service surface: view every owned
+  product (Shopify-imported or manually created, tagged Shopify by
+  `external_id` being non-null), change its status via a plain dropdown, or
+  delete it (`DELETE /vendors/products/:id`, unchanged, no confirmation at
+  the API level — the storefront adds its own `window.confirm` before
+  calling it). Staff can still review from the unmodified Admin product page
+  too; nothing there was removed, it's just no longer the *only* way a
+  product goes live. Variant/option
   authoring and image upload are done, including **per-variant pricing**: a
   vendor passes `options` (e.g. Size/Color) and one `variants` entry per
   combination, each with its own price and optionally sku/barcode/
@@ -348,6 +367,36 @@ starts.
   images still point at Shopify's own CDN rather than being re-hosted
   through the File Module (deliberately deferred again, same tradeoff as
   the original spike).
+
+  **Re-sync must never pass `options` into `updateProductsWorkflow` — confirmed
+  by reproducing it directly against Medusa core, not just reading source.**
+  The first hypothesis (a genuinely *new* option value introduced since the
+  last import, e.g. Shopify adding "Navy" to a product's Color option) turned
+  out to be wrong: reproducing the exact failure via `medusa exec` against
+  the real data showed every option's values already matched, zero missing,
+  yet `updateProductsWorkflow` still threw `Option value Navy does not exist
+  for option Color`. The actual cause: passing `options` in the *same* update
+  call at all — even re-declaring values that already match what's
+  persisted — corrupts the option's in-memory value list before that same
+  call validates the attached variants against it
+  (`resolveAllowedOptionValues` in `@medusajs/product`, invoked from
+  `ProductRepository.deepUpdate`). The fix has two parts, both in
+  `import-vendor-shopify-products`: `buildUpdateShopifyProductInput` never
+  includes `options` at all (only `buildCreateShopifyProductInput` does,
+  where it's the one call establishing them for the first time); and
+  `steps/sync-product-option-values.ts` runs before
+  `updateProductsWorkflow.runAsStep` to keep an existing option's values
+  current by diffing Shopify's values against what's persisted and calling
+  `productModuleService.updateProductOptions(id, {values})` for any that are
+  genuinely missing — the exact same primitive
+  `create-vendor-product/steps/resolve-shared-product-options.ts` already
+  uses to solve the analogous problem on create, just scoped to one
+  product's own option instead of a title-matched shared one (a
+  Shopify-imported product's options aren't shared across products the way
+  a vendor-manual-create product's are, so no cross-product locking is
+  needed here). Without this step, a value Shopify genuinely added since the
+  last sync would still fail, now for the more ordinary reason that nothing
+  ever registers it.
 
   **`src/workflows/sync-shopify-products/` (the original spike workflow,
   below) is now superseded for real use** by the workflow above — it's kept

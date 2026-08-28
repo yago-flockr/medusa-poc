@@ -7,6 +7,10 @@ import {
   MedusaError,
   ProductStatus,
 } from "@medusajs/framework/utils"
+import {
+  vendorProductsListResponseSchema,
+  type VendorProductsListResponse,
+} from "@dtc/api-contracts/vendor/products"
 import { createVendorProductWorkflow } from "../../../workflows/create-vendor-product"
 import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
 import { parseVendorListQuery } from "../list-query"
@@ -27,12 +31,35 @@ export const GET = async (
 
   const { data: products, metadata } = await query.graph({
     entity: "product",
-    fields: ["*", "variants.*", "variants.prices.*", "images.*"],
+    fields: [
+      "id",
+      "title",
+      "handle",
+      "status",
+      "thumbnail",
+      "external_id",
+      "variants.id",
+    ],
     filters: { vendor: { id: vendorUser.vendor_id } },
     pagination: { skip: offset, take: limit },
   })
 
-  res.json({ products, count: metadata?.count, limit, offset })
+  const response: VendorProductsListResponse = {
+    products: products.map((product) => ({
+      id: product.id,
+      title: product.title,
+      handle: product.handle,
+      status: product.status,
+      thumbnail: product.thumbnail,
+      external_id: product.external_id,
+      variant_count: product.variants?.length ?? 0,
+    })),
+    count: metadata?.count ?? 0,
+    limit,
+    offset,
+  }
+
+  res.json(vendorProductsListResponseSchema.parse(response))
 }
 
 export const POST = async (

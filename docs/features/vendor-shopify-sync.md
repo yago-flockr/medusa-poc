@@ -55,9 +55,13 @@ synced price, but never rewrite the price itself. If it was created directly wit
 here. This is what keeps there from being two conflicting sources of truth for the
 same product.
 
-**Approval.** A synced-in product is held back from customers until staff review it,
-the same review a manually entered product already goes through. The source of the
-data changes; the review step does not.
+**Approval.** A synced-in product lands as `proposed`, held back from customers by
+default, the same as a manually entered product. **Reversed from the original
+design:** review is no longer staff-only — the vendor can approve (publish) their
+own product themselves, from their own `/vendor/products` page, without waiting on
+staff. Staff can still review from Admin too; that path wasn't removed, it's just no
+longer the only one. The source of the data still doesn't change the rule: import or
+re-sync, the review step (whoever performs it) is identical either way.
 
 **Selling.** When a customer buys one of that vendor's items through us, their Shopify
 stock drops by the quantity sold and a record of the sale appears there for the vendor
@@ -79,9 +83,10 @@ connection is restored.
   variants and stock.** We never overwrite it with our own view of the truth.
 - **We only ever tell a vendor's Shopify that a sale happened** — a quantity sold, an
   order to fulfil. We never push our own stock count into their store.
-- **Staff approval applies identically regardless of where a product came from.**
-  Nothing about the review step changes because a product arrived via sync instead of
-  by hand.
+- **The review step applies identically regardless of where a product came from,
+  or who performs it.** A product landing at `proposed` behaves the same whether it
+  arrived via sync or by hand, and whether it's the vendor or staff who moves it to
+  `published`.
 - **Returns and payouts are never sent back to a vendor's Shopify.** Those stay
   entirely on our side, start to finish.
 - **A vendor keeps selling on their own Shopify at the same time as through us.** Both
