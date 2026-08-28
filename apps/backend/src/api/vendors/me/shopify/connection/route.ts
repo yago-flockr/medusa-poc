@@ -26,20 +26,20 @@ export const PATCH = async (
   const { result } = await updateVendorWorkflow(req.scope).run({
     input: {
       id: vendorUser.vendor.id,
-      shopify_store_domain,
-      shopify_client_id,
-      shopify_client_secret,
+      integration_connection: {
+        provider: "shopify",
+        external_account_identifier: shopify_store_domain,
+        client_id: shopify_client_id,
+        client_secret: shopify_client_secret,
+      },
     },
   })
-  const vendor = result as unknown as {
-    id: string
-    shopify_store_domain: string | null
-  }
 
   const response: SetVendorShopifyConnectionResponse = {
     vendor: {
-      id: vendor.id,
-      shopify_store_domain: vendor.shopify_store_domain,
+      id: vendorUser.vendor.id,
+      shopify_store_domain:
+        result.integration_connection?.external_account_identifier ?? null,
     },
   }
 

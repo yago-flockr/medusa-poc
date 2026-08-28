@@ -2,18 +2,7 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { VENDOR_MODULE } from "../../../modules/vendor"
 import VendorModuleService from "../../../modules/vendor/service"
 
-const VENDOR_UPDATABLE_FIELDS = [
-  "name",
-  "handle",
-  "is_active",
-  "shopify_store_domain",
-  "shopify_client_id",
-  "shopify_client_secret",
-  "shopify_access_token",
-  "shopify_scope",
-  "shopify_connected_at",
-  "shopify_oauth_state",
-] as const
+const VENDOR_UPDATABLE_FIELDS = ["name", "handle", "is_active"] as const
 
 type VendorUpdatableField = (typeof VENDOR_UPDATABLE_FIELDS)[number]
 
@@ -22,17 +11,10 @@ export type UpdateVendorStepInput = {
   name?: string
   handle?: string
   is_active?: boolean
-  shopify_store_domain?: string | null
-  shopify_client_id?: string | null
-  shopify_client_secret?: string
-  shopify_access_token?: string
-  shopify_scope?: string
-  shopify_connected_at?: Date
-  shopify_oauth_state?: string | null
 }
 
 type UpdateVendorCompensation = { id: string } & Partial<
-  Record<VendorUpdatableField, string | boolean | Date | null>
+  Record<VendorUpdatableField, string | boolean | null>
 >
 
 export const updateVendorStep = createStep(

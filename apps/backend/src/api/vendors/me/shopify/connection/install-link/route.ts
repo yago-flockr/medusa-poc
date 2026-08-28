@@ -20,12 +20,16 @@ export const GET = async (
 
   const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
     "vendor.id",
-    "vendor.shopify_store_domain",
-    "vendor.shopify_client_id",
+    "vendor.integration_connections.provider",
+    "vendor.integration_connections.external_account_identifier",
+    "vendor.integration_connections.client_id",
   ])
   const { vendor } = vendorUser
+  const shopifyConnection = vendor.integration_connections?.find(
+    (connection) => connection?.provider === "shopify",
+  )
 
-  if (!vendor.shopify_store_domain || !vendor.shopify_client_id) {
+  if (!shopifyConnection?.external_account_identifier || !shopifyConnection.client_id) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
       "Set your Shopify store domain and client ID first (PATCH /vendors/me/shopify/connection).",
@@ -34,7 +38,10 @@ export const GET = async (
 
   const state = crypto.randomUUID()
   await updateVendorWorkflow(req.scope).run({
-    input: { id: vendor.id, shopify_oauth_state: state },
+    input: {
+      id: vendor.id,
+      integration_connection: { provider: "shopify", oauth_state: state },
+    },
   })
 
   const host = req.get("x-forwarded-host") ?? req.get("host")
@@ -43,8 +50,8 @@ export const GET = async (
   }
 
   const installLink = buildShopifyInstallLink({
-    storeDomain: vendor.shopify_store_domain,
-    clientId: vendor.shopify_client_id,
+    storeDomain: shopifyConnection.external_account_identifier,
+    clientId: shopifyConnection.client_id,
     state,
     protocol: req.get("x-forwarded-proto") ?? req.protocol,
     host,

@@ -13,25 +13,30 @@ export const findVendorByShopifyDomainStep = createStep(
     const vendorModuleService: VendorModuleService =
       container.resolve(VENDOR_MODULE)
 
-    const [vendor] = await vendorModuleService.listVendors({
-      shopify_store_domain: input.shopifyStoreDomain,
+    const [connection] = await vendorModuleService.listVendorIntegrationConnections({
+      provider: "shopify",
+      external_account_identifier: input.shopifyStoreDomain,
     })
 
-    if (!vendor) {
+    if (!connection) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
-        `No vendor found with shopify_store_domain: ${input.shopifyStoreDomain}`,
+        `No vendor found with Shopify store domain: ${input.shopifyStoreDomain}`,
       )
     }
 
-    const { shopify_client_id, shopify_client_secret } = vendor
-    if (!shopify_client_id || !shopify_client_secret) {
+    if (!connection.client_id || !connection.client_secret) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Vendor ${vendor.id} is missing shopify_client_id/shopify_client_secret — set them via PATCH /admin/vendors/${vendor.id} before sending the install link.`,
+        `Vendor ${connection.vendor_id} is missing its Shopify client id/secret — set them via PATCH /admin/vendors/${connection.vendor_id} before sending the install link.`,
       )
     }
 
-    return new StepResponse({ ...vendor, shopify_client_id, shopify_client_secret })
+    return new StepResponse({
+      vendorId: connection.vendor_id,
+      oauthState: connection.oauth_state,
+      clientId: connection.client_id,
+      clientSecret: connection.client_secret,
+    })
   },
 )

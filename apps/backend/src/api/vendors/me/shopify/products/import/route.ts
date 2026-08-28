@@ -10,7 +10,7 @@ import {
 } from "@dtc/api-contracts/vendor/shopify-products"
 import { resolveVendorUser } from "../../../../resolve-vendor-user"
 import { importVendorShopifyProductsWorkflow } from "../../../../../../workflows/import-vendor-shopify-products"
-import { assertVendorHasShopifyCredentials } from "../../../../../../integrations/shopify/helpers/assert-vendor-has-shopify-credentials"
+import { assertShopifyConnectionCredentials } from "../../../../../../integrations/shopify/helpers/assert-shopify-connection-credentials"
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<ImportVendorShopifyProductsInput>,
@@ -20,19 +20,23 @@ export const POST = async (
 
   const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
     "vendor.id",
-    "vendor.shopify_store_domain",
-    "vendor.shopify_access_token",
+    "vendor.integration_connections.provider",
+    "vendor.integration_connections.external_account_identifier",
+    "vendor.integration_connections.access_token",
   ])
   const { vendor } = vendorUser
+  const shopifyConnection = vendor.integration_connections?.find(
+    (connection) => connection?.provider === "shopify",
+  )
 
-  assertVendorHasShopifyCredentials(vendor)
+  assertShopifyConnectionCredentials(shopifyConnection)
 
   const { result } = await importVendorShopifyProductsWorkflow(req.scope).run({
     input: {
       vendorId: vendor.id,
       credentials: {
-        storeDomain: vendor.shopify_store_domain,
-        accessToken: vendor.shopify_access_token,
+        storeDomain: shopifyConnection.external_account_identifier,
+        accessToken: shopifyConnection.access_token,
       },
       shopifyProductIds: req.validatedBody.shopify_product_ids,
     },

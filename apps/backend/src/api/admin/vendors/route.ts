@@ -1,6 +1,7 @@
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createVendorWorkflow } from "../../../workflows/create-vendor"
+import { withShopifyConnectionFields } from "./map-vendor-response"
 import type { CreateVendor } from "./contract"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
@@ -16,7 +17,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   })
 
   res.json({
-    vendors,
+    vendors: vendors.map(withShopifyConnectionFields),
     count,
     limit: take,
     offset: skip,

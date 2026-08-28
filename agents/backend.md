@@ -468,17 +468,47 @@ starts.
   behavior to match the real one's; that's a deliberate, separate difference,
   not drift.
 - **Vendor's Shopify connection uses OAuth authorization-code-grant, one
-  Shopify app per vendor, credentials stored on the Vendor record — see
-  `shopify-app-config.md` and `docs/vendor-shopify-connection-guide.md`.**
+  Shopify app per vendor — see `shopify-app-config.md` and
+  `docs/vendor-shopify-connection-guide.md`.**
   Superseded the client-credentials approach the pull spike started with,
   which only works for stores in our own Shopify organization and can never
   work for a real vendor's independent store. `src/api/hooks/shopify/oauth/callback`
   + `src/workflows/complete-vendor-shopify-connection/` handle Shopify's
-  redirect and save `shopify_access_token`/`shopify_scope`/`shopify_connected_at`.
-  Confirmed hands-on: Shopify's Custom Distribution caps a single app at one
-  live production store, so "one app per vendor" isn't a choice, it's a
-  platform constraint — see `docs/plan.md`'s Open Questions entry for the full
-  reasoning.
+  redirect and save the access token/scope/connected-at. Confirmed hands-on:
+  Shopify's Custom Distribution caps a single app at one live production
+  store, so "one app per vendor" isn't a choice, it's a platform constraint —
+  see `docs/plan.md`'s Open Questions entry for the full reasoning.
+- **Per-integration connection credentials live on their own model,
+  `modules/vendor/models/vendor-integration-connection.ts`
+  (`vendor_integration_connection`, one row per vendor+provider), not as
+  Shopify-named columns on Vendor.** Vendor previously carried
+  `shopify_store_domain`/`shopify_client_id`/`shopify_client_secret`/
+  `shopify_access_token`/`shopify_scope`/`shopify_connected_at`/
+  `shopify_oauth_state` directly — a second integration would have meant
+  bolting on another 7 near-identical columns. `VendorIntegrationConnection`
+  generalizes that shape (`provider`, `external_account_identifier`,
+  `client_id`, `client_secret`, `access_token`, `scope`, `connected_at`,
+  `oauth_state`) — the standard "connected account" pattern, one row per
+  vendor+provider. `workflows/shared/steps/
+  upsert-vendor-integration-connection.ts` is the one place that creates or
+  updates a connection (looks up by `vendor_id`+`provider`, creates if
+  missing, updates in place otherwise — verified hands-on that a second call
+  updates the same row rather than duplicating it), with real compensation
+  (delete on create-then-fail, restore previous field values on
+  update-then-fail). `updateVendorStep`/`updateVendorWorkflow` now only
+  touch plain vendor fields (`name`/`handle`/`is_active`); a caller that also
+  needs to touch a connection passes an optional `integration_connection:
+  {provider, ...}` and the workflow composes both steps. The wire contracts
+  (`api/admin/vendors/contract.ts`, `@dtc/api-contracts/vendor/me`,
+  `.../shopify-connection`, `.../shopify-products`) deliberately keep their
+  existing flat Shopify-named fields (`shopify_store_domain` etc.) unchanged
+  — those describe a genuinely Shopify-scoped endpoint or a UI's display
+  shape, so only the *internal* storage/route logic generalized; each admin
+  route re-flattens `vendor.integration_connections` back to those fields
+  before responding (`api/admin/vendors/map-vendor-response.ts`). Legacy-data
+  note (see the POC data policy in `agents/overview.md`): the migration
+  drops the old Vendor columns outright — any vendor connected before this
+  change loses its stored Shopify credentials and needs to reconnect.
 - **Never store the customer-facing order status.** It is derived from the states of
   its parts, so it cannot drift out of agreement with them.
 - **Compute the money split inside the order workflow**, so it is stored atomically

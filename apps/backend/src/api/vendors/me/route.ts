@@ -29,11 +29,16 @@ export const GET = async (
     "vendor.id",
     "vendor.name",
     "vendor.handle",
-    "vendor.shopify_store_domain",
-    "vendor.shopify_client_id",
-    "vendor.shopify_connected_at",
-    "vendor.shopify_access_token",
+    "vendor.integration_connections.provider",
+    "vendor.integration_connections.external_account_identifier",
+    "vendor.integration_connections.client_id",
+    "vendor.integration_connections.connected_at",
+    "vendor.integration_connections.access_token",
   ])
+
+  const shopifyConnection = vendorUser.vendor.integration_connections?.find(
+    (connection) => connection?.provider === "shopify",
+  )
 
   const response: VendorMeResponse = {
     vendor_user: {
@@ -46,12 +51,12 @@ export const GET = async (
       id: vendorUser.vendor.id,
       name: vendorUser.vendor.name,
       handle: vendorUser.vendor.handle,
-      shopify_store_domain: vendorUser.vendor.shopify_store_domain,
-      shopify_client_id: vendorUser.vendor.shopify_client_id,
-      shopify_connected_at: vendorUser.vendor.shopify_connected_at
-        ? new Date(vendorUser.vendor.shopify_connected_at).toISOString()
+      shopify_store_domain: shopifyConnection?.external_account_identifier ?? null,
+      shopify_client_id: shopifyConnection?.client_id ?? null,
+      shopify_connected_at: shopifyConnection?.connected_at
+        ? new Date(shopifyConnection.connected_at).toISOString()
         : null,
-      shopify_connected: Boolean(vendorUser.vendor.shopify_access_token),
+      shopify_connected: Boolean(shopifyConnection?.access_token),
     },
   }
 

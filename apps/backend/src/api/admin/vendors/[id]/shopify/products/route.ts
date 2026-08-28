@@ -1,20 +1,34 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { VENDOR_MODULE } from "../../../../../../modules/vendor"
-import type VendorModuleService from "../../../../../../modules/vendor/service"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { pullShopifyProducts } from "../../../../../../integrations/shopify/products"
-import { assertVendorHasShopifyCredentials } from "../../../../../../integrations/shopify/helpers/assert-vendor-has-shopify-credentials"
+import { assertShopifyConnectionCredentials } from "../../../../../../integrations/shopify/helpers/assert-shopify-connection-credentials"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const vendorModuleService: VendorModuleService = req.scope.resolve(VENDOR_MODULE)
-  const vendor = await vendorModuleService.retrieveVendor(id)
+  const {
+    data: [vendor],
+  } = await query.graph({
+    entity: "vendor",
+    filters: { id },
+    fields: [
+      "id",
+      "integration_connections.provider",
+      "integration_connections.external_account_identifier",
+      "integration_connections.access_token",
+    ],
+  })
 
-  assertVendorHasShopifyCredentials(vendor)
+  const shopifyConnection = vendor?.integration_connections?.find(
+    (connection) => connection?.provider === "shopify",
+  )
+
+  assertShopifyConnectionCredentials(shopifyConnection)
 
   const result = await pullShopifyProducts({
-    storeDomain: vendor.shopify_store_domain,
-    accessToken: vendor.shopify_access_token,
+    storeDomain: shopifyConnection.external_account_identifier,
+    accessToken: shopifyConnection.access_token,
   })
 
   res.json(result)

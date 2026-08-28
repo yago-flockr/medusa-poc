@@ -3,7 +3,7 @@ import { findVendorByShopifyDomainStep } from "./steps/find-vendor-by-shopify-do
 import { verifyShopifyCallbackHmacStep } from "./steps/verify-shopify-callback-hmac"
 import { verifyShopifyOAuthStateStep } from "./steps/verify-shopify-oauth-state"
 import { exchangeShopifyOAuthCodeStep } from "./steps/exchange-shopify-oauth-code"
-import { updateVendorStep } from "../update-vendor/steps/update-vendor"
+import { upsertVendorIntegrationConnectionStep } from "../shared/steps/upsert-vendor-integration-connection"
 
 export type CompleteVendorShopifyConnectionWorkflowInput = {
   shop: string
@@ -14,35 +14,36 @@ export type CompleteVendorShopifyConnectionWorkflowInput = {
 export const completeVendorShopifyConnectionWorkflow = createWorkflow(
   "complete-vendor-shopify-connection",
   function (input: CompleteVendorShopifyConnectionWorkflowInput) {
-    const vendor = findVendorByShopifyDomainStep({
+    const found = findVendorByShopifyDomainStep({
       shopifyStoreDomain: input.shop,
     })
 
     verifyShopifyCallbackHmacStep({
       query: input.query,
-      clientSecret: vendor.shopify_client_secret,
+      clientSecret: found.clientSecret,
     })
 
     verifyShopifyOAuthStateStep({
-      expectedState: vendor.shopify_oauth_state,
+      expectedState: found.oauthState,
       actualState: input.query.state,
     })
 
     const { access_token, scope, connectedAt } = exchangeShopifyOAuthCodeStep({
       shop: input.shop,
-      clientId: vendor.shopify_client_id,
-      clientSecret: vendor.shopify_client_secret,
+      clientId: found.clientId,
+      clientSecret: found.clientSecret,
       code: input.code,
     })
 
-    const updatedVendor = updateVendorStep({
-      id: vendor.id,
-      shopify_access_token: access_token,
-      shopify_scope: scope,
-      shopify_connected_at: connectedAt,
-      shopify_oauth_state: null,
+    const connection = upsertVendorIntegrationConnectionStep({
+      vendor_id: found.vendorId,
+      provider: "shopify",
+      access_token,
+      scope,
+      connected_at: connectedAt,
+      oauth_state: null,
     })
 
-    return new WorkflowResponse(updatedVendor)
+    return new WorkflowResponse(connection)
   },
 )

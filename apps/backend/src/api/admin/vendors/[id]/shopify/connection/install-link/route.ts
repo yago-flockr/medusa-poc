@@ -1,27 +1,48 @@
 import crypto from "node:crypto"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { MedusaError } from "@medusajs/framework/utils"
-import { VENDOR_MODULE } from "../../../../../../../modules/vendor"
-import type VendorModuleService from "../../../../../../../modules/vendor/service"
+import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
 import { updateVendorWorkflow } from "../../../../../../../workflows/update-vendor"
 import { buildShopifyInstallLink } from "../../../../../../../integrations/shopify/oauth"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const vendorModuleService: VendorModuleService = req.scope.resolve(VENDOR_MODULE)
-  const vendor = await vendorModuleService.retrieveVendor(id)
+  const {
+    data: [vendor],
+  } = await query.graph({
+    entity: "vendor",
+    filters: { id },
+    fields: [
+      "id",
+      "integration_connections.provider",
+      "integration_connections.external_account_identifier",
+      "integration_connections.client_id",
+      "integration_connections.client_secret",
+    ],
+  })
 
-  if (!vendor.shopify_store_domain || !vendor.shopify_client_id || !vendor.shopify_client_secret) {
+  const shopifyConnection = vendor?.integration_connections?.find(
+    (connection) => connection?.provider === "shopify",
+  )
+
+  if (
+    !shopifyConnection?.external_account_identifier ||
+    !shopifyConnection.client_id ||
+    !shopifyConnection.client_secret
+  ) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
-      `Vendor ${id} is missing shopify_store_domain/shopify_client_id/shopify_client_secret — set them via PATCH /admin/vendors/${id} first.`,
+      `Vendor ${id} is missing its Shopify store domain/client id/client secret — set them via PATCH /admin/vendors/${id} first.`,
     )
   }
 
   const state = crypto.randomUUID()
   await updateVendorWorkflow(req.scope).run({
-    input: { id, shopify_oauth_state: state },
+    input: {
+      id,
+      integration_connection: { provider: "shopify", oauth_state: state },
+    },
   })
 
   const host = req.get("x-forwarded-host") ?? req.get("host")
@@ -30,8 +51,8 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   }
 
   const installLink = buildShopifyInstallLink({
-    storeDomain: vendor.shopify_store_domain,
-    clientId: vendor.shopify_client_id,
+    storeDomain: shopifyConnection.external_account_identifier,
+    clientId: shopifyConnection.client_id,
     state,
     protocol: req.get("x-forwarded-proto") ?? req.protocol,
     host,
