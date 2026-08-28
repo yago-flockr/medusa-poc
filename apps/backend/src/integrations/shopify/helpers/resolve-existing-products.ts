@@ -10,14 +10,16 @@ export async function findExistingShopifyProductIds(
 
   const { data: existing } = await query.graph({
     entity: "product",
-    fields: ["id", "external_id"],
+    fields: ["id", "external_id", "metadata"],
     filters: { external_id: shopifyIds },
   })
 
   return new Map(
     existing
-      .filter((product): product is typeof product & { external_id: string } =>
-        product.external_id !== null,
+      .filter(
+        (product): product is typeof product & { external_id: string } =>
+          product.external_id !== null &&
+          product.metadata?.external_source === "shopify",
       )
       .map((product) => [product.external_id, product.id]),
   )

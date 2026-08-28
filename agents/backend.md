@@ -47,7 +47,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `migration-scripts/`: one-off DB data-migration scripts — Medusa-recognized location, auto-run once as part of `db:migrate` (tracked so it never reruns). Not for demo/seed data — see `scripts/`.
 - `scripts/`: CLI exec helpers — demo-data seeding (`seed.ts`, `pnpm run seed`, not idempotent — re-running duplicates rather than updates), publishable key sync
 - `integrations/`: one folder per external, non-Medusa system this app talks to (currently just `shopify`) — owns that system's client, auth, and mapper code, and nothing outside it should reach past the folder's public exports into another external system's internals. Not for Medusa-internal cross-module concerns (that's `links/`). The URL surface for a given integration mirrors this: every vendor- or admin-facing route touching it nests under a **static** `.../shopify/...` segment (`/vendors/me/shopify/products`, `/vendors/me/shopify/connection`, `/admin/vendors/:id/shopify/products`) rather than a dynamic `[integration]` catch-all. A second integration gets its own sibling static segment when it's real, with its own `middlewares.ts`/contract entries — deliberately not a shared generic dispatcher, since that would force every future integration's routing to be decided by a runtime string switch instead of Medusa's own file-based routing, and would bet on a shape for an integration that doesn't exist yet. Inside one integration's folder, split by role, not by convenience: `client.ts` is the generic transport for that external API (auth headers, request/response envelope, error mapping — zero resource-specific knowledge, e.g. `runShopifyQuery` + `ShopifyStoreCredentials`), and `oauth.ts` covers connection/auth flow the same way; both stay flat at the folder root. A resource-specific file per thing being synced (`products.ts` today; a future `orders.ts`/`stock.ts` once two-way sync grows beyond products, per the marketplace constraints below) holds that resource's queries/mutations and shape-mapping, built on top of `client.ts` rather than duplicating it. `mappers/` holds shape-translation functions that convert an external resource into a Medusa create/update input (kept separate from the resource file itself since it's translating *into* our domain, not just querying the external one). `helpers/` holds pure, local support logic that never leaves this app — assertions, dedupe-by-`external_id` lookups against our own DB, anything that isn't itself a call to the external API. Copy this shape (`client`/`oauth` at root, one file per resource, `mappers/`, `helpers/`) for a second integration or a new resource within this one, rather than inventing a new split.
-- `lib/`: shared helpers with no domain/vendor ownership (default markets seed config, generic store-prerequisite resolution, random password generation). If a helper is specific to one external integration, it belongs in `integrations/<name>/`, not here — `lib/` drifting into an integration's dumping ground is exactly the mess this rule exists to prevent.
+- `lib/`: shared helpers with no domain/vendor ownership (default markets seed config, generic store-prerequisite resolution, random password generation, the `ExternalProduct` type + `build-medusa-product-input.ts`'s create/update-input builders — see below). If a helper is specific to one external integration, it belongs in `integrations/<name>/`, not here — `lib/` drifting into an integration's dumping ground is exactly the mess this rule exists to prevent.
 
 ## Patterns to follow when extending
 
@@ -408,6 +408,49 @@ starts.
   afterward — matching the actual product decision this exists to serve
   (Shopify drops a color, the vendor's product stops offering it, full stop,
   not a value lingering forever because nothing ever cleaned it up).
+
+  **Shopify-imported options are shared (`is_exclusive: false`) across
+  products now, same as vendor-manual ones, so future storefront filtering
+  by option value has one row per value to point at, not one per product.**
+  Both create paths (`import-vendor-shopify-products`, `sync-shopify-products`)
+  now resolve options through `shared/steps/resolve-shared-product-options.ts`
+  — the same step `create-vendor-product` already used, moved out of that
+  workflow's own folder since it's genuinely cross-workflow now, and extended
+  with case-insensitive title/value matching ("Color" and "color" resolve to
+  the same row). Update never touches `is_exclusive`, so a product created
+  before this change stays exclusive; only new creates get shared. Verified
+  against real data: deleted an already-imported product, re-imported it,
+  confirmed it reused an existing shared option rather than creating its own.
+
+  **The Shopify→Medusa product mapping is split into a generic core (`lib/
+  external-product.ts` + `lib/build-medusa-product-input.ts`) and a thin
+  Shopify-specific adapter (`integrations/shopify/mappers/
+  product-input.mapper.ts`), so a second integration wouldn't have to
+  reinvent the variant/option-building logic — only its own translation
+  into the neutral shape.** `ExternalProduct` (`external_id`, `external_source`,
+  `title`, `description`, `handle`, `image_urls`, `options`, `variants`) is
+  what any integration adapter produces; `build-medusa-product-input.ts`'s
+  `buildCreateProductInputFromExternal`/`buildUpdateProductInputFromExternal`
+  turn that into Medusa's create/update DTOs and are the only place that
+  logic lives. `integrations/shopify/mappers/product-input.mapper.ts` keeps
+  its original Shopify-named exports (`buildCreateShopifyProductInput`,
+  `toMedusaOptions`, etc. — so callers in `workflows/` didn't need to change)
+  but each is now a one-line adapter: convert `ShopifyProduct` (`shopify_id`)
+  to `ExternalProduct` (`external_id`, `external_source: "shopify"`), then
+  delegate. This exists specifically because `external_id` on Product had no
+  field recording which system wrote it — real ambiguity today, not a
+  hypothetical: `buildCreateProductInputFromExternal` now always sets
+  `metadata.external_source`, and `integrations/shopify/helpers/
+  resolve-existing-products.ts`'s `findExistingShopifyProductIds` filters on
+  it (`metadata.external_source === "shopify"`) in addition to `external_id`,
+  so a future second integration's ids can never be misread as an existing
+  Shopify product. Medusa merges (doesn't replace) `metadata` on update, so
+  it's set once at create and never re-sent on update.
+  **Legacy-data note, not a code bug** (see the POC data policy in
+  `agents/overview.md`): products imported before this change have no
+  `metadata.external_source`, so re-importing one of them will no longer be
+  recognized as already-existing and will attempt to create it again —
+  wipe/reseed rather than trying to backfill their metadata.
 
   **`src/workflows/sync-shopify-products/` (the original spike workflow,
   below) is now superseded for real use** by the workflow above — it's kept

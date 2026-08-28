@@ -5,7 +5,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
 import type { CreateProductWorkflowInputDTO } from "@medusajs/framework/types"
-import { resolveSharedProductOptionsStep } from "./steps/resolve-shared-product-options"
+import { resolveSharedProductOptionsStep } from "../shared/steps/resolve-shared-product-options"
 
 export type CreateVendorProductWorkflowInput = {
   product: Omit<CreateProductWorkflowInputDTO, "options">

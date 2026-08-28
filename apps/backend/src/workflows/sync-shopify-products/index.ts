@@ -7,9 +7,16 @@ import {
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
 import { pullShopifyProductsStep } from "./steps/pull-shopify-products"
 import { resolveShopifyProductPrerequisitesStep } from "../shared/steps/resolve-shopify-product-prerequisites"
+import {
+  chunkResolvedOptions,
+  resolveSharedProductOptionsStep,
+} from "../shared/steps/resolve-shared-product-options"
 import { filterNewShopifyProductsStep } from "./steps/filter-new-shopify-products"
 import type { ShopifyStoreCredentials } from "../../integrations/shopify/client"
-import { buildCreateShopifyProductInput } from "../../integrations/shopify/mappers/product-input.mapper"
+import {
+  buildCreateShopifyProductInput,
+  toMedusaOptions,
+} from "../../integrations/shopify/mappers/product-input.mapper"
 
 export type SyncShopifyProductsWorkflowInput = {
   credentials: ShopifyStoreCredentials
@@ -20,10 +27,8 @@ export type SyncShopifyProductsWorkflowInput = {
  * Spike-only first cut of the real "pull" direction: proves the pull can
  * actually land in Medusa, not just the console. Deliberately simple —
  * create-only (skips anything already imported, never updates it), no
- * vendor link yet, no shared/filterable options across products (a step
- * can't loop over N products inside workflow composition, so that's left
- * for later). Credentials are per-call, not read from a single global env
- * config — matches the real per-vendor connection shape, even though no
+ * vendor link yet. Credentials are per-call, not read from a single global
+ * env config — matches the real per-vendor connection shape, even though no
  * per-vendor storage exists yet (docs/spikes/vendor-shopify-sync.md).
  */
 export const syncShopifyProductsWorkflow = createWorkflow(
@@ -37,11 +42,34 @@ export const syncShopifyProductsWorkflow = createWorkflow(
       }),
     )
 
+    const rawOptionsPerProduct = transform({ filtered }, (data) =>
+      data.filtered.created.map((product) => toMedusaOptions(product)),
+    )
+
+    const flattenedOptions = transform({ rawOptionsPerProduct }, (data) =>
+      data.rawOptionsPerProduct.flat(),
+    )
+
+    const resolvedFlatOptions = resolveSharedProductOptionsStep({
+      options: flattenedOptions,
+      shared: true,
+    })
+
+    const resolvedOptionsPerProduct = transform(
+      { rawOptionsPerProduct, resolvedFlatOptions },
+      (data) =>
+        chunkResolvedOptions(data.rawOptionsPerProduct, data.resolvedFlatOptions),
+    )
+
     const createInput = transform(
-      { filtered, prerequisites },
+      { filtered, prerequisites, resolvedOptionsPerProduct },
       (data) => ({
-        products: data.filtered.created.map((product) =>
-          buildCreateShopifyProductInput(product, data.prerequisites),
+        products: data.filtered.created.map((product, index) =>
+          buildCreateShopifyProductInput(
+            product,
+            data.prerequisites,
+            data.resolvedOptionsPerProduct[index],
+          ),
         ),
       }),
     )

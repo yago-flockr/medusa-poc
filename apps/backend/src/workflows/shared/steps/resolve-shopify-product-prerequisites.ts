@@ -1,7 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
 import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
-import type { ShopifyProductPrerequisites } from "../../../integrations/shopify/mappers/product-input.mapper"
+import type { ProductPrerequisites } from "../../../lib/build-medusa-product-input"
 
 export type ResolveShopifyProductPrerequisitesStepInput = {
   shopCurrencyCode: string
@@ -31,6 +31,6 @@ export const resolveShopifyProductPrerequisitesStep = createStep(
       shippingProfileId,
       salesChannelId,
       currencyCode,
-    } satisfies ShopifyProductPrerequisites)
+    } satisfies ProductPrerequisites)
   },
 )

@@ -1,19 +1,28 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
-import type { MedusaContainer } from "@medusajs/framework/types"
+import type {
+  CreateProductWorkflowInputDTO,
+  MedusaContainer,
+} from "@medusajs/framework/types"
 
 export type ResolveSharedProductOptionsStepInput = {
   options: { title: string; values: string[] }[]
   shared: boolean
 }
 
-type ResolvedOption =
-  | { id: string }
-  | { title: string; values: string[]; is_exclusive?: boolean }
+export type ResolvedProductOption = NonNullable<
+  CreateProductWorkflowInputDTO["options"]
+>[number]
+
+type ResolvedOption = ResolvedProductOption
 
 type OptionCompensation = {
   id: string
   previousValues: string[]
+}
+
+function normalize(value: string): string {
+  return value.trim().toLowerCase()
 }
 
 function resolveExclusiveOptions(
@@ -23,8 +32,9 @@ function resolveExclusiveOptions(
 }
 
 // Medusa's shared (is_exclusive: false) product options are looked up by
-// title with a DB-level unique constraint, so every vendor's product with
-// the same option title must resolve to the same underlying row.
+// title with a DB-level unique constraint, so every product with the same
+// option title (compared case-insensitively) must resolve to the same
+// underlying row.
 async function resolveSharedOptionsWithLocking(
   options: { title: string; values: string[] }[],
   container: MedusaContainer,
@@ -36,17 +46,17 @@ async function resolveSharedOptionsWithLocking(
   const { data: existingOptions } = await query.graph({
     entity: "product_option",
     fields: ["id", "title"],
-    filters: { title: options.map((option) => option.title), is_exclusive: false },
+    filters: { is_exclusive: false },
   })
 
-  const existingByTitle = new Map(
-    existingOptions.map((option) => [option.title, option]),
+  const existingByNormalizedTitle = new Map(
+    existingOptions.map((option) => [normalize(option.title), option]),
   )
 
   const updates = (
     await Promise.all(
       options.flatMap((option) => {
-        const existing = existingByTitle.get(option.title)
+        const existing = existingByNormalizedTitle.get(normalize(option.title))
         if (!existing) {
           return []
         }
@@ -68,8 +78,9 @@ async function resolveSharedOptionsWithLocking(
             const existingValues = (fresh.values ?? [])
               .filter((value) => value != null)
               .map((value) => value!.value)
+            const existingValuesNormalized = new Set(existingValues.map(normalize))
             const missingValues = option.values.filter(
-              (value) => !existingValues.includes(value),
+              (value) => !existingValuesNormalized.has(normalize(value)),
             )
 
             if (!missingValues.length) {
@@ -88,13 +99,32 @@ async function resolveSharedOptionsWithLocking(
   ).filter((update): update is OptionCompensation => update !== null)
 
   const resolved: ResolvedOption[] = options.map((option) => {
-    const existing = existingByTitle.get(option.title)
+    const existing = existingByNormalizedTitle.get(normalize(option.title))
     return existing
       ? { id: existing.id }
       : { title: option.title, values: option.values, is_exclusive: false }
   })
 
   return { resolved, compensation: updates }
+}
+
+// resolveSharedProductOptionsStep resolves one flat list of raw options at a
+// time — this re-groups the resolved results back into the per-product
+// chunks the caller flattened them from, given each product's original raw
+// option count.
+export function chunkResolvedOptions(
+  perProductRawOptions: { title: string; values: string[] }[][],
+  resolvedFlat: ResolvedProductOption[],
+): ResolvedProductOption[][] {
+  const chunks: ResolvedProductOption[][] = []
+  let cursor = 0
+
+  for (const rawOptions of perProductRawOptions) {
+    chunks.push(resolvedFlat.slice(cursor, cursor + rawOptions.length))
+    cursor += rawOptions.length
+  }
+
+  return chunks
 }
 
 export const resolveSharedProductOptionsStep = createStep(

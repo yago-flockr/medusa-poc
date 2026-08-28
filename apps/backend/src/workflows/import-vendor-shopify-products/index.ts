@@ -15,8 +15,13 @@ import { syncProductOptionValuesStep } from "./steps/sync-product-option-values"
 import { pruneStaleProductOptionValuesStep } from "./steps/prune-stale-product-option-values"
 import { resolveShopifyProductPrerequisitesStep } from "../shared/steps/resolve-shopify-product-prerequisites"
 import {
+  chunkResolvedOptions,
+  resolveSharedProductOptionsStep,
+} from "../shared/steps/resolve-shared-product-options"
+import {
   buildCreateShopifyProductInput,
   buildUpdateShopifyProductInput,
+  toMedusaOptions,
 } from "../../integrations/shopify/mappers/product-input.mapper"
 import type { ShopifyStoreCredentials } from "../../integrations/shopify/client"
 
@@ -43,11 +48,34 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
 
     syncProductOptionValuesStep({ updates: matched.updated })
 
+    const rawOptionsPerProduct = transform({ matched }, (data) =>
+      data.matched.created.map((product) => toMedusaOptions(product)),
+    )
+
+    const flattenedOptions = transform({ rawOptionsPerProduct }, (data) =>
+      data.rawOptionsPerProduct.flat(),
+    )
+
+    const resolvedFlatOptions = resolveSharedProductOptionsStep({
+      options: flattenedOptions,
+      shared: true,
+    })
+
+    const resolvedOptionsPerProduct = transform(
+      { rawOptionsPerProduct, resolvedFlatOptions },
+      (data) =>
+        chunkResolvedOptions(data.rawOptionsPerProduct, data.resolvedFlatOptions),
+    )
+
     const createInput = transform(
-      { matched, prerequisites, vendorId: input.vendorId },
+      { matched, prerequisites, vendorId: input.vendorId, resolvedOptionsPerProduct },
       (data) => ({
-        products: data.matched.created.map((product) =>
-          buildCreateShopifyProductInput(product, data.prerequisites),
+        products: data.matched.created.map((product, index) =>
+          buildCreateShopifyProductInput(
+            product,
+            data.prerequisites,
+            data.resolvedOptionsPerProduct[index],
+          ),
         ),
         additional_data: { vendor_id: data.vendorId },
       }),
