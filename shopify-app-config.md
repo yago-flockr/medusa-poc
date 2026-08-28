@@ -1,118 +1,62 @@
-# Shopify Dev Dashboard app configuration
+# Connect your store to Shopify
 
-How to configure a vendor's Shopify app in the Dev Dashboard
-(`dev.shopify.com`) so its OAuth connection actually works with our backend.
-This is the "staff configures Shopify" half of onboarding a vendor — for
-the full per-vendor runbook (including the admin-UI side), see
-`docs/vendor-shopify-connection-guide.md`.
+How to create your own Shopify app and connect your store here. This is
+one-time setup, and you do it yourself from your vendor panel — no staff
+involved once you have a login.
 
-One app per vendor, always — Shopify's Custom Distribution caps a single
-app at one live production store, so this whole page gets repeated once
-per new vendor, not configured once and reused.
+Shopify requires **one app per store** (its Custom Distribution only
+allows one live production store per app), so this is specific to your
+store — you can't reuse an app from anywhere else.
 
-## Step 1 — Create the app
+## Checklist
 
-1. Open `https://dev.shopify.com/dashboard/228592484/apps/new`
-2. App name: anything unique, but **it can't contain the word "shopify"**
-   — Shopify rejects that. Use something like `<vendor>-poc` or
-   `<vendor>-sync`.
-3. Click **Create app**
+1. **Create the app** — `https://dev.shopify.com/dashboard/<your-org-id>/apps/new`
+   (your own Shopify Partner/Dev Dashboard). Any name works except one
+   containing "shopify" (Shopify rejects it) — e.g. `<your-store>-sync`.
+2. **Versions → Create a version:**
+   - Scopes: `read_products,read_inventory`
+   - Allowed redirection URL(s) — add both, so you never need to touch
+     this again:
+     - `https://localhost.invalid/hooks/shopify/oauth/callback`
+     - `https://medusa-poc.medusajs.app/hooks/shopify/oauth/callback`
+   - Under **URLs**, uncheck **"Embed app in Shopify admin"** (checked by
+     default) — leave **App URL** as the default `https://example.com`,
+     it's never loaded once unchecked
+   - Click **Release**
+3. **Distribution → Custom distribution** → enter your store's domain
+   (`<your-store>.myshopify.com`) — required even though you won't use the
+   link this screen generates (your vendor panel builds the real one).
+4. **Settings** → copy **Client ID** and **Client secret**.
+5. On your vendor panel's **Shopify** page: paste your store domain,
+   Client ID, and Client secret, and save.
+6. Click **Connect to Shopify** on that same page — it opens Shopify's
+   real approval screen. Approve it, and you're back on your panel,
+   connected.
 
-## Step 2 — Scopes and redirect URLs
+That's it — nothing else to do, and no one else needs to be involved.
 
-On the **Versions → Create a version** screen:
+## Troubleshooting / why
 
-1. **Scopes**: `read_products,read_inventory`
-2. **Allowed redirection URL(s)** — comma-separated, add both:
-   - the local test placeholder: `https://localhost.invalid/hooks/shopify/oauth/callback`
-   - the real prod callback: `https://medusa-poc.medusajs.app/hooks/shopify/oauth/callback`
-
-   Setting both now means this app's config never needs touching again
-   once it moves from local testing to the real vendor.
-
-## Step 3 — Turn off embedding
-
-Under **URLs**, **uncheck "Embed app in Shopify admin."** This defaults
-to checked, and it's not optional to skip:
-
-- With it checked, Shopify sends the merchant's browser to the app's
-  **App URL** first, expecting _our own server_ to then redirect them on
-  to Shopify's real consent screen. We don't have that redirector built,
-  so the merchant lands on a dead page (`hmac`/`shop`/`timestamp` in the
-  URL, but no `code`) and the connection silently never happens.
-- With it unchecked, we can send the merchant straight to Shopify's real
-  `/admin/oauth/authorize` consent screen ourselves (Step 5 below), and
-  App URL is never loaded at all.
-
-**App URL** itself can stay as the default `https://example.com` — once
-embedding is off, Shopify never requests it, so its value doesn't matter.
-
-Click **Release**.
-
-## Step 4 — Configure distribution
-
-Even though we won't use the link this screen generates (see Step 5),
-this step is still required — it's what actually authorizes a specific
-external store to complete OAuth with this app at all:
-
-1. Click **Distribution** in the left sidebar
-2. **Choose distribution** → **Custom distribution**
-3. Enter the vendor's store domain (`<their-store>.myshopify.com`)
-
-## Step 5 — Build the install link ourselves
-
-Don't send the vendor the link this dashboard generates — in testing, it
-routes through the App URL launch described in Step 3 and doesn't work
-without a redirector we don't have. Instead, our backend builds the real
-authorization URL for you — in Admin → Vendors, use the **Copy Shopify
-install link** row action (see `docs/vendor-shopify-connection-guide.md`
-Step 3). It already handles the local-testing redirect quirk below
-automatically, so you don't need to build the URL by hand; the shape is
-shown here for reference:
-
-```
-https://<their-store>.myshopify.com/admin/oauth/authorize?client_id=<client id from Settings>&scope=read_products,read_inventory&redirect_uri=<url-encoded redirect uri>&state=<any random string>
-```
-
-Example (URL-encoded redirect_uri):
-
-```
-https://sensus-en0h00hi.myshopify.com/admin/oauth/authorize?client_id=a0fc51ec861a2347b0decc49bb8310f7&scope=read_products,read_inventory&redirect_uri=https%3A%2F%2Flocalhost.invalid%2Fhooks%2Fshopify%2Foauth%2Fcallback&state=test-state-1
-```
-
-Opening this directly takes the merchant to Shopify's real approval
-screen. Approving it redirects to whichever redirect URL was passed —
-with `code=` this time — which our `complete-vendor-shopify-connection`
-workflow (behind `/hooks/shopify/oauth/callback`) exchanges for an access
-token automatically.
-
-## Prerequisite before sending the link
-
-Our callback matches Shopify's redirect back to a vendor by store domain,
-so the vendor's `shopify_store_domain` / `shopify_client_id` /
-`shopify_client_secret` must already be saved on their Vendor record
-(Admin UI → Vendors → edit vendor) **before** anyone opens the Step 5
-link — otherwise the callback has nothing to match against and fails.
-
-## Local-testing-only note
-
-Shopify rejects any `http://` redirect_uri outright — it's not just a
-whitelist-exact-match issue, `https://` is required unconditionally, so
-`http://localhost:...` can never be whitelisted or used directly during
-local development. `https://localhost.invalid` is the safe placeholder —
-that TLD is reserved to never resolve, so the browser fails to load it but
-still shows the full URL (including `code=`) in the address bar, and
-nothing is ever sent to a real third-party server.
-
-Both install-link routes (`buildShopifyInstallLink` in
-`apps/backend/src/integrations/shopify/oauth.ts`) detect a `localhost`/`127.0.0.1`
-request and substitute this placeholder automatically, so the **Copy
-Shopify install link** button already generates a working link locally —
-no manual URL edits needed. What still can't be automated (no public
-tunnel for local dev, by design — see `docs/plan.md`): after approving,
-copy the query string from the dead `localhost.invalid` page and replay
-it against the real local callback
-(`http://localhost:9000/hooks/shopify/oauth/callback?...`) to finish the
-connection. This replay step is unnecessary once testing against a real
-deployed `https://` backend — the install link then points straight at
-that URL and Shopify's redirect lands on it directly.
+- **Why uncheck "Embed app in Shopify admin"?** Checked (the default)
+  sends you to the app's **App URL** first, expecting it to redirect you
+  on to Shopify's consent screen — that redirector doesn't exist, so
+  you'd land on a dead page (no `code` in the URL) and the connection
+  would silently never happen. Unchecked, your panel sends you straight
+  to the real consent screen itself (step 6 above).
+- **Why not the Distribution tab's own link?** It routes through the same
+  App URL launch described above and fails the same way. Your vendor
+  panel's **Connect to Shopify** button builds the real
+  `/admin/oauth/authorize` URL directly instead. Shape, for reference:
+  `https://<store>.myshopify.com/admin/oauth/authorize?client_id=<id>&scope=read_products,read_inventory&redirect_uri=<url-encoded>&state=<random>`
+- **Local dev only — `https://localhost.invalid`:** Shopify rejects any
+  `http://` redirect outright, so plain `localhost` can never be
+  whitelisted. `.invalid` is a TLD reserved to never resolve — the browser
+  shows the full URL (including `code=`) without loading anything or
+  contacting a real server. The install link already substitutes this
+  automatically for local requests. The one step that can't be automated
+  (no public tunnel for local dev, by design — see `docs/plan.md`): after
+  approving, copy the query string from the dead `localhost.invalid` page
+  and replay it against
+  `http://localhost:9000/hooks/shopify/oauth/callback?...` to finish the
+  connection. Not needed once testing against a real deployed `https://`
+  backend — Shopify's redirect lands on it directly.
