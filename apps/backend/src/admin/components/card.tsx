@@ -1,5 +1,6 @@
 import { clx, Container, Heading, Text } from "@medusajs/ui"
 import { ComponentProps } from "react"
+import { optionalField } from "../lib/optional-field"
 
 type CardRootProps = ComponentProps<typeof Container>
 
@@ -65,10 +66,40 @@ const CardFooter = ({ className, ...props }: CardFooterProps) => {
   )
 }
 
+type CardInfoRowProps = ComponentProps<"div">
+
+const CardInfoRow = ({ className, ...props }: CardInfoRowProps) => (
+  <CardContent className={clx("text-ui-fg-subtle grid-cols-2", className)} {...props} />
+)
+
+type CardInfoLabelProps = ComponentProps<typeof Text>
+
+const CardInfoLabel = (props: CardInfoLabelProps) => (
+  <Text size="small" weight="plus" leading="compact" {...props} />
+)
+
+type CardInfoTextProps = Omit<ComponentProps<typeof Text>, "children"> & {
+  children?: string | null
+}
+
+const CardInfoText = ({ className, children, ...props }: CardInfoTextProps) => (
+  <Text
+    size="small"
+    leading="compact"
+    className={clx("whitespace-pre-line text-pretty", className)}
+    {...props}
+  >
+    {optionalField(children)}
+  </Text>
+)
+
 export const Card = {
   Root: CardRoot,
   Header: CardHeader,
   Title: CardTitle,
   Content: CardContent,
   Footer: CardFooter,
+  InfoRow: CardInfoRow,
+  InfoLabel: CardInfoLabel,
+  InfoText: CardInfoText,
 }
