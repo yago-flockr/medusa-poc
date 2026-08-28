@@ -4,6 +4,7 @@ import {
   ContainerRegistrationKeys,
 } from "@medusajs/framework/utils"
 import { updateVendorWorkflow } from "../../../../workflows/update-vendor"
+import { deleteVendorWorkflow } from "../../../../workflows/delete-vendor"
 import { mapVendorConnectionFields } from "../map-vendor-response"
 import type { UpdateVendor } from "../contract"
 
@@ -49,4 +50,18 @@ export const POST = async (
   })
 
   res.json({ vendor: mapVendorConnectionFields(vendor) })
+}
+
+export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
+  const { id } = req.params
+
+  await deleteVendorWorkflow(req.scope).run({
+    input: { id },
+  })
+
+  res.json({
+    id,
+    object: "vendor",
+    deleted: true,
+  })
 }

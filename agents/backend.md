@@ -208,6 +208,23 @@ starts.
   choosing their own is still a real, undone follow-up — deliberately
   deferred as UX polish, not a security gap, since password generation and
   regeneration themselves are already handled server-side (see above).
+  **`DELETE /admin/vendors/:id` (`deleteVendorWorkflow`,
+  `workflows/delete-vendor/`) exists for real removal — "disable"
+  (`is_active: false`) is a status toggle, not deletion, and doesn't get a
+  vendor out of listings/counts.** Copies `delete-brand`'s shape exactly
+  (soft-delete via `softDeleteVendors` + full `restoreVendors` compensation,
+  same as every other delete in this app — nothing here is a hard,
+  unrecoverable delete): also soft-deletes the vendor's `VendorUser` and
+  `VendorIntegrationConnection` rows, and **dismisses** (not deletes) the
+  `product-vendor` link for each of the vendor's products, so their
+  products survive as unlinked/orphaned rather than being destroyed —
+  mirrors `delete-brand`'s own "dismiss the link, don't cascade-delete the
+  product" choice exactly, verified hands-on that both the soft-deletes and
+  the link dismissal (and their compensations) work as expected. One thing
+  `delete-brand` doesn't need that this does: `assertVendorHasNoOrdersStep`
+  refuses the whole delete if the vendor has any linked orders — real
+  transactional history, unlike products, isn't something a generic delete
+  should silently orphan.
   **Reversed: staff approval is no longer the only path to publish — a
   vendor can now self-approve their own products.** Creation/import still
   lands as `status: "proposed"` (`src/api/vendors/products/route.ts`,
