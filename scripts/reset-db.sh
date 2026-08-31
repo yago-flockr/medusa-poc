@@ -33,10 +33,23 @@ migrateAndSeed() {
   pnpm --filter @dtc/backend run seed
 }
 
+syncPublishableKey() {
+  # Seeding above generates a brand-new publishable API key every time, so
+  # the storefront's .env.local must be re-synced or it's left pointing at a
+  # key that no longer exists. Only applies if the storefront is configured.
+  if [ ! -f "apps/storefront/.env.local" ]; then
+    echo "Skipping publishable key sync: apps/storefront/.env.local not found."
+    return
+  fi
+  echo "Syncing publishable API key to storefront .env.local..."
+  pnpm --filter @dtc/backend exec medusa exec ./seeds/sync-publishable-key.ts
+}
+
 main() {
   confirm
   resetSchema
   migrateAndSeed
+  syncPublishableKey
   echo "Database reset and reseeded."
 }
 
