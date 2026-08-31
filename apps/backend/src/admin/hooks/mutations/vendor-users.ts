@@ -4,7 +4,7 @@ import type {
   UpdateVendorUser,
   VendorUserResponse,
   VendorUserWithPasswordResponse,
-} from "../../../api/admin/vendor-users/contract"
+} from "@dtc/api-contracts/admin/vendor-users"
 import { createResourceMutationHook } from "../../lib/create-resource-mutation"
 import { mutationKeys } from "./mutation-keys"
 import { queryKeys } from "../queries/query-keys"

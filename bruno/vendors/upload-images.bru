@@ -1,0 +1,29 @@
+meta {
+  name: upload-images
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/vendors/uploads
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{vendor_token}}
+}
+
+body:multipart-form {
+  files: @file(./sample-image.jpg)
+}
+
+docs {
+  Uploads one or more images (PNG/JPEG/WEBP/GIF, 5MB max each, 5 files max
+  per request) and returns their public URLs — pass those URLs in
+  `images: [{url}]` when creating or updating a product (see create-product,
+  update-product). Not part of the shared ts-rest contract: this version of
+  @ts-rest/core has no multipart body support, so the storefront calls this
+  route with a plain fetch + FormData instead — see
+  packages/api-contracts/README.md, "Multipart/file-upload routes".
+}

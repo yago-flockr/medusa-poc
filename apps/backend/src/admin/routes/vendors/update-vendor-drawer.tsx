@@ -1,5 +1,5 @@
 import { Button, Drawer, Text, toast } from "@medusajs/ui"
-import type { Vendor } from "../../../api/admin/vendors/contract"
+import type { Vendor } from "@dtc/api-contracts/admin/vendors"
 import { Divider } from "../../components/divider"
 import { TitleSubtitle } from "../../components/title-subtitle"
 import {

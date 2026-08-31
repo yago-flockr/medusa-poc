@@ -10,7 +10,7 @@ import {
   usePrompt,
 } from "@medusajs/ui"
 import { useState } from "react"
-import type { Vendor } from "../../../api/admin/vendors/contract"
+import type { Vendor } from "@dtc/api-contracts/admin/vendors"
 import { Card } from "../../components/card"
 import { TitleSubtitle } from "../../components/title-subtitle"
 import {

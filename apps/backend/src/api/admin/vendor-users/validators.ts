@@ -6,7 +6,7 @@ import {
   createVendorUserSchema,
   updateVendorUserSchema,
   vendorUserListFiltersSchema,
-} from "./contract"
+} from "@dtc/api-contracts/admin/vendor-users"
 
 export const AdminGetVendorUserParams = createSelectParams()
 

@@ -2,7 +2,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createVendorWorkflow } from "../../../workflows/create-vendor"
 import { mapVendorConnectionFields } from "./map-vendor-response"
-import type { CreateVendor } from "./contract"
+import type { CreateVendor } from "@dtc/api-contracts/admin/vendors"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

@@ -6,7 +6,7 @@ import {
   brandListFiltersSchema,
   createBrandSchema,
   updateBrandSchema,
-} from "./contract"
+} from "@dtc/api-contracts/admin/brands"
 
 export const AdminGetBrandParams = createSelectParams()
 

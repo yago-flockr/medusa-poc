@@ -7,9 +7,9 @@ import {
   deleteProductsWorkflow,
   updateProductsWorkflow,
 } from "@medusajs/medusa/core-flows"
+import type { UpdateVendorProduct } from "@dtc/api-contracts/vendor/products"
 import { resolveVendorUser } from "../../resolve-vendor-user"
 import { assertOwnedVendorProduct } from "../assert-owned-product"
-import type { UpdateVendorProduct } from "../contract"
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<UpdateVendorProduct>,

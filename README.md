@@ -91,11 +91,13 @@ cd apps/backend
 pnpm exec medusa db:migrate
 ```
 
-6. Create an admin user:
+6. Seed identity and catalogue data (from `apps/backend`):
 
 ```bash
-pnpm exec medusa user -e admin@example.com -p supersecret
+pnpm run seed
 ```
+
+Creates an admin user (`admin@example.com` / `supersecret`, override with `ADMIN_EMAIL`/`ADMIN_PASSWORD`), a demo vendor + vendor user, and demo store/catalogue data. See [Seeding](#seeding) below.
 
 7. Start the backend (terminal 1):
 
@@ -131,6 +133,15 @@ From the repo root you can use:
 pnpm run backend:dev
 pnpm run storefront:dev
 ```
+
+## Seeding
+
+`pnpm run seed` (from `apps/backend`) is the one command for local data, safe to run any time — not just on a fresh DB:
+
+- **Identity** (admin user, demo vendor + vendor user) runs first and is idempotent: re-running skips whatever already exists instead of erroring. A vendor user's password is generated once, at creation, and only ever printed that one time — re-running after it exists just logs a reminder, not a new password. Run this part alone with `pnpm run seed:identity`.
+- **Store/catalogue demo data** runs second and is still one-shot: it assumes a fresh DB and errors if run twice (unique product handles, duplicate regions, etc.).
+
+If you do need a true clean slate (e.g. the catalogue step above already ran and you want to redo it), `pnpm run db:reset` (repo root) drops and recreates the database schema, migrates, and reseeds everything from zero. Requires Docker running. This is the occasional full-reset option, not something to reach for between every feature — `pnpm run seed` alone covers that.
 
 ## Useful docs in this repo
 

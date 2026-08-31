@@ -9,9 +9,14 @@
     "./vendor/shopify-products": "./src/vendor/shopify-products.ts",
     "./vendor/orders": "./src/vendor/orders.ts",
     "./vendor/products": "./src/vendor/products.ts",
-    "./vendor/contract": "./src/vendor/contract.ts"
+    "./vendor/uploads": "./src/vendor/uploads.ts",
+    "./vendor/contract": "./src/vendor/contract.ts",
+    "./admin/brands": "./src/admin/brands.ts",
+    "./admin/vendor-users": "./src/admin/vendor-users.ts",
+    "./admin/vendors": "./src/admin/vendors.ts"
   },
   "dependencies": {
+    "@medusajs/types": "2.18.0",
     "@ts-rest/core": "3.53.0-rc.1",
     "zod": "4.2.0"
   }

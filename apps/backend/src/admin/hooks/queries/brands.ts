@@ -1,7 +1,7 @@
 import type {
   BrandListQuery,
   BrandListResponse,
-} from "../../../api/admin/brands/contract"
+} from "@dtc/api-contracts/admin/brands"
 import { createResourceQueryHook } from "../../lib/create-resource-query"
 import { queryKeys } from "./query-keys"
 import { sdk } from "../../lib/sdk"

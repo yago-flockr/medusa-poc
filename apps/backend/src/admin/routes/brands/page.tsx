@@ -8,7 +8,7 @@ import {
   usePrompt,
 } from "@medusajs/ui"
 import { useState } from "react"
-import type { Brand } from "../../../api/admin/brands/contract"
+import type { Brand } from "@dtc/api-contracts/admin/brands"
 import { Card } from "../../components/card"
 import { TitleSubtitle } from "../../components/title-subtitle"
 import { useDeleteOneBrand } from "../../hooks/mutations/brands"

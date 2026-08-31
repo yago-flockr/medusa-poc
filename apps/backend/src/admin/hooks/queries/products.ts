@@ -1,8 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import type {
-  Product,
-  ProductQuery,
-} from "../../../api/admin/products/contract"
+import type { Product, ProductQuery } from "../../../api/admin/products/types"
 import { queryKeys } from "./query-keys"
 import { sdk } from "../../lib/sdk"
 

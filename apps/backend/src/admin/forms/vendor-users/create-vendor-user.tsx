@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form"
 import {
   createVendorUserSchema,
   type CreateVendorUser,
-} from "../../../api/admin/vendor-users/contract"
+} from "@dtc/api-contracts/admin/vendor-users"
 import { SelectField, type SelectFieldOption } from "../fields/select-field"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"

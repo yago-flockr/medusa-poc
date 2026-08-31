@@ -1,5 +1,5 @@
 import { Button, Drawer, toast } from "@medusajs/ui"
-import type { Brand } from "../../../api/admin/brands/contract"
+import type { Brand } from "@dtc/api-contracts/admin/brands"
 import { TitleSubtitle } from "../../components/title-subtitle"
 import {
   UPDATE_BRAND_FORM_ID,

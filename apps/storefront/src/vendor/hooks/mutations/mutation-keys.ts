@@ -11,7 +11,11 @@ export const mutationKeys = {
     importShopifyProducts: ["importShopifyProducts"] as const,
   },
   products: {
+    createProduct: ["createProduct"] as const,
     updateProductStatus: ["updateProductStatus"] as const,
     deleteProduct: ["deleteProduct"] as const,
+  },
+  uploads: {
+    uploadVendorImages: ["uploadVendorImages"] as const,
   },
 }

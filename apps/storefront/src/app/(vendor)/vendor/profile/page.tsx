@@ -37,22 +37,6 @@ export default function VendorProfilePage() {
                 <InfoList.Label>Handle</InfoList.Label>
                 <InfoList.Text>{vendor?.handle ?? ""}</InfoList.Text>
               </InfoList.Row>
-              <InfoList.Row>
-                <InfoList.Label>Shopify connection</InfoList.Label>
-                {vendor?.shopify_connected && vendor.shopify_store_domain ? (
-                  <InfoList.Link
-                    href={`https://${vendor.shopify_store_domain}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {vendor.shopify_store_domain}
-                  </InfoList.Link>
-                ) : (
-                  <InfoList.Text>
-                    {vendor?.shopify_connected ? "Connected" : "Not connected"}
-                  </InfoList.Text>
-                )}
-              </InfoList.Row>
             </InfoList.Root>
           </DataState.Content>
         </DataState>

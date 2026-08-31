@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals"
-import { updateVendorSchema } from "../contract"
+import { updateVendorSchema } from "@dtc/api-contracts/admin/vendors"
 
 describe("updateVendorSchema integration_connection.external_account_identifier", () => {
   it("strips a leading protocol and trailing slash, and lowercases it", () => {

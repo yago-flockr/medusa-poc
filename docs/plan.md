@@ -234,18 +234,17 @@ in short form, with what's genuinely still open flagged as such:
 - **Legal seller / import duties per country — still open.** DDP is
   confirmed at checkout for UK/EU/US; who is the legal seller of record
   isn't stated yet.
-- **New, still open: does every launch brand actually connect via the
+- **Resolved (partially) — does every launch brand actually connect via the
   Shopify sync, or does some of the initial catalogue arrive by
   spreadsheet instead?** `Sensus Questions.md` Q17's answer says the
   initial catalogue load (~30 brands) happens "via the connector **or**
   spreadsheet templates" — phrasing that implies not every brand is
-  Shopify-sync-connected, at least not from day one. If spreadsheet import
-  is a one-time convenience for brands that go on to connect Shopify
-  shortly after, nothing changes. If it's meant to stay an ongoing parallel
-  path for brands that never connect Shopify, we still need some kind of
-  bulk/manual catalogue entry capability alongside the sync — which the
-  current plan assumes is fully retired. Worth a direct answer before
-  assuming every brand is sync-only.
+  Shopify-sync-connected, at least not from day one. See the manual-creation
+  decision below: the vendor panel now has a per-vendor create-product form
+  for exactly this case. Still open: whether that one-by-one form is
+  sufficient for a real spreadsheet-sized initial load, or whether a bulk
+  import capability is also needed — worth a direct answer once volume is
+  known, not assumed either way.
 - **New, still open: what is the "house-portal" mentioned in the design
   handoff?** Q18's answer lists design deliverables as "~14 customer-facing
   templates plus the house-portal and admin templates" — naming it
@@ -459,25 +458,27 @@ in short form, with what's genuinely still open flagged as such:
   are worth reusing as technique, not as code. Full evaluation and the
   technical shape to build against: `docs/spikes/vendor-shopify-sync.md`.
 - **A full vendor panel is back — superseding "no vendor-facing panel for
-  v1" above, and the earlier deletion of `/vendor`.** Not a return to manual
-  catalogue entry: the panel's job is connection management (a vendor
-  connects and picks what to import from their own Shopify), staff-parity
-  profile CRUD, and its own orders/statements — not typing in products by
-  hand, which stays retired. This also resolves something the sync spike
-  had already flagged as unreconciled: the original "staff creates the app
-  and pastes credentials" shape assumed staff could act inside a vendor's
+  v1" above, and the earlier deletion of `/vendor`.** The panel's job is
+  connection management (a vendor connects and picks what to import from
+  their own Shopify), staff-parity profile CRUD, and its own
+  orders/statements. This also resolves something the sync spike had
+  already flagged as unreconciled: the original "staff creates the app and
+  pastes credentials" shape assumed staff could act inside a vendor's
   Shopify org, which hands-on testing already proved false — a
   custom-distribution app can only be created by someone with access to the
   *installing* store's own org, so the connection step was always going to
   have to be vendor-driven, not staff-driven, regardless of this decision.
   Staff still originates the relationship (invite, approval) — only the
-  "click connect, pick what to bring in" action moves to the vendor. Two
-  things this does **not** reopen: a Shopify-connected product's own
-  data (title, price, images, variants) still comes from Shopify only,
-  never edited by hand on either side of the connection — see the new SSOT
-  rule in `docs/features/vendor-shopify-sync.md`; and Vendor/VendorUser as a
-  model, staff approval via `ProductStatus`, and the order-splitting work
-  are all unaffected, exactly as when the sync decision first landed.
+  "click connect, pick what to bring in" action moves to the vendor. One
+  thing this does **not** reopen: for a Shopify-connected vendor, that
+  product's own data (title, price, images, variants) still comes from
+  Shopify only, never edited by hand on either side of the connection — see
+  the SSOT rule in `docs/features/vendor-shopify-sync.md`. Vendor/VendorUser
+  as a model, staff approval via `ProductStatus`, and the order-splitting
+  work are all unaffected, exactly as when the sync decision first landed.
+  See the manual-creation decision below for the "typing in products by
+  hand" question this entry originally called retired — that call is
+  superseded there.
 - **Shopify sync is vendor-pull-triggered for v1, not webhook-push** —
   refines the sync direction above rather than reversing it (product/stock
   still flows in, a sale still flows out; only what *triggers* an inbound
@@ -504,3 +505,22 @@ in short form, with what's genuinely still open flagged as such:
   decision, not a technical one:** when layer 3 finds the live price has
   moved since the customer saw it in cart, do we block checkout and ask
   them to reconfirm, or silently honor the new price?
+- **Manual product creation is back in the vendor panel — supersedes "not
+  typing in products by hand, which stays retired" in the "full vendor
+  panel is back" decision above.** Directly resolves the Open Questions
+  entry on spreadsheet-based initial catalogue load: a vendor with no
+  Shopify connection still needs some way to list products, so the panel
+  gets a create-product form alongside the Shopify-connection flow — the
+  two are not mutually exclusive per vendor. This does not touch the SSOT
+  rule for a Shopify-connected vendor's products (still sync-only, never
+  hand-edited on either side); manual creation applies to a vendor's own
+  products, entered by the vendor itself, the same way the backend already
+  modeled it. A manually-created product goes through the same
+  `ProductStatus` proposed/published staff-approval gate as any synced-in
+  one — no new review mechanism needed. The backend side of this was
+  already fully built and unexposed (`POST /vendors/products`,
+  `createVendorProductWorkflow`, vendor-scoped via the authenticated
+  vendor_user) — this decision is to surface it in the panel UI and finish
+  wiring it through the shared `packages/api-contracts` package, rather
+  than leave a working capability backend-only with a locally-duplicated
+  Zod schema.

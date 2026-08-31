@@ -12,7 +12,7 @@ import {
   usePrompt,
 } from "@medusajs/ui"
 import { useState } from "react"
-import type { VendorUser } from "../../../api/admin/vendor-users/contract"
+import type { VendorUser } from "@dtc/api-contracts/admin/vendor-users"
 import { Card } from "../../components/card"
 import { OtpShow } from "../../components/otp-show"
 import { TitleSubtitle } from "../../components/title-subtitle"

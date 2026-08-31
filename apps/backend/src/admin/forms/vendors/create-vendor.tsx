@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import {
   createVendorSchema,
   type CreateVendor,
-} from "../../../api/admin/vendors/contract"
+} from "@dtc/api-contracts/admin/vendors"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
 

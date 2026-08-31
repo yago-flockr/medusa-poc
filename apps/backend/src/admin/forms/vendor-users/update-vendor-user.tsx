@@ -6,7 +6,7 @@ import {
   updateVendorUserSchema,
   type UpdateVendorUser,
   type VendorUser,
-} from "../../../api/admin/vendor-users/contract"
+} from "@dtc/api-contracts/admin/vendor-users"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
 

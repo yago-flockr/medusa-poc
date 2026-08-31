@@ -6,7 +6,7 @@ import {
 import { updateVendorWorkflow } from "../../../../workflows/update-vendor"
 import { deleteVendorWorkflow } from "../../../../workflows/delete-vendor"
 import { mapVendorConnectionFields } from "../map-vendor-response"
-import type { UpdateVendor } from "../contract"
+import type { UpdateVendor } from "@dtc/api-contracts/admin/vendors"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

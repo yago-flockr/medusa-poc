@@ -1,5 +1,5 @@
 import { Button, Drawer, Text, toast } from "@medusajs/ui"
-import type { VendorUser } from "../../../api/admin/vendor-users/contract"
+import type { VendorUser } from "@dtc/api-contracts/admin/vendor-users"
 import { TitleSubtitle } from "../../components/title-subtitle"
 import {
   UPDATE_VENDOR_USER_FORM_ID,

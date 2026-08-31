@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
-import type { Brand } from "../../../api/admin/brands/contract"
+import type { Brand } from "@dtc/api-contracts/admin/brands"
 import { SelectField } from "../fields/select-field"
 import type { CommonFormProps } from "../form-type"
 

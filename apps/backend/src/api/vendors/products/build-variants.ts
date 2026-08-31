@@ -1,5 +1,5 @@
 import { MedusaError } from "@medusajs/framework/utils"
-import type { CreateVendorProduct } from "./contract"
+import type { CreateVendorProduct } from "@dtc/api-contracts/vendor/products"
 
 export type VendorProductOption = {
   title: string

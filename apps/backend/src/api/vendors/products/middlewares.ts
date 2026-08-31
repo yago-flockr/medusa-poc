@@ -5,7 +5,7 @@ import {
 import {
   createVendorProductSchema,
   updateVendorProductSchema,
-} from "./contract"
+} from "@dtc/api-contracts/vendor/products"
 
 export const vendorProductRoutesMiddlewares: MiddlewareRoute[] = [
   {

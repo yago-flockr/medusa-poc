@@ -1,3 +1,4 @@
+import type { VendorUploadResponse } from "@dtc/api-contracts/vendor/uploads"
 import { useVendorAuthStore } from "../stores/auth-store"
 
 const BACKEND_URL =
@@ -14,7 +15,11 @@ export class VendorApiError extends Error {
 
 type ApiErrorBody = { message?: string }
 
-export function assertOkResponse(res: Response, data: unknown, path: string): void {
+export function assertOkResponse(
+  res: Response,
+  data: unknown,
+  path: string,
+): void {
   if (res.ok) {
     return
   }
@@ -24,7 +29,10 @@ export function assertOkResponse(res: Response, data: unknown, path: string): vo
   }
 
   const message = (data as ApiErrorBody)?.message
-  throw new VendorApiError(message ?? `Request to ${path} failed (${res.status})`, res.status)
+  throw new VendorApiError(
+    message ?? `Request to ${path} failed (${res.status})`,
+    res.status,
+  )
 }
 
 export async function request<T>(
@@ -46,4 +54,27 @@ export async function request<T>(
   assertOkResponse(res, data, path)
 
   return data as T
+}
+
+export async function uploadVendorImages(
+  files: File[],
+): Promise<VendorUploadResponse> {
+  const token = useVendorAuthStore.getState().token
+  const path = "/vendors/uploads"
+
+  const body = new FormData()
+  for (const file of files) {
+    body.append("files", file)
+  }
+
+  const res = await fetch(`${BACKEND_URL}${path}`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body,
+  })
+
+  const data: unknown = await res.json().catch(() => ({}))
+  assertOkResponse(res, data, path)
+
+  return data as VendorUploadResponse
 }

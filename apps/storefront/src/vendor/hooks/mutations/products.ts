@@ -1,7 +1,22 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
-import type { UpdateVendorProductStatusInput } from "@dtc/api-contracts/vendor/products"
+import type {
+  CreateVendorProduct,
+  UpdateVendorProductStatusInput,
+} from "@dtc/api-contracts/vendor/products"
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
+
+export const useCreateProduct = () =>
+  useMutation({
+    mutationKey: mutationKeys.products.createProduct,
+    mutationFn: async (body: CreateVendorProduct) => {
+      const response = await vendorClient.createProduct({ body })
+      if (response.status !== 200) {
+        throw new Error(`Unexpected response status ${response.status}`)
+      }
+      return response.body
+    },
+  })
 
 export const useUpdateProductStatus = () =>
   useMutation({

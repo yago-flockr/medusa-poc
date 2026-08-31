@@ -32,11 +32,14 @@ Shopify OAuth flow showed the connection step is unavoidably vendor-driven
 (only someone with access to the *installing* store's own org can complete a
 custom-distribution app install, so staff can't do this step on a vendor's
 behalf). See `docs/plan.md` Decisions, "A full vendor panel is back", for the
-full history. **This is not a return to manual catalogue entry**: the
-panel's job is connection management (a vendor connects and picks what to
-import from their own Shopify) and viewing its own orders/statements — a
-Shopify-connected product's own data (title, price, images, variants) still
-comes from Shopify only, never edited by hand on either side.
+full history. The panel's job is connection management (a vendor connects
+and picks what to import from their own Shopify), viewing its own
+orders/statements, **and manual product creation for a vendor without a
+Shopify connection** (`docs/plan.md` Decisions, "Manual product creation is
+back in the vendor panel") — a Shopify-connected product's own data (title,
+price, images, variants) still comes from Shopify only, never edited by hand
+on either side; manual creation is only for a vendor's own, non-synced
+products.
 `src/vendor/lib/contract-client.ts` (a ts-rest client built from
 `@dtc/api-contracts/vendor/contract`) is the current convention for every
 `/vendors/*` call — `src/vendor/lib/client.ts`'s older `request()` helper

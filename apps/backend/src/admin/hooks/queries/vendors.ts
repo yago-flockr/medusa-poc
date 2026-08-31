@@ -1,7 +1,7 @@
 import type {
   VendorListQuery,
   VendorListResponse,
-} from "../../../api/admin/vendors/contract"
+} from "@dtc/api-contracts/admin/vendors"
 import { createResourceQueryHook } from "../../lib/create-resource-query"
 import { queryKeys } from "./query-keys"
 import { sdk } from "../../lib/sdk"

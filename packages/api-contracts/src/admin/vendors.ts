@@ -1,10 +1,5 @@
-import { z } from "@medusajs/framework/zod"
-import type { FindParams, PaginatedResponse } from "@medusajs/framework/types"
-import {
-  optionalTrimmedString,
-  optionalTrimmedStringOrNull,
-  requiredTrimmedString,
-} from "../zod-helpers"
+import { z } from "zod"
+import type { FindParams, PaginatedResponse } from "@medusajs/types"
 
 export const vendorUserSchema = z.object({
   id: z.string(),
@@ -55,17 +50,16 @@ export type VendorResponse = {
   vendor: Vendor
 }
 
-const name = requiredTrimmedString("Name is required")
-const handle = optionalTrimmedString()
-const externalAccountIdentifier = optionalTrimmedStringOrNull().transform((value) =>
-  value ? value.replace(/^https?:\/\//i, "").replace(/\/+$/, "").toLowerCase() : value,
-)
-const connectionClientId = optionalTrimmedStringOrNull()
-
 export const createVendorSchema = z
   .object({
-    name,
-    handle,
+    name: z.string().trim().min(1, "Name is required"),
+    handle: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : undefined
+      })
+      .optional(),
   })
   .strict()
 
@@ -74,9 +68,32 @@ export type CreateVendor = z.infer<typeof createVendorSchema>
 export const updateVendorIntegrationConnectionSchema = z
   .object({
     provider: z.literal("shopify"),
-    external_account_identifier: externalAccountIdentifier,
-    client_id: connectionClientId,
-    client_secret: optionalTrimmedString(),
+    external_account_identifier: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : null
+      })
+      .optional()
+      .transform((value) =>
+        value
+          ? value.replace(/^https?:\/\//i, "").replace(/\/+$/, "").toLowerCase()
+          : value,
+      ),
+    client_id: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : null
+      })
+      .optional(),
+    client_secret: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : undefined
+      })
+      .optional(),
   })
   .refine(
     (data) =>
@@ -91,8 +108,14 @@ export const updateVendorIntegrationConnectionSchema = z
 
 export const updateVendorSchema = z
   .object({
-    name: name.optional(),
-    handle,
+    name: z.string().trim().min(1, "Name is required").optional(),
+    handle: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : undefined
+      })
+      .optional(),
     is_active: z.boolean().optional(),
     integration_connection: updateVendorIntegrationConnectionSchema.optional(),
   })

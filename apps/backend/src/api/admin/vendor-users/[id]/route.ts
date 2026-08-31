@@ -4,7 +4,7 @@ import {
   ContainerRegistrationKeys,
 } from "@medusajs/framework/utils"
 import { updateVendorUserWorkflow } from "../../../../workflows/update-vendor-user"
-import type { UpdateVendorUser } from "../contract"
+import type { UpdateVendorUser } from "@dtc/api-contracts/admin/vendor-users"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

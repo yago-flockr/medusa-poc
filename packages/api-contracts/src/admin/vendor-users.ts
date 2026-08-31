@@ -1,6 +1,5 @@
-import type { FindParams, PaginatedResponse } from "@medusajs/framework/types"
-import { z } from "@medusajs/framework/zod"
-import { optionalTrimmedString, requiredTrimmedString } from "../zod-helpers"
+import { z } from "zod"
+import type { FindParams, PaginatedResponse } from "@medusajs/types"
 
 export const vendorUserSchema = z.object({
   id: z.string(),
@@ -42,14 +41,24 @@ export type RegeneratePasswordResponse = {
   password: string
 }
 
-const optionalNamePart = optionalTrimmedString()
-
 export const createVendorUserSchema = z
   .object({
-    vendor_id: requiredTrimmedString("Vendor is required"),
+    vendor_id: z.string().trim().min(1, "Vendor is required"),
     email: z.string().trim().email("A valid email is required"),
-    first_name: optionalNamePart,
-    last_name: optionalNamePart,
+    first_name: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : undefined
+      })
+      .optional(),
+    last_name: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : undefined
+      })
+      .optional(),
   })
   .strict()
 
@@ -57,8 +66,20 @@ export type CreateVendorUser = z.infer<typeof createVendorUserSchema>
 
 export const updateVendorUserSchema = z
   .object({
-    first_name: optionalNamePart,
-    last_name: optionalNamePart,
+    first_name: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : undefined
+      })
+      .optional(),
+    last_name: z
+      .string()
+      .transform((value) => {
+        const trimmed = value.trim()
+        return trimmed.length > 0 ? trimmed : undefined
+      })
+      .optional(),
     is_active: z.boolean().optional(),
   })
   .strict()

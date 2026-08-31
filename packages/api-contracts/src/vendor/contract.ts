@@ -19,6 +19,8 @@ import {
   pullVendorShopifyProductsResponseSchema,
 } from "./shopify-products"
 import {
+  createVendorProductResponseSchema,
+  createVendorProductSchema,
   deleteVendorProductResponseSchema,
   updateVendorProductStatusResponseSchema,
   updateVendorProductStatusSchema,
@@ -88,6 +90,14 @@ export const vendorContract = c.router({
     query: vendorProductsQuerySchema,
     responses: {
       200: vendorProductsListResponseSchema,
+    },
+  },
+  createProduct: {
+    method: "POST",
+    path: "/vendors/products",
+    body: createVendorProductSchema,
+    responses: {
+      200: createVendorProductResponseSchema,
     },
   },
   updateProductStatus: {

@@ -3,7 +3,7 @@ import type {
   BrandResponse,
   CreateBrand,
   UpdateBrand,
-} from "../../../api/admin/brands/contract"
+} from "@dtc/api-contracts/admin/brands"
 import { createResourceMutationHook } from "../../lib/create-resource-mutation"
 import { mutationKeys } from "./mutation-keys"
 import { queryKeys } from "../queries/query-keys"

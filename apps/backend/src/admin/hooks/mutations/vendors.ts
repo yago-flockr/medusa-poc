@@ -3,7 +3,7 @@ import type {
   CreateVendor,
   UpdateVendor,
   VendorResponse,
-} from "../../../api/admin/vendors/contract"
+} from "@dtc/api-contracts/admin/vendors"
 import type { ShopifyProductsPullResult } from "../../../integrations/shopify/products"
 import { createResourceMutationHook } from "../../lib/create-resource-mutation"
 import { mutationKeys } from "./mutation-keys"

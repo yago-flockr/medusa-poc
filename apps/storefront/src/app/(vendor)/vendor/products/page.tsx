@@ -31,6 +31,7 @@ import type {
   VendorProductStatus,
 } from "@dtc/api-contracts/vendor/products"
 import { RiDeleteBinLine, RiLinksLine } from "@remixicon/react"
+import { CreateProductDialog } from "./_components/create-product-dialog"
 
 const STATUS_OPTIONS: VendorProductStatus[] = [
   "draft",
@@ -48,6 +49,7 @@ export default function VendorProductsPage() {
     <VendorSection
       title="Products"
       description="View your catalogue, publish products yourself, or remove them. Anything synced from Shopify keeps its details in sync from there — this page only controls whether it's visible to customers."
+      action={<CreateProductDialog onCreated={() => getProducts.refetch()} />}
       className="flex flex-col gap-3"
     >
       <DataState

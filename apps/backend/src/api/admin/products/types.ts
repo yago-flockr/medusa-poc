@@ -1,6 +1,6 @@
 import type { HttpTypes } from "@medusajs/framework/types"
-import type { Brand } from "../brands/contract"
-import type { Vendor } from "../vendors/contract"
+import type { Brand } from "@dtc/api-contracts/admin/brands"
+import type { Vendor } from "@dtc/api-contracts/admin/vendors"
 
 export type Product = HttpTypes.AdminProduct & {
   brand?: Brand | null

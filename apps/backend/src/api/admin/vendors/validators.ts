@@ -6,7 +6,7 @@ import {
   createVendorSchema,
   updateVendorSchema,
   vendorListFiltersSchema,
-} from "./contract"
+} from "@dtc/api-contracts/admin/vendors"
 
 export const AdminGetVendorParams = createSelectParams()
 

@@ -8,7 +8,10 @@ import {
   ProductStatus,
 } from "@medusajs/framework/utils"
 import {
+  createVendorProductResponseSchema,
   vendorProductsListResponseSchema,
+  type CreateVendorProduct,
+  type CreateVendorProductResponse,
   type VendorProductsListResponse,
 } from "@dtc/api-contracts/vendor/products"
 import { createVendorProductWorkflow } from "../../../workflows/create-vendor-product"
@@ -16,7 +19,6 @@ import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisi
 import { parseVendorListQuery } from "../list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 import { resolveProductVariants } from "./build-variants"
-import type { CreateVendorProduct } from "./contract"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -110,5 +112,19 @@ export const POST = async (
     },
   })
 
-  res.json({ product: result[0] })
+  const product = result[0]
+
+  const response: CreateVendorProductResponse = {
+    product: {
+      id: product.id,
+      title: product.title,
+      handle: product.handle,
+      status: product.status,
+      thumbnail: product.thumbnail,
+      external_id: product.external_id,
+      variant_count: product.variants?.length ?? 0,
+    },
+  }
+
+  res.json(createVendorProductResponseSchema.parse(response))
 }

@@ -4,6 +4,7 @@ import type {
 } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
 import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows"
+import { vendorUploadResponseSchema } from "@dtc/api-contracts/vendor/uploads"
 
 const ALLOWED_MIME_TYPES = new Set([
   "image/png",
@@ -45,5 +46,9 @@ export const POST = async (
     },
   })
 
-  res.json({ files: result })
+  res.json(
+    vendorUploadResponseSchema.parse({
+      files: result.map((file) => ({ id: file.id, url: file.url })),
+    }),
+  )
 }
