@@ -8,7 +8,7 @@ Follow **Maintaining project documentation** in `agents/overview.md`. Update thi
 
 ## Overview
 
-Medusa v2 commerce engine for the chassis. Config: `medusa-config.ts`. Default seed markets: `src/lib/markets.ts` (UK / EU / US regions for seed).
+Medusa v2 commerce engine for the chassis. Config: `medusa-config.ts`. Default seed markets: `src/lib/markets.ts` (UK / EU / US regions for seed). Seed scripts themselves live in `seeds/`, a sibling of `src/` — see the `seeds/` entry below.
 
 ## Architecture and flow
 
@@ -44,8 +44,13 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
 - `admin/`: Admin dashboard widgets and routes. Query hooks in `admin/hooks/queries/`, mutation hooks in `admin/hooks/mutations/`.
-- `migration-scripts/`: one-off DB data-migration scripts — Medusa-recognized location, auto-run once as part of `db:migrate` (tracked so it never reruns). Not for demo/seed data — see `scripts/`.
-- `scripts/`: CLI exec helpers. `pnpm run seed` (from `apps/backend`) chains two scripts, in order: `seed-identity.ts` (admin user + demo vendor + vendor user, via the same workflows the admin routes use — **idempotent**, skips whatever already exists instead of erroring, so it's safe to run repeatedly without wiping the DB) then `seed.ts` (store/catalogue demo data — **not idempotent**, assumes a fresh DB, re-running errors on duplicate handles/regions). Run identity alone with `pnpm run seed:identity`. Also here: publishable key sync. Root `pnpm run db:reset` (`scripts/reset-db.sh`) is the occasional full-reset escape hatch — wipes the DB (drops and recreates the `public` schema) and reruns migrations + `pnpm run seed` from zero — not something to reach for between every feature now that identity seeding is safe to rerun on its own.
+- `migration-scripts/`: one-off DB data-migration scripts — Medusa-recognized location, auto-run once as part of `db:migrate` (tracked so it never reruns). Not for demo/seed data — see `seeds/` (app root, sibling of `src/`, documented next).
+- `seeds/` (app root, **not** under `src/` — it's demo/test data, not application source): CLI exec helpers, chained by `pnpm run seed` (from `apps/backend`) in this order:
+  1. `seed-catalog.ts` — store/catalogue demo data (regions, shipping, categories, product options, demo catalogue products). **Not idempotent**: assumes a fresh DB, re-running errors on duplicate handles/regions. Run alone with `pnpm run seed:catalog`.
+  2. `seed-identity.ts` — the admin user only, via the same workflow the admin routes use. **Idempotent**: skips if a user with that email already exists. Run alone with `pnpm run seed:identity`.
+  3. `seed-vendors.ts` — several demo vendors (2–3), each with a vendor user and 2–3 vendor products (each with 2–3 priced variants), built through the *same* `createVendorProductWorkflow` + `resolveStorePrerequisites`/`resolveProductVariants` helpers the real `POST /vendors/products` route uses (`src/lib/resolve-store-prerequisites.ts`, `src/api/vendors/products/build-variants.ts`) rather than reimplementing variant/price building. **Idempotent**: skips any vendor/vendor user/product that already exists (by handle/email/handle respectively) instead of erroring. Depends on `seed-catalog.ts` having already created the shipping profile and default sales channel, so it must run after it. Run alone with `pnpm run seed:vendors`.
+
+  Also here: `sync-publishable-key.ts` (publishable key sync). Root `pnpm run db:reset` (`scripts/reset-db.sh` — currently missing from the repo despite being referenced by that script; needs restoring or the command fixed) is the occasional full-reset escape hatch — wipes the DB (drops and recreates the `public` schema) and reruns migrations + `pnpm run seed` from zero — not something to reach for between every feature now that identity and vendor seeding are both safe to rerun on their own.
 - `workflows/create-admin-user/`: mirrors `create-vendor-user/` exactly (register an emailpass auth identity → create the domain row → `setAuthAppMetadataStep` to link them), but for the `user` actor type and with a caller-chosen password instead of a random one — an admin/staff login is meant to be typed in and known, unlike a vendor's. Exists because `medusa user` (the CLI command that normally creates an admin) is not reliably re-runnable: it sometimes throws "User with email: ..., already exists" instead of a graceful no-op, which is exactly what broke a plain wipe-free reseed. `seed-identity.ts` checks for an existing user by email first and only calls this workflow when there isn't one.
 - `integrations/`: one folder per external, non-Medusa system this app talks to (currently just `shopify`) — owns that system's client, auth, and mapper code, and nothing outside it should reach past the folder's public exports into another external system's internals. Not for Medusa-internal cross-module concerns (that's `links/`). The URL surface for a given integration mirrors this: every vendor- or admin-facing route touching it nests under a **static** `.../shopify/...` segment (`/vendors/me/shopify/products`, `/vendors/me/shopify/connection`, `/admin/vendors/:id/shopify/products`) rather than a dynamic `[integration]` catch-all. A second integration gets its own sibling static segment when it's real, with its own `middlewares.ts`/contract entries — deliberately not a shared generic dispatcher, since that would force every future integration's routing to be decided by a runtime string switch instead of Medusa's own file-based routing, and would bet on a shape for an integration that doesn't exist yet. Inside one integration's folder, split by role, not by convenience: `client.ts` is the generic transport for that external API (auth headers, request/response envelope, error mapping — zero resource-specific knowledge, e.g. `runShopifyQuery` + `ShopifyStoreCredentials`), and `oauth.ts` covers connection/auth flow the same way; both stay flat at the folder root. A resource-specific file per thing being synced (`products.ts` today; a future `orders.ts`/`stock.ts` once two-way sync grows beyond products, per the marketplace constraints below) holds that resource's queries/mutations and shape-mapping, built on top of `client.ts` rather than duplicating it. `mappers/` holds shape-translation functions that convert an external resource into a Medusa create/update input (kept separate from the resource file itself since it's translating *into* our domain, not just querying the external one). `helpers/` holds pure, local support logic that never leaves this app — assertions, dedupe-by-`external_id` lookups against our own DB, anything that isn't itself a call to the external API. Copy this shape (`client`/`oauth` at root, one file per resource, `mappers/`, `helpers/`) for a second integration or a new resource within this one, rather than inventing a new split.
 - `lib/`: shared helpers with no domain/vendor ownership (default markets seed config, generic store-prerequisite resolution, random password generation, the `ExternalProduct` type + `build-medusa-product-input.ts`'s create/update-input builders — see below). If a helper is specific to one external integration, it belongs in `integrations/<name>/`, not here — `lib/` drifting into an integration's dumping ground is exactly the mess this rule exists to prevent.
@@ -281,7 +286,7 @@ starts.
   requires the order item's product's shipping profile to match the chosen
   shipping option's). Fixed by looking up the store's one default shipping
   profile (`query.graph({entity: "shipping_profile"})`, same row
-  `scripts/seed.ts` already uses) and setting it on every vendor
+  `seeds/seed-catalog.ts` already uses) and setting it on every vendor
   product at creation (`src/api/vendors/products/route.ts`) — no new model,
   no per-vendor warehouse system. Additionally, `create-vendor-orders`
   (`steps/assert-items-fulfillable.ts`) now checks every cart item's product
@@ -612,7 +617,7 @@ From `apps/backend`:
 - `pnpm run dev` → `medusa develop`
 - `pnpm exec medusa db:migrate`
 - `pnpm exec medusa user -e ... -p ...`
-- `pnpm exec medusa exec ./src/scripts/<file>.ts`
+- `pnpm exec medusa exec ./seeds/<file>.ts`
 
 ## Gotchas and notes
 

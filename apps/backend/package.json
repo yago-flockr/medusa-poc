@@ -19,8 +19,10 @@
     "dev": "medusa develop",
     "predev": "graphql-codegen",
     "lint": "medusa lint",
-    "seed": "pnpm run seed:identity && medusa exec ./src/scripts/seed.ts",
-    "seed:identity": "medusa exec ./src/scripts/seed-identity.ts",
+    "seed": "pnpm run seed:catalog && pnpm run seed:identity && pnpm run seed:vendors",
+    "seed:catalog": "medusa exec ./seeds/seed-catalog.ts",
+    "seed:identity": "medusa exec ./seeds/seed-identity.ts",
+    "seed:vendors": "medusa exec ./seeds/seed-vendors.ts",
     "shopify-codegen": "graphql-codegen",
     "shopify-codegen:refresh-schema": "rm -f src/integrations/shopify/generated/admin-*.schema.json && graphql-codegen",
     "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
@@ -49,6 +51,7 @@
     "zod": "4.2.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "9.9.0",
     "@graphql-codegen/cli": "^7.3.0",
     "@jest/globals": "^29.7.0",
     "@medusajs/test-utils": "2.18.0",

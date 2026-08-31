@@ -50,8 +50,8 @@ skim [Product](https://docs.medusajs.com/resources/commerce-modules/product),
 ### A3. Container and Query
 
 **Goal:** read data the Medusa way instead of opening a SQL client.
-**Build:** a script under `src/scripts/` run with
-`pnpm exec medusa exec ./src/scripts/<file>.ts` that resolves Query from the
+**Build:** a script under `seeds/` (throwaway, not application source) run with
+`pnpm exec medusa exec ./seeds/<file>.ts` that resolves Query from the
 container and prints products with their variants and prices.
 **Done when:** the script prints data fetched with `query.graph(...)`, no raw SQL.
 **Read:** [Medusa Container](https://docs.medusajs.com/learn/fundamentals/medusa-container),

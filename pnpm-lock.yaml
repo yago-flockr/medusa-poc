@@ -66,7 +66,7 @@ importers:
         version: 2.18.0
       '@medusajs/medusa':
         specifier: 2.18.0
-        version: 2.18.0(640b3e1e2a693cfdd2dcebbc5d9ce60f)
+        version: 2.18.0(597ba8c1e07b40a6b538ff7f24e610a5)
       '@medusajs/ui':
         specifier: 4.2.0
         version: 4.2.0(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
@@ -89,6 +89,9 @@ importers:
         specifier: 4.2.0
         version: 4.2.0
     devDependencies:
+      '@faker-js/faker':
+        specifier: 9.9.0
+        version: 9.9.0
       '@graphql-codegen/cli':
         specifier: ^7.3.0
         version: 7.3.0(@parcel/watcher@2.6.0)(@types/node@22.19.2)(graphql@16.14.2)(supports-color@10.2.2)(typescript@5.9.3)
@@ -1627,6 +1630,10 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@faker-js/faker@9.9.0':
+    resolution: {integrity: sha512-OEl393iCOoo/z8bMezRlJu+GlRGlsKbUAN7jKB6LhnKoqKve5DXRpalbItIIcwnCjs1k/FOPjFzcA6Qn+H+YbA==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@fastify/busboy@3.2.2':
     resolution: {integrity: sha512-yXSS27qPExaXeuLvMRMXOLtpipzfQYNjG3FkunDWKGfMYjKuhFXko9CVzqxm8jcF+lmtS9Fd89QNdh9XDjnbNg==}
@@ -12855,6 +12862,8 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
+  '@faker-js/faker@9.9.0': {}
+
   '@fastify/busboy@3.2.2': {}
 
   '@floating-ui/core@1.7.3':
@@ -14452,10 +14461,10 @@ snapshots:
 
   '@js-sdsl/ordered-map@4.4.2': {}
 
-  '@medusajs/admin-bundler@2.18.0(@types/node@22.19.2)(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(lightningcss@1.32.0)(picomatch@4.0.5)(supports-color@10.2.2)(terser@5.44.1)(typescript@5.9.3)(yaml@2.9.0)':
+  '@medusajs/admin-bundler@2.18.0(@types/node@22.19.2)(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.44.1)(typescript@5.9.3)(yaml@2.9.0)':
     dependencies:
       '@medusajs/admin-shared': 2.18.0
-      '@medusajs/admin-vite-plugin': 2.18.0(picomatch@4.0.5)(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))
+      '@medusajs/admin-vite-plugin': 2.18.0(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))
       '@medusajs/dashboard': 2.18.0(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(typescript@5.9.3)
       '@vitejs/plugin-react': 4.7.0(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))
       autoprefixer: 10.4.22(postcss@8.5.22)
@@ -14493,14 +14502,14 @@ snapshots:
 
   '@medusajs/admin-shared@2.18.0': {}
 
-  '@medusajs/admin-vite-plugin@2.18.0(picomatch@4.0.5)(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))':
+  '@medusajs/admin-vite-plugin@2.18.0(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))':
     dependencies:
       '@babel/parser': 7.25.6
       '@babel/traverse': 7.25.6(supports-color@10.2.2)
       '@babel/types': 7.25.6
       '@medusajs/admin-shared': 2.18.0
       chokidar: 3.6.0
-      fdir: 6.1.1(picomatch@4.0.5)
+      fdir: 6.1.1
       magic-string: 0.30.5
       outdent: 0.8.0
       picocolors: 1.1.1
@@ -14874,12 +14883,12 @@ snapshots:
     dependencies:
       '@medusajs/framework': 2.18.0(@medusajs/cli@2.18.0(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2))(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(ioredis@5.8.2(supports-color@10.2.2))(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))(zod@4.2.0)
 
-  '@medusajs/medusa@2.18.0(640b3e1e2a693cfdd2dcebbc5d9ce60f)':
+  '@medusajs/medusa@2.18.0(597ba8c1e07b40a6b538ff7f24e610a5)':
     dependencies:
       '@inquirer/checkbox': 2.5.0
       '@inquirer/confirm': 2.0.17
       '@inquirer/input': 2.3.0
-      '@medusajs/admin-bundler': 2.18.0(@types/node@22.19.2)(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(lightningcss@1.32.0)(picomatch@4.0.5)(supports-color@10.2.2)(terser@5.44.1)(typescript@5.9.3)(yaml@2.9.0)
+      '@medusajs/admin-bundler': 2.18.0(@types/node@22.19.2)(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.44.1)(typescript@5.9.3)(yaml@2.9.0)
       '@medusajs/analytics': 2.18.0(@medusajs/framework@2.18.0(@medusajs/cli@2.18.0(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2))(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(ioredis@5.8.2(supports-color@10.2.2))(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))(zod@4.2.0))
       '@medusajs/analytics-local': 2.18.0(@medusajs/framework@2.18.0(@medusajs/cli@2.18.0(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2))(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(ioredis@5.8.2(supports-color@10.2.2))(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))(zod@4.2.0))
       '@medusajs/analytics-posthog': 2.18.0(@medusajs/framework@2.18.0(@medusajs/cli@2.18.0(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2))(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(ioredis@5.8.2(supports-color@10.2.2))(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))(zod@4.2.0))(posthog-node@5.17.2)
@@ -15130,7 +15139,7 @@ snapshots:
       ulid: 2.4.0
     optionalDependencies:
       '@medusajs/core-flows': 2.18.0(@medusajs/framework@2.18.0(@medusajs/cli@2.18.0(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2))(@types/node@22.19.2)(debug@4.4.3(supports-color@10.2.2))(ioredis@5.8.2(supports-color@10.2.2))(supports-color@10.2.2)(vite@5.4.21(@types/node@22.19.2)(lightningcss@1.32.0)(terser@5.44.1))(zod@4.2.0))
-      '@medusajs/medusa': 2.18.0(640b3e1e2a693cfdd2dcebbc5d9ce60f)
+      '@medusajs/medusa': 2.18.0(597ba8c1e07b40a6b538ff7f24e610a5)
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -20482,9 +20491,7 @@ snapshots:
     dependencies:
       bser: 2.1.1
 
-  fdir@6.1.1(picomatch@4.0.5):
-    optionalDependencies:
-      picomatch: 4.0.5
+  fdir@6.1.1: {}
 
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:

@@ -25,7 +25,7 @@ import {
   STORE_SUPPORTED_CURRENCIES,
   DEFAULT_MARKETS,
   countryGeoZones,
-} from "../lib/markets"
+} from "../src/lib/markets"
 
 /** Demo catalogue prices: EUR / USD / GBP (GBP mirrors EUR for seed data). */
 function demoVariantPrices(eurAmount: number, usdAmount: number) {
