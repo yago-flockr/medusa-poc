@@ -524,7 +524,23 @@ starts.
   `admin/widgets/product-brand.tsx`'s exact shape (`+vendor.*` via the
   `product-vendor` link, per the Module Link fields pattern above) minus
   the edit affordance — nothing currently needs staff to reassign a
-  product's vendor from here, so don't add that without a real need.
+  product's vendor from here, so don't add that without a real need. The
+  products **list** table also shows the vendor, as a real column — not a
+  widget: `medusa-config.ts` enables the `view_configurations` feature flag
+  (Medusa v2.18+, marked experimental upstream) and registers
+  `@medusajs/medusa/settings` with `entityOverrides.Product.
+  defaultVisibleFields: ["vendor.name"]` (plus a `defaultFieldOrdering`
+  entry). This is the only supported way to add a genuine column to a core
+  Admin data table — a widget zone (`product.list`/`.before`/`.after`) can
+  only place a separate block above/below/within the list page, never a
+  column inside the table itself. The dotted-path field (`vendor.name`)
+  works because `vendor` is already a real linked relation on `product`
+  (the same `product-vendor` link the detail-page widget uses) — same
+  mechanism Medusa's own docs show for `collection.title`. Verify via
+  `GET /admin/views/:entity/columns` (here, `product`) if a future column
+  addition doesn't appear — that's the exact API the dashboard reads to
+  build the table, so it's the fastest way to confirm a config change
+  landed without needing the browser.
 
   **`src/workflows/sync-shopify-products/` (the original spike workflow,
   below) is now superseded for real use** by the workflow above — it's kept
