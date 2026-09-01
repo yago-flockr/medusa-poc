@@ -1,5 +1,6 @@
+import type { Vendor } from "@dtc/api-contracts/admin/vendors"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { CheckCircle, Link, PencilSquare, XCircle } from "@medusajs/icons"
+import { CheckCircle, PencilSquare, XCircle } from "@medusajs/icons"
 import {
   createDataTableColumnHelper,
   DataTable,
@@ -10,13 +11,9 @@ import {
   usePrompt,
 } from "@medusajs/ui"
 import { useState } from "react"
-import type { Vendor } from "@dtc/api-contracts/admin/vendors"
 import { Card } from "../../components/card"
 import { TitleSubtitle } from "../../components/title-subtitle"
-import {
-  useGenerateVendorShopifyInstallLink,
-  useUpdateOneVendor,
-} from "../../hooks/mutations/vendors"
+import { useUpdateOneVendor } from "../../hooks/mutations/vendors"
 import { useFindManyVendors } from "../../hooks/queries/vendors"
 import { CreateVendorModal } from "./create-vendor-modal"
 import { UpdateVendorDrawer } from "./update-vendor-drawer"
@@ -28,7 +25,6 @@ const columnHelper = createDataTableColumnHelper<Vendor>()
 const VendorsPage = () => {
   const prompt = usePrompt()
   const updateOneVendor = useUpdateOneVendor()
-  const generateShopifyInstallLink = useGenerateVendorShopifyInstallLink()
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: PAGINATION_LIMIT,
     pageIndex: 0,
@@ -59,8 +55,9 @@ const VendorsPage = () => {
     }),
     columnHelper.accessor(
       (row) =>
-        row.integration_connections?.filter((connection) => connection.connected)
-          .length ?? 0,
+        row.integration_connections?.filter(
+          (connection) => connection.connected,
+        ).length ?? 0,
       {
         id: "integrations",
         header: "Integrations",
@@ -108,27 +105,6 @@ const VendorsPage = () => {
                 },
               },
             )
-          },
-        },
-        {
-          icon: <Link />,
-          label: "Copy Install Link",
-          onClick: () => {
-            generateShopifyInstallLink.mutate(ctx.row.original.id, {
-              onSuccess: async ({ install_link: installLink }) => {
-                try {
-                  await navigator.clipboard.writeText(installLink)
-                  toast.success("Install link copied to clipboard")
-                } catch {
-                  toast.info("Install link", { description: installLink })
-                }
-              },
-              onError: (error) => {
-                toast.error("Couldn't generate install link", {
-                  description: error.message,
-                })
-              },
-            })
           },
         },
       ],

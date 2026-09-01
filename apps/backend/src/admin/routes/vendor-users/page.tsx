@@ -75,12 +75,12 @@ const VendorUsersPage = () => {
           },
         },
         {
-          label: "Regenerate password",
+          label: "Regenerate Password",
           icon: <ArrowPath />,
           onClick: async () => {
             const vendorUser = ctx.row.original
             const confirmed = await prompt({
-              title: "Regenerate password?",
+              title: "Regenerate Password?",
               description: `This immediately invalidates ${vendorUser.email}'s current password. Share the new one with them yourself.`,
               confirmText: "Regenerate",
               cancelText: "Cancel",
