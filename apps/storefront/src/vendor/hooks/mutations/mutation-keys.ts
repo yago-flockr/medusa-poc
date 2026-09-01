@@ -21,4 +21,7 @@ export const mutationKeys = {
   stockLocations: {
     createStockLocation: ["createStockLocation"] as const,
   },
+  productInventory: {
+    setProductInventory: ["setProductInventory"] as const,
+  },
 }

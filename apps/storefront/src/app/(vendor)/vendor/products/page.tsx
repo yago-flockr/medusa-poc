@@ -32,6 +32,7 @@ import type {
 } from "@dtc/api-contracts/vendor/products"
 import { RiDeleteBinLine, RiLinksLine } from "@remixicon/react"
 import { CreateProductDialog } from "./_components/create-product-dialog"
+import { ManageInventoryDialog } from "./_components/manage-inventory-dialog"
 
 const STATUS_OPTIONS: VendorProductStatus[] = [
   "draft",
@@ -122,6 +123,10 @@ export default function VendorProductsPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <ManageInventoryDialog
+                    productId={product.id}
+                    productTitle={product.title}
+                  />
                   <AlertDialog>
                     <AlertDialogTrigger
                       render={

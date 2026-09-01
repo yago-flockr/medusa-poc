@@ -12,6 +12,7 @@
     "./vendor/products": "./src/vendor/products.ts",
     "./vendor/uploads": "./src/vendor/uploads.ts",
     "./vendor/stock-locations": "./src/vendor/stock-locations.ts",
+    "./vendor/product-inventory": "./src/vendor/product-inventory.ts",
     "./vendor/contract": "./src/vendor/contract.ts",
     "./admin/brands": "./src/admin/brands.ts",
     "./admin/vendor-users": "./src/admin/vendor-users.ts",

@@ -33,6 +33,10 @@ import {
   vendorStockLocationsListResponseSchema,
   vendorStockLocationsQuerySchema,
 } from "./stock-locations"
+import {
+  setVendorInventoryLevelSchema,
+  vendorProductInventoryResponseSchema,
+} from "./product-inventory"
 
 const c = initContract()
 
@@ -135,6 +139,21 @@ export const vendorContract = c.router({
     body: createVendorStockLocationSchema,
     responses: {
       200: createVendorStockLocationResponseSchema,
+    },
+  },
+  getProductInventory: {
+    method: "GET",
+    path: "/vendors/products/:id/inventory",
+    responses: {
+      200: vendorProductInventoryResponseSchema,
+    },
+  },
+  setProductInventory: {
+    method: "POST",
+    path: "/vendors/products/:id/inventory",
+    body: setVendorInventoryLevelSchema,
+    responses: {
+      200: vendorProductInventoryResponseSchema,
     },
   },
 })
