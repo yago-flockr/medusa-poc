@@ -15,11 +15,9 @@ import {
 } from "@medusajs/medusa/core-flows"
 import type { CartLineItemDTO } from "@medusajs/framework/types"
 import vendorOrderLink from "../../links/vendor-order"
-import { assertExternalAvailabilityStep } from "./steps/assert-external-availability"
 import { assertItemsFulfillableStep } from "./steps/assert-items-fulfillable"
 import { createVendorOrdersStep } from "./steps/create-vendor-orders"
 import { groupVendorItemsStep } from "./steps/group-vendor-items"
-import { recordExternalSaleStep } from "./steps/record-external-sale"
 import { resolveVendorOrdersStep } from "./steps/resolve-vendor-orders"
 
 export type CreateVendorOrdersWorkflowInput = {
@@ -43,7 +41,6 @@ export const createVendorOrdersWorkflow = createWorkflow(
     ) as unknown as CartLineItemDTO[]
 
     assertItemsFulfillableStep({ items: cartItems })
-    assertExternalAvailabilityStep({ items: cartItems })
 
     // ttl has no renewal (Medusa's default lock provider expires it
     // unconditionally at ttl regardless of whether this run finished) — 60s
@@ -123,15 +120,6 @@ export const createVendorOrdersWorkflow = createWorkflow(
     // retry after a client timeout would return vendorOrders: undefined
     // even though the vendor orders exist in the DB.
     const vendorOrders = resolveVendorOrdersStep({ orderId, parentOrder: order })
-
-    when(
-      "record-external-sale",
-      { existingVendorLinks, existingChildOrders },
-      (data) =>
-        data.existingVendorLinks.length === 0 && data.existingChildOrders.length === 0,
-    ).then(() => {
-      recordExternalSaleStep({ vendorOrders })
-    })
 
     releaseLockStep({ key: input.cart_id })
 

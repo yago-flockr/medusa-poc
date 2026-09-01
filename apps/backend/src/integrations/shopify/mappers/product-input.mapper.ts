@@ -10,7 +10,7 @@ import {
   type UpdateProductInputFromExternal,
 } from "../../../lib/build-medusa-product-input"
 import type { ShopifyProduct } from "../products"
-import { catalogSourceSchema } from "../../catalog-provider"
+import { catalogSourceSchema } from "../../external-source"
 
 export type ShopifyProductPrerequisites = ProductPrerequisites
 export type ShopifyMappedOption = MappedProductOption
