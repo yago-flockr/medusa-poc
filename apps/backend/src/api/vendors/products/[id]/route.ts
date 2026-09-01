@@ -10,6 +10,7 @@ import {
 import type { UpdateVendorProduct } from "@dtc/api-contracts/vendor/products"
 import { resolveVendorUser } from "../../resolve-vendor-user"
 import { assertOwnedVendorProduct } from "../assert-owned-product"
+import { assertPublishableVendorProduct } from "../assert-publishable-product"
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<UpdateVendorProduct>,
@@ -23,6 +24,10 @@ export const POST = async (
   ])
 
   await assertOwnedVendorProduct(query, id, vendorUser.vendor_id)
+
+  if (req.validatedBody.status === "published") {
+    await assertPublishableVendorProduct(query, id)
+  }
 
   const { result } = await updateProductsWorkflow(req.scope).run({
     input: {

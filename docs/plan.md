@@ -570,3 +570,48 @@ in short form, with what's genuinely still open flagged as such:
   wiring it through the shared `packages/api-contracts` package, rather
   than leave a working capability backend-only with a locally-duplicated
   Zod schema.
+- **A product cannot go live unless it actually carries what checkout and
+  fulfilment need — enforced by a shared `assertPublishable` gate, not left
+  to the honesty of a form.** Building the vendor panel's create-product
+  form surfaced that core operational fields (`sku`, variant weight, a real
+  multi-option variant matrix) were optional and unenforced end-to-end — a
+  vendor could create a product with no way to look it up in Admin
+  Inventory and no weight to rate its shipping. The fix is a hard
+  requirement, not a friendlier form: a product cannot move to `published`
+  unless every variant carries what's actually operationally load-bearing
+  (`sku` and weight, at minimum — the exact list is expected to grow as the
+  shipping/tax picture firms up). Anything that only helps merchandising or
+  discovery (categories, tags, filters) stays optional and can be added
+  later without blocking a sale. One `assertPublishable`-style check is
+  called from the status-update path regardless of who's asking to publish
+  — a vendor, staff, or the Shopify sync job — not a UI-only warning a
+  vendor can dismiss.
+- **What happens to an incomplete product differs by where its data comes
+  from.** A manually-created vendor product missing a required field
+  simply cannot leave `draft`; the vendor completes it and moves it to
+  `proposed` themselves, the same gate every other product goes through. An
+  externally-synced (Shopify) product missing a required field is set to
+  `rejected` instead, because we do not hand-edit synced product data on
+  our side — that's the existing SSOT rule holding here too. If Shopify
+  itself doesn't have the field, the only way back to sellable is Shopify
+  supplying it on a later sync, never us patching it in from our side. That
+  re-check is manual, not automatic: pulling in a now-complete product does
+  not by itself flip it out of `rejected` — a vendor or staff member has to
+  trigger the re-evaluation. This trades a little staleness (a product can
+  sit `rejected` for a while after Shopify actually fixes the missing
+  field) for never silently reviving a listing nobody looked at again;
+  revisit if that staleness turns out to matter in practice. A
+  field that's genuinely safe to guess without creating a shipping or
+  checkout problem (a missing variant option like color or size) gets
+  auto-filled with a neutral default instead of blocking the product — but
+  nothing that affects a real operational outcome, weight above all, is
+  ever guessed: a sync missing weight rejects that variant, it never
+  defaults to zero or assumes a value.
+- **A stock location's address becomes required, reversing the "fully
+  optional" shape the location form shipped with earlier this same
+  session.** That earlier call was about never forcing a *link* between
+  vendor, product and location at creation time — it was never a decision
+  that a location's own address should be optional. An address-less
+  location can't have shipping rated from it, so it belongs in the same
+  "core, not cosmetic" bucket as SKU and weight above, not in the "add
+  later" bucket.

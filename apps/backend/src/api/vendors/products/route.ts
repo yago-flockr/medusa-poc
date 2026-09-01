@@ -19,6 +19,7 @@ import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisi
 import { parseListQuery } from "../../../lib/list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 import { resolveProductVariants } from "./build-variants"
+import { isVariantComplete } from "./product-completeness"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -93,6 +94,10 @@ export const POST = async (
     storeCurrencies,
   )
 
+  const status = variants.every(isVariantComplete)
+    ? ProductStatus.PROPOSED
+    : ProductStatus.DRAFT
+
   const { result } = await createVendorProductWorkflow(req.scope).run({
     input: {
       product: {
@@ -100,7 +105,7 @@ export const POST = async (
         subtitle,
         description,
         handle,
-        status: ProductStatus.PROPOSED,
+        status,
         shipping_profile_id: shippingProfileId,
         images: images ?? [],
         variants: productVariants,
