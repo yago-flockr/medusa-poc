@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { paginationMetaSchema, paginationQuerySchema } from "../common/pagination"
 
 export const vendorOrderSchema = z.object({
   id: z.string(),
@@ -13,20 +14,14 @@ export const vendorOrderSchema = z.object({
 
 export type VendorOrder = z.infer<typeof vendorOrderSchema>
 
-export const vendorOrdersListResponseSchema = z.object({
+export const vendorOrdersListResponseSchema = paginationMetaSchema.extend({
   orders: z.array(vendorOrderSchema),
-  count: z.number(),
-  limit: z.number(),
-  offset: z.number(),
 })
 
 export type VendorOrdersListResponse = z.infer<
   typeof vendorOrdersListResponseSchema
 >
 
-export const vendorOrdersQuerySchema = z.object({
-  limit: z.number().optional(),
-  offset: z.number().optional(),
-})
+export const vendorOrdersQuerySchema = paginationQuerySchema
 
 export type VendorOrdersQuery = z.infer<typeof vendorOrdersQuerySchema>

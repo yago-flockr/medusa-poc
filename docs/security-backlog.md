@@ -196,6 +196,24 @@ each was found while building or adversarially testing the marketplace spine
 
 ## Order/payment integrity (cross-reference)
 
+- **RESOLVED: `POST /store/carts/:id/complete-vendor` used to return the
+  internal `vendor_orders` array — each vendor's own split-off order object —
+  to the customer's unauthenticated browser session, with no response schema
+  and no reviewed decision that this should be customer-visible.** Found
+  while giving this route's response a proper contract as part of a
+  shared-types cleanup: the storefront (`placeOrder` in
+  `apps/storefront/src/store/lib/data/cart.ts`) only ever read `order` off
+  the response and ignored `vendor_orders`/`type` entirely, so it was unused,
+  unschemaed weight on the wire — not an active leak of anything beyond the
+  customer's own order data, but exposing internal per-vendor split
+  structure and whatever fields Medusa's `OrderDTO` happens to include by
+  default, unfiltered. Fixed by dropping `vendor_orders`/`type` from the
+  response — it's just `{ order }` now, matching what the storefront
+  actually reads. Still open: if the storefront is ever meant to show a
+  per-vendor delivery breakdown (per `docs/features/multi-vendor-marketplace.md`,
+  "the customer sees one order containing several deliveries"), that needs
+  an explicit, reviewed customer-facing shape defined at that point — not
+  the internal `OrderDTO` passed through as-is.
 - **The order-splitting model is explicitly not settled**
   (`docs/spikes/multi-vendor-order.md`) — child orders vs. consignment
   records. Not a security bug, but a correctness-under-retry concern

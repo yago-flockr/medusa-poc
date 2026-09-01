@@ -3,6 +3,7 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
 import { updateVendorWorkflow } from "../../../../../../../workflows/update-vendor"
 import { buildShopifyInstallLink } from "../../../../../../../integrations/shopify/oauth"
+import { vendorShopifyInstallLinkResponseSchema } from "@dtc/api-contracts/vendor/shopify-connection"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params
@@ -58,5 +59,5 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     host,
   })
 
-  res.json({ installLink })
+  res.json(vendorShopifyInstallLinkResponseSchema.parse({ installLink }))
 }

@@ -5,7 +5,11 @@ import {
 } from "@medusajs/framework/utils"
 import { updateBrandWorkflow } from "../../../../workflows/update-brand"
 import { deleteBrandWorkflow } from "../../../../workflows/delete-brand"
-import type { UpdateBrand } from "@dtc/api-contracts/admin/brands"
+import {
+  brandDeleteResponseSchema,
+  brandResponseSchema,
+  type UpdateBrand,
+} from "@dtc/api-contracts/admin/brands"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -26,7 +30,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     )
   }
 
-  res.json({ brand })
+  res.json(brandResponseSchema.parse({ brand }))
 }
 
 export const POST = async (
@@ -42,7 +46,7 @@ export const POST = async (
     },
   })
 
-  res.json({ brand: result })
+  res.json(brandResponseSchema.parse({ brand: result }))
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
@@ -52,9 +56,11 @@ export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
     input: { id },
   })
 
-  res.json({
-    id,
-    object: "brand",
-    deleted: true,
-  })
+  res.json(
+    brandDeleteResponseSchema.parse({
+      id,
+      object: "brand",
+      deleted: true,
+    }),
+  )
 }

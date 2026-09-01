@@ -4,7 +4,10 @@ import {
   ContainerRegistrationKeys,
 } from "@medusajs/framework/utils"
 import { updateVendorUserWorkflow } from "../../../../workflows/update-vendor-user"
-import type { UpdateVendorUser } from "@dtc/api-contracts/admin/vendor-users"
+import {
+  vendorUserResponseSchema,
+  type UpdateVendorUser,
+} from "@dtc/api-contracts/admin/vendor-users"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -25,7 +28,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     )
   }
 
-  res.json({ vendor_user: vendorUser })
+  res.json(vendorUserResponseSchema.parse({ vendor_user: vendorUser }))
 }
 
 export const POST = async (
@@ -41,5 +44,5 @@ export const POST = async (
     },
   })
 
-  res.json({ vendor_user: result })
+  res.json(vendorUserResponseSchema.parse({ vendor_user: result }))
 }

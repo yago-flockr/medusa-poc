@@ -1,5 +1,6 @@
 import { z } from "zod"
-import type { DeleteResponse, FindParams, PaginatedResponse } from "@medusajs/types"
+import type { FindParams } from "@medusajs/types"
+import { paginationMetaSchema } from "../common/pagination"
 
 export const brandSchema = z.object({
   id: z.string(),
@@ -20,13 +21,25 @@ export const brandListFiltersSchema = z.object({
 
 export type BrandListQuery = FindParams & z.infer<typeof brandListFiltersSchema>
 
-export type BrandListResponse = PaginatedResponse<{ brands: Brand[] }>
+export const brandListResponseSchema = paginationMetaSchema.extend({
+  brands: z.array(brandSchema),
+})
 
-export type BrandResponse = {
-  brand: Brand
-}
+export type BrandListResponse = z.infer<typeof brandListResponseSchema>
 
-export type BrandDeleteResponse = DeleteResponse<"brand">
+export const brandResponseSchema = z.object({
+  brand: brandSchema,
+})
+
+export type BrandResponse = z.infer<typeof brandResponseSchema>
+
+export const brandDeleteResponseSchema = z.object({
+  id: z.string(),
+  object: z.literal("brand"),
+  deleted: z.boolean(),
+})
+
+export type BrandDeleteResponse = z.infer<typeof brandDeleteResponseSchema>
 
 export const createBrandSchema = z
   .object({

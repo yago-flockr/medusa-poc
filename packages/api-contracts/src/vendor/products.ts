@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { paginationMetaSchema, paginationQuerySchema } from "../common/pagination"
 
 export const vendorProductStatusSchema = z.enum([
   "draft",
@@ -21,18 +22,12 @@ export const vendorProductSchema = z.object({
 
 export type VendorProduct = z.infer<typeof vendorProductSchema>
 
-export const vendorProductsQuerySchema = z.object({
-  limit: z.number().optional(),
-  offset: z.number().optional(),
-})
+export const vendorProductsQuerySchema = paginationQuerySchema
 
 export type VendorProductsQuery = z.infer<typeof vendorProductsQuerySchema>
 
-export const vendorProductsListResponseSchema = z.object({
+export const vendorProductsListResponseSchema = paginationMetaSchema.extend({
   products: z.array(vendorProductSchema),
-  count: z.number(),
-  limit: z.number(),
-  offset: z.number(),
 })
 
 export type VendorProductsListResponse = z.infer<
@@ -71,19 +66,27 @@ export const vendorProductOptionSchema = z
   })
   .strict()
 
+export type VendorProductOptionInput = z.infer<typeof vendorProductOptionSchema>
+
 export const vendorProductOptionsSchema = z
   .array(vendorProductOptionSchema)
   .max(5)
   .optional()
 
+export type VendorProductOptionsInput = z.infer<typeof vendorProductOptionsSchema>
+
 export const vendorProductImageSchema = z
-  .object({ url: z.string().url() })
+  .object({ url: z.url() })
   .strict()
+
+export type VendorProductImageInput = z.infer<typeof vendorProductImageSchema>
 
 export const vendorProductImagesSchema = z
   .array(vendorProductImageSchema)
   .max(5)
   .optional()
+
+export type VendorProductImagesInput = z.infer<typeof vendorProductImagesSchema>
 
 export const vendorProductVariantSchema = z
   .object({
@@ -98,10 +101,14 @@ export const vendorProductVariantSchema = z
   })
   .strict()
 
+export type VendorProductVariantInput = z.infer<typeof vendorProductVariantSchema>
+
 export const vendorProductVariantsSchema = z
   .array(vendorProductVariantSchema)
   .min(1)
   .max(50)
+
+export type VendorProductVariantsInput = z.infer<typeof vendorProductVariantsSchema>
 
 export const createVendorProductSchema = z
   .object({

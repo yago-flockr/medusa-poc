@@ -9,7 +9,7 @@ import {
   type VendorOrder,
   type VendorOrdersListResponse,
 } from "@dtc/api-contracts/vendor/orders"
-import { parseVendorListQuery } from "../list-query"
+import { parseListQuery } from "../../../lib/list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 
 export const GET = async (
@@ -17,7 +17,7 @@ export const GET = async (
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const { limit, offset } = parseVendorListQuery(req.query)
+  const { limit, offset } = parseListQuery(req.query)
 
   const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
     "vendor.orders.id",

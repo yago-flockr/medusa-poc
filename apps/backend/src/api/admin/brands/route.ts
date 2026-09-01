@@ -1,7 +1,11 @@
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createBrandWorkflow } from "../../../workflows/create-brand"
-import type { CreateBrand } from "@dtc/api-contracts/admin/brands"
+import {
+  brandListResponseSchema,
+  brandResponseSchema,
+  type CreateBrand,
+} from "@dtc/api-contracts/admin/brands"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -13,12 +17,14 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
       ...req.queryConfig,
     })
 
-  res.json({
-    brands,
-    count,
-    limit: take,
-    offset: skip,
-  })
+  res.json(
+    brandListResponseSchema.parse({
+      brands,
+      count,
+      limit: take,
+      offset: skip,
+    }),
+  )
 }
 
 export const POST = async (
@@ -29,5 +35,5 @@ export const POST = async (
     input: req.validatedBody,
   })
 
-  res.json({ brand: result })
+  res.json(brandResponseSchema.parse({ brand: result }))
 }

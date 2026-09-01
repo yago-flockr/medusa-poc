@@ -16,7 +16,7 @@ import {
 } from "@dtc/api-contracts/vendor/products"
 import { createVendorProductWorkflow } from "../../../workflows/create-vendor-product"
 import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
-import { parseVendorListQuery } from "../list-query"
+import { parseListQuery } from "../../../lib/list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 import { resolveProductVariants } from "./build-variants"
 
@@ -25,7 +25,7 @@ export const GET = async (
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const { limit, offset } = parseVendorListQuery(req.query)
+  const { limit, offset } = parseListQuery(req.query)
 
   const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
     "vendor_id",

@@ -1,5 +1,6 @@
 import { z } from "zod"
-import type { FindParams, PaginatedResponse } from "@medusajs/types"
+import type { FindParams } from "@medusajs/types"
+import { paginationMetaSchema } from "../common/pagination"
 
 export const vendorUserSchema = z.object({
   id: z.string(),
@@ -24,27 +25,39 @@ export const vendorUserListFiltersSchema = z.object({
 export type VendorUserListQuery = FindParams &
   z.infer<typeof vendorUserListFiltersSchema>
 
-export type VendorUserListResponse = PaginatedResponse<{
-  vendor_users: VendorUser[]
-}>
+export const vendorUserListResponseSchema = paginationMetaSchema.extend({
+  vendor_users: z.array(vendorUserSchema),
+})
 
-export type VendorUserResponse = {
-  vendor_user: VendorUser
-}
+export type VendorUserListResponse = z.infer<typeof vendorUserListResponseSchema>
 
-export type VendorUserWithPasswordResponse = {
-  vendor_user: VendorUser
-  password: string
-}
+export const vendorUserResponseSchema = z.object({
+  vendor_user: vendorUserSchema,
+})
 
-export type RegeneratePasswordResponse = {
-  password: string
-}
+export type VendorUserResponse = z.infer<typeof vendorUserResponseSchema>
+
+export const vendorUserWithPasswordResponseSchema = z.object({
+  vendor_user: vendorUserSchema,
+  password: z.string(),
+})
+
+export type VendorUserWithPasswordResponse = z.infer<
+  typeof vendorUserWithPasswordResponseSchema
+>
+
+export const regeneratePasswordResponseSchema = z.object({
+  password: z.string(),
+})
+
+export type RegeneratePasswordResponse = z.infer<
+  typeof regeneratePasswordResponseSchema
+>
 
 export const createVendorUserSchema = z
   .object({
     vendor_id: z.string().trim().min(1, "Vendor is required"),
-    email: z.string().trim().email("A valid email is required"),
+    email: z.string().trim().pipe(z.email("A valid email is required")),
     first_name: z
       .string()
       .transform((value) => {

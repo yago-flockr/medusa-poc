@@ -6,7 +6,11 @@ import {
 import { updateVendorWorkflow } from "../../../../workflows/update-vendor"
 import { deleteVendorWorkflow } from "../../../../workflows/delete-vendor"
 import { mapVendorConnectionFields } from "../map-vendor-response"
-import type { UpdateVendor } from "@dtc/api-contracts/admin/vendors"
+import {
+  vendorDeleteResponseSchema,
+  vendorResponseSchema,
+  type UpdateVendor,
+} from "@dtc/api-contracts/admin/vendors"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -27,7 +31,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     )
   }
 
-  res.json({ vendor: mapVendorConnectionFields(vendor) })
+  res.json(vendorResponseSchema.parse({ vendor: mapVendorConnectionFields(vendor) }))
 }
 
 export const POST = async (
@@ -49,7 +53,7 @@ export const POST = async (
     ...req.queryConfig,
   })
 
-  res.json({ vendor: mapVendorConnectionFields(vendor) })
+  res.json(vendorResponseSchema.parse({ vendor: mapVendorConnectionFields(vendor) }))
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
@@ -59,9 +63,11 @@ export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
     input: { id },
   })
 
-  res.json({
-    id,
-    object: "vendor",
-    deleted: true,
-  })
+  res.json(
+    vendorDeleteResponseSchema.parse({
+      id,
+      object: "vendor",
+      deleted: true,
+    }),
+  )
 }

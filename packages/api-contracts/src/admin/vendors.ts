@@ -1,5 +1,6 @@
 import { z } from "zod"
-import type { FindParams, PaginatedResponse } from "@medusajs/types"
+import type { FindParams } from "@medusajs/types"
+import { paginationMetaSchema } from "../common/pagination"
 import {
   vendorIntegrationConnectionProviderSchema,
   vendorIntegrationConnectionSchema,
@@ -44,11 +45,25 @@ export const vendorListFiltersSchema = z.object({
 export type VendorListQuery = FindParams &
   z.infer<typeof vendorListFiltersSchema>
 
-export type VendorListResponse = PaginatedResponse<{ vendors: Vendor[] }>
+export const vendorListResponseSchema = paginationMetaSchema.extend({
+  vendors: z.array(vendorSchema),
+})
 
-export type VendorResponse = {
-  vendor: Vendor
-}
+export type VendorListResponse = z.infer<typeof vendorListResponseSchema>
+
+export const vendorResponseSchema = z.object({
+  vendor: vendorSchema,
+})
+
+export type VendorResponse = z.infer<typeof vendorResponseSchema>
+
+export const vendorDeleteResponseSchema = z.object({
+  id: z.string(),
+  object: z.literal("vendor"),
+  deleted: z.boolean(),
+})
+
+export type VendorDeleteResponse = z.infer<typeof vendorDeleteResponseSchema>
 
 export const createVendorSchema = z
   .object({
@@ -105,6 +120,10 @@ export const updateVendorIntegrationConnectionSchema = z
         "At least one of external_account_identifier, client_id, or client_secret is required",
     },
   )
+
+export type UpdateVendorIntegrationConnection = z.infer<
+  typeof updateVendorIntegrationConnectionSchema
+>
 
 export const updateVendorSchema = z
   .object({

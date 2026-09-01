@@ -32,6 +32,17 @@ export type PulledShopifyProductWithStatus = z.infer<
   typeof pulledShopifyProductWithStatusSchema
 >
 
+export const pullShopifyProductsResponseSchema = z.object({
+  currencyCode: z.string(),
+  requestedQueryCost: z.number().optional(),
+  hasNextPage: z.boolean(),
+  products: z.array(shopifyPulledProductSchema),
+})
+
+export type PullShopifyProductsResponse = z.infer<
+  typeof pullShopifyProductsResponseSchema
+>
+
 export const pullVendorShopifyProductsResponseSchema = z.object({
   currencyCode: z.string(),
   requestedQueryCost: z.number().optional(),

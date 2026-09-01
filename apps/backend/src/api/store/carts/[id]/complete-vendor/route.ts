@@ -8,9 +8,5 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     input: { cart_id: id },
   })
 
-  res.json({
-    type: "order",
-    order: result.order,
-    vendor_orders: result.vendorOrders,
-  })
+  res.json({ order: result.order })
 }

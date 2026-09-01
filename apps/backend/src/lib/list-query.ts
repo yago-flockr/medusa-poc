@@ -1,15 +1,15 @@
 import { z } from "@medusajs/framework/zod"
 import { MedusaError } from "@medusajs/framework/utils"
 
-const vendorListQuerySchema = z.object({
+const listQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   offset: z.coerce.number().int().min(0).default(0),
 })
 
-export type VendorListQuery = z.infer<typeof vendorListQuerySchema>
+export type ListQuery = z.infer<typeof listQuerySchema>
 
-export function parseVendorListQuery(query: unknown): VendorListQuery {
-  const result = vendorListQuerySchema.safeParse(query)
+export function parseListQuery(query: unknown): ListQuery {
+  const result = listQuerySchema.safeParse(query)
 
   if (!result.success) {
     throw new MedusaError(
