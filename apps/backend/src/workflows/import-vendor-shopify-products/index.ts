@@ -42,7 +42,7 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
     const [matched, prerequisites] = parallelize(
       matchExistingShopifyProductsStep({ products: pulled.products }),
       resolveShopifyProductPrerequisitesStep({
-        shopCurrencyCode: pulled.currencyCode,
+        shopCurrencyCode: pulled.currency_code,
       }),
     )
 

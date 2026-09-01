@@ -8,9 +8,9 @@ import { runShopifyQuery, type ShopifyStoreCredentials } from "./client"
 export type ShopifyProduct = ShopifyPulledProduct
 
 export type ShopifyProductsPullResult = {
-  currencyCode: string
-  requestedQueryCost?: number
-  hasNextPage: boolean
+  currency_code: string
+  requested_query_cost?: number
+  has_next_page: boolean
   products: ShopifyProduct[]
 }
 
@@ -91,7 +91,7 @@ function mapShopifyProductNode(p: ShopifyProductFieldsNode): ShopifyProduct {
       title: v.node.title,
       sku: v.node.sku ?? null,
       price: v.node.price,
-      inventoryQuantity: v.node.inventoryQuantity ?? null,
+      inventory_quantity: v.node.inventoryQuantity ?? null,
       options: v.node.selectedOptions,
     })),
     collections: p.collections.edges.map((c) => c.node.handle),
@@ -109,15 +109,15 @@ export async function pullShopifyProducts(
   )
 
   return {
-    currencyCode: data.shop.currencyCode,
-    requestedQueryCost: cost?.requestedQueryCost,
-    hasNextPage: data.products.pageInfo.hasNextPage,
+    currency_code: data.shop.currencyCode,
+    requested_query_cost: cost?.requestedQueryCost,
+    has_next_page: data.products.pageInfo.hasNextPage,
     products: data.products.edges.map((edge) => mapShopifyProductNode(edge.node)),
   }
 }
 
 export type ShopifyProductsByIdsResult = {
-  currencyCode: string
+  currency_code: string
   products: ShopifyProduct[]
 }
 
@@ -126,7 +126,7 @@ export async function pullShopifyProductsByIds(
   shopifyIds: string[],
 ): Promise<ShopifyProductsByIdsResult> {
   if (shopifyIds.length === 0) {
-    return { currencyCode: "", products: [] }
+    return { currency_code: "", products: [] }
   }
 
   // Shopify caps how many ids `nodes(ids:)` accepts per call.
@@ -141,7 +141,7 @@ export async function pullShopifyProductsByIds(
   )
 
   return {
-    currencyCode: batches[0].data.shop.currencyCode,
+    currency_code: batches[0].data.shop.currencyCode,
     products: batches.flatMap((batch) =>
       batch.data.nodes
         .filter(isShopifyProductNode)

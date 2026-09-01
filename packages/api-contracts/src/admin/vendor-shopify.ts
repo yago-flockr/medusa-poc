@@ -10,7 +10,7 @@ import { shopifyPulledProductSchema } from "../vendor/shopify-products"
 // computes that).
 
 export const generateVendorShopifyInstallLinkResponseSchema = z.object({
-  installLink: z.string(),
+  install_link: z.string(),
 })
 
 export type GenerateVendorShopifyInstallLinkResponse = z.infer<
@@ -18,9 +18,9 @@ export type GenerateVendorShopifyInstallLinkResponse = z.infer<
 >
 
 export const pullVendorShopifyProductsResponseSchema = z.object({
-  currencyCode: z.string(),
-  requestedQueryCost: z.number().optional(),
-  hasNextPage: z.boolean(),
+  currency_code: z.string(),
+  requested_query_cost: z.number().optional(),
+  has_next_page: z.boolean(),
   products: z.array(shopifyPulledProductSchema),
 })
 

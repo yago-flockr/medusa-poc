@@ -36,7 +36,7 @@ export default function VendorShopifyPage() {
       onSuccess: () => {
         getMe.refetch()
         getShopifyInstallLink.mutate(undefined, {
-          onSuccess: ({ installLink }) => {
+          onSuccess: ({ install_link: installLink }) => {
             window.open(installLink, "_blank")
           },
         })

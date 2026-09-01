@@ -38,7 +38,7 @@ export const syncShopifyProductsWorkflow = createWorkflow(
     const [filtered, prerequisites] = parallelize(
       filterNewShopifyProductsStep({ products: pulled.products }),
       resolveShopifyProductPrerequisitesStep({
-        shopCurrencyCode: pulled.currencyCode,
+        shopCurrencyCode: pulled.currency_code,
       }),
     )
 

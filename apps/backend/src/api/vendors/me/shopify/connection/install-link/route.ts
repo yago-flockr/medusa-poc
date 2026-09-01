@@ -57,7 +57,7 @@ export const GET = async (
     host,
   })
 
-  const response: GetVendorShopifyInstallLinkResponse = { installLink }
+  const response: GetVendorShopifyInstallLinkResponse = { install_link: installLink }
 
   res.json(getVendorShopifyInstallLinkResponseSchema.parse(response))
 }

@@ -115,7 +115,7 @@ const VendorsPage = () => {
           label: "Copy Install Link",
           onClick: () => {
             generateShopifyInstallLink.mutate(ctx.row.original.id, {
-              onSuccess: async ({ installLink }) => {
+              onSuccess: async ({ install_link: installLink }) => {
                 try {
                   await navigator.clipboard.writeText(installLink)
                   toast.success("Install link copied to clipboard")

@@ -16,7 +16,7 @@ function isUnavailable(
   }
 
   const variant = product.variants.find((v) => v.title === item.variantTitle)
-  const availableQuantity = variant?.inventoryQuantity
+  const availableQuantity = variant?.inventory_quantity
 
   return (
     !variant ||

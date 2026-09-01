@@ -15,7 +15,7 @@ export const shopifyPulledProductSchema = z.object({
       title: z.string(),
       sku: z.string().nullable(),
       price: z.string(),
-      inventoryQuantity: z.number().nullable(),
+      inventory_quantity: z.number().nullable(),
       options: z.array(z.object({ name: z.string(), value: z.string() })),
     }),
   ),
@@ -33,9 +33,9 @@ export type PulledShopifyProductWithStatus = z.infer<
 >
 
 export const pullVendorShopifyProductsResponseSchema = z.object({
-  currencyCode: z.string(),
-  requestedQueryCost: z.number().optional(),
-  hasNextPage: z.boolean(),
+  currency_code: z.string(),
+  requested_query_cost: z.number().optional(),
+  has_next_page: z.boolean(),
   products: z.array(pulledShopifyProductWithStatusSchema),
 })
 

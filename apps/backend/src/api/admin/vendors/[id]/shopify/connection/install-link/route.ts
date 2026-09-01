@@ -59,5 +59,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     host,
   })
 
-  res.json(generateVendorShopifyInstallLinkResponseSchema.parse({ installLink }))
+  res.json(
+    generateVendorShopifyInstallLinkResponseSchema.parse({ install_link: installLink }),
+  )
 }

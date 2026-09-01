@@ -22,7 +22,7 @@ export type SetVendorShopifyConnectionResponse = z.infer<
 >
 
 export const getVendorShopifyInstallLinkResponseSchema = z.object({
-  installLink: z.string(),
+  install_link: z.string(),
 })
 
 export type GetVendorShopifyInstallLinkResponse = z.infer<

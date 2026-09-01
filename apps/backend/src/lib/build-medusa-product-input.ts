@@ -83,7 +83,7 @@ function toMedusaVariants(
   return product.variants.map((variant) => ({
     title: variant.title,
     sku: variant.sku,
-    manage_inventory: variant.inventoryQuantity !== null,
+    manage_inventory: variant.inventory_quantity !== null,
     options: toMedusaVariantOptions(variant),
     prices: [{ amount: Number(variant.price), currency_code: currencyCode }],
   }))
