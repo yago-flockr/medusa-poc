@@ -19,6 +19,7 @@ import { assertExternalAvailabilityStep } from "./steps/assert-external-availabi
 import { assertItemsFulfillableStep } from "./steps/assert-items-fulfillable"
 import { createVendorOrdersStep } from "./steps/create-vendor-orders"
 import { groupVendorItemsStep } from "./steps/group-vendor-items"
+import { recordExternalSaleStep } from "./steps/record-external-sale"
 import { resolveVendorOrdersStep } from "./steps/resolve-vendor-orders"
 
 export type CreateVendorOrdersWorkflowInput = {
@@ -122,6 +123,15 @@ export const createVendorOrdersWorkflow = createWorkflow(
     // retry after a client timeout would return vendorOrders: undefined
     // even though the vendor orders exist in the DB.
     const vendorOrders = resolveVendorOrdersStep({ orderId, parentOrder: order })
+
+    when(
+      "record-external-sale",
+      { existingVendorLinks, existingChildOrders },
+      (data) =>
+        data.existingVendorLinks.length === 0 && data.existingChildOrders.length === 0,
+    ).then(() => {
+      recordExternalSaleStep({ vendorOrders })
+    })
 
     releaseLockStep({ key: input.cart_id })
 

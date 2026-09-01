@@ -1,12 +1,13 @@
 import type {
   CatalogProvider,
-  ExternalAvailabilityCheckItem,
+  ExternalCatalogItem,
   ExternalConnectionCredentials,
 } from "../catalog-provider"
+import { decrementShopifyInventory } from "./inventory"
 import { pullShopifyProductsByIds } from "./products"
 
 function isUnavailable(
-  item: ExternalAvailabilityCheckItem,
+  item: ExternalCatalogItem,
   productByExternalId: Map<string, Awaited<ReturnType<typeof pullShopifyProductsByIds>>["products"][number]>,
 ) {
   const product = productByExternalId.get(item.externalProductId)
@@ -29,7 +30,7 @@ function isUnavailable(
 export const shopifyCatalogProvider: CatalogProvider = {
   async checkAvailability(
     credentials: ExternalConnectionCredentials,
-    items: ExternalAvailabilityCheckItem[],
+    items: ExternalCatalogItem[],
   ) {
     const externalIds = [...new Set(items.map((item) => item.externalProductId))]
 
@@ -48,5 +49,19 @@ export const shopifyCatalogProvider: CatalogProvider = {
       .map((item) => item.label)
 
     return { unavailableLabels }
+  },
+
+  async recordSale(credentials: ExternalConnectionCredentials, items: ExternalCatalogItem[]) {
+    await decrementShopifyInventory(
+      {
+        storeDomain: credentials.external_account_identifier,
+        accessToken: credentials.access_token,
+      },
+      items.map((item) => ({
+        shopifyProductId: item.externalProductId,
+        variantTitle: item.variantTitle,
+        quantity: item.quantity,
+      })),
+    )
   },
 }
