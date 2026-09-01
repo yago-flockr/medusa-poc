@@ -27,6 +27,12 @@ import {
   vendorProductsListResponseSchema,
   vendorProductsQuerySchema,
 } from "./products"
+import {
+  createVendorStockLocationResponseSchema,
+  createVendorStockLocationSchema,
+  vendorStockLocationsListResponseSchema,
+  vendorStockLocationsQuerySchema,
+} from "./stock-locations"
 
 const c = initContract()
 
@@ -113,6 +119,22 @@ export const vendorContract = c.router({
     path: "/vendors/products/:id",
     responses: {
       200: deleteVendorProductResponseSchema,
+    },
+  },
+  getStockLocations: {
+    method: "GET",
+    path: "/vendors/stock-locations",
+    query: vendorStockLocationsQuerySchema,
+    responses: {
+      200: vendorStockLocationsListResponseSchema,
+    },
+  },
+  createStockLocation: {
+    method: "POST",
+    path: "/vendors/stock-locations",
+    body: createVendorStockLocationSchema,
+    responses: {
+      200: createVendorStockLocationResponseSchema,
     },
   },
 })

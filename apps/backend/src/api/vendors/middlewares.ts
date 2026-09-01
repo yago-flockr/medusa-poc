@@ -5,6 +5,7 @@ import {
 import { vendorCors } from "./cors"
 import { vendorMeRoutesMiddlewares } from "./me/middlewares"
 import { vendorProductRoutesMiddlewares } from "./products/middlewares"
+import { vendorStockLocationRoutesMiddlewares } from "./stock-locations/middlewares"
 import { vendorUploadRoutesMiddlewares } from "./uploads/middlewares"
 
 // Vendors are created by staff from the Admin panel (see api/admin/vendors
@@ -17,5 +18,6 @@ export const vendorRoutesMiddlewares: MiddlewareRoute[] = [
   },
   ...vendorMeRoutesMiddlewares,
   ...vendorProductRoutesMiddlewares,
+  ...vendorStockLocationRoutesMiddlewares,
   ...vendorUploadRoutesMiddlewares,
 ]
