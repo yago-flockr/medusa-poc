@@ -90,8 +90,12 @@ when a vendor handles the physical return.
 - **The customer never pays twice or is charged per vendor.** One payment, always.
 - Vendors join and leave, and products are discontinued often. Churn is normal
   operation, not an exception to handle later.
-- Unknown: whether vendors also sell the same stock elsewhere. If they do, someone
-  has to be right when two systems disagree.
+- **Answered for the Shopify case, not in general:** a vendor does sell the same
+  physical stock elsewhere too. For a Shopify-connected vendor we don't try to keep
+  the two systems agreeing — the vendor books us an explicit quantity, separate from
+  what they carry on Shopify, and an oversell across both is accepted as the vendor's
+  to manage, not something we detect. See `docs/features/vendor-shopify-sync.md`.
+  Still open for any other channel a vendor might sell through.
 
 ## The consignment lifecycle
 

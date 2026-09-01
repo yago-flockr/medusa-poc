@@ -9,11 +9,13 @@
 
 ## What we want
 
-A vendor's own product catalogue, imagery, variants and stock reach our marketplace
-straight from the Shopify store they already run, without anyone at the vendor or on
-our staff re-typing it into us. The moment we sell one of their items, their own
-Shopify reflects the reduced stock and holds a record of that sale ready for them to
-pick, pack and ship — exactly as if the sale had happened on their own store.
+A vendor's own product catalogue — title, price, imagery, variants — reaches our
+marketplace straight from the Shopify store they already run, without anyone at the
+vendor or on our staff re-typing it into us. Stock is the one thing that doesn't flow
+from Shopify: the vendor tells us directly how many of each variant they're choosing
+to make sellable through us, separately from whatever they carry on Shopify. From
+there it's ours to hold and release like any other product's stock — we never ask
+Shopify what's left, and we never tell it what we sold.
 
 ## Why
 
@@ -37,14 +39,17 @@ staff was never able to do this step on the vendor's behalf.
 
 **Bringing the catalogue in.** Once connected, the vendor sees their Shopify catalogue
 and chooses what to bring across — this isn't an all-or-nothing dump of everything in
-their store. Whatever they choose to import goes through the same review before
-customers can see it (see "Approval" below).
+their store. For each variant they bring in, they also say how many they're making
+available through us — a number they set, not one read off Shopify. Whatever they
+choose to import goes through the same review before customers can see it (see
+"Approval" below).
 
-**Staying current.** A Shopify-connected product's price and stock are refreshed (a)
-whenever the vendor logs into their panel, (b) on a periodic schedule regardless of
-whether the vendor logs in, and (c) live, right before a customer's payment for it is
-taken — this last check is what actually protects against a sale racing a stock
-change, not the other two. Full mechanics: `docs/plan.md` Decisions.
+**Staying current.** A Shopify-connected product's catalogue fields — price, title,
+images, variants — are refreshed (a) whenever the vendor logs into their panel, and
+(b) on a periodic schedule regardless of whether the vendor logs in. Stock isn't part
+of this refresh; it's set once when the vendor books it and changed only by the
+vendor, or by an order actually placed through us. Full mechanics: `docs/plan.md`
+Decisions.
 
 **Who can change what.** A product's own data — title, price, images, variants —
 always comes from wherever it was created and never from the other side. If it
@@ -63,10 +68,10 @@ staff. Staff can still review from Admin too; that path wasn't removed, it's jus
 longer the only one. The source of the data still doesn't change the rule: import or
 re-sync, the review step (whoever performs it) is identical either way.
 
-**Selling.** When a customer buys one of that vendor's items through us, their Shopify
-stock drops by the quantity sold and a record of the sale appears there for the vendor
-to fulfil — the same place they'd see an order from any other channel they sell
-through.
+**Selling.** When a customer buys one of that vendor's items through us, the order and
+the stock it consumes both stay entirely on our side. Nothing reaches Shopify — the
+vendor sees the order the same place they'd see any order placed through us, not
+inside Shopify.
 
 **Fulfilling.** The vendor dispatches from their own Shopify as they normally would.
 Dispatch and tracking information they record there reaches us and the customer
@@ -79,18 +84,22 @@ connection is restored.
 
 ## Rules we already know
 
-- **The vendor's Shopify is the source of truth for their own product data, imagery,
-  variants and stock.** We never overwrite it with our own view of the truth.
-- **We only ever tell a vendor's Shopify that a sale happened** — a quantity sold, an
-  order to fulfil. We never push our own stock count into their store.
+- **The vendor's Shopify is the source of truth for their own product data and
+  imagery — never stock.** We never overwrite title, price, images or variants with
+  our own view. Stock is the opposite: it's ours from the moment the vendor books it,
+  and Shopify's own view of it is never consulted again.
+- **We never tell a vendor's Shopify anything.** No sale, no order, no stock
+  decrement. The connection is read-only, catalogue in, nothing back out.
 - **The review step applies identically regardless of where a product came from,
   or who performs it.** A product landing at `proposed` behaves the same whether it
   arrived via sync or by hand, and whether it's the vendor or staff who moves it to
   `published`.
 - **Returns and payouts are never sent back to a vendor's Shopify.** Those stay
   entirely on our side, start to finish.
-- **A vendor keeps selling on their own Shopify at the same time as through us.** Both
-  places must agree about what's actually in stock.
+- **A vendor may keep selling the same physical stock on their own Shopify at the same
+  time as through us, and the two are never reconciled.** The vendor's booked
+  quantity is a deliberate allocation, not a live mirror — if they oversell across
+  both channels, that's on them to manage, not something we detect or prevent.
 - **A vendor is invited by staff, but connects their own store themselves.** Nobody
   reaches the connection step without being invited first; nobody but the vendor can
   take the connection step itself, since staff has no access to the vendor's own
@@ -102,8 +111,9 @@ connection is restored.
 
 ## What each audience sees
 
-**Vendor** — nothing new to learn. They keep running their Shopify store exactly as
-before; our sales just show up there as orders like any other channel.
+**Vendor** — they keep running their Shopify store exactly as before; a sale through
+us never shows up there. They see it, and manage the stock they've allocated to us,
+entirely inside our own panel — a separate pool from whatever they carry on Shopify.
 
 **Customer** — no visible difference. Buying a Shopify-connected vendor's product
 looks identical to buying anything else in the marketplace.
@@ -117,9 +127,10 @@ regardless of source.
 - **A vendor's Shopify connection breaks or is revoked.** Sync pauses; staff can see
   which vendor and since when; what customers already see from that vendor stays as
   it last was rather than vanishing.
-- **Someone buys the last unit through us at nearly the same moment someone else buys
-  it on the vendor's own Shopify.** This is a known risk with no agreed answer yet —
-  see Open Questions.
+- **Someone buys the last unit through us at nearly the same moment the vendor sells
+  the same physical item on their own Shopify.** Accepted, not prevented — see "A
+  vendor may keep selling the same physical stock..." above. The vendor's booked
+  quantity is what we trust; we never check Shopify to catch this.
 - **A vendor's synced product is missing something we require** (for shipping, duty,
   or accessibility). It doesn't reach customers, exactly as a manually entered
   incomplete product wouldn't.
@@ -128,14 +139,6 @@ regardless of source.
 
 ## Open questions
 
-- **Answered in shape, not yet built: what happens when a sale on our marketplace and
-  a sale on the vendor's own Shopify race for the same last unit?** A live check
-  against Shopify runs immediately before payment is taken, so the race is caught at
-  the one moment it actually matters rather than relying on however fresh our synced
-  copy happens to be. See `docs/plan.md` Decisions for the full mechanics.
-- **Newly open, a product decision — what happens when that live check finds the
-  price has moved since the customer saw it in their cart?** Block checkout and ask
-  them to reconfirm, or silently honor the new price.
 - **Can we ever show a different price than the vendor's own Shopify says, or must
   their price always be what the customer pays?** Unconfirmed with the client. The
   markup/discount layered on top of the synced price (see "Who can change what"
@@ -149,10 +152,11 @@ regardless of source.
 ## How we know it works
 
 A vendor's real Shopify store is connected once. Their existing catalogue appears here
-awaiting approval without anyone typing it in. Approving it makes it visible to
-customers. Buying one of those items reduces stock on the vendor's actual Shopify and
-produces a record they can fulfil from. The vendor changing their own stock updates
-what we show, without staff touching an admin screen to make that happen.
+awaiting approval without anyone typing it in, alongside the quantity the vendor
+booked for each variant. Approving it makes it visible to customers. Buying one of
+those items holds and decrements stock entirely on our side — nothing reaches
+Shopify, and nothing from Shopify's own stock count is ever read again for that
+variant.
 
 ## Out of scope
 

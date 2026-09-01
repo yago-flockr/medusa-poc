@@ -215,12 +215,20 @@ Most of these have now been answered by Sensus specifically — see
 in short form, with what's genuinely still open flagged as such:
 
 - **Vendor catalogue arrival — answered.** By connecting the vendor's own
-  Shopify store, not by hand or upload. Two-way sync (product, stock, order,
-  fulfilment-status) is treated as core, not optional.
-- **Stock shared with other sales channels — answered, implicitly.** A
-  vendor keeps selling on their own Shopify too, so yes. Their Shopify is
-  authoritative for their own stock; we sync it in read-only and never write
-  a stock *level* back, only a sale's decrement.
+  Shopify store, not by hand or upload. Catalogue (product, price, images,
+  variants) syncs in this way. **Reopened, not yet re-confirmed with Sensus:**
+  the "two-way, including stock and order" half of this answer is what our own
+  build attempted first and then walked back — see the entry below.
+- **Stock shared with other sales channels — reopened, needs re-confirming
+  with Sensus.** The answer recorded here was "yes, and their Shopify stays
+  authoritative for it, synced in read-only with a sale's decrement written
+  back." Building that surfaced real problems (see the Decisions entry
+  "Superseded — stock is no longer part of what syncs from Shopify"), so for
+  this first version the vendor instead books us an explicit quantity,
+  independent of their Shopify stock, and we never read or write Shopify's
+  stock at all. This is our own engineering call for v1, not something Sensus
+  has agreed to yet — needs a real conversation before it can move back to
+  "answered."
 - **Shipping/commission/fee division — answered.** Per-brand commission
   rates, applied at line level, net of refunds and chargebacks. Exact
   numbers (whether commission includes processing/FX fees) still
@@ -408,20 +416,26 @@ in short form, with what's genuinely still open flagged as such:
   they raised no objection. Revisit public distribution only if vendor
   onboarding volume ever makes staff repeating this per vendor the actual
   bottleneck, not before.
-- **A vendor's catalogue and stock arrive via Shopify sync, not a vendor
-  panel — the biggest single change from Sensus's answers.** Each vendor
-  runs their own, independent Shopify store; we don't build or touch its
-  UI. Our Next.js storefront stays our own build (confirmed both by the
-  client's answer and by the team's own preference for it) and remains the
-  actual marketplace shopping experience a customer uses — this is not
-  Shopify's own storefront/theme. What changes is where a vendor's product
-  data comes from: read in via the Shopify Admin API/webhooks
-  (`products/update`, `inventory_levels/update` — Shopify's own documented
-  pattern for exactly this "feed a centralized system" use case, not
-  something we're improvising), written back out with `inventoryAdjustQuantities`
-  and an `orderCreate`/`draftOrderCreate` when we sell one of their items,
-  so their own stock and fulfilment queue reflect the sale. Connecting a
-  vendor is an OAuth app install per store (`@shopify/shopify-api`), **not**
+- **A vendor's catalogue arrives via Shopify sync, not a vendor panel — the
+  biggest single change from Sensus's answers.** Each vendor runs their own,
+  independent Shopify store; we don't build or touch its UI. Our Next.js
+  storefront stays our own build (confirmed both by the client's answer and
+  by the team's own preference for it) and remains the actual marketplace
+  shopping experience a customer uses — this is not Shopify's own
+  storefront/theme. What changes is where a vendor's product data comes
+  from: read in via the Shopify Admin API (`products/update` and similar —
+  Shopify's own documented pattern for exactly this "feed a centralized
+  system" use case, not something we're improvising). **Reopened, not yet
+  re-confirmed with Sensus: stock is no longer part of what's read in, and
+  nothing is ever written back to Shopify** — no `inventoryAdjustQuantities`,
+  no `orderCreate`. The vendor books an explicit sellable quantity for us
+  directly, and their Shopify fulfilment queue never hears about a sale made
+  through us. Sensus's original answer assumed the opposite (their own stock
+  and fulfilment queue reflecting our sales); this is our own engineering
+  call for a first version, made after building the two-way version and
+  finding it didn't actually hold together — see
+  `docs/spikes/vendor-shopify-sync.md` "Update: stock sync dropped entirely."
+  Connecting a vendor is an OAuth app install per store (`@shopify/shopify-api`), **not**
   a single shared API key — Shopify's terms forbid the simpler
   one-token-per-store "custom app" method across more than one merchant,
   so this needs a proper (if privately-distributed) OAuth app, not a
@@ -505,6 +519,38 @@ in short form, with what's genuinely still open flagged as such:
   decision, not a technical one:** when layer 3 finds the live price has
   moved since the customer saw it in cart, do we block checkout and ask
   them to reconfirm, or silently honor the new price?
+- **Superseded — stock is no longer part of what syncs from Shopify, in
+  either direction.** The entry above (layer 3's live check, and the
+  "sale flows out" write-back it was meant to pair with) assumed Shopify
+  was the source of truth for a Shopify-connected vendor's stock. Building
+  the write-back half surfaced two problems that changed the call: (1)
+  Medusa's own `updateProductsWorkflow` — the workflow any re-sync after
+  the first import has to use — has no code path that creates or updates
+  an inventory level for any variant, in either direction; combined with
+  variants being fully replaced on every re-sync (no per-variant Shopify
+  id tracked, unchanged from the spike's own finding), a synced stock
+  number could never actually survive a second sync. (2) Even solved,
+  syncing stock still meant checkout depending on a live Shopify API call
+  in the critical path, and never actually closed the double-sell race
+  the sync spike named — it only shrank the window.
+  **New decision: a Shopify-connected vendor's catalogue (title, price,
+  images, variants) still syncs in exactly as before, but stock does not.**
+  The vendor books an explicit quantity per variant — how much they're
+  choosing to make sellable through us — separately from whatever they
+  carry on Shopify. From that point on it's a normal Medusa inventory
+  level at that vendor's own stock location, held and released by Medusa's
+  own order/reservation machinery like any other product; nothing
+  Shopify-specific touches it again. We never call back to Shopify with a
+  decrement or an order — selling through us and selling on Shopify are
+  two independent pools the vendor manages themselves, not one number
+  kept in sync. This is a deliberate trade: it gives up catching a
+  same-item double-sell across the two channels (accepted, not solved),
+  in exchange for removing a whole class of sync failure and taking
+  Shopify off the checkout critical path entirely. Layers 1 and 2 above
+  (login-triggered and scheduled refresh) still stand, just narrowed to
+  catalogue fields only; layer 3 (the live pre-checkout Admin API check)
+  and its still-open price-drift question are dropped along with the
+  stock sync they existed to protect.
 - **Manual product creation is back in the vendor panel — supersedes "not
   typing in products by hand, which stays retired" in the "full vendor
   panel is back" decision above.** Directly resolves the Open Questions

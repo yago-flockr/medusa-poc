@@ -137,42 +137,45 @@ ship first, and why shipping it simple doesn't cost us anything later.
 ### Vendor catalogue import — No longer a simplification, now core
 
 - **Full version:** a vendor connects their own Shopify store; the
-  catalogue, stock, imagery and variants sync in on their own, and a sale
-  syncs back out as an inventory adjustment and an order on their store.
-- **Sensus's answer:** two-way sync is "the single most-requested feature
-  from the brands" — explicitly core at launch, not a nice-to-have. This
-  reverses the original safe-simplification call in this document: manual
-  entry (what we built and tested first) turns out not to be what v1 needs.
-- **What this actually costs:** a real Shopify integration — an OAuth app
-  each vendor installs, webhook-driven sync in (`products/update`,
-  `inventory_levels/update`), and a push out (`inventoryAdjustQuantities` +
-  `orderCreate`/`draftOrderCreate`) on every sale. Confirmed against
-  Shopify's current API and terms, not assumed. This is real new work, not
-  a corner we can keep cutting.
+  catalogue, imagery and variants sync in on their own.
+- **Sensus's answer:** two-way sync — catalogue *and* stock, both
+  directions — is "the single most-requested feature from the brands,"
+  explicitly core at launch. **Reopened, not yet re-confirmed with Sensus:**
+  building the stock half of that surfaced real problems (see
+  `docs/spikes/vendor-shopify-sync.md` "Update: stock sync dropped
+  entirely"), so v1 keeps catalogue sync but drops stock sync — the vendor
+  books us an explicit quantity instead. Catalogue-only was always going to
+  need Sensus told either way; it now needs telling something different than
+  planned, not just telling.
+- **What this actually costs:** a real Shopify integration for catalogue —
+  an OAuth app each vendor installs, sync in (`products/update` and
+  similar). No push back out to Shopify at all. Confirmed against Shopify's
+  current API and terms, not assumed.
 - **What isn't lost:** the vendor/product ownership model, staff approval
   via `ProductStatus`, and order-splitting/commission logic were all built
   against "a product exists and belongs to a vendor" — they don't care how
   the product got there, so none of that is rework. Only the vendor-facing
   manual-entry API and its UI are discarded; see `docs/plan.md` Decisions.
 
-### Stock & inventory per vendor — Resolved by the Shopify sync direction
+### Stock & inventory per vendor — Bespoke tooling after all, not resolved by Shopify
 
 - **Full version:** each vendor's stock counted separately, held on order,
   released on cancel, live availability shown before and after checkout.
 - **What changed:** this was flagged as the one risky simplification in
-  this document — real stock, not deferrable. It's resolved as a side
-  effect of the Shopify sync decision, not by building bespoke inventory
-  tooling: a vendor's own Shopify store is already their authoritative
-  stock count (they're selling through it themselves too), synced in via
-  webhook, so "everything sells as available-to-order" is no longer the
-  fallback — real per-vendor stock is what the sync gives us by
-  construction. The remaining risk moves from "do we track stock at all" to
-  "sync latency" — a sale on our site and a sale on their own Shopify
-  landing within the same short window can still both succeed before either
-  system's stock update reaches the other. Worth a real answer (a short
-  reservation hold, or accepting the rare double-sale and refunding one) once
-  real vendor volume exists, but it's a narrower, well-understood problem
-  now, not an open one.
+  this document, and for a while looked resolved as a side effect of the
+  Shopify sync direction — the vendor's own Shopify stock count, synced in,
+  standing in for real per-vendor stock. Building it found that doesn't
+  hold up (see `docs/spikes/vendor-shopify-sync.md`), so this is back to
+  needing its own real answer, not a free side effect of another decision.
+- **v1 answer:** the vendor books an explicit quantity per variant when
+  importing from Shopify (or when creating a product by hand). From there
+  it's a normal Medusa inventory level, held on order and released on
+  cancel like any other product — real per-vendor stock, just vendor-set
+  rather than Shopify-derived. The double-sell risk this section used to
+  frame as "sync latency, narrow and well-understood" is instead accepted
+  outright for v1: nothing checks the vendor's Shopify count against ours,
+  so a vendor overselling the same item across both channels isn't caught.
+  Revisit only if that turns out to matter in practice.
 
 ## 3. Decisions only the client can make — now answered
 

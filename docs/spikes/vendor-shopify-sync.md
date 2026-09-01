@@ -2,15 +2,18 @@
 
 > Experiment, not production code. **This is the one place where "how" belongs** —
 > the requirement is in `docs/features/vendor-shopify-sync.md` and says nothing about
-> implementation on purpose. The direction (two-way, what syncs in, what syncs out,
-> the auth model) is already settled in `docs/plan.md` Decisions; this spike is about
-> whether it holds up once built, not about re-deciding it.
+> implementation on purpose. The direction (catalogue in, nothing out, the auth
+> model) is already settled in `docs/plan.md` Decisions; this spike is about whether
+> it holds up once built, not about re-deciding it.
 
-**Status:** in progress — read side proven against a real store (Sensus test store)
-**through the actual decided auth model** (private custom-distribution OAuth app,
-client-credentials grant), and now actually **writes into Medusa** too (create-only,
-idempotent on `external_id`). Still untested: double-sell race, write-back direction,
-pagination/resumability beyond one small page, image re-hosting.
+**Status:** in progress — read side (catalogue in) proven against a real store
+(Sensus test store) **through the actual decided auth model** (private
+custom-distribution OAuth app, client-credentials grant), and writes into Medusa too
+(create-only, idempotent on `external_id`). **The write-back direction (stock
+decrement + order push to Shopify) below is superseded, not just untested** — see
+"Update: stock sync dropped entirely" at the end of this doc. Still open:
+pagination/resumability beyond one small page, image re-hosting, and building the
+vendor-booked-quantity input that replaces it.
 **Prerequisite:** `docs/features/vendor-shopify-sync.md` (the requirement),
 `docs/plan.md` Decisions (already-settled direction and auth model).
 
@@ -303,3 +306,43 @@ After that, `client_credentials` token exchange returned a real `200` with a
 working access token, and the exec script pulled the same real product data
 through it as the earlier CLI-session test. Full step-by-step trail (useful if
 this needs repeating per vendor): `SHOPIFY_SPIKE_SETUP.md` at the repo root.
+
+## Update: stock sync dropped entirely
+
+The write-back plan in "Approach to try first" above (`inventoryAdjustQuantities`
+plus `orderCreate`/`draftOrderCreate` per sale) was actually built — a
+`CatalogProvider` port with a live pre-checkout availability check and a
+post-checkout inventory decrement, matching layer 3 of the `docs/plan.md` decision
+this spike fed into. Two things surfaced while testing it against real multi-vendor
+checkout scenarios that changed the call, recorded here rather than in
+`docs/plan.md` alone since they're evidence, not just the decision:
+
+- **The re-sync path can't carry a stock number even in principle.** Reading
+  Medusa's actual `updateProductsWorkflow` source (`@medusajs/core-flows`) found it
+  has no code path that creates or updates an inventory level for any variant, in
+  either direction — the only inventory-related step it runs is dismissing
+  inventory when a variant turns `manage_inventory: false`. Combined with this
+  spike's own earlier finding that variants are fully replaced on every re-sync (no
+  per-variant Shopify id to match against, still true — see "Update: create-only and
+  no-vendor-link are resolved..." above), any stock number written at import would
+  be silently destroyed by the very next re-sync, regardless of where the number
+  came from.
+- **Even fixed, it never actually closed Question 1.** The live pre-checkout check
+  (this spike's own answer to the double-sell race) only shrinks the race window to
+  the time between the check and the order actually completing — it doesn't remove
+  it, and it puts a live Shopify API call in the checkout critical path for every
+  order touching a Shopify-sourced item.
+
+**Decision, recorded in full in `docs/plan.md` Decisions:** stock stops syncing from
+Shopify at all, in either direction. A vendor books an explicit quantity per variant
+when importing; from then on it's a normal Medusa inventory level at that vendor's
+own stock location, managed like any other product's stock. We never read Shopify's
+stock again and never write anything back. This directly answers Question 1 by
+making it moot rather than solved — there's no race to lose if we never check the
+other side — at the accepted cost of not catching a vendor overselling the same
+physical item across both channels.
+
+The code already built for the live check and the decrement (`checkAvailability`
+querying Shopify live, `recordSale` calling `inventoryAdjustQuantities`) needs to
+come out; it's no longer part of the design. Left in place as of this note, pending
+that cleanup.
