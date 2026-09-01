@@ -22,7 +22,10 @@ export default function VendorShopifyPage() {
   const [isImporting, setIsImporting] = useState(false)
 
   const vendor = getMe.data?.vendor
-  const isConnected = vendor?.shopify_connected ?? false
+  const shopifyConnection = vendor?.integration_connections?.find(
+    (connection) => connection.provider === "shopify",
+  )
+  const isConnected = shopifyConnection?.connected ?? false
 
   const pullShopifyProducts = usePullShopifyProducts(undefined, {
     enabled: isConnected && isImporting,
@@ -53,7 +56,7 @@ export default function VendorShopifyPage() {
         title="Shopify connection"
         description={
           isConnected
-            ? vendor?.shopify_store_domain
+            ? shopifyConnection?.external_account_identifier
             : "Enter your store's credentials, then connect."
         }
         action={
@@ -70,10 +73,11 @@ export default function VendorShopifyPage() {
           <DataState.Content>
             <ShopifyConnectionForm
               defaultValues={
-                vendor?.shopify_store_domain && vendor?.shopify_client_id
+                shopifyConnection?.external_account_identifier &&
+                shopifyConnection?.client_id
                   ? {
-                      shopify_store_domain: vendor.shopify_store_domain,
-                      shopify_client_id: vendor.shopify_client_id,
+                      shopify_store_domain: shopifyConnection.external_account_identifier,
+                      shopify_client_id: shopifyConnection.client_id,
                     }
                   : undefined
               }

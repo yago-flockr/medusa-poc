@@ -19,6 +19,7 @@ import {
   createTaxRegionsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
+  updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows"
 import {
   ALL_MARKET_COUNTRY_CODES,
@@ -27,12 +28,11 @@ import {
   countryGeoZones,
 } from "../src/lib/markets"
 
-/** Demo catalogue prices: EUR / USD / GBP (GBP mirrors EUR for seed data). */
-function demoVariantPrices(eurAmount: number, usdAmount: number) {
+/** Demo catalogue prices: GBP / USD. */
+function demoVariantPrices(gbpAmount: number, usdAmount: number) {
   return [
-    { amount: eurAmount, currency_code: "eur" },
     { amount: usdAmount, currency_code: "usd" },
-    { amount: eurAmount, currency_code: "gbp" },
+    { amount: gbpAmount, currency_code: "gbp" },
   ]
 }
 
@@ -47,18 +47,32 @@ export default async function seed({ container }: ExecArgs) {
   const countries = ALL_MARKET_COUNTRY_CODES
 
   logger.info("Seeding store data...")
-  const {
-    result: [defaultSalesChannel],
-  } = await createSalesChannelsWorkflow(container).run({
-    input: {
-      salesChannelsData: [
-        {
-          name: "Default Sales Channel",
-          description: "Created by Medusa",
-        },
-      ],
-    },
+
+  // Medusa's core migration already creates one default store + sales
+  // channel. Creating new ones here (instead of reusing/updating them)
+  // leaves the migration-created store behind with only its default "eur"
+  // currency — which is the one every other workflow resolves via
+  // `query.graph({ entity: "store" })`, so product prices silently end up
+  // EUR-only regardless of what currencies this seed intends to support.
+  const { data: existingSalesChannels } = await query.graph({
+    entity: "sales_channel",
+    fields: ["id"],
   })
+
+  const defaultSalesChannel = existingSalesChannels[0]
+    ? existingSalesChannels[0]
+    : (
+        await createSalesChannelsWorkflow(container).run({
+          input: {
+            salesChannelsData: [
+              {
+                name: "Default Sales Channel",
+                description: "Created by Medusa",
+              },
+            ],
+          },
+        })
+      ).result[0]
 
   const {
     result: [publishableApiKey],
@@ -81,19 +95,37 @@ export default async function seed({ container }: ExecArgs) {
     },
   })
 
-  await createStoresWorkflow(container).run({
-    input: {
-      stores: [
-        {
+  const { data: existingStores } = await query.graph({
+    entity: "store",
+    fields: ["id"],
+  })
+
+  if (existingStores[0]) {
+    await updateStoresWorkflow(container).run({
+      input: {
+        selector: { id: existingStores[0].id },
+        update: {
           name: "Medusa Store",
           supported_currencies: [...STORE_SUPPORTED_CURRENCIES],
           default_sales_channel_id: defaultSalesChannel.id,
         },
-      ],
-    },
-  })
+      },
+    })
+  } else {
+    await createStoresWorkflow(container).run({
+      input: {
+        stores: [
+          {
+            name: "Medusa Store",
+            supported_currencies: [...STORE_SUPPORTED_CURRENCIES],
+            default_sales_channel_id: defaultSalesChannel.id,
+          },
+        ],
+      },
+    })
+  }
 
-  logger.info("Seeding region data (UK, EU, US)...")
+  logger.info("Seeding region data (UK, US)...")
   const { result: regionResult } = await createRegionsWorkflow(container).run({
     input: {
       regions: DEFAULT_MARKETS.map((market) => ({
@@ -156,7 +188,7 @@ export default async function seed({ container }: ExecArgs) {
     type: "shipping",
     service_zones: [
       {
-        name: "UK · EU · US",
+        name: "UK · US",
         geo_zones: countryGeoZones(countries),
       },
     ],
@@ -191,7 +223,6 @@ export default async function seed({ container }: ExecArgs) {
         },
         prices: [
           { currency_code: "gbp", amount: 10 },
-          { currency_code: "eur", amount: 10 },
           { currency_code: "usd", amount: 10 },
           ...regionShippingPrices,
         ],
@@ -221,7 +252,6 @@ export default async function seed({ container }: ExecArgs) {
         },
         prices: [
           { currency_code: "gbp", amount: 15 },
-          { currency_code: "eur", amount: 15 },
           { currency_code: "usd", amount: 15 },
           ...regionShippingPrices.map((p) => ({ ...p, amount: 15 })),
         ],

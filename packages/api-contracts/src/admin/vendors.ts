@@ -1,5 +1,16 @@
 import { z } from "zod"
 import type { FindParams, PaginatedResponse } from "@medusajs/types"
+import {
+  vendorIntegrationConnectionProviderSchema,
+  vendorIntegrationConnectionSchema,
+  type VendorIntegrationConnection,
+} from "../vendor/integration-connection"
+
+export {
+  vendorIntegrationConnectionProviderSchema,
+  vendorIntegrationConnectionSchema,
+  type VendorIntegrationConnection,
+}
 
 export const vendorUserSchema = z.object({
   id: z.string(),
@@ -9,17 +20,6 @@ export const vendorUserSchema = z.object({
 })
 
 export type VendorUser = z.infer<typeof vendorUserSchema>
-
-export const vendorIntegrationConnectionSchema = z.object({
-  provider: z.string(),
-  external_account_identifier: z.string().nullable(),
-  client_id: z.string().nullable(),
-  connected: z.boolean(),
-})
-
-export type VendorIntegrationConnection = z.infer<
-  typeof vendorIntegrationConnectionSchema
->
 
 export const vendorSchema = z.object({
   id: z.string(),
@@ -67,7 +67,7 @@ export type CreateVendor = z.infer<typeof createVendorSchema>
 
 export const updateVendorIntegrationConnectionSchema = z
   .object({
-    provider: z.literal("shopify"),
+    provider: vendorIntegrationConnectionProviderSchema,
     external_account_identifier: z
       .string()
       .transform((value) => {

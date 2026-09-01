@@ -33,8 +33,7 @@ export default function VendorOrdersPage() {
                 <p className="text-muted-foreground">{order.status}</p>
               </div>
               <p className="font-medium">
-                {(order.total / 100).toFixed(2)}{" "}
-                {order.currency_code.toUpperCase()}
+                {order.total.toFixed(2)} {order.currency_code.toUpperCase()}
               </p>
             </div>
           ))}

@@ -10,6 +10,7 @@ import {
   type UpdateProductInputFromExternal,
 } from "../../../lib/build-medusa-product-input"
 import type { ShopifyProduct } from "../products"
+import { catalogSourceSchema } from "../../catalog-provider"
 
 export type ShopifyProductPrerequisites = ProductPrerequisites
 export type ShopifyMappedOption = MappedProductOption
@@ -17,12 +18,10 @@ export type CreateShopifyProductInput = CreateProductInputFromExternal
 export type UpdateShopifyProductInput = UpdateProductInputFromExternal
 export type { ResolvedProductOption }
 
-const SHOPIFY_EXTERNAL_SOURCE = "shopify"
-
 function toExternalProduct(product: ShopifyProduct): ExternalProduct {
   return {
     external_id: product.shopify_id,
-    external_source: SHOPIFY_EXTERNAL_SOURCE,
+    external_source: catalogSourceSchema.enum.shopify,
     title: product.title,
     description: product.description,
     handle: product.handle,

@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { vendorIntegrationConnectionSchema } from "./integration-connection"
 
 export const vendorMeResponseSchema = z.object({
   vendor_user: z.object({
@@ -11,10 +12,7 @@ export const vendorMeResponseSchema = z.object({
     id: z.string(),
     name: z.string(),
     handle: z.string(),
-    shopify_store_domain: z.string().nullable(),
-    shopify_client_id: z.string().nullable(),
-    shopify_connected_at: z.string().nullable(),
-    shopify_connected: z.boolean(),
+    integration_connections: z.array(vendorIntegrationConnectionSchema),
   }),
 })
 

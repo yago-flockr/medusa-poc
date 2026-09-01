@@ -7,6 +7,7 @@ import {
   vendorMeResponseSchema,
   type VendorMeResponse,
 } from "@dtc/api-contracts/vendor/me"
+import { vendorIntegrationConnectionProviderSchema } from "@dtc/api-contracts/vendor/integration-connection"
 import {
   updateVendorProfileResponseSchema,
   type UpdateVendorProfileInput,
@@ -33,12 +34,7 @@ export const GET = async (
     "vendor.integration_connections.external_account_identifier",
     "vendor.integration_connections.client_id",
     "vendor.integration_connections.connected_at",
-    "vendor.integration_connections.access_token",
   ])
-
-  const shopifyConnection = vendorUser.vendor.integration_connections?.find(
-    (connection) => connection?.provider === "shopify",
-  )
 
   const response: VendorMeResponse = {
     vendor_user: {
@@ -51,12 +47,24 @@ export const GET = async (
       id: vendorUser.vendor.id,
       name: vendorUser.vendor.name,
       handle: vendorUser.vendor.handle,
-      shopify_store_domain: shopifyConnection?.external_account_identifier ?? null,
-      shopify_client_id: shopifyConnection?.client_id ?? null,
-      shopify_connected_at: shopifyConnection?.connected_at
-        ? new Date(shopifyConnection.connected_at).toISOString()
-        : null,
-      shopify_connected: Boolean(shopifyConnection?.access_token),
+      integration_connections: (vendorUser.vendor.integration_connections ?? [])
+        .filter((connection): connection is NonNullable<typeof connection> => connection !== null)
+        .flatMap((connection) => {
+          const provider = vendorIntegrationConnectionProviderSchema.safeParse(
+            connection.provider,
+          )
+
+          return provider.success
+            ? [
+                {
+                  provider: provider.data,
+                  external_account_identifier: connection.external_account_identifier,
+                  client_id: connection.client_id,
+                  connected: connection.connected_at !== null,
+                },
+              ]
+            : []
+        }),
     },
   }
 

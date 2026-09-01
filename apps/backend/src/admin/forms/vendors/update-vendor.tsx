@@ -1,25 +1,31 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
 import { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import type { Vendor } from "@dtc/api-contracts/admin/vendors"
+import { vendorIntegrationConnectionProviderSchema } from "@dtc/api-contracts/admin/vendors"
 import { Divider } from "../../components/divider"
+import { SelectField, type SelectFieldOption } from "../fields/select-field"
 import { TextField } from "../fields/text-field"
 import type { CommonFormProps } from "../form-type"
 
 export const UPDATE_VENDOR_FORM_ID = "update-vendor-form"
 
+const PROVIDER_OPTIONS: SelectFieldOption[] = vendorIntegrationConnectionProviderSchema.options.map(
+  (provider) => ({ label: provider, value: provider }),
+)
+
 const updateVendorFormSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   handle: z.string().trim().min(1, "Handle is required"),
   integration_connection: z.object({
-    provider: z.literal("shopify"),
+    provider: z.enum(vendorIntegrationConnectionProviderSchema.options),
     external_account_identifier: z
       .string()
       .trim()
       .refine(
         (value) => !value.includes("://"),
-        "Enter just the domain, without https:// (e.g. your-store.myshopify.com)",
+        "Enter just the domain or URL, without https:// (e.g. your-store.myshopify.com)",
       ),
     client_id: z.string().trim(),
     client_secret: z.string().trim(),
@@ -30,17 +36,16 @@ export type UpdateVendorFormValues = z.infer<typeof updateVendorFormSchema>
 export type UpdateVendorFormProps = CommonFormProps<UpdateVendorFormValues>
 
 function defaultValuesFromVendor(vendor?: Vendor): UpdateVendorFormValues {
-  const shopifyConnection = vendor?.integration_connections?.find(
-    (connection) => connection.provider === "shopify",
-  )
+  const existingConnection = vendor?.integration_connections?.[0]
+  const provider = existingConnection?.provider ?? vendorIntegrationConnectionProviderSchema.options[0]
 
   return {
     name: vendor?.name ?? "",
     handle: vendor?.handle ?? "",
     integration_connection: {
-      provider: "shopify",
-      external_account_identifier: shopifyConnection?.external_account_identifier ?? "",
-      client_id: shopifyConnection?.client_id ?? "",
+      provider,
+      external_account_identifier: existingConnection?.external_account_identifier ?? "",
+      client_id: existingConnection?.client_id ?? "",
       client_secret: "",
     },
   }
@@ -60,6 +65,7 @@ export const UpdateVendorForm = ({
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<UpdateVendorFormValues>({
     resolver: zodResolver(updateVendorFormSchema),
@@ -95,10 +101,25 @@ export const UpdateVendorForm = ({
         disabled={isDisabled || isLoading}
         {...register("handle")}
       />
-      <Divider>Shopify</Divider>
+      <Divider>Integration connection</Divider>
+      <Controller
+        control={control}
+        name="integration_connection.provider"
+        render={({ field }) => (
+          <SelectField
+            id="update-vendor-connection-provider"
+            label="Provider"
+            options={PROVIDER_OPTIONS}
+            error={errors.integration_connection?.provider?.message}
+            disabled={isDisabled || isLoading}
+            value={field.value}
+            onValueChange={field.onChange}
+          />
+        )}
+      />
       <TextField
-        id="update-vendor-shopify-store-domain"
-        label="Store Domain"
+        id="update-vendor-connection-store-domain"
+        label="Store Domain / URL"
         optional
         placeholder="their-store.myshopify.com"
         error={errors.integration_connection?.external_account_identifier?.message}
@@ -106,7 +127,7 @@ export const UpdateVendorForm = ({
         {...register("integration_connection.external_account_identifier")}
       />
       <TextField
-        id="update-vendor-shopify-client-id"
+        id="update-vendor-connection-client-id"
         label="Client ID"
         optional
         error={errors.integration_connection?.client_id?.message}
@@ -114,7 +135,7 @@ export const UpdateVendorForm = ({
         {...register("integration_connection.client_id")}
       />
       <TextField
-        id="update-vendor-shopify-client-secret"
+        id="update-vendor-connection-client-secret"
         label="Client Secret"
         optional
         type="password"

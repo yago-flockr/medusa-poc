@@ -388,8 +388,8 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
 
 /**
  * Places an order for a cart. If no cart ID is provided, it will use the cart ID from the cookies.
+ * Routes through the vendor-aware complete endpoint so the order gets linked to its vendor(s).
  * @param cartId - optional - The ID of the cart to place an order for.
- * @returns The cart object if the order was successful, or null if not.
  */
 export async function placeOrder(cartId?: string) {
   const id = cartId || (await getCartId())
@@ -402,8 +402,11 @@ export async function placeOrder(cartId?: string) {
     ...(await getAuthHeaders()),
   }
 
-  const cartRes = await sdk.store.cart
-    .complete(id, {}, headers)
+  const cartRes = await sdk.client
+    .fetch<{ order: HttpTypes.StoreOrder }>(
+      `/store/carts/${id}/complete-vendor`,
+      { method: "POST", headers },
+    )
     .then(async (cartRes) => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
@@ -411,18 +414,13 @@ export async function placeOrder(cartId?: string) {
     })
     .catch(medusaError)
 
-  if (cartRes?.type === "order") {
-    const countryCode =
-      cartRes.order.shipping_address?.country_code?.toLowerCase()
+  const countryCode = cartRes.order.shipping_address?.country_code?.toLowerCase()
 
-    const orderCacheTag = await getCacheTag("orders")
-    revalidateTag(orderCacheTag)
+  const orderCacheTag = await getCacheTag("orders")
+  revalidateTag(orderCacheTag)
 
-    removeCartId()
-    redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`)
-  }
-
-  return cartRes.cart
+  removeCartId()
+  redirect(`/${countryCode}/order/${cartRes.order.id}/confirmed`)
 }
 
 /**

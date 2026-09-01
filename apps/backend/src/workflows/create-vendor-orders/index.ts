@@ -15,6 +15,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import type { CartLineItemDTO } from "@medusajs/framework/types"
 import vendorOrderLink from "../../links/vendor-order"
+import { assertExternalAvailabilityStep } from "./steps/assert-external-availability"
 import { assertItemsFulfillableStep } from "./steps/assert-items-fulfillable"
 import { createVendorOrdersStep } from "./steps/create-vendor-orders"
 import { groupVendorItemsStep } from "./steps/group-vendor-items"
@@ -41,6 +42,7 @@ export const createVendorOrdersWorkflow = createWorkflow(
     ) as unknown as CartLineItemDTO[]
 
     assertItemsFulfillableStep({ items: cartItems })
+    assertExternalAvailabilityStep({ items: cartItems })
 
     // ttl has no renewal (Medusa's default lock provider expires it
     // unconditionally at ttl regardless of whether this run finished) — 60s
