@@ -11,4 +11,7 @@ export const queryKeys = {
   products: {
     getProducts: ["getProducts"] as const,
   },
+  stockLocations: {
+    getStockLocations: ["getStockLocations"] as const,
+  },
 }

@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/vendor/profile", label: "Profile" },
   { href: "/vendor/orders", label: "Orders" },
   { href: "/vendor/products", label: "Products" },
+  { href: "/vendor/locations", label: "Locations" },
   { href: "/vendor/shopify", label: "Shopify" },
 ]
 

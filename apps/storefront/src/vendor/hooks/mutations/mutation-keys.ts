@@ -18,4 +18,7 @@ export const mutationKeys = {
   uploads: {
     uploadVendorImages: ["uploadVendorImages"] as const,
   },
+  stockLocations: {
+    createStockLocation: ["createStockLocation"] as const,
+  },
 }
