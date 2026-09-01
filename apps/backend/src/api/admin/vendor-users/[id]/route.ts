@@ -4,6 +4,7 @@ import {
   ContainerRegistrationKeys,
 } from "@medusajs/framework/utils"
 import { updateVendorUserWorkflow } from "../../../../workflows/update-vendor-user"
+import { toIsoString } from "../../../../lib/normalize-timestamps"
 import {
   vendorUserResponseSchema,
   type UpdateVendorUser,
@@ -28,7 +29,15 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     )
   }
 
-  res.json(vendorUserResponseSchema.parse({ vendor_user: vendorUser }))
+  res.json(
+    vendorUserResponseSchema.parse({
+      vendor_user: {
+        ...vendorUser,
+        created_at: toIsoString(vendorUser.created_at),
+        updated_at: toIsoString(vendorUser.updated_at),
+      },
+    }),
+  )
 }
 
 export const POST = async (
@@ -44,5 +53,13 @@ export const POST = async (
     },
   })
 
-  res.json(vendorUserResponseSchema.parse({ vendor_user: result }))
+  res.json(
+    vendorUserResponseSchema.parse({
+      vendor_user: {
+        ...result,
+        created_at: toIsoString(result.created_at),
+        updated_at: toIsoString(result.updated_at),
+      },
+    }),
+  )
 }

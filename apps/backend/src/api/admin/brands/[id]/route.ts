@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import { updateBrandWorkflow } from "../../../../workflows/update-brand"
 import { deleteBrandWorkflow } from "../../../../workflows/delete-brand"
+import { toIsoString, toIsoStringOrNull } from "../../../../lib/normalize-timestamps"
 import {
   brandDeleteResponseSchema,
   brandResponseSchema,
@@ -30,7 +31,16 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     )
   }
 
-  res.json(brandResponseSchema.parse({ brand }))
+  res.json(
+    brandResponseSchema.parse({
+      brand: {
+        ...brand,
+        created_at: toIsoString(brand.created_at),
+        updated_at: toIsoString(brand.updated_at),
+        deleted_at: toIsoStringOrNull(brand.deleted_at),
+      },
+    }),
+  )
 }
 
 export const POST = async (
@@ -46,7 +56,16 @@ export const POST = async (
     },
   })
 
-  res.json(brandResponseSchema.parse({ brand: result }))
+  res.json(
+    brandResponseSchema.parse({
+      brand: {
+        ...result,
+        created_at: toIsoString(result.created_at),
+        updated_at: toIsoString(result.updated_at),
+        deleted_at: toIsoStringOrNull(result.deleted_at),
+      },
+    }),
+  )
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {

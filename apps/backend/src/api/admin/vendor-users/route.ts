@@ -1,6 +1,7 @@
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createVendorUserWorkflow } from "../../../workflows/create-vendor-user"
+import { toIsoString } from "../../../lib/normalize-timestamps"
 import {
   vendorUserListResponseSchema,
   vendorUserWithPasswordResponseSchema,
@@ -21,7 +22,11 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
   res.json(
     vendorUserListResponseSchema.parse({
-      vendor_users: vendorUsers,
+      vendor_users: vendorUsers.map((vendorUser) => ({
+        ...vendorUser,
+        created_at: toIsoString(vendorUser.created_at),
+        updated_at: toIsoString(vendorUser.updated_at),
+      })),
       count,
       limit: take,
       offset: skip,
@@ -39,5 +44,14 @@ export const POST = async (
 
   const { password, ...vendor_user } = result
 
-  res.json(vendorUserWithPasswordResponseSchema.parse({ vendor_user, password }))
+  res.json(
+    vendorUserWithPasswordResponseSchema.parse({
+      vendor_user: {
+        ...vendor_user,
+        created_at: toIsoString(vendor_user.created_at),
+        updated_at: toIsoString(vendor_user.updated_at),
+      },
+      password,
+    }),
+  )
 }

@@ -1,4 +1,9 @@
+import { toIsoString, toIsoStringOrNull } from "../../../lib/normalize-timestamps"
+
 type VendorQueryResult = {
+  created_at: string | Date
+  updated_at: string | Date
+  deleted_at?: string | Date | null
   integration_connections?:
     | ({
         provider: string
@@ -11,7 +16,10 @@ type VendorQueryResult = {
 
 export function mapVendorConnectionFields<T extends VendorQueryResult>(
   vendor: T,
-): Omit<T, "integration_connections"> & {
+): Omit<T, "integration_connections" | "created_at" | "updated_at" | "deleted_at"> & {
+  created_at: string
+  updated_at: string
+  deleted_at: string | null
   integration_connections: {
     provider: string
     external_account_identifier: string | null
@@ -19,10 +27,14 @@ export function mapVendorConnectionFields<T extends VendorQueryResult>(
     connected: boolean
   }[]
 } {
-  const { integration_connections: connections, ...rest } = vendor
+  const { integration_connections: connections, created_at, updated_at, deleted_at, ...rest } =
+    vendor
 
   return {
     ...rest,
+    created_at: toIsoString(created_at),
+    updated_at: toIsoString(updated_at),
+    deleted_at: toIsoStringOrNull(deleted_at),
     integration_connections: (connections ?? [])
       .filter((connection): connection is NonNullable<typeof connection> => connection !== null)
       .map((connection) => ({

@@ -1,6 +1,7 @@
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createBrandWorkflow } from "../../../workflows/create-brand"
+import { toIsoString, toIsoStringOrNull } from "../../../lib/normalize-timestamps"
 import {
   brandListResponseSchema,
   brandResponseSchema,
@@ -19,7 +20,12 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
   res.json(
     brandListResponseSchema.parse({
-      brands,
+      brands: brands.map((brand) => ({
+        ...brand,
+        created_at: toIsoString(brand.created_at),
+        updated_at: toIsoString(brand.updated_at),
+        deleted_at: toIsoStringOrNull(brand.deleted_at),
+      })),
       count,
       limit: take,
       offset: skip,
