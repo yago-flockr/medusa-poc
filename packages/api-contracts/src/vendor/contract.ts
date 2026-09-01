@@ -11,7 +11,7 @@ import {
 import {
   setVendorShopifyConnectionResponseSchema,
   setVendorShopifyConnectionSchema,
-  vendorShopifyInstallLinkResponseSchema,
+  getVendorShopifyInstallLinkResponseSchema,
 } from "./shopify-connection"
 import {
   importVendorShopifyProductsResponseSchema,
@@ -58,7 +58,7 @@ export const vendorContract = c.router({
     method: "GET",
     path: "/vendors/me/shopify/connection/install-link",
     responses: {
-      200: vendorShopifyInstallLinkResponseSchema,
+      200: getVendorShopifyInstallLinkResponseSchema,
     },
   },
   pullShopifyProducts: {

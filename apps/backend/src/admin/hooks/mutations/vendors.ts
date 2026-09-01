@@ -4,8 +4,10 @@ import type {
   UpdateVendor,
   VendorResponse,
 } from "@dtc/api-contracts/admin/vendors"
-import type { PullShopifyProductsResponse } from "@dtc/api-contracts/vendor/shopify-products"
-import type { VendorShopifyInstallLinkResponse } from "@dtc/api-contracts/vendor/shopify-connection"
+import type {
+  GenerateVendorShopifyInstallLinkResponse,
+  PullVendorShopifyProductsResponse,
+} from "@dtc/api-contracts/admin/vendor-shopify"
 import { createResourceMutationHook } from "../../lib/create-resource-mutation"
 import { mutationKeys } from "./mutation-keys"
 import { queryKeys } from "../queries/query-keys"
@@ -28,7 +30,7 @@ export const usePullVendorShopifyProducts = () =>
   useMutation({
     mutationKey: mutationKeys.vendors.pullShopifyProducts,
     mutationFn: (vendorId: string) =>
-      sdk.client.fetch<PullShopifyProductsResponse>(
+      sdk.client.fetch<PullVendorShopifyProductsResponse>(
         `/admin/vendors/${vendorId}/shopify/products`,
       ),
   })
@@ -37,7 +39,7 @@ export const useGenerateVendorShopifyInstallLink = () =>
   useMutation({
     mutationKey: mutationKeys.vendors.generateShopifyInstallLink,
     mutationFn: (vendorId: string) =>
-      sdk.client.fetch<VendorShopifyInstallLinkResponse>(
+      sdk.client.fetch<GenerateVendorShopifyInstallLinkResponse>(
         `/admin/vendors/${vendorId}/shopify/connection/install-link`,
       ),
   })

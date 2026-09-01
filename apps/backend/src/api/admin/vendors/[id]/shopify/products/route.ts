@@ -2,7 +2,7 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { pullShopifyProducts } from "../../../../../../integrations/shopify/products"
 import { assertShopifyConnectionCredentials } from "../../../../../../integrations/shopify/helpers/assert-shopify-connection-credentials"
-import { pullShopifyProductsResponseSchema } from "@dtc/api-contracts/vendor/shopify-products"
+import { pullVendorShopifyProductsResponseSchema } from "@dtc/api-contracts/admin/vendor-shopify"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params
@@ -32,5 +32,5 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     accessToken: shopifyConnection.access_token,
   })
 
-  res.json(pullShopifyProductsResponseSchema.parse(result))
+  res.json(pullVendorShopifyProductsResponseSchema.parse(result))
 }

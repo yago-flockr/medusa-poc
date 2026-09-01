@@ -46,12 +46,12 @@ export type VendorUserWithPasswordResponse = z.infer<
   typeof vendorUserWithPasswordResponseSchema
 >
 
-export const regeneratePasswordResponseSchema = z.object({
+export const regenerateVendorUserPasswordResponseSchema = z.object({
   password: z.string(),
 })
 
-export type RegeneratePasswordResponse = z.infer<
-  typeof regeneratePasswordResponseSchema
+export type RegenerateVendorUserPasswordResponse = z.infer<
+  typeof regenerateVendorUserPasswordResponseSchema
 >
 
 export const createVendorUserSchema = z

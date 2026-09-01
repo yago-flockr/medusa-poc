@@ -14,7 +14,8 @@
     "./vendor/contract": "./src/vendor/contract.ts",
     "./admin/brands": "./src/admin/brands.ts",
     "./admin/vendor-users": "./src/admin/vendor-users.ts",
-    "./admin/vendors": "./src/admin/vendors.ts"
+    "./admin/vendors": "./src/admin/vendors.ts",
+    "./admin/vendor-shopify": "./src/admin/vendor-shopify.ts"
   },
   "dependencies": {
     "@medusajs/types": "2.18.0",

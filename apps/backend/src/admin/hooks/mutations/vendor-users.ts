@@ -1,6 +1,6 @@
 import type {
   CreateVendorUser,
-  RegeneratePasswordResponse,
+  RegenerateVendorUserPasswordResponse,
   UpdateVendorUser,
   VendorUserResponse,
   VendorUserWithPasswordResponse,
@@ -38,11 +38,11 @@ export const useUpdateOneVendorUser = createResourceMutationHook<
 
 export const useRegenerateVendorUserPassword = createResourceMutationHook<
   string,
-  RegeneratePasswordResponse
+  RegenerateVendorUserPasswordResponse
 >({
   mutationKey: mutationKeys.vendorUsers.regeneratePassword,
   mutationFn: (vendorUserId) =>
-    sdk.client.fetch<RegeneratePasswordResponse>(
+    sdk.client.fetch<RegenerateVendorUserPasswordResponse>(
       `/admin/vendor-users/${vendorUserId}/regenerate-password`,
       { method: "POST" },
     ),

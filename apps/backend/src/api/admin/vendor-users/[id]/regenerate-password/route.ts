@@ -1,6 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { regenerateVendorUserPasswordWorkflow } from "../../../../../workflows/regenerate-vendor-user-password"
-import { regeneratePasswordResponseSchema } from "@dtc/api-contracts/admin/vendor-users"
+import { regenerateVendorUserPasswordResponseSchema } from "@dtc/api-contracts/admin/vendor-users"
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params
@@ -11,5 +11,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     input: { vendorUserId: id },
   })
 
-  res.json(regeneratePasswordResponseSchema.parse({ password: result.password }))
+  res.json(
+    regenerateVendorUserPasswordResponseSchema.parse({ password: result.password }),
+  )
 }

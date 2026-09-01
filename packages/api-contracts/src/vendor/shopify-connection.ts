@@ -21,10 +21,10 @@ export type SetVendorShopifyConnectionResponse = z.infer<
   typeof setVendorShopifyConnectionResponseSchema
 >
 
-export const vendorShopifyInstallLinkResponseSchema = z.object({
+export const getVendorShopifyInstallLinkResponseSchema = z.object({
   installLink: z.string(),
 })
 
-export type VendorShopifyInstallLinkResponse = z.infer<
-  typeof vendorShopifyInstallLinkResponseSchema
+export type GetVendorShopifyInstallLinkResponse = z.infer<
+  typeof getVendorShopifyInstallLinkResponseSchema
 >
