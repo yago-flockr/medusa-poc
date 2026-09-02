@@ -1,10 +1,11 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { LoginVendorInput } from "@dtc/api-contracts/vendor/auth"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import z from "zod"
-import { Button } from "@/components/ui/button"
 import { TextField } from "./fields/text-field"
 import type { CommonFormProps } from "./form-type"
 
@@ -13,32 +14,43 @@ export const loginVendorSchema = z.object({
   password: z.string().min(1),
 })
 
-export type LoginVendorInput = z.infer<typeof loginVendorSchema>
+export type LoginVendorSchema = z.infer<typeof loginVendorSchema>
 
-type LoginFormProps = CommonFormProps<LoginVendorInput> & {
-  error?: string
-  className?: string
+type LoginFormProps = CommonFormProps<LoginVendorSchema>
+
+export function loginVendorFormToInput(
+  values: LoginVendorSchema,
+): LoginVendorInput {
+  return {
+    email: values.email,
+    password: values.password,
+  }
 }
 
-export function LoginForm({
-  isLoading,
-  onSubmit,
-  error,
-  className,
-}: LoginFormProps) {
+export function loginVendorInputToForm(
+  values: LoginVendorInput,
+): LoginVendorSchema {
+  return {
+    email: values.email,
+    password: values.password,
+  }
+}
+
+export function LoginForm({ isLoading, onSubmit, className }: LoginFormProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginVendorInput>({
+  } = useForm<LoginVendorSchema>({
     resolver: zodResolver(loginVendorSchema),
     defaultValues: { email: "", password: "" },
   })
 
-  const submit = handleSubmit((values) => onSubmit(values))
-
   return (
-    <form onSubmit={submit} className={cn("flex flex-col gap-4", className)}>
+    <form
+      onSubmit={handleSubmit((values) => onSubmit?.(values))}
+      className={cn("flex flex-col gap-4", className)}
+    >
       <TextField
         id="vendor-email"
         label="Email"
@@ -56,7 +68,6 @@ export function LoginForm({
       <Button type="submit" disabled={isLoading}>
         {isLoading ? "Logging in…" : "Log in"}
       </Button>
-      {error && <p className="text-sm text-destructive">{error}</p>}
     </form>
   )
 }

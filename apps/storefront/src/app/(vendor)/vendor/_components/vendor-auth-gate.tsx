@@ -1,10 +1,6 @@
 "use client"
 
-import { LoginForm, type LoginVendorInput } from "@/vendor/forms/login-form"
-import { VendorNav } from "@/vendor/components/nav"
-import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
-import { useVendorAuthStore } from "@/vendor/stores/auth-store"
-import { useEffect, useState } from "react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Card,
   CardContent,
@@ -12,28 +8,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { VendorNav } from "@/vendor/components/nav"
+import { LoginForm } from "@/vendor/forms/login-form"
+import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
+import { useVendorAuthStore } from "@/vendor/stores/auth-store"
+import { useEffect, useState } from "react"
 
 export function VendorAuthGate({ children }: { children: React.ReactNode }) {
-  const [checked, setChecked] = useState(false)
-  const token = useVendorAuthStore((state) => state.token)
-  const setToken = useVendorAuthStore((state) => state.setToken)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const { token, setToken } = useVendorAuthStore()
+
   const loginVendor = useLoginVendor()
 
   useEffect(() => {
-    setChecked(true)
+    setIsLoaded(true)
   }, [])
 
-  if (!checked) {
-    return null
-  }
+  if (!isLoaded) return null
 
   if (!token) {
-    const handleLogin = (values: LoginVendorInput) => {
-      loginVendor.mutate(values, {
-        onSuccess: ({ token }) => setToken(token),
-      })
-    }
-
     return (
       <div className="max-w-sm mx-auto px-4 py-8">
         <Card>
@@ -46,9 +39,20 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
           <CardContent>
             <LoginForm
               isLoading={loginVendor.isPending}
-              error={loginVendor.error?.message}
-              onSubmit={handleLogin}
+              onSubmit={(data) =>
+                loginVendor.mutate(data, {
+                  onSuccess: (data) => {
+                    setToken(data.token)
+                  },
+                })
+              }
             />
+            {loginVendor.error && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertTitle>An Error Occurred</AlertTitle>
+                <AlertDescription>{loginVendor.error.message}</AlertDescription>
+              </Alert>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -8,15 +8,15 @@ import {
 } from "@/components/ui/number-field"
 import { forwardRef, type ComponentPropsWithoutRef } from "react"
 
-export type NumberFieldControlProps = {
+export type NumberControlFieldProps = {
   label: string
   error?: string
 } & ComponentPropsWithoutRef<typeof NumberField>
 
-export const NumberFieldControl = forwardRef<
+export const NumberControlField = forwardRef<
   HTMLInputElement,
-  NumberFieldControlProps
->(function NumberFieldControl({ id, label, error, ...props }, ref) {
+  NumberControlFieldProps
+>(function NumberControlField({ id, label, error, ...props }, ref) {
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={id}>{label}</Label>

@@ -1,9 +1,11 @@
+import { ComponentProps } from "react"
+
 export type FormState = "CREATING" | "READING" | "UPDATING" | "DELETING"
 
-export interface CommonFormValuesProps<
+export type CommonFormValuesProps<
   Default = Record<string, unknown>,
   Custom = Record<string, unknown>,
-> {
+> = {
   customValues?: Partial<Custom>
   defaultValues?: Partial<Default>
   isDisabled?: boolean
@@ -11,11 +13,11 @@ export interface CommonFormValuesProps<
   state?: FormState
 }
 
-export interface CommonFormProps<
+export type CommonFormProps<
   Default = Record<string, unknown>,
   Custom = Record<string, unknown>,
-> extends CommonFormValuesProps<Default, Custom> {
+> = CommonFormValuesProps<Default, Custom> & {
   onCancel?: () => void
   onSubmit?: (data: Default) => void
   onError?: (error: string) => void
-}
+} & Omit<ComponentProps<"form">, "onSubmit">

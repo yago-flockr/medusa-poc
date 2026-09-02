@@ -4,7 +4,6 @@ import { DataState } from "@/components/display/data-state"
 import { VendorSection } from "@/vendor/components/section"
 import { useGetStockLocations } from "@/vendor/hooks/queries/stock-locations"
 import type { VendorStockLocation } from "@dtc/api-contracts/vendor/stock-locations"
-import { CreateStockLocationDialog } from "./_components/create-stock-location-dialog"
 
 export default function VendorLocationsPage() {
   const getStockLocations = useGetStockLocations()
@@ -13,9 +12,6 @@ export default function VendorLocationsPage() {
     <VendorSection
       title="Locations"
       description="Where your stock is held. Link a product's variants to a location and quantity from the Products page."
-      action={
-        <CreateStockLocationDialog onCreated={() => getStockLocations.refetch()} />
-      }
       className="flex flex-col gap-3"
     >
       <DataState

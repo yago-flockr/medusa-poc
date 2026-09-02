@@ -66,6 +66,15 @@ describe a *thing* (a status, an image, a brand) or a *pattern* (an
 optional trimmed string, a positive number)? Things get named and reused;
 patterns get written out every time.
 
+## Naming chain into hooks and forms
+
+This package only covers the contract half. For how a contract's
+`InputSchema`/`ResponseSchema` names carry through the mutation/query key
+and the hook on the storefront side, see
+`docs/vendor-contract-hook-pattern.md` — worked end to end on the vendor
+login flow. `docs/vendor-hook-form-pattern.md` continues from there into
+the form (schema, parsers, props) that consumes the hook.
+
 ## Structure (per domain)
 
 ```
