@@ -1,17 +1,80 @@
 "use client"
 
+import { ConfirmDeleteDialog } from "@/components/display/confirm-delete-dialog"
 import { DataState } from "@/components/display/data-state"
+import { ErrorAlert } from "@/components/display/error-alert"
+import { FormDialog } from "@/components/display/form-dialog"
+import { Button } from "@/components/ui/button"
 import { VendorSection } from "@/vendor/components/section"
+import type { CommonFormValuesProps } from "@/vendor/forms/form-type"
+import {
+  StockLocationForm,
+  stockLocationFormToInput,
+  stockLocationInputToForm,
+  type StockLocationSchema,
+} from "@/vendor/forms/stock-location-form"
+import {
+  useDeleteVendorsStockLocationsById,
+  usePostVendorsStockLocations,
+  usePostVendorsStockLocationsById,
+} from "@/vendor/hooks/mutations/stock-locations"
 import { useGetVendorsStockLocations } from "@/vendor/hooks/queries/stock-locations"
 import type { VendorStockLocation } from "@dtc/api-contracts/vendor/stock-locations"
+import { RiDeleteBinLine, RiPencilLine } from "@remixicon/react"
+import { useState } from "react"
+import { toast } from "sonner"
+
+type LocationFormValues = CommonFormValuesProps<
+  StockLocationSchema,
+  VendorStockLocation
+>
 
 export default function VendorLocationsPage() {
   const getVendorsStockLocations = useGetVendorsStockLocations()
+  const postVendorsStockLocations = usePostVendorsStockLocations()
+  const postVendorsStockLocationsById = usePostVendorsStockLocationsById()
+  const deleteVendorsStockLocationsById = useDeleteVendorsStockLocationsById()
+
+  const [formValues, setFormValues] = useState<LocationFormValues>()
+
+  function handleSubmit(values: StockLocationSchema) {
+    if (formValues?.state === "UPDATING") {
+      postVendorsStockLocationsById.mutate(
+        {
+          id: formValues.customValues!.id!,
+          ...stockLocationFormToInput(values),
+        },
+        {
+          onSuccess: () => {
+            toast.success("Location updated")
+            getVendorsStockLocations.refetch()
+            setFormValues(undefined)
+          },
+        },
+      )
+      return
+    }
+
+    if (formValues?.state === "CREATING") {
+      postVendorsStockLocations.mutate(stockLocationFormToInput(values), {
+        onSuccess: () => {
+          toast.success("Location created")
+          getVendorsStockLocations.refetch()
+          setFormValues(undefined)
+        },
+      })
+    }
+  }
 
   return (
     <VendorSection
       title="Locations"
       description="Where your stock is held. Link a product's variants to a location and quantity from the Products page."
+      action={
+        <Button size="sm" onClick={() => setFormValues({ state: "CREATING" })}>
+          Create
+        </Button>
+      }
       className="flex flex-col gap-3"
     >
       <DataState
@@ -28,29 +91,111 @@ export default function VendorLocationsPage() {
               (location: VendorStockLocation) => (
                 <li
                   key={location.id}
-                  className="flex flex-col gap-1 rounded-md border px-4 py-3 text-sm"
+                  className="flex items-center justify-between gap-3 rounded-md border px-4 py-3 text-sm"
                 >
-                  <p className="font-medium">{location.name}</p>
-                  {location.address && (
-                    <p className="text-xs text-muted-foreground">
-                      {[
-                        location.address.address_1,
-                        location.address.address_2,
-                        location.address.city,
-                        location.address.province,
-                        location.address.postal_code,
-                        location.address.country_code.toUpperCase(),
-                      ]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </p>
-                  )}
+                  <div className="flex flex-col gap-1">
+                    <p className="font-medium">{location.name}</p>
+                    {location.address && (
+                      <p className="text-xs text-muted-foreground">
+                        {[
+                          location.address.address_1,
+                          location.address.address_2,
+                          location.address.city,
+                          location.address.province,
+                          location.address.postal_code,
+                          location.address.country_code.toUpperCase(),
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon-sm"
+                      onClick={() =>
+                        setFormValues({
+                          state: "UPDATING",
+                          defaultValues: stockLocationInputToForm(location),
+                          customValues: location,
+                        })
+                      }
+                    >
+                      <RiPencilLine />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon-sm"
+                      onClick={() =>
+                        setFormValues({
+                          state: "DELETING",
+                          customValues: location,
+                        })
+                      }
+                    >
+                      <RiDeleteBinLine />
+                    </Button>
+                  </div>
                 </li>
               ),
             )}
           </ul>
         </DataState.Content>
       </DataState>
+      <FormDialog
+        title="Manage stock location"
+        description="This is where your stock is held."
+        open={
+          formValues?.state === "CREATING" || formValues?.state === "UPDATING"
+        }
+        onOpenChange={(open) => {
+          if (!open) setFormValues(undefined)
+        }}
+      >
+        <StockLocationForm
+          defaultValues={formValues?.defaultValues}
+          onSubmit={handleSubmit}
+          isLoading={
+            postVendorsStockLocations.isPending ||
+            postVendorsStockLocationsById.isPending
+          }
+        />
+        {postVendorsStockLocations.error && (
+          <ErrorAlert description={postVendorsStockLocations.error.message} />
+        )}
+        {postVendorsStockLocationsById.error && (
+          <ErrorAlert
+            description={postVendorsStockLocationsById.error.message}
+          />
+        )}
+      </FormDialog>
+      <ConfirmDeleteDialog
+        title="Delete this location?"
+        description="Are you sure you want to delete this location? This action cannot be undone."
+        open={formValues?.state === "DELETING"}
+        onOpenChange={(open) => !open && setFormValues(undefined)}
+        isLoading={deleteVendorsStockLocationsById.isPending}
+        onConfirm={() => {
+          deleteVendorsStockLocationsById.mutate(
+            formValues?.customValues!.id!,
+            {
+              onSuccess: () => {
+                toast.success("Location deleted")
+                getVendorsStockLocations.refetch()
+                setFormValues(undefined)
+              },
+            },
+          )
+        }}
+      />
+      {deleteVendorsStockLocationsById.error && (
+        <ErrorAlert
+          description={deleteVendorsStockLocationsById.error.message}
+        />
+      )}
     </VendorSection>
   )
 }

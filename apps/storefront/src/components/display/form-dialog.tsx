@@ -29,7 +29,7 @@ export function FormDialog({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        {children}
+        {open ? children : null}
       </DialogContent>
     </Dialog>
   )
