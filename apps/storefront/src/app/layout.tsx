@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 import { Inter } from "next/font/google"
 
@@ -14,7 +15,10 @@ export default function RootLayout({
       data-mode="light"
       className={cn("font-sans", inter.variable)}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster />
+      </body>
     </html>
   )
 }

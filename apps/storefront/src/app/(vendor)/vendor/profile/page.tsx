@@ -11,6 +11,7 @@ import {
 } from "@/vendor/forms/profile-form"
 import { useGetVendorsMe } from "@/vendor/hooks/queries/vendor"
 import { usePatchVendorsMe } from "@/vendor/hooks/mutations/profile"
+import { toast } from "sonner"
 
 export default function VendorProfilePage() {
   const getVendorsMe = useGetVendorsMe()
@@ -56,7 +57,9 @@ export default function VendorProfilePage() {
               })}
               isLoading={patchVendorsMe.isPending}
               onSubmit={(values) =>
-                patchVendorsMe.mutate(profileFormToInput(values))
+                patchVendorsMe.mutate(profileFormToInput(values), {
+                  onSuccess: () => toast.success("Profile updated"),
+                })
               }
             />
             {patchVendorsMe.error && (
