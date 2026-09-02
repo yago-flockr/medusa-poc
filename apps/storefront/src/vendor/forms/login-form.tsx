@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { LoginVendorInput } from "@dtc/api-contracts/vendor/auth"
+import { PostAuthVendorEmailpassInput } from "@dtc/api-contracts/vendor/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import z from "zod"
@@ -20,7 +20,7 @@ type LoginFormProps = CommonFormProps<LoginVendorSchema>
 
 export function loginVendorFormToInput(
   values: LoginVendorSchema,
-): LoginVendorInput {
+): PostAuthVendorEmailpassInput {
   return {
     email: values.email,
     password: values.password,
@@ -28,7 +28,7 @@ export function loginVendorFormToInput(
 }
 
 export function loginVendorInputToForm(
-  values: LoginVendorInput,
+  values: PostAuthVendorEmailpassInput,
 ): LoginVendorSchema {
   return {
     email: values.email,

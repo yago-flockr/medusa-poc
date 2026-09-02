@@ -1,4 +1,4 @@
-import type { VendorUploadResponse } from "@dtc/api-contracts/vendor/uploads"
+import type { PostVendorsUploadsResponse } from "@dtc/api-contracts/vendor/uploads"
 import { useVendorAuthStore } from "../stores/auth-store"
 
 const BACKEND_URL =
@@ -58,7 +58,7 @@ export async function request<T>(
 
 export async function uploadVendorImages(
   files: File[],
-): Promise<VendorUploadResponse> {
+): Promise<PostVendorsUploadsResponse> {
   const token = useVendorAuthStore.getState().token
   const path = "/vendors/uploads"
 
@@ -76,5 +76,5 @@ export async function uploadVendorImages(
   const data: unknown = await res.json().catch(() => ({}))
   assertOkResponse(res, data, path)
 
-  return data as VendorUploadResponse
+  return data as PostVendorsUploadsResponse
 }

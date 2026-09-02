@@ -2,12 +2,12 @@
 
 import { DataState } from "@/components/display/data-state"
 import { VendorSection } from "@/vendor/components/section"
-import { useGetProducts } from "@/vendor/hooks/queries/products"
+import { useGetVendorsProducts } from "@/vendor/hooks/queries/products"
 import type { VendorProduct } from "@dtc/api-contracts/vendor/products"
 import { RiLinksLine } from "@remixicon/react"
 
 export default function VendorProductsPage() {
-  const getProducts = useGetProducts()
+  const getVendorsProducts = useGetVendorsProducts()
 
   return (
     <VendorSection
@@ -16,8 +16,8 @@ export default function VendorProductsPage() {
       className="flex flex-col gap-3"
     >
       <DataState
-        isLoading={getProducts.isLoading}
-        isEmpty={getProducts.data?.products.length === 0}
+        isLoading={getVendorsProducts.isLoading}
+        isEmpty={getVendorsProducts.data?.products.length === 0}
       >
         <DataState.Loading />
         <DataState.Empty>
@@ -25,7 +25,7 @@ export default function VendorProductsPage() {
         </DataState.Empty>
         <DataState.Content>
           <ul className="flex flex-col gap-2">
-            {getProducts.data?.products.map((product: VendorProduct) => (
+            {getVendorsProducts.data?.products.map((product: VendorProduct) => (
               <li
                 key={product.id}
                 className="flex items-center gap-3 rounded-md border px-4 py-3 text-sm"

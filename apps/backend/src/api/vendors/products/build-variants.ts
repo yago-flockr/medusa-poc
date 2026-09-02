@@ -1,12 +1,12 @@
 import { MedusaError } from "@medusajs/framework/utils"
-import type { CreateVendorProduct } from "@dtc/api-contracts/vendor/products"
+import type { PostVendorsProductsInput } from "@dtc/api-contracts/vendor/products"
 
 export type VendorProductOption = {
   title: string
   values: string[]
 }
 
-export type VendorVariantInput = CreateVendorProduct["variants"][number]
+export type VendorVariantInput = PostVendorsProductsInput["variants"][number]
 
 const DEFAULT_OPTIONS: VendorProductOption[] = [
   { title: "Default", values: ["Default option value"] },

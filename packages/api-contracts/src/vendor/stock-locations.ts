@@ -21,19 +21,21 @@ export const vendorStockLocationSchema = z.object({
 
 export type VendorStockLocation = z.infer<typeof vendorStockLocationSchema>
 
-export const vendorStockLocationsQuerySchema = paginationQuerySchema
+export const getVendorsStockLocationsInputSchema = paginationQuerySchema
 
-export type VendorStockLocationsQuery = z.infer<typeof vendorStockLocationsQuerySchema>
+export type GetVendorsStockLocationsInput = z.infer<
+  typeof getVendorsStockLocationsInputSchema
+>
 
-export const vendorStockLocationsListResponseSchema = paginationMetaSchema.extend({
+export const getVendorsStockLocationsResponseSchema = paginationMetaSchema.extend({
   stock_locations: z.array(vendorStockLocationSchema),
 })
 
-export type VendorStockLocationsListResponse = z.infer<
-  typeof vendorStockLocationsListResponseSchema
+export type GetVendorsStockLocationsResponse = z.infer<
+  typeof getVendorsStockLocationsResponseSchema
 >
 
-const createVendorStockLocationAddressSchema = z
+export const postVendorsStockLocationsAddressInputSchema = z
   .object({
     address_1: z.string().trim().min(1, "Address is required"),
     address_2: z.string().trim().optional(),
@@ -45,19 +47,25 @@ const createVendorStockLocationAddressSchema = z
   })
   .strict()
 
-export const createVendorStockLocationSchema = z
+export type PostVendorsStockLocationsAddressInput = z.infer<
+  typeof postVendorsStockLocationsAddressInputSchema
+>
+
+export const postVendorsStockLocationsInputSchema = z
   .object({
     name: z.string().trim().min(1, "Name is required"),
-    address: createVendorStockLocationAddressSchema.optional(),
+    address: postVendorsStockLocationsAddressInputSchema.optional(),
   })
   .strict()
 
-export type CreateVendorStockLocation = z.infer<typeof createVendorStockLocationSchema>
+export type PostVendorsStockLocationsInput = z.infer<
+  typeof postVendorsStockLocationsInputSchema
+>
 
-export const createVendorStockLocationResponseSchema = z.object({
+export const postVendorsStockLocationsResponseSchema = z.object({
   stock_location: vendorStockLocationSchema,
 })
 
-export type CreateVendorStockLocationResponse = z.infer<
-  typeof createVendorStockLocationResponseSchema
+export type PostVendorsStockLocationsResponse = z.infer<
+  typeof postVendorsStockLocationsResponseSchema
 >

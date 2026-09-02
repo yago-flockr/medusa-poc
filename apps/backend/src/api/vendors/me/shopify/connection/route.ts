@@ -4,15 +4,15 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import {
-  setVendorShopifyConnectionResponseSchema,
-  type SetVendorShopifyConnectionInput,
-  type SetVendorShopifyConnectionResponse,
+  patchVendorsMeShopifyConnectionResponseSchema,
+  type PatchVendorsMeShopifyConnectionInput,
+  type PatchVendorsMeShopifyConnectionResponse,
 } from "@dtc/api-contracts/vendor/shopify-connection"
 import { resolveVendorUser } from "../../../resolve-vendor-user"
 import { updateVendorWorkflow } from "../../../../../workflows/update-vendor"
 
 export const PATCH = async (
-  req: AuthenticatedMedusaRequest<SetVendorShopifyConnectionInput>,
+  req: AuthenticatedMedusaRequest<PatchVendorsMeShopifyConnectionInput>,
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -35,7 +35,7 @@ export const PATCH = async (
     },
   })
 
-  const response: SetVendorShopifyConnectionResponse = {
+  const response: PatchVendorsMeShopifyConnectionResponse = {
     vendor: {
       id: vendorUser.vendor.id,
       shopify_store_domain:
@@ -43,5 +43,5 @@ export const PATCH = async (
     },
   }
 
-  res.json(setVendorShopifyConnectionResponseSchema.parse(response))
+  res.json(patchVendorsMeShopifyConnectionResponseSchema.parse(response))
 }

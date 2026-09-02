@@ -4,11 +4,11 @@ import type {
 } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import {
-  createVendorStockLocationResponseSchema,
-  vendorStockLocationsListResponseSchema,
-  type CreateVendorStockLocation,
-  type CreateVendorStockLocationResponse,
-  type VendorStockLocationsListResponse,
+  postVendorsStockLocationsResponseSchema,
+  getVendorsStockLocationsResponseSchema,
+  type PostVendorsStockLocationsInput,
+  type PostVendorsStockLocationsResponse,
+  type GetVendorsStockLocationsResponse,
 } from "@dtc/api-contracts/vendor/stock-locations"
 import { createVendorStockLocationWorkflow } from "../../../workflows/create-vendor-stock-location"
 import { parseListQuery } from "../../../lib/list-query"
@@ -32,7 +32,7 @@ export const GET = async (
     pagination: { skip: offset, take: limit },
   })
 
-  const response: VendorStockLocationsListResponse = {
+  const response: GetVendorsStockLocationsResponse = {
     stock_locations: stockLocations.map((location) => ({
       id: location.id,
       name: location.name,
@@ -53,11 +53,11 @@ export const GET = async (
     offset,
   }
 
-  res.json(vendorStockLocationsListResponseSchema.parse(response))
+  res.json(getVendorsStockLocationsResponseSchema.parse(response))
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<CreateVendorStockLocation>,
+  req: AuthenticatedMedusaRequest<PostVendorsStockLocationsInput>,
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -76,7 +76,7 @@ export const POST = async (
     },
   })
 
-  const response: CreateVendorStockLocationResponse = {
+  const response: PostVendorsStockLocationsResponse = {
     stock_location: {
       id: result.id,
       name: result.name,
@@ -94,5 +94,5 @@ export const POST = async (
     },
   }
 
-  res.json(createVendorStockLocationResponseSchema.parse(response))
+  res.json(postVendorsStockLocationsResponseSchema.parse(response))
 }

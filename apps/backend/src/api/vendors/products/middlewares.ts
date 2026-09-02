@@ -3,25 +3,27 @@ import {
   type MiddlewareRoute,
 } from "@medusajs/framework/http"
 import {
-  createVendorProductSchema,
-  updateVendorProductSchema,
+  postVendorsProductsInputSchema,
+  postVendorsProductsByIdInputSchema,
 } from "@dtc/api-contracts/vendor/products"
-import { setVendorInventoryLevelSchema } from "@dtc/api-contracts/vendor/product-inventory"
+import { postVendorsProductsByIdInventoryInputSchema } from "@dtc/api-contracts/vendor/product-inventory"
 
 export const vendorProductRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["POST"],
     matcher: "/vendors/products",
-    middlewares: [validateAndTransformBody(createVendorProductSchema)],
+    middlewares: [validateAndTransformBody(postVendorsProductsInputSchema)],
   },
   {
     method: ["POST"],
     matcher: "/vendors/products/:id",
-    middlewares: [validateAndTransformBody(updateVendorProductSchema)],
+    middlewares: [validateAndTransformBody(postVendorsProductsByIdInputSchema)],
   },
   {
     method: ["POST"],
     matcher: "/vendors/products/:id/inventory",
-    middlewares: [validateAndTransformBody(setVendorInventoryLevelSchema)],
+    middlewares: [
+      validateAndTransformBody(postVendorsProductsByIdInventoryInputSchema),
+    ],
   },
 ]

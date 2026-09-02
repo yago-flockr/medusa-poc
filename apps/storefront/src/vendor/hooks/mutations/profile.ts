@@ -1,13 +1,13 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
-import type { UpdateVendorProfileInput } from "@dtc/api-contracts/vendor/profile"
+import type { PatchVendorsMeInput } from "@dtc/api-contracts/vendor/profile"
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
 
-export const useUpdateProfile = () =>
+export const usePatchVendorsMe = () =>
   useMutation({
-    mutationKey: mutationKeys.profile.updateProfile,
-    mutationFn: async (input: UpdateVendorProfileInput) => {
-      const response = await vendorClient.updateProfile({ body: input })
+    mutationKey: mutationKeys.profile.patchVendorsMe,
+    mutationFn: async (input: PatchVendorsMeInput) => {
+      const response = await vendorClient.patchVendorsMe({ body: input })
       if (response.status !== 200) {
         throw new Error(`Unexpected response status ${response.status}`)
       }

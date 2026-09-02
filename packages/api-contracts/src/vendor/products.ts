@@ -22,57 +22,67 @@ export const vendorProductSchema = z.object({
 
 export type VendorProduct = z.infer<typeof vendorProductSchema>
 
-export const vendorProductsQuerySchema = paginationQuerySchema
+export const getVendorsProductsInputSchema = paginationQuerySchema
 
-export type VendorProductsQuery = z.infer<typeof vendorProductsQuerySchema>
+export type GetVendorsProductsInput = z.infer<
+  typeof getVendorsProductsInputSchema
+>
 
-export const vendorProductsListResponseSchema = paginationMetaSchema.extend({
+export const getVendorsProductsResponseSchema = paginationMetaSchema.extend({
   products: z.array(vendorProductSchema),
 })
 
-export type VendorProductsListResponse = z.infer<
-  typeof vendorProductsListResponseSchema
+export type GetVendorsProductsResponse = z.infer<
+  typeof getVendorsProductsResponseSchema
 >
 
-export const deleteVendorProductResponseSchema = z.object({
+export const deleteVendorsProductsByIdResponseSchema = z.object({
   id: z.string(),
   deleted: z.boolean(),
 })
 
-export type DeleteVendorProductResponse = z.infer<
-  typeof deleteVendorProductResponseSchema
+export type DeleteVendorsProductsByIdResponse = z.infer<
+  typeof deleteVendorsProductsByIdResponseSchema
 >
 
-export const vendorProductOptionSchema = z
+export const postVendorsProductsOptionInputSchema = z
   .object({
     title: z.string().trim().min(1),
     values: z.array(z.string().trim().min(1)).min(1).max(20),
   })
   .strict()
 
-export type VendorProductOptionInput = z.infer<typeof vendorProductOptionSchema>
+export type PostVendorsProductsOptionInput = z.infer<
+  typeof postVendorsProductsOptionInputSchema
+>
 
-export const vendorProductOptionsSchema = z
-  .array(vendorProductOptionSchema)
+export const postVendorsProductsOptionsInputSchema = z
+  .array(postVendorsProductsOptionInputSchema)
   .max(5)
   .optional()
 
-export type VendorProductOptionsInput = z.infer<typeof vendorProductOptionsSchema>
+export type PostVendorsProductsOptionsInput = z.infer<
+  typeof postVendorsProductsOptionsInputSchema
+>
 
-export const vendorProductImageSchema = z
+export const postVendorsProductsImageInputSchema = z
   .object({ url: z.url() })
   .strict()
 
-export type VendorProductImageInput = z.infer<typeof vendorProductImageSchema>
+export type PostVendorsProductsImageInput = z.infer<
+  typeof postVendorsProductsImageInputSchema
+>
 
-export const vendorProductImagesSchema = z
-  .array(vendorProductImageSchema)
+export const postVendorsProductsImagesInputSchema = z
+  .array(postVendorsProductsImageInputSchema)
   .max(5)
   .optional()
 
-export type VendorProductImagesInput = z.infer<typeof vendorProductImagesSchema>
+export type PostVendorsProductsImagesInput = z.infer<
+  typeof postVendorsProductsImagesInputSchema
+>
 
-export const vendorProductVariantSchema = z
+export const postVendorsProductsVariantInputSchema = z
   .object({
     optionValues: z.record(z.string(), z.string()),
     price: z.number().positive("Price must be greater than 0"),
@@ -85,38 +95,44 @@ export const vendorProductVariantSchema = z
   })
   .strict()
 
-export type VendorProductVariantInput = z.infer<typeof vendorProductVariantSchema>
+export type PostVendorsProductsVariantInput = z.infer<
+  typeof postVendorsProductsVariantInputSchema
+>
 
-export const vendorProductVariantsSchema = z
-  .array(vendorProductVariantSchema)
+export const postVendorsProductsVariantsInputSchema = z
+  .array(postVendorsProductsVariantInputSchema)
   .min(1)
   .max(50)
 
-export type VendorProductVariantsInput = z.infer<typeof vendorProductVariantsSchema>
+export type PostVendorsProductsVariantsInput = z.infer<
+  typeof postVendorsProductsVariantsInputSchema
+>
 
-export const createVendorProductSchema = z
+export const postVendorsProductsInputSchema = z
   .object({
     title: z.string().trim().min(1, "Title is required"),
     subtitle: z.string().trim().min(1).optional(),
     description: z.string().trim().min(1).optional(),
     handle: z.string().trim().min(1).optional(),
-    images: vendorProductImagesSchema,
-    options: vendorProductOptionsSchema,
-    variants: vendorProductVariantsSchema,
+    images: postVendorsProductsImagesInputSchema,
+    options: postVendorsProductsOptionsInputSchema,
+    variants: postVendorsProductsVariantsInputSchema,
   })
   .strict()
 
-export type CreateVendorProduct = z.infer<typeof createVendorProductSchema>
+export type PostVendorsProductsInput = z.infer<
+  typeof postVendorsProductsInputSchema
+>
 
-export const createVendorProductResponseSchema = z.object({
+export const postVendorsProductsResponseSchema = z.object({
   product: vendorProductSchema,
 })
 
-export type CreateVendorProductResponse = z.infer<
-  typeof createVendorProductResponseSchema
+export type PostVendorsProductsResponse = z.infer<
+  typeof postVendorsProductsResponseSchema
 >
 
-export const updateVendorProductVariantSchema = z
+export const postVendorsProductsByIdVariantInputSchema = z
   .object({
     id: z.string(),
     price: z.number().positive("Price must be greater than 0").optional(),
@@ -125,26 +141,28 @@ export const updateVendorProductVariantSchema = z
   })
   .strict()
 
-export type UpdateVendorProductVariantInput = z.infer<
-  typeof updateVendorProductVariantSchema
+export type PostVendorsProductsByIdVariantInput = z.infer<
+  typeof postVendorsProductsByIdVariantInputSchema
 >
 
-export const updateVendorProductSchema = z
+export const postVendorsProductsByIdInputSchema = z
   .object({
     title: z.string().trim().min(1, "Title is required").optional(),
     subtitle: z.string().trim().min(1).optional(),
     description: z.string().trim().min(1).optional(),
     handle: z.string().trim().min(1).optional(),
-    images: vendorProductImagesSchema,
+    images: postVendorsProductsImagesInputSchema,
     status: vendorProductStatusSchema.optional(),
-    variants: z.array(updateVendorProductVariantSchema).optional(),
+    variants: z.array(postVendorsProductsByIdVariantInputSchema).optional(),
   })
   .strict()
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field is required",
   })
 
-export type UpdateVendorProduct = z.infer<typeof updateVendorProductSchema>
+export type PostVendorsProductsByIdInput = z.infer<
+  typeof postVendorsProductsByIdInputSchema
+>
 
 export const vendorProductOptionDetailSchema = z.object({
   title: z.string(),
@@ -184,10 +202,10 @@ export const vendorProductDetailSchema = z.object({
 
 export type VendorProductDetail = z.infer<typeof vendorProductDetailSchema>
 
-export const getVendorProductResponseSchema = z.object({
+export const getVendorsProductsByIdResponseSchema = z.object({
   product: vendorProductDetailSchema,
 })
 
-export type GetVendorProductResponse = z.infer<
-  typeof getVendorProductResponseSchema
+export type GetVendorsProductsByIdResponse = z.infer<
+  typeof getVendorsProductsByIdResponseSchema
 >

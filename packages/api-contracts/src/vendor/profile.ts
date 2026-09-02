@@ -1,14 +1,14 @@
 import { z } from "zod"
 import { vendorUserSchema } from "./vendor"
 
-export const updateVendorProfileSchema = z.object({
+export const patchVendorsMeInputSchema = z.object({
   first_name: z.string().min(1),
   last_name: z.string().min(1),
 })
 
-export type UpdateVendorProfileInput = z.infer<typeof updateVendorProfileSchema>
+export type PatchVendorsMeInput = z.infer<typeof patchVendorsMeInputSchema>
 
-export const updateVendorProfileResponseSchema = z.object({
+export const patchVendorsMeResponseSchema = z.object({
   vendor_user: vendorUserSchema.pick({
     id: true,
     first_name: true,
@@ -16,6 +16,6 @@ export const updateVendorProfileResponseSchema = z.object({
   }),
 })
 
-export type UpdateVendorProfileResponse = z.infer<
-  typeof updateVendorProfileResponseSchema
+export type PatchVendorsMeResponse = z.infer<
+  typeof patchVendorsMeResponseSchema
 >

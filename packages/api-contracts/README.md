@@ -94,10 +94,10 @@ unused ceremony. Add one only when a domain actually gets a ts-rest client.
 ## Use it — backend route
 
 ```ts
-import { vendorMeResponseSchema, type VendorMeResponse } from "@dtc/api-contracts/vendor/me"
+import { getVendorsMeResponseSchema, type GetVendorsMeResponse } from "@dtc/api-contracts/vendor/me"
 
-const response: VendorMeResponse = { vendor_user: {...}, vendor: {...} }
-res.json(vendorMeResponseSchema.parse(response)) // validates + strips extra fields
+const response: GetVendorsMeResponse = { vendor_user: {...}, vendor: {...} }
+res.json(getVendorsMeResponseSchema.parse(response)) // validates + strips extra fields
 ```
 
 ## Use it — frontend
@@ -105,10 +105,16 @@ res.json(vendorMeResponseSchema.parse(response)) // validates + strips extra fie
 ```ts
 import { vendorClient } from "@/vendor/lib/contract-client"
 
-const response = await vendorClient.getMe()
+const response = await vendorClient.getVendorsMe()
 if (response.status !== 200) throw new Error(...)
 return response.body // fully typed, no annotation needed
 ```
+
+Every schema/type/router-key/hook name in `vendor/` is mechanically derived
+from the route's method + path (`GET /vendors/me` → `getVendorsMe`), never
+hand-picked — see `docs/vendor-contract-hook-pattern.md` for the full
+algorithm and `docs/vendor-hook-form-pattern.md` for how a form built on top
+of a hook is named instead (its own human-facing name, not route-derived).
 
 That's 90% of "using" this package: import a schema on the backend, call
 `<domain>Client.<method>()` on the frontend.
@@ -131,17 +137,18 @@ import type { BrandListQuery, BrandListResponse } from "@dtc/api-contracts/admin
 Say you're adding `GET /vendors/foo` (a `vendor/` route, called from
 `apps/storefront` through the ts-rest client):
 
-1. **`src/vendor/foo.ts`** — new file:
+1. **`src/vendor/foo.ts`** — new file, named after the route
+   (`GET /vendors/foo` → `getVendorsFoo`):
    ```ts
    import { z } from "zod"
-   export const vendorFooResponseSchema = z.object({ bar: z.string() })
-   export type VendorFooResponse = z.infer<typeof vendorFooResponseSchema>
+   export const getVendorsFooResponseSchema = z.object({ bar: z.string() })
+   export type GetVendorsFooResponse = z.infer<typeof getVendorsFooResponseSchema>
    ```
-2. **`src/vendor/contract.ts`** — register it:
+2. **`src/vendor/contract.ts`** — register it under that same name:
    ```ts
-   getFoo: { method: "GET", path: "/vendors/foo", responses: { 200: vendorFooResponseSchema } }
+   getVendorsFoo: { method: "GET", path: "/vendors/foo", responses: { 200: getVendorsFooResponseSchema } }
    ```
-3. Use it exactly like the two snippets above, swap `me` → `foo`.
+3. Use it exactly like the two snippets above, swap `Me` → `Foo`.
 
 Adding `GET /admin/foo` (an `admin/` route, called only from the bundled
 Admin dashboard) skips step 2 — just the resource file, imported directly

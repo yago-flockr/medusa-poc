@@ -1,14 +1,16 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
-import type { SetVendorShopifyConnectionInput } from "@dtc/api-contracts/vendor/shopify-connection"
-import type { ImportVendorShopifyProductsInput } from "@dtc/api-contracts/vendor/shopify-products"
+import type { PatchVendorsMeShopifyConnectionInput } from "@dtc/api-contracts/vendor/shopify-connection"
+import type { PostVendorsMeShopifyProductsImportInput } from "@dtc/api-contracts/vendor/shopify-products"
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
 
-export const useSetShopifyConnection = () =>
+export const usePatchVendorsMeShopifyConnection = () =>
   useMutation({
-    mutationKey: mutationKeys.shopify.setShopifyConnection,
-    mutationFn: async (input: SetVendorShopifyConnectionInput) => {
-      const response = await vendorClient.setShopifyConnection({ body: input })
+    mutationKey: mutationKeys.shopify.patchVendorsMeShopifyConnection,
+    mutationFn: async (input: PatchVendorsMeShopifyConnectionInput) => {
+      const response = await vendorClient.patchVendorsMeShopifyConnection({
+        body: input,
+      })
       if (response.status !== 200) {
         throw new Error(`Unexpected response status ${response.status}`)
       }
@@ -16,11 +18,12 @@ export const useSetShopifyConnection = () =>
     },
   })
 
-export const useGetShopifyInstallLink = () =>
+export const useGetVendorsMeShopifyConnectionInstallLink = () =>
   useMutation({
-    mutationKey: mutationKeys.shopify.getShopifyInstallLink,
+    mutationKey: mutationKeys.shopify.getVendorsMeShopifyConnectionInstallLink,
     mutationFn: async () => {
-      const response = await vendorClient.getShopifyInstallLink()
+      const response =
+        await vendorClient.getVendorsMeShopifyConnectionInstallLink()
       if (response.status !== 200) {
         throw new Error(`Unexpected response status ${response.status}`)
       }
@@ -28,11 +31,13 @@ export const useGetShopifyInstallLink = () =>
     },
   })
 
-export const useImportShopifyProducts = () =>
+export const usePostVendorsMeShopifyProductsImport = () =>
   useMutation({
-    mutationKey: mutationKeys.shopify.importShopifyProducts,
-    mutationFn: async (input: ImportVendorShopifyProductsInput) => {
-      const response = await vendorClient.importShopifyProducts({ body: input })
+    mutationKey: mutationKeys.shopify.postVendorsMeShopifyProductsImport,
+    mutationFn: async (input: PostVendorsMeShopifyProductsImportInput) => {
+      const response = await vendorClient.postVendorsMeShopifyProductsImport({
+        body: input,
+      })
       if (response.status !== 200) {
         throw new Error(`Unexpected response status ${response.status}`)
       }

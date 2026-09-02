@@ -5,9 +5,9 @@ import type {
 import type { RemoteQueryFunction } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import {
-  vendorProductInventoryResponseSchema,
-  type SetVendorInventoryLevel,
-  type VendorProductInventoryResponse,
+  getVendorsProductsByIdInventoryResponseSchema,
+  type PostVendorsProductsByIdInventoryInput,
+  type GetVendorsProductsByIdInventoryResponse,
 } from "@dtc/api-contracts/vendor/product-inventory"
 import { setVendorInventoryLevelWorkflow } from "../../../../../workflows/set-vendor-inventory-level"
 import { resolveVendorUser } from "../../../resolve-vendor-user"
@@ -19,7 +19,7 @@ async function buildProductInventoryResponse(
   query: Omit<RemoteQueryFunction, symbol>,
   productId: string,
   vendorId: string,
-): Promise<VendorProductInventoryResponse> {
+): Promise<GetVendorsProductsByIdInventoryResponse> {
   const [{ data: [product] }, { data: locations }] = await Promise.all([
     query.graph({
       entity: "product",
@@ -86,11 +86,11 @@ export const GET = async (
     vendorUser.vendor_id,
   )
 
-  res.json(vendorProductInventoryResponseSchema.parse(response))
+  res.json(getVendorsProductsByIdInventoryResponseSchema.parse(response))
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<SetVendorInventoryLevel>,
+  req: AuthenticatedMedusaRequest<PostVendorsProductsByIdInventoryInput>,
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -115,5 +115,5 @@ export const POST = async (
     vendorUser.vendor_id,
   )
 
-  res.json(vendorProductInventoryResponseSchema.parse(response))
+  res.json(getVendorsProductsByIdInventoryResponseSchema.parse(response))
 }

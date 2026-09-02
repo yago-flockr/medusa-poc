@@ -1,15 +1,16 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
-import type { VendorProductInventoryResponse } from "@dtc/api-contracts/vendor/product-inventory"
+import type { GetVendorsProductsByIdInventoryResponse } from "@dtc/api-contracts/vendor/product-inventory"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export const useGetProductInventory = createResourceQueryHook<
+export const useGetVendorsProductsByIdInventory = createResourceQueryHook<
   string,
-  VendorProductInventoryResponse
+  GetVendorsProductsByIdInventoryResponse
 >({
-  queryKey: (productId) => queryKeys.productInventory.getProductInventory(productId),
+  queryKey: (productId) =>
+    queryKeys.productInventory.getVendorsProductsByIdInventory(productId),
   queryFn: async (productId) => {
-    const response = await vendorClient.getProductInventory({
+    const response = await vendorClient.getVendorsProductsByIdInventory({
       params: { id: productId },
     })
     if (response.status !== 200) {

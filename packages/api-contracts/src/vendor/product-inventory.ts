@@ -15,16 +15,16 @@ export const vendorVariantInventorySchema = z.object({
 
 export type VendorVariantInventory = z.infer<typeof vendorVariantInventorySchema>
 
-export const vendorProductInventoryResponseSchema = z.object({
+export const getVendorsProductsByIdInventoryResponseSchema = z.object({
   variants: z.array(vendorVariantInventorySchema),
   locations: z.array(z.object({ id: z.string(), name: z.string() })),
 })
 
-export type VendorProductInventoryResponse = z.infer<
-  typeof vendorProductInventoryResponseSchema
+export type GetVendorsProductsByIdInventoryResponse = z.infer<
+  typeof getVendorsProductsByIdInventoryResponseSchema
 >
 
-export const setVendorInventoryLevelSchema = z
+export const postVendorsProductsByIdInventoryInputSchema = z
   .object({
     variant_id: z.string(),
     location_id: z.string(),
@@ -32,4 +32,6 @@ export const setVendorInventoryLevelSchema = z
   })
   .strict()
 
-export type SetVendorInventoryLevel = z.infer<typeof setVendorInventoryLevelSchema>
+export type PostVendorsProductsByIdInventoryInput = z.infer<
+  typeof postVendorsProductsByIdInventoryInputSchema
+>

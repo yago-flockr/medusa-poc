@@ -7,8 +7,10 @@ export const vendorUploadedFileSchema = z.object({
 
 export type VendorUploadedFile = z.infer<typeof vendorUploadedFileSchema>
 
-export const vendorUploadResponseSchema = z.object({
+export const postVendorsUploadsResponseSchema = z.object({
   files: z.array(vendorUploadedFileSchema),
 })
 
-export type VendorUploadResponse = z.infer<typeof vendorUploadResponseSchema>
+export type PostVendorsUploadsResponse = z.infer<
+  typeof postVendorsUploadsResponseSchema
+>

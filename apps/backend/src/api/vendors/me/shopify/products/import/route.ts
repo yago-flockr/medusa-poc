@@ -4,16 +4,16 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import {
-  importVendorShopifyProductsResponseSchema,
-  type ImportVendorShopifyProductsInput,
-  type ImportVendorShopifyProductsResponse,
+  postVendorsMeShopifyProductsImportResponseSchema,
+  type PostVendorsMeShopifyProductsImportInput,
+  type PostVendorsMeShopifyProductsImportResponse,
 } from "@dtc/api-contracts/vendor/shopify-products"
 import { resolveVendorUser } from "../../../../resolve-vendor-user"
 import { importVendorShopifyProductsWorkflow } from "../../../../../../workflows/import-vendor-shopify-products"
 import { assertShopifyConnectionCredentials } from "../../../../../../integrations/shopify/helpers/assert-shopify-connection-credentials"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<ImportVendorShopifyProductsInput>,
+  req: AuthenticatedMedusaRequest<PostVendorsMeShopifyProductsImportInput>,
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -42,7 +42,7 @@ export const POST = async (
     },
   })
 
-  const response: ImportVendorShopifyProductsResponse = result
+  const response: PostVendorsMeShopifyProductsImportResponse = result
 
-  res.json(importVendorShopifyProductsResponseSchema.parse(response))
+  res.json(postVendorsMeShopifyProductsImportResponseSchema.parse(response))
 }

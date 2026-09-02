@@ -1,16 +1,16 @@
 import { request } from "@/vendor/lib/client"
 import type {
-  LoginVendorInput,
-  LoginVendorResponse,
+  PostAuthVendorEmailpassInput,
+  PostAuthVendorEmailpassResponse,
 } from "@dtc/api-contracts/vendor/auth"
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
 
-export const useLoginVendor = () =>
+export const usePostAuthVendorEmailpass = () =>
   useMutation({
-    mutationKey: mutationKeys.auth.login,
-    mutationFn: ({ email, password }: LoginVendorInput) =>
-      request<LoginVendorResponse>("/auth/vendor/emailpass", {
+    mutationKey: mutationKeys.auth.postAuthVendorEmailpass,
+    mutationFn: ({ email, password }: PostAuthVendorEmailpassInput) =>
+      request<PostAuthVendorEmailpassResponse>("/auth/vendor/emailpass", {
         method: "POST",
         body: { email, password },
       }),

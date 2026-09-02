@@ -5,9 +5,9 @@ import type {
 } from "@medusajs/framework/http"
 import { getOrdersListWorkflow } from "@medusajs/medusa/core-flows"
 import {
-  vendorOrdersListResponseSchema,
+  getVendorsOrdersResponseSchema,
   type VendorOrder,
-  type VendorOrdersListResponse,
+  type GetVendorsOrdersResponse,
 } from "@dtc/api-contracts/vendor/orders"
 import { parseListQuery } from "../../../lib/list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
@@ -51,12 +51,12 @@ export const GET = async (
     metadata: { count: number }
   }
 
-  const response: VendorOrdersListResponse = {
+  const response: GetVendorsOrdersResponse = {
     orders,
     count: metadata.count,
     limit,
     offset,
   }
 
-  res.json(vendorOrdersListResponseSchema.parse(response))
+  res.json(getVendorsOrdersResponseSchema.parse(response))
 }

@@ -32,18 +32,18 @@ export type PulledShopifyProductWithStatus = z.infer<
   typeof pulledShopifyProductWithStatusSchema
 >
 
-export const pullVendorShopifyProductsResponseSchema = z.object({
+export const getVendorsMeShopifyProductsResponseSchema = z.object({
   currency_code: z.string(),
   requested_query_cost: z.number().optional(),
   has_next_page: z.boolean(),
   products: z.array(pulledShopifyProductWithStatusSchema),
 })
 
-export type PullVendorShopifyProductsResponse = z.infer<
-  typeof pullVendorShopifyProductsResponseSchema
+export type GetVendorsMeShopifyProductsResponse = z.infer<
+  typeof getVendorsMeShopifyProductsResponseSchema
 >
 
-export const importVendorShopifyProductsSchema = z.object({
+export const postVendorsMeShopifyProductsImportInputSchema = z.object({
   shopify_product_ids: z
     .array(z.string())
     .min(1)
@@ -52,15 +52,15 @@ export const importVendorShopifyProductsSchema = z.object({
     }),
 })
 
-export type ImportVendorShopifyProductsInput = z.infer<
-  typeof importVendorShopifyProductsSchema
+export type PostVendorsMeShopifyProductsImportInput = z.infer<
+  typeof postVendorsMeShopifyProductsImportInputSchema
 >
 
-export const importVendorShopifyProductsResponseSchema = z.object({
+export const postVendorsMeShopifyProductsImportResponseSchema = z.object({
   created_count: z.number(),
   updated_count: z.number(),
 })
 
-export type ImportVendorShopifyProductsResponse = z.infer<
-  typeof importVendorShopifyProductsResponseSchema
+export type PostVendorsMeShopifyProductsImportResponse = z.infer<
+  typeof postVendorsMeShopifyProductsImportResponseSchema
 >

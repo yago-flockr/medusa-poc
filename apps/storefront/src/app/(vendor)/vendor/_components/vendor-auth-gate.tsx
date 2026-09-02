@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card"
 import { VendorNav } from "@/vendor/components/nav"
 import { LoginForm } from "@/vendor/forms/login-form"
-import { useLoginVendor } from "@/vendor/hooks/mutations/auth"
+import { usePostAuthVendorEmailpass } from "@/vendor/hooks/mutations/auth"
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useEffect, useState } from "react"
 
@@ -18,7 +18,7 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false)
   const { token, setToken } = useVendorAuthStore()
 
-  const loginVendor = useLoginVendor()
+  const postAuthVendorEmailpass = usePostAuthVendorEmailpass()
 
   useEffect(() => {
     setIsLoaded(true)
@@ -38,19 +38,21 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
           </CardHeader>
           <CardContent>
             <LoginForm
-              isLoading={loginVendor.isPending}
+              isLoading={postAuthVendorEmailpass.isPending}
               onSubmit={(data) =>
-                loginVendor.mutate(data, {
+                postAuthVendorEmailpass.mutate(data, {
                   onSuccess: (data) => {
                     setToken(data.token)
                   },
                 })
               }
             />
-            {loginVendor.error && (
+            {postAuthVendorEmailpass.error && (
               <Alert variant="destructive" className="mt-4">
                 <AlertTitle>An Error Occurred</AlertTitle>
-                <AlertDescription>{loginVendor.error.message}</AlertDescription>
+                <AlertDescription>
+                  {postAuthVendorEmailpass.error.message}
+                </AlertDescription>
               </Alert>
             )}
           </CardContent>

@@ -51,17 +51,20 @@ still exists only for the one endpoint not in that contract
 
 **The full naming chain from contract to form is documented end to end in
 two sibling docs** (worked on the vendor login flow throughout):
-`docs/vendor-contract-hook-pattern.md` covers contract → key → hook
-(`LoginVendorInput`/`LoginVendorResponse` → `mutationKeys.auth.login` →
-`useLoginVendor`, plus the key-registry/hook-shape/key-parameterization
-conventions every hook file follows), and `docs/vendor-hook-form-pattern.md`
-continues from the hook into the form (`LoginForm`'s own `loginVendorSchema`
-+ parsers). Copy that recipe for every new vendor contract + hook + form
-triplet.
+`docs/vendor-contract-hook-pattern.md` covers contract → key → hook — every
+schema/key/hook name is **mechanically derived from the route's HTTP method
++ path**, never hand-picked (`PostAuthVendorEmailpassInput`/
+`PostAuthVendorEmailpassResponse` → `mutationKeys.auth.postAuthVendorEmailpass`
+→ `usePostAuthVendorEmailpass`, plus the key-registry/hook-shape/key-
+parameterization conventions every hook file follows), and
+`docs/vendor-hook-form-pattern.md` continues from the hook into the form
+(`LoginForm`'s own, independently human-named `loginVendorSchema` + parsers
+— the form layer is deliberately *not* mechanically named). Copy that recipe
+for every new vendor contract + hook + form triplet.
 
-**Hook naming is fixed, not a style preference:** every `src/vendor/hooks/{queries,mutations}/*` hook wrapping a `vendorClient` call is named `use<MethodName>`, exactly matching the ts-rest contract method it calls (`vendorClient.getMe()` → `useGetMe`, `vendorClient.pullShopifyProducts()` → `usePullShopifyProducts`) — never a rephrased verb like `useFindOneVendor`/`useFindManyVendorOrders`. The query/mutation key string and the call-site local variable (already-established convention: the hook's result is assigned to one const named after the hook itself minus `use`) follow the same name, so the contract method, the hook, its cache key, and its call-site variable are the same word end to end — a hook whose name doesn't match what it calls forces a reader into its body just to learn what it does.
+**Hook naming is fixed, not a style preference:** every `src/vendor/hooks/{queries,mutations}/*` hook wrapping a `vendorClient` call is named `use<MethodName>`, exactly matching the ts-rest contract method it calls (`vendorClient.getVendorsMe()` → `useGetVendorsMe`, `vendorClient.getVendorsMeShopifyProducts()` → `useGetVendorsMeShopifyProducts`) — and that contract method name is itself mechanically derived from the route (see `docs/vendor-contract-hook-pattern.md`), never a rephrased verb like `useFindOneVendor`/`useFindManyVendorOrders`. The query/mutation key string and the call-site local variable (already-established convention: the hook's result is assigned to one const named after the hook itself minus `use`) follow the same name, so the route, the contract method, the hook, its cache key, and its call-site variable are the same word end to end — a hook whose name doesn't match what it calls forces a reader into its body just to learn what it does.
 
-**Classify by what the backend route actually does, not by how the UI triggers it.** `useQuery` (via `createResourceQueryHook`) is for anything idempotent that only reads — including something a user triggers with a button click, like `usePullShopifyProducts` (a `GET` that only reads from Shopify and writes nothing to Medusa's own DB; TanStack's `refetch()` covers the "pull again on demand" button for free). `useMutation` is reserved for routes that actually write/change persisted state (`useSetShopifyConnection`, `useUpdateProfile`). Don't reach for `useEffect(() => mutate(), [])` to fire something on mount — that's the anti-pattern `useQuery` exists to replace; if you want "fetch automatically when this page loads," that's a sign the operation was misclassified as a mutation in the first place, not a case for an effect.
+**Classify by what the backend route actually does, not by how the UI triggers it.** `useQuery` (via `createResourceQueryHook`) is for anything idempotent that only reads — including something a user triggers with a button click, like `useGetVendorsMeShopifyProducts` (a `GET` that only reads from Shopify and writes nothing to Medusa's own DB; TanStack's `refetch()` covers the "pull again on demand" button for free). `useMutation` is reserved for routes that actually write/change persisted state (`usePatchVendorsMeShopifyConnection`, `usePatchVendorsMe`). Don't reach for `useEffect(() => mutate(), [])` to fire something on mount — that's the anti-pattern `useQuery` exists to replace; if you want "fetch automatically when this page loads," that's a sign the operation was misclassified as a mutation in the first place, not a case for an effect. (`useGetVendorsMeShopifyConnectionInstallLink` is a `GET` currently implemented as a mutation — a known, pre-existing misclassification, not a new one introduced by this naming pass; worth fixing separately.)
 
 `src/components/display/` holds this app's fully generic, domain-agnostic pieces — `DataState` (a `Root`/`Loading`/`Fetching`/`Empty`/`Content` compound component for query loading/empty/content states) and `InfoList` (`Root`/`Row`/`Label`/`Text`/`Link` for label-value display rows) — versus `src/vendor/components/` for pieces that are vendor-panel-specific (`VendorNav`, `VendorSection`, a thin wrapper standardizing `Card`/`CardHeader`/`CardTitle`/`CardDescription`/`CardAction`/`CardContent` into one `{title, description?, action?, children}` API). Generic and domain-specific UI code never share a folder on this repo — check `components/display/` for an existing generic piece before building a new domain-specific one that duplicates it.
 

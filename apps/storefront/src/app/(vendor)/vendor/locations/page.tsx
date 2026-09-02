@@ -2,11 +2,11 @@
 
 import { DataState } from "@/components/display/data-state"
 import { VendorSection } from "@/vendor/components/section"
-import { useGetStockLocations } from "@/vendor/hooks/queries/stock-locations"
+import { useGetVendorsStockLocations } from "@/vendor/hooks/queries/stock-locations"
 import type { VendorStockLocation } from "@dtc/api-contracts/vendor/stock-locations"
 
 export default function VendorLocationsPage() {
-  const getStockLocations = useGetStockLocations()
+  const getVendorsStockLocations = useGetVendorsStockLocations()
 
   return (
     <VendorSection
@@ -15,8 +15,8 @@ export default function VendorLocationsPage() {
       className="flex flex-col gap-3"
     >
       <DataState
-        isLoading={getStockLocations.isLoading}
-        isEmpty={getStockLocations.data?.stock_locations.length === 0}
+        isLoading={getVendorsStockLocations.isLoading}
+        isEmpty={getVendorsStockLocations.data?.stock_locations.length === 0}
       >
         <DataState.Loading />
         <DataState.Empty>
@@ -24,7 +24,7 @@ export default function VendorLocationsPage() {
         </DataState.Empty>
         <DataState.Content>
           <ul className="flex flex-col gap-2">
-            {getStockLocations.data?.stock_locations.map(
+            {getVendorsStockLocations.data?.stock_locations.map(
               (location: VendorStockLocation) => (
                 <li
                   key={location.id}

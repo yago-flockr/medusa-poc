@@ -1,75 +1,148 @@
 # Contract → keys → hook naming chain
 
-How a single vendor operation (e.g. "log in") stays typed and traceable
-from the shared `@dtc/api-contracts` package down to its TanStack Query
-hook, plus the structural conventions every hook file itself follows (key
-registry, hook shape, key parameterization) — verified across every domain
-in `apps/storefront/src/vendor/hooks/`, not just login. Reference example
-throughout: **vendor login**. Copy this shape for every new `/vendors/*`
-(or `/auth/vendor/*`) operation — don't invent a parallel naming or
-structural style for a new one.
+Every vendor contract schema, router key, mutation/query key, and hook name
+is **mechanically derived from the backend route's HTTP method + path** —
+never hand-picked. This is deliberate: a name that describes the route
+(`postVendorsProducts`) can never drift from the route it describes, and a
+new route never needs a naming judgment call — the algorithm always gives
+exactly one right answer. Reference example throughout: **vendor login**
+(`POST /auth/vendor/emailpass`). Copy this shape for every new operation —
+don't invent a parallel naming style for a new one.
 
 For what happens **after** the hook — the form that consumes it — see the
 sibling doc `docs/vendor-hook-form-pattern.md`.
 
-## The chain, at a glance
+## The algorithm
 
-| # | Layer | File (login example) | Exports |
-|---|-------|------------------------|---------|
-| 1 | API contract — request | `packages/api-contracts/src/vendor/auth.ts` | `loginVendorInputSchema`, `LoginVendorInput` |
-| 2 | API contract — response | same file | `loginVendorResponseSchema`, `LoginVendorResponse` |
-| 3 | Mutation/query key | `apps/storefront/src/vendor/hooks/mutations/mutation-keys.ts` | `mutationKeys.auth.login` → `["loginVendor"]` |
-| 4 | Hook | `apps/storefront/src/vendor/hooks/mutations/auth.ts` | `useLoginVendor` |
+`<method, lowercase><each path segment, PascalCased, literally>` + `Input` /
+`Response`. A `:id` path param becomes `ById`. Hyphens are dropped and the
+next letter capitalized (`stock-locations` → `StockLocations`).
 
-One word stem — `loginVendor` / `LoginVendor` — runs through every layer.
-That's what makes the chain traceable: given any one name, you can guess
-every other name in the chain without opening a file.
+```
+GET  /vendors/products/:id   →  getVendorsProductsById
+POST /vendors/products/:id   →  postVendorsProductsById
+POST /auth/vendor/emailpass  →  postAuthVendorEmailpass
+```
+
+This applies to the router key in `contract.ts`, the top-level Input/Response
+schema + type, the mutation/query key, and the hook name — all four are the
+exact same word, every time.
+
+## The full table (every current vendor operation)
+
+| Method + path | Router key / key / hook name |
+|---|---|
+| `GET /vendors/me` | `getVendorsMe` |
+| `PATCH /vendors/me` | `patchVendorsMe` |
+| `PATCH /vendors/me/shopify/connection` | `patchVendorsMeShopifyConnection` |
+| `GET /vendors/me/shopify/connection/install-link` | `getVendorsMeShopifyConnectionInstallLink` |
+| `GET /vendors/me/shopify/products` | `getVendorsMeShopifyProducts` |
+| `POST /vendors/me/shopify/products/import` | `postVendorsMeShopifyProductsImport` |
+| `GET /vendors/orders` | `getVendorsOrders` |
+| `GET /vendors/products` | `getVendorsProducts` |
+| `POST /vendors/products` | `postVendorsProducts` |
+| `GET /vendors/products/:id` | `getVendorsProductsById` |
+| `POST /vendors/products/:id` | `postVendorsProductsById` |
+| `DELETE /vendors/products/:id` | `deleteVendorsProductsById` |
+| `GET /vendors/stock-locations` | `getVendorsStockLocations` |
+| `POST /vendors/stock-locations` | `postVendorsStockLocations` |
+| `GET /vendors/products/:id/inventory` | `getVendorsProductsByIdInventory` |
+| `POST /vendors/products/:id/inventory` | `postVendorsProductsByIdInventory` |
+| `POST /vendors/uploads` (multipart, not ts-rest-served) | `postVendorsUploads` |
+| `POST /auth/vendor/emailpass` (core Medusa route, no `route.ts` in this repo) | `postAuthVendorEmailpass` |
+
+Login proves the rule has no exceptions: it isn't backed by a file in
+`apps/backend/src/api/**` at all (it's Medusa's own built-in auth route), but
+the literal path is still known (`/auth/vendor/emailpass`), so the same
+algorithm still applies — there is no manual/semantic fallback name reserved
+for "the one route with no `route.ts` file."
+
+## Worked example: login, end to end
+
+| # | Layer | File | Exports |
+|---|-------|------|---------|
+| 1 | API contract — request | `packages/api-contracts/src/vendor/auth.ts` | `postAuthVendorEmailpassInputSchema`, `PostAuthVendorEmailpassInput` |
+| 2 | API contract — response | same file | `postAuthVendorEmailpassResponseSchema`, `PostAuthVendorEmailpassResponse` |
+| 3 | Mutation key | `apps/storefront/src/vendor/hooks/mutations/mutation-keys.ts` | `mutationKeys.auth.postAuthVendorEmailpass` → `["postAuthVendorEmailpass"]` |
+| 4 | Hook | `apps/storefront/src/vendor/hooks/mutations/auth.ts` | `usePostAuthVendorEmailpass` |
+| 5 | Call site local var | `.../vendor/_components/vendor-auth-gate.tsx` | `const postAuthVendorEmailpass = usePostAuthVendorEmailpass()` |
+
+The word `postAuthVendorEmailpass` runs through every layer, including the
+call site's own local variable name (per the existing "hook result const
+matches hook name" convention) — given any one of these five, you can guess
+every other one without opening a file.
 
 ## The hard rules
 
-Non-negotiable for every new vendor contract + hook pair, not just login:
-
-1. **Every contract has an `InputSchema` + `InputType`.**
-   `loginVendorInputSchema` / `LoginVendorInput` — the Zod schema is the
-   source of truth, the type is `z.infer<typeof ...>`, never hand-declared.
+1. **Every contract has an `InputSchema` + `InputType`, always, named by the
+   algorithm above** — never a semantic verb like `createProduct` or
+   `login`. The Zod schema is the source of truth, the type is
+   `z.infer<typeof ...>`, never hand-declared.
 2. **Every contract has a `ResponseSchema` + `ResponseType`**, same rule:
-   `loginVendorResponseSchema` / `LoginVendorResponse`.
-3. **The mutation/query key matches the contract's name exactly.**
-   The leaf key string is the same stem as the schema/type name
-   (`"loginVendor"`), not a rephrased verb. See
-   `packages/api-contracts/README.md` and `agents/storefront.md` for the
-   broader "hook name must match the API it calls" rule this extends
-   backward onto the key itself.
-4. **The hook is named exactly after its mutation/query key.**
-   `mutationKeys.auth.login` → `useLoginVendor`. A reader should never have
-   to open the hook body to learn which key it uses.
-5. **Every hook is typed with the contract's `Input`/`Response` types**,
-   never a locally re-typed shape:
-   `mutationFn: ({ email, password }: LoginVendorInput) => request<LoginVendorResponse>(...)`.
-6. **Every hook has a destined form.** `useLoginVendor` pairs with
-   `LoginForm` — a hook without a form (or vice versa) is a sign the two
-   were built out of step. See `docs/vendor-hook-form-pattern.md` for the
-   rules that pick up from here.
+   `postAuthVendorEmailpassResponseSchema` / `PostAuthVendorEmailpassResponse`.
+3. **A GET query-string schema is still an `Input`** — the client sends it to
+   the server the same as a body, just via the URL. `getVendorsProductsInputSchema`
+   /`GetVendorsProductsInput` covers the `?limit=&offset=` query params for
+   `GET /vendors/products`, named after the same route stem as any other Input.
+4. **A nested schema used only inside a bigger *request* schema is named
+   after that request's route, not given its own semantic name** —
+   `postVendorsProductsOptionInputSchema`, `postVendorsProductsImageInputSchema`,
+   `postVendorsProductsVariantInputSchema`, `postVendorsProductsByIdVariantInputSchema`
+   (nested inside the *update* route's body, hence `ById`),
+   `postVendorsStockLocationsAddressInputSchema`. These are still pieces of
+   one specific route's payload — verbose and mechanical, same as the top
+   level.
+5. **A schema reused across two or more *different* routes' responses stays
+   domain-named, not mechanical** — `vendorProductSchema`, `vendorOrderSchema`,
+   `vendorUserSchema`, `vendorStockLocationSchema`, and the `*DetailSchema`
+   family in `products.ts`. This isn't an exception granted for convenience:
+   the algorithm requires exactly one owning route, and a shape genuinely
+   consumed by two routes has no single route to derive a name from.
+6. **A response shape already reused by two routes is not duplicated to give
+   each route its own mechanically-named copy** — `POST /vendors/products/:id`
+   returns the exact same shape as `GET /vendors/products/:id`, so both routes'
+   `responses:` point at the one schema, named after the GET (the canonical
+   read): `getVendorsProductsByIdResponseSchema`. Same for product inventory's
+   GET/POST pair. Duplicating an identical Zod schema just to keep every route's
+   name self-contained would violate this repo's DRY rule ("a shape is
+   translated in exactly one place") — DRY wins this specific conflict.
+7. **Every schema gets exported with its inferred type, however small or
+   seemingly private.** No "this one's only used inside this same file"
+   exception — a schema that looks internal today may need to be imported
+   directly later, and retrofitting an export is a bigger diff than always
+   exporting.
+8. **The mutation/query key is the exact same word as the router key.**
+   `postVendorsProducts` in `contract.ts` → `mutationKeys.products.postVendorsProducts`
+   → `["postVendorsProducts"]`. The registry's top-level *group* name (`products`,
+   `shopify`, `auth`) is a separate, stable organizational label matching the
+   hook **file** it belongs to — it does not change when a route's mechanical
+   name changes.
+9. **The hook is named exactly after its mutation/query key.**
+   `mutationKeys.auth.postAuthVendorEmailpass` → `usePostAuthVendorEmailpass`.
+10. **Every hook is typed with the contract's `Input`/`Response` types**,
+    never a locally re-typed shape.
+11. **Every hook has a destined form.** `usePostAuthVendorEmailpass` pairs
+    with `LoginForm` — see `docs/vendor-hook-form-pattern.md` for the rules
+    that pick up from here (the **form's own** schema/component name is a
+    separate, human-facing naming decision, not mechanically derived — a form
+    is UI, not a wire contract).
 
 ## Three more conventions every hook file follows
 
 These aren't about naming — they're about how the hook files themselves are
 structured. Verified across every file in
-`apps/storefront/src/vendor/hooks/{mutations,queries}/`, not just auth/login.
+`apps/storefront/src/vendor/hooks/{mutations,queries}/`.
 
 ### 1. Keys always live in one central registry file, never inline
 
 `mutation-keys.ts` and `query-keys.ts` are the **only** two files in their
 respective folders allowed to write a key literal (`["someKey"] as const`).
-Every other file in that folder — `auth.ts`, `profile.ts`, `shopify.ts`,
-`products.ts`, `uploads.ts`, `stock-locations.ts`, `product-inventory.ts` for
-mutations; `vendor.ts`, `orders.ts`, `shopify-products.ts`, `products.ts`,
-`stock-locations.ts`, `product-inventory.ts` for queries — only *imports*
-`mutationKeys`/`queryKeys` and reads a key off it. No hook ever writes
-`mutationKey: ["loginVendor"]` directly inline.
+Every other file only *imports* `mutationKeys`/`queryKeys` and reads a key
+off it. No hook ever writes `mutationKey: ["postVendorsProducts"]` directly
+inline.
 
-The registry is grouped by domain, and **each top-level group name matches
-one hook file's name** one-to-one:
+The registry is grouped by domain, and each top-level group name matches one
+hook **file** (not the mechanical route name):
 
 | Registry group | Hook file |
 |---|---|
@@ -87,56 +160,43 @@ one hook file's name** one-to-one:
 | `queryKeys.stockLocations` | `queries/stock-locations.ts` |
 | `queryKeys.productInventory` | `queries/product-inventory.ts` |
 
-Adding a hook to a domain that already has a file means adding to that
-domain's existing group in the registry — never starting a second group for
-the same domain, and never adding a key to a group whose file you're not
-also touching.
-
-**Why centralize instead of colocating the key next to its hook** (the more
-"obvious" option): one file makes every mutation/query key in the whole
-vendor panel visible in a single glance — you can `grep` `mutation-keys.ts`
-to answer "does this key already exist" or "is this name already taken"
+**Why centralize instead of colocating the key next to its hook:** one file
+makes every mutation/query key in the whole vendor panel visible in a single
+glance — `grep mutation-keys.ts` answers "does this key already exist"
 without opening seven files. It also means a future cross-domain
-`invalidateQueries` call (e.g. a `products` mutation invalidating a
-`productInventory` query) can import one small file instead of pulling in
+`invalidateQueries` call can import one small file instead of pulling in
 another domain's entire hook file just to reach its key.
 
 ### 2. A hook is always a single expression, never a function body
 
-Every exported hook in these folders is written as one of exactly two
-shapes, both single-expression arrow functions with **no block body, no
-local variables, no logic of its own**:
-
 ```ts
 // mutations — direct useMutation call
-export const useLoginVendor = () =>
+export const usePostAuthVendorEmailpass = () =>
   useMutation({
-    mutationKey: mutationKeys.auth.login,
-    mutationFn: (input: LoginVendorInput) => request<LoginVendorResponse>(...),
+    mutationKey: mutationKeys.auth.postAuthVendorEmailpass,
+    mutationFn: (input: PostAuthVendorEmailpassInput) =>
+      request<PostAuthVendorEmailpassResponse>(...),
   })
 
 // queries — via the createResourceQueryHook factory
-export const useGetProducts = createResourceQueryHook<void, VendorProductsListResponse>({
-  queryKey: () => queryKeys.products.getProducts,
+export const useGetVendorsProducts = createResourceQueryHook<void, GetVendorsProductsResponse>({
+  queryKey: () => queryKeys.products.getVendorsProducts,
   queryFn: async () => { ... },
 })
 ```
 
 Never `export function useX() { const result = useMutation(...); return result }`
-— there is nothing to add between calling `useMutation`/`useQuery` and
-returning it, so nothing does. If a hook ever needs extra logic (derived
-state, a side effect on success), that logic belongs in the **caller**, not
-smuggled into the hook itself — same "who owns what" boundary as the
-form/caller split in `docs/vendor-hook-form-pattern.md`.
+— if a hook ever needs extra logic, that logic belongs in the **caller**, not
+inside the hook.
 
-All the actual work happens *inside* `mutationFn`/`queryFn`, and that inner
-function follows its own fixed shape for every `vendorClient`-backed hook
-(ts-rest calls, i.e. everything except the one legacy `request()`-based auth
-route and the one raw `uploadVendorImages` reference in `uploads.ts`):
+The inner `mutationFn`/`queryFn` follows its own fixed shape for every
+`vendorClient`-backed hook (everything except the `request()`-based auth hook
+and the raw `uploadVendorImages` reference, whose status/401 handling is
+already centralized in `client.ts`'s `assertOkResponse`):
 
 ```ts
-mutationFn: async (body: CreateVendorProduct) => {
-  const response = await vendorClient.createProduct({ body })
+mutationFn: async (body: PostVendorsProductsInput) => {
+  const response = await vendorClient.postVendorsProducts({ body })
   if (response.status !== 200) {
     throw new Error(`Unexpected response status ${response.status}`)
   }
@@ -144,80 +204,39 @@ mutationFn: async (body: CreateVendorProduct) => {
 }
 ```
 
-Call the contract method → check `response.status !== 200` → throw a bare
-`Error` with that exact message template → otherwise return `response.body`.
-This is the one place a non-200 becomes a thrown error for a ts-rest call;
-don't add a second status-checking style. (The `request()`-based auth hook
-and `uploadVendorImages` skip this because their status/401 handling is
-already centralized inside `client.ts`'s `assertOkResponse` — see
-`agents/storefront.md`'s "A `401` from either... triggers the same logout
-automatically" note. Don't re-add a manual status check on top of those.)
-
 ### 3. Static key for no params, key-factory function once a param exists
 
-A key with no parameters is a plain `as const` tuple:
-
 ```ts
-mutationKeys.products.createProduct        // ["createProduct"] as const
-queryKeys.orders.getOrders                 // ["getOrders"] as const
-```
+mutationKeys.products.postVendorsProducts   // ["postVendorsProducts"] as const
+queryKeys.orders.getVendorsOrders           // ["getVendorsOrders"] as const
 
-A **query** key that needs to address one specific resource (fetch-by-id)
-becomes a function instead, taking that id and folding it into the tuple:
-
-```ts
-// query-keys.ts
+// query-keys.ts — a fetch-by-id query becomes a function
 products: {
-  getProducts: ["getProducts"] as const,
-  getProduct: (productId: string) => ["getProduct", productId] as const,
+  getVendorsProductsById: (productId: string) =>
+    ["getVendorsProductsById", productId] as const,
 },
-productInventory: {
-  getProductInventory: (productId: string) =>
-    ["getProductInventory", productId] as const,
-},
-```
-
-and the hook passes the param straight through to it:
-
-```ts
-export const useGetProduct = createResourceQueryHook<string, GetVendorProductResponse>({
-  queryKey: (productId) => queryKeys.products.getProduct(productId),
-  queryFn: (productId) => ...,
-})
 ```
 
 **Mutations never take the function form, even when the mutation itself
-takes an id** — `useUpdateProduct` and `useDeleteProduct` both take an `id`
-in their input, but `mutationKeys.products.updateProduct` /
-`.deleteProduct` are still plain tuples with no id folded in. The reason is
-what the key is *for*: a query key is a cache address — TanStack Query uses
-it to store and invalidate that exact resource's cached data, so two
-different products must produce two different keys. A mutation key is just
-a label for devtools/mutation-state tracking, not a cache address (nothing
-is cached by mutation key), so it never needs to be parameterized. Don't
-"fix" a mutation key into a function out of consistency with queries — that
-would be solving a problem that doesn't exist for mutations.
+takes an id** — `postVendorsProductsById` (update) and `deleteVendorsProductsById`
+both take an `id`, but their mutation keys stay plain tuples. A query key is
+a cache address (two different products must produce two different keys); a
+mutation key is just a devtools label, nothing is cached by it.
 
 ## Recipe: adding a new contract + hook pair
 
-Given a new operation, e.g. `POST /vendors/foo`:
+Given a new operation, e.g. `PUT /vendors/bar`:
 
-1. **Contract** — `packages/api-contracts/src/vendor/foo.ts`:
-   `fooVendorInputSchema`/`FooVendorInput`,
-   `fooVendorResponseSchema`/`FooVendorResponse`. Register in
-   `vendor/contract.ts` if it's ts-rest-served; skip that step for the one
-   legacy `request()`-based auth route (see
-   `packages/api-contracts/README.md`, "Not for").
-2. **Key** — add `["fooVendor"]` (or, for a fetch-by-id query,
-   `(id: string) => ["fooVendor", id] as const`) under the matching domain
-   group in `mutation-keys.ts` / `query-keys.ts` — never inline in the hook
-   file itself. If the domain has no group yet, its name must match the new
-   hook file's name.
-3. **Hook** — `useFooVendor` in
-   `apps/storefront/src/vendor/hooks/{mutations,queries}/<domain>.ts`,
-   typed with `FooVendorInput`/`FooVendorResponse`, written as a single
-   expression (`() => useMutation({...})` / `createResourceQueryHook({...})`)
-   with the `response.status !== 200` check inside `mutationFn`/`queryFn`.
+1. **Derive the name**: `putVendorsBar`.
+2. **Contract** — `packages/api-contracts/src/vendor/bar.ts`:
+   `putVendorsBarInputSchema`/`PutVendorsBarInput`,
+   `putVendorsBarResponseSchema`/`PutVendorsBarResponse`. Register in
+   `vendor/contract.ts` as `putVendorsBar: { method: "PUT", path: "/vendors/bar", ... }`.
+3. **Key** — add `["putVendorsBar"]` under the matching domain group in
+   `mutation-keys.ts`/`query-keys.ts` — never inline in the hook file.
+4. **Hook** — `usePutVendorsBar`, typed with `PutVendorsBarInput`/`PutVendorsBarResponse`,
+   written as a single expression, with the `response.status !== 200` check
+   inside `mutationFn`.
 
 Once the hook exists, continue with `docs/vendor-hook-form-pattern.md` to
 build its form and wire the caller.

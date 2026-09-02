@@ -8,11 +8,11 @@ import {
   ProductStatus,
 } from "@medusajs/framework/utils"
 import {
-  createVendorProductResponseSchema,
-  vendorProductsListResponseSchema,
-  type CreateVendorProduct,
-  type CreateVendorProductResponse,
-  type VendorProductsListResponse,
+  postVendorsProductsResponseSchema,
+  getVendorsProductsResponseSchema,
+  type PostVendorsProductsInput,
+  type PostVendorsProductsResponse,
+  type GetVendorsProductsResponse,
 } from "@dtc/api-contracts/vendor/products"
 import { createVendorProductWorkflow } from "../../../workflows/create-vendor-product"
 import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
@@ -47,7 +47,7 @@ export const GET = async (
     pagination: { skip: offset, take: limit },
   })
 
-  const response: VendorProductsListResponse = {
+  const response: GetVendorsProductsResponse = {
     products: products.map((product) => ({
       id: product.id,
       title: product.title,
@@ -62,11 +62,11 @@ export const GET = async (
     offset,
   }
 
-  res.json(vendorProductsListResponseSchema.parse(response))
+  res.json(getVendorsProductsResponseSchema.parse(response))
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<CreateVendorProduct>,
+  req: AuthenticatedMedusaRequest<PostVendorsProductsInput>,
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -119,7 +119,7 @@ export const POST = async (
 
   const product = result[0]
 
-  const response: CreateVendorProductResponse = {
+  const response: PostVendorsProductsResponse = {
     product: {
       id: product.id,
       title: product.title,
@@ -131,5 +131,5 @@ export const POST = async (
     },
   }
 
-  res.json(createVendorProductResponseSchema.parse(response))
+  res.json(postVendorsProductsResponseSchema.parse(response))
 }

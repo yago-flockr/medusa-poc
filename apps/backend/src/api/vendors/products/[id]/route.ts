@@ -9,8 +9,8 @@ import {
   updateProductVariantsWorkflow,
 } from "@medusajs/medusa/core-flows"
 import {
-  getVendorProductResponseSchema,
-  type UpdateVendorProduct,
+  getVendorsProductsByIdResponseSchema,
+  type PostVendorsProductsByIdInput,
 } from "@dtc/api-contracts/vendor/products"
 import { resolveStorePrerequisites } from "../../../../lib/resolve-store-prerequisites"
 import { resolveVendorUser } from "../../resolve-vendor-user"
@@ -34,11 +34,11 @@ export const GET = async (
 
   const product = await buildVendorProductDetail(query, id)
 
-  res.json(getVendorProductResponseSchema.parse({ product }))
+  res.json(getVendorsProductsByIdResponseSchema.parse({ product }))
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<UpdateVendorProduct>,
+  req: AuthenticatedMedusaRequest<PostVendorsProductsByIdInput>,
   res: MedusaResponse,
 ) => {
   const { id } = req.params
@@ -95,7 +95,7 @@ export const POST = async (
 
   const product = await buildVendorProductDetail(query, id)
 
-  res.json(getVendorProductResponseSchema.parse({ product }))
+  res.json(getVendorsProductsByIdResponseSchema.parse({ product }))
 }
 
 export const DELETE = async (

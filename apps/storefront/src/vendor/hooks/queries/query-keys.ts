@@ -1,22 +1,23 @@
 export const queryKeys = {
   vendor: {
-    getMe: ["getMe"] as const,
+    getVendorsMe: ["getVendorsMe"] as const,
   },
   orders: {
-    getOrders: ["getOrders"] as const,
+    getVendorsOrders: ["getVendorsOrders"] as const,
   },
   shopifyProducts: {
-    pullShopifyProducts: ["pullShopifyProducts"] as const,
+    getVendorsMeShopifyProducts: ["getVendorsMeShopifyProducts"] as const,
   },
   products: {
-    getProducts: ["getProducts"] as const,
-    getProduct: (productId: string) => ["getProduct", productId] as const,
+    getVendorsProducts: ["getVendorsProducts"] as const,
+    getVendorsProductsById: (productId: string) =>
+      ["getVendorsProductsById", productId] as const,
   },
   stockLocations: {
-    getStockLocations: ["getStockLocations"] as const,
+    getVendorsStockLocations: ["getVendorsStockLocations"] as const,
   },
   productInventory: {
-    getProductInventory: (productId: string) =>
-      ["getProductInventory", productId] as const,
+    getVendorsProductsByIdInventory: (productId: string) =>
+      ["getVendorsProductsByIdInventory", productId] as const,
   },
 }

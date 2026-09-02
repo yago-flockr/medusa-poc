@@ -1,9 +1,9 @@
 import { MedusaError } from "@medusajs/framework/utils"
-import type { UpdateVendorProduct } from "@dtc/api-contracts/vendor/products"
+import type { PostVendorsProductsByIdInput } from "@dtc/api-contracts/vendor/products"
 
 export function assertEditableVendorProduct(
   externalId: string | null,
-  body: UpdateVendorProduct,
+  body: PostVendorsProductsByIdInput,
 ) {
   const editsContentOnly = Object.keys(body).every((key) => key === "status")
 

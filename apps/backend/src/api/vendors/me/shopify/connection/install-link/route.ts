@@ -5,8 +5,8 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import {
-  getVendorShopifyInstallLinkResponseSchema,
-  type GetVendorShopifyInstallLinkResponse,
+  getVendorsMeShopifyConnectionInstallLinkResponseSchema,
+  type GetVendorsMeShopifyConnectionInstallLinkResponse,
 } from "@dtc/api-contracts/vendor/shopify-connection"
 import { resolveVendorUser } from "../../../../resolve-vendor-user"
 import { updateVendorWorkflow } from "../../../../../../workflows/update-vendor"
@@ -57,7 +57,7 @@ export const GET = async (
     host,
   })
 
-  const response: GetVendorShopifyInstallLinkResponse = { install_link: installLink }
+  const response: GetVendorsMeShopifyConnectionInstallLinkResponse = { install_link: installLink }
 
-  res.json(getVendorShopifyInstallLinkResponseSchema.parse(response))
+  res.json(getVendorsMeShopifyConnectionInstallLinkResponseSchema.parse(response))
 }

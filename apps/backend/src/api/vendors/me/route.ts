@@ -4,14 +4,14 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import {
-  vendorMeResponseSchema,
-  type VendorMeResponse,
+  getVendorsMeResponseSchema,
+  type GetVendorsMeResponse,
 } from "@dtc/api-contracts/vendor/me"
 import { vendorIntegrationConnectionProviderSchema } from "@dtc/api-contracts/vendor/integration-connection"
 import {
-  updateVendorProfileResponseSchema,
-  type UpdateVendorProfileInput,
-  type UpdateVendorProfileResponse,
+  patchVendorsMeResponseSchema,
+  type PatchVendorsMeInput,
+  type PatchVendorsMeResponse,
 } from "@dtc/api-contracts/vendor/profile"
 import { resolveVendorUser } from "../resolve-vendor-user"
 import { updateVendorUserWorkflow } from "../../../workflows/update-vendor-user"
@@ -36,7 +36,7 @@ export const GET = async (
     "vendor.integration_connections.connected_at",
   ])
 
-  const response: VendorMeResponse = {
+  const response: GetVendorsMeResponse = {
     vendor_user: {
       id: vendorUser.id,
       first_name: vendorUser.first_name,
@@ -68,11 +68,11 @@ export const GET = async (
     },
   }
 
-  res.json(vendorMeResponseSchema.parse(response))
+  res.json(getVendorsMeResponseSchema.parse(response))
 }
 
 export const PATCH = async (
-  req: AuthenticatedMedusaRequest<UpdateVendorProfileInput>,
+  req: AuthenticatedMedusaRequest<PatchVendorsMeInput>,
   res: MedusaResponse,
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -92,7 +92,7 @@ export const PATCH = async (
     last_name: string | null
   }
 
-  const response: UpdateVendorProfileResponse = {
+  const response: PatchVendorsMeResponse = {
     vendor_user: {
       id: updatedVendorUser.id,
       first_name: updatedVendorUser.first_name,
@@ -100,5 +100,5 @@ export const PATCH = async (
     },
   }
 
-  res.json(updateVendorProfileResponseSchema.parse(response))
+  res.json(patchVendorsMeResponseSchema.parse(response))
 }

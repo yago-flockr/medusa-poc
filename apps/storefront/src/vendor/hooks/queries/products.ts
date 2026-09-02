@@ -1,18 +1,18 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
 import type {
-  GetVendorProductResponse,
-  VendorProductsListResponse,
+  GetVendorsProductsByIdResponse,
+  GetVendorsProductsResponse,
 } from "@dtc/api-contracts/vendor/products"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export const useGetProducts = createResourceQueryHook<
+export const useGetVendorsProducts = createResourceQueryHook<
   void,
-  VendorProductsListResponse
+  GetVendorsProductsResponse
 >({
-  queryKey: () => queryKeys.products.getProducts,
+  queryKey: () => queryKeys.products.getVendorsProducts,
   queryFn: async () => {
-    const response = await vendorClient.getProducts({ query: {} })
+    const response = await vendorClient.getVendorsProducts({ query: {} })
     if (response.status !== 200) {
       throw new Error(`Unexpected response status ${response.status}`)
     }
@@ -20,13 +20,15 @@ export const useGetProducts = createResourceQueryHook<
   },
 })
 
-export const useGetProduct = createResourceQueryHook<
+export const useGetVendorsProductsById = createResourceQueryHook<
   string,
-  GetVendorProductResponse
+  GetVendorsProductsByIdResponse
 >({
-  queryKey: (productId) => queryKeys.products.getProduct(productId),
+  queryKey: (productId) => queryKeys.products.getVendorsProductsById(productId),
   queryFn: async (productId) => {
-    const response = await vendorClient.getProduct({ params: { id: productId } })
+    const response = await vendorClient.getVendorsProductsById({
+      params: { id: productId },
+    })
     if (response.status !== 200) {
       throw new Error(`Unexpected response status ${response.status}`)
     }

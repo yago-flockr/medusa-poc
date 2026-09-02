@@ -1,15 +1,15 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
-import type { VendorOrdersListResponse } from "@dtc/api-contracts/vendor/orders"
+import type { GetVendorsOrdersResponse } from "@dtc/api-contracts/vendor/orders"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export const useGetOrders = createResourceQueryHook<
+export const useGetVendorsOrders = createResourceQueryHook<
   void,
-  VendorOrdersListResponse
+  GetVendorsOrdersResponse
 >({
-  queryKey: () => queryKeys.orders.getOrders,
+  queryKey: () => queryKeys.orders.getVendorsOrders,
   queryFn: async () => {
-    const response = await vendorClient.getOrders({ query: {} })
+    const response = await vendorClient.getVendorsOrders({ query: {} })
     if (response.status !== 200) {
       throw new Error(`Unexpected response status ${response.status}`)
     }

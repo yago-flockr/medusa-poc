@@ -1,16 +1,16 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
 import type {
-  CreateVendorProduct,
-  UpdateVendorProduct,
+  PostVendorsProductsInput,
+  PostVendorsProductsByIdInput,
 } from "@dtc/api-contracts/vendor/products"
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
 
-export const useCreateProduct = () =>
+export const usePostVendorsProducts = () =>
   useMutation({
-    mutationKey: mutationKeys.products.createProduct,
-    mutationFn: async (body: CreateVendorProduct) => {
-      const response = await vendorClient.createProduct({ body })
+    mutationKey: mutationKeys.products.postVendorsProducts,
+    mutationFn: async (body: PostVendorsProductsInput) => {
+      const response = await vendorClient.postVendorsProducts({ body })
       if (response.status !== 200) {
         throw new Error(`Unexpected response status ${response.status}`)
       }
@@ -18,14 +18,14 @@ export const useCreateProduct = () =>
     },
   })
 
-export const useUpdateProduct = () =>
+export const usePostVendorsProductsById = () =>
   useMutation({
-    mutationKey: mutationKeys.products.updateProduct,
+    mutationKey: mutationKeys.products.postVendorsProductsById,
     mutationFn: async ({
       id,
       ...body
-    }: { id: string } & UpdateVendorProduct) => {
-      const response = await vendorClient.updateProduct({
+    }: { id: string } & PostVendorsProductsByIdInput) => {
+      const response = await vendorClient.postVendorsProductsById({
         params: { id },
         body,
       })
@@ -36,11 +36,13 @@ export const useUpdateProduct = () =>
     },
   })
 
-export const useDeleteProduct = () =>
+export const useDeleteVendorsProductsById = () =>
   useMutation({
-    mutationKey: mutationKeys.products.deleteProduct,
+    mutationKey: mutationKeys.products.deleteVendorsProductsById,
     mutationFn: async (id: string) => {
-      const response = await vendorClient.deleteProduct({ params: { id } })
+      const response = await vendorClient.deleteVendorsProductsById({
+        params: { id },
+      })
       if (response.status !== 200) {
         throw new Error(`Unexpected response status ${response.status}`)
       }

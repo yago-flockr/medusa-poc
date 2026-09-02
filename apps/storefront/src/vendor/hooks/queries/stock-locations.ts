@@ -1,15 +1,15 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
-import type { VendorStockLocationsListResponse } from "@dtc/api-contracts/vendor/stock-locations"
+import type { GetVendorsStockLocationsResponse } from "@dtc/api-contracts/vendor/stock-locations"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export const useGetStockLocations = createResourceQueryHook<
+export const useGetVendorsStockLocations = createResourceQueryHook<
   void,
-  VendorStockLocationsListResponse
+  GetVendorsStockLocationsResponse
 >({
-  queryKey: () => queryKeys.stockLocations.getStockLocations,
+  queryKey: () => queryKeys.stockLocations.getVendorsStockLocations,
   queryFn: async () => {
-    const response = await vendorClient.getStockLocations({ query: {} })
+    const response = await vendorClient.getVendorsStockLocations({ query: {} })
     if (response.status !== 200) {
       throw new Error(`Unexpected response status ${response.status}`)
     }

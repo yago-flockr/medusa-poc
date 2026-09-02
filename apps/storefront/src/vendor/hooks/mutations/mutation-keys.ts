@@ -1,27 +1,35 @@
 export const mutationKeys = {
   auth: {
-    login: ["loginVendor"] as const,
+    postAuthVendorEmailpass: ["postAuthVendorEmailpass"] as const,
   },
   profile: {
-    updateProfile: ["updateProfile"] as const,
+    patchVendorsMe: ["patchVendorsMe"] as const,
   },
   shopify: {
-    setShopifyConnection: ["setShopifyConnection"] as const,
-    getShopifyInstallLink: ["getShopifyInstallLink"] as const,
-    importShopifyProducts: ["importShopifyProducts"] as const,
+    patchVendorsMeShopifyConnection: [
+      "patchVendorsMeShopifyConnection",
+    ] as const,
+    getVendorsMeShopifyConnectionInstallLink: [
+      "getVendorsMeShopifyConnectionInstallLink",
+    ] as const,
+    postVendorsMeShopifyProductsImport: [
+      "postVendorsMeShopifyProductsImport",
+    ] as const,
   },
   products: {
-    createProduct: ["createProduct"] as const,
-    updateProduct: ["updateProduct"] as const,
-    deleteProduct: ["deleteProduct"] as const,
+    postVendorsProducts: ["postVendorsProducts"] as const,
+    postVendorsProductsById: ["postVendorsProductsById"] as const,
+    deleteVendorsProductsById: ["deleteVendorsProductsById"] as const,
   },
   uploads: {
-    uploadVendorImages: ["uploadVendorImages"] as const,
+    postVendorsUploads: ["postVendorsUploads"] as const,
   },
   stockLocations: {
-    createStockLocation: ["createStockLocation"] as const,
+    postVendorsStockLocations: ["postVendorsStockLocations"] as const,
   },
   productInventory: {
-    setProductInventory: ["setProductInventory"] as const,
+    postVendorsProductsByIdInventory: [
+      "postVendorsProductsByIdInventory",
+    ] as const,
   },
 }

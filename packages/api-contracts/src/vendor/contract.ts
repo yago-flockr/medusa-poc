@@ -1,166 +1,166 @@
 import { initContract } from "@ts-rest/core"
-import { vendorMeResponseSchema } from "./me"
+import { getVendorsMeResponseSchema } from "./me"
 import {
-  vendorOrdersListResponseSchema,
-  vendorOrdersQuerySchema,
+  getVendorsOrdersInputSchema,
+  getVendorsOrdersResponseSchema,
 } from "./orders"
 import {
-  updateVendorProfileResponseSchema,
-  updateVendorProfileSchema,
+  patchVendorsMeInputSchema,
+  patchVendorsMeResponseSchema,
 } from "./profile"
 import {
-  setVendorShopifyConnectionResponseSchema,
-  setVendorShopifyConnectionSchema,
-  getVendorShopifyInstallLinkResponseSchema,
+  patchVendorsMeShopifyConnectionInputSchema,
+  patchVendorsMeShopifyConnectionResponseSchema,
+  getVendorsMeShopifyConnectionInstallLinkResponseSchema,
 } from "./shopify-connection"
 import {
-  importVendorShopifyProductsResponseSchema,
-  importVendorShopifyProductsSchema,
-  pullVendorShopifyProductsResponseSchema,
+  postVendorsMeShopifyProductsImportInputSchema,
+  postVendorsMeShopifyProductsImportResponseSchema,
+  getVendorsMeShopifyProductsResponseSchema,
 } from "./shopify-products"
 import {
-  createVendorProductResponseSchema,
-  createVendorProductSchema,
-  deleteVendorProductResponseSchema,
-  getVendorProductResponseSchema,
-  updateVendorProductSchema,
-  vendorProductsListResponseSchema,
-  vendorProductsQuerySchema,
+  deleteVendorsProductsByIdResponseSchema,
+  getVendorsProductsByIdResponseSchema,
+  getVendorsProductsInputSchema,
+  getVendorsProductsResponseSchema,
+  postVendorsProductsByIdInputSchema,
+  postVendorsProductsInputSchema,
+  postVendorsProductsResponseSchema,
 } from "./products"
 import {
-  createVendorStockLocationResponseSchema,
-  createVendorStockLocationSchema,
-  vendorStockLocationsListResponseSchema,
-  vendorStockLocationsQuerySchema,
+  getVendorsStockLocationsInputSchema,
+  getVendorsStockLocationsResponseSchema,
+  postVendorsStockLocationsInputSchema,
+  postVendorsStockLocationsResponseSchema,
 } from "./stock-locations"
 import {
-  setVendorInventoryLevelSchema,
-  vendorProductInventoryResponseSchema,
+  getVendorsProductsByIdInventoryResponseSchema,
+  postVendorsProductsByIdInventoryInputSchema,
 } from "./product-inventory"
 
 const c = initContract()
 
 export const vendorContract = c.router({
-  getMe: {
+  getVendorsMe: {
     method: "GET",
     path: "/vendors/me",
     responses: {
-      200: vendorMeResponseSchema,
+      200: getVendorsMeResponseSchema,
     },
   },
-  updateProfile: {
+  patchVendorsMe: {
     method: "PATCH",
     path: "/vendors/me",
-    body: updateVendorProfileSchema,
+    body: patchVendorsMeInputSchema,
     responses: {
-      200: updateVendorProfileResponseSchema,
+      200: patchVendorsMeResponseSchema,
     },
   },
-  setShopifyConnection: {
+  patchVendorsMeShopifyConnection: {
     method: "PATCH",
     path: "/vendors/me/shopify/connection",
-    body: setVendorShopifyConnectionSchema,
+    body: patchVendorsMeShopifyConnectionInputSchema,
     responses: {
-      200: setVendorShopifyConnectionResponseSchema,
+      200: patchVendorsMeShopifyConnectionResponseSchema,
     },
   },
-  getShopifyInstallLink: {
+  getVendorsMeShopifyConnectionInstallLink: {
     method: "GET",
     path: "/vendors/me/shopify/connection/install-link",
     responses: {
-      200: getVendorShopifyInstallLinkResponseSchema,
+      200: getVendorsMeShopifyConnectionInstallLinkResponseSchema,
     },
   },
-  pullShopifyProducts: {
+  getVendorsMeShopifyProducts: {
     method: "GET",
     path: "/vendors/me/shopify/products",
     responses: {
-      200: pullVendorShopifyProductsResponseSchema,
+      200: getVendorsMeShopifyProductsResponseSchema,
     },
   },
-  importShopifyProducts: {
+  postVendorsMeShopifyProductsImport: {
     method: "POST",
     path: "/vendors/me/shopify/products/import",
-    body: importVendorShopifyProductsSchema,
+    body: postVendorsMeShopifyProductsImportInputSchema,
     responses: {
-      200: importVendorShopifyProductsResponseSchema,
+      200: postVendorsMeShopifyProductsImportResponseSchema,
     },
   },
-  getOrders: {
+  getVendorsOrders: {
     method: "GET",
     path: "/vendors/orders",
-    query: vendorOrdersQuerySchema,
+    query: getVendorsOrdersInputSchema,
     responses: {
-      200: vendorOrdersListResponseSchema,
+      200: getVendorsOrdersResponseSchema,
     },
   },
-  getProducts: {
+  getVendorsProducts: {
     method: "GET",
     path: "/vendors/products",
-    query: vendorProductsQuerySchema,
+    query: getVendorsProductsInputSchema,
     responses: {
-      200: vendorProductsListResponseSchema,
+      200: getVendorsProductsResponseSchema,
     },
   },
-  createProduct: {
+  postVendorsProducts: {
     method: "POST",
     path: "/vendors/products",
-    body: createVendorProductSchema,
+    body: postVendorsProductsInputSchema,
     responses: {
-      200: createVendorProductResponseSchema,
+      200: postVendorsProductsResponseSchema,
     },
   },
-  getProduct: {
+  getVendorsProductsById: {
     method: "GET",
     path: "/vendors/products/:id",
     responses: {
-      200: getVendorProductResponseSchema,
+      200: getVendorsProductsByIdResponseSchema,
     },
   },
-  updateProduct: {
+  postVendorsProductsById: {
     method: "POST",
     path: "/vendors/products/:id",
-    body: updateVendorProductSchema,
+    body: postVendorsProductsByIdInputSchema,
     responses: {
-      200: getVendorProductResponseSchema,
+      200: getVendorsProductsByIdResponseSchema,
     },
   },
-  deleteProduct: {
+  deleteVendorsProductsById: {
     method: "DELETE",
     path: "/vendors/products/:id",
     responses: {
-      200: deleteVendorProductResponseSchema,
+      200: deleteVendorsProductsByIdResponseSchema,
     },
   },
-  getStockLocations: {
+  getVendorsStockLocations: {
     method: "GET",
     path: "/vendors/stock-locations",
-    query: vendorStockLocationsQuerySchema,
+    query: getVendorsStockLocationsInputSchema,
     responses: {
-      200: vendorStockLocationsListResponseSchema,
+      200: getVendorsStockLocationsResponseSchema,
     },
   },
-  createStockLocation: {
+  postVendorsStockLocations: {
     method: "POST",
     path: "/vendors/stock-locations",
-    body: createVendorStockLocationSchema,
+    body: postVendorsStockLocationsInputSchema,
     responses: {
-      200: createVendorStockLocationResponseSchema,
+      200: postVendorsStockLocationsResponseSchema,
     },
   },
-  getProductInventory: {
+  getVendorsProductsByIdInventory: {
     method: "GET",
     path: "/vendors/products/:id/inventory",
     responses: {
-      200: vendorProductInventoryResponseSchema,
+      200: getVendorsProductsByIdInventoryResponseSchema,
     },
   },
-  setProductInventory: {
+  postVendorsProductsByIdInventory: {
     method: "POST",
     path: "/vendors/products/:id/inventory",
-    body: setVendorInventoryLevelSchema,
+    body: postVendorsProductsByIdInventoryInputSchema,
     responses: {
-      200: vendorProductInventoryResponseSchema,
+      200: getVendorsProductsByIdInventoryResponseSchema,
     },
   },
 })

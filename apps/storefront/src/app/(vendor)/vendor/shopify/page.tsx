@@ -3,12 +3,12 @@
 import { DataState } from "@/components/display/data-state"
 import { Badge } from "@/components/ui/badge"
 import { VendorSection } from "@/vendor/components/section"
-import { useGetMe } from "@/vendor/hooks/queries/vendor"
+import { useGetVendorsMe } from "@/vendor/hooks/queries/vendor"
 
 export default function VendorShopifyPage() {
-  const getMe = useGetMe()
+  const getVendorsMe = useGetVendorsMe()
 
-  const shopifyConnection = getMe.data?.vendor.integration_connections?.find(
+  const shopifyConnection = getVendorsMe.data?.vendor.integration_connections?.find(
     (connection) => connection.provider === "shopify",
   )
   const isConnected = shopifyConnection?.connected ?? false
@@ -30,7 +30,7 @@ export default function VendorShopifyPage() {
       }
       className="flex flex-col gap-2"
     >
-      <DataState isLoading={getMe.isLoading || !getMe.data}>
+      <DataState isLoading={getVendorsMe.isLoading || !getVendorsMe.data}>
         <DataState.Loading />
         <DataState.Content>
           <p className="text-sm text-muted-foreground">

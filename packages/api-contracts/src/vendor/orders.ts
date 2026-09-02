@@ -14,14 +14,14 @@ export const vendorOrderSchema = z.object({
 
 export type VendorOrder = z.infer<typeof vendorOrderSchema>
 
-export const vendorOrdersListResponseSchema = paginationMetaSchema.extend({
+export const getVendorsOrdersResponseSchema = paginationMetaSchema.extend({
   orders: z.array(vendorOrderSchema),
 })
 
-export type VendorOrdersListResponse = z.infer<
-  typeof vendorOrdersListResponseSchema
+export type GetVendorsOrdersResponse = z.infer<
+  typeof getVendorsOrdersResponseSchema
 >
 
-export const vendorOrdersQuerySchema = paginationQuerySchema
+export const getVendorsOrdersInputSchema = paginationQuerySchema
 
-export type VendorOrdersQuery = z.infer<typeof vendorOrdersQuerySchema>
+export type GetVendorsOrdersInput = z.infer<typeof getVendorsOrdersInputSchema>

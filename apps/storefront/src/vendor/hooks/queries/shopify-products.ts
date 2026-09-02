@@ -1,15 +1,15 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
-import type { PullVendorShopifyProductsResponse } from "@dtc/api-contracts/vendor/shopify-products"
+import type { GetVendorsMeShopifyProductsResponse } from "@dtc/api-contracts/vendor/shopify-products"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export const usePullShopifyProducts = createResourceQueryHook<
+export const useGetVendorsMeShopifyProducts = createResourceQueryHook<
   void,
-  PullVendorShopifyProductsResponse
+  GetVendorsMeShopifyProductsResponse
 >({
-  queryKey: () => queryKeys.shopifyProducts.pullShopifyProducts,
+  queryKey: () => queryKeys.shopifyProducts.getVendorsMeShopifyProducts,
   queryFn: async () => {
-    const response = await vendorClient.pullShopifyProducts()
+    const response = await vendorClient.getVendorsMeShopifyProducts()
     if (response.status !== 200) {
       throw new Error(`Unexpected response status ${response.status}`)
     }

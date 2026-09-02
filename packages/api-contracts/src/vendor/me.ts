@@ -1,9 +1,9 @@
 import { z } from "zod"
 import { vendorSchema, vendorUserSchema } from "./vendor"
 
-export const vendorMeResponseSchema = z.object({
+export const getVendorsMeResponseSchema = z.object({
   vendor_user: vendorUserSchema,
   vendor: vendorSchema,
 })
 
-export type VendorMeResponse = z.infer<typeof vendorMeResponseSchema>
+export type GetVendorsMeResponse = z.infer<typeof getVendorsMeResponseSchema>

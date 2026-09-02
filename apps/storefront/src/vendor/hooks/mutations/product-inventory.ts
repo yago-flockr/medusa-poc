@@ -1,16 +1,16 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
-import type { SetVendorInventoryLevel } from "@dtc/api-contracts/vendor/product-inventory"
+import type { PostVendorsProductsByIdInventoryInput } from "@dtc/api-contracts/vendor/product-inventory"
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
 
-export const useSetProductInventory = () =>
+export const usePostVendorsProductsByIdInventory = () =>
   useMutation({
-    mutationKey: mutationKeys.productInventory.setProductInventory,
+    mutationKey: mutationKeys.productInventory.postVendorsProductsByIdInventory,
     mutationFn: async ({
       productId,
       ...body
-    }: { productId: string } & SetVendorInventoryLevel) => {
-      const response = await vendorClient.setProductInventory({
+    }: { productId: string } & PostVendorsProductsByIdInventoryInput) => {
+      const response = await vendorClient.postVendorsProductsByIdInventory({
         params: { id: productId },
         body,
       })

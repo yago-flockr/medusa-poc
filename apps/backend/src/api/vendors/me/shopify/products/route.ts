@@ -4,8 +4,8 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import {
-  pullVendorShopifyProductsResponseSchema,
-  type PullVendorShopifyProductsResponse,
+  getVendorsMeShopifyProductsResponseSchema,
+  type GetVendorsMeShopifyProductsResponse,
 } from "@dtc/api-contracts/vendor/shopify-products"
 import { resolveVendorUser } from "../../../resolve-vendor-user"
 import { pullShopifyProducts } from "../../../../../integrations/shopify/products"
@@ -40,7 +40,7 @@ export const GET = async (
     pulled.products.map((product) => product.shopify_id),
   )
 
-  const result: PullVendorShopifyProductsResponse = {
+  const result: GetVendorsMeShopifyProductsResponse = {
     ...pulled,
     products: pulled.products.map((product) => ({
       ...product,
@@ -48,5 +48,5 @@ export const GET = async (
     })),
   }
 
-  res.json(pullVendorShopifyProductsResponseSchema.parse(result))
+  res.json(getVendorsMeShopifyProductsResponseSchema.parse(result))
 }

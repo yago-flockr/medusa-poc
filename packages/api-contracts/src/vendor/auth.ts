@@ -1,14 +1,18 @@
 import { z } from "zod"
 
-export const loginVendorInputSchema = z.object({
+export const postAuthVendorEmailpassInputSchema = z.object({
   email: z.email(),
   password: z.string().min(1),
 })
 
-export type LoginVendorInput = z.infer<typeof loginVendorInputSchema>
+export type PostAuthVendorEmailpassInput = z.infer<
+  typeof postAuthVendorEmailpassInputSchema
+>
 
-export const loginVendorResponseSchema = z.object({
+export const postAuthVendorEmailpassResponseSchema = z.object({
   token: z.string(),
 })
 
-export type LoginVendorResponse = z.infer<typeof loginVendorResponseSchema>
+export type PostAuthVendorEmailpassResponse = z.infer<
+  typeof postAuthVendorEmailpassResponseSchema
+>
