@@ -1,8 +1,8 @@
 export type FormState = "CREATING" | "READING" | "UPDATING" | "DELETING"
 
 export interface CommonFormValuesProps<
-  Default = Record<string, any>,
-  Custom = Record<string, any>,
+  Default = Record<string, unknown>,
+  Custom = Record<string, unknown>,
 > {
   customValues?: Partial<Custom>
   defaultValues?: Partial<Default>
@@ -12,10 +12,10 @@ export interface CommonFormValuesProps<
 }
 
 export interface CommonFormProps<
-  Default = Record<string, any>,
-  Custom = Record<string, any>,
+  Default = Record<string, unknown>,
+  Custom = Record<string, unknown>,
 > extends CommonFormValuesProps<Default, Custom> {
   onCancel?: () => void
-  onSubmit?: (data: Default & Partial<Custom>) => void
+  onSubmit?: (data: Default) => void
   onError?: (error: string) => void
 }

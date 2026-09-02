@@ -6,43 +6,28 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from "@/components/ui/number-field"
+import { forwardRef, type ComponentPropsWithoutRef } from "react"
 
 export type NumberFieldControlProps = {
-  id: string
   label: string
   error?: string
-  value: number | undefined
-  onValueChange: (value: number | null) => void
-  min?: number
-  step?: number
-}
+} & ComponentPropsWithoutRef<typeof NumberField>
 
-export function NumberFieldControl({
-  id,
-  label,
-  error,
-  value,
-  onValueChange,
-  min,
-  step,
-}: NumberFieldControlProps) {
+export const NumberFieldControl = forwardRef<
+  HTMLInputElement,
+  NumberFieldControlProps
+>(function NumberFieldControl({ id, label, error, ...props }, ref) {
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={id}>{label}</Label>
-      <NumberField
-        id={id}
-        value={value ?? null}
-        onValueChange={onValueChange}
-        min={min}
-        step={step}
-      >
+      <NumberField id={id} {...props}>
         <NumberFieldGroup>
           <NumberFieldDecrement />
-          <NumberFieldInput aria-invalid={Boolean(error)} />
+          <NumberFieldInput ref={ref} aria-invalid={Boolean(error)} />
           <NumberFieldIncrement />
         </NumberFieldGroup>
       </NumberField>
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   )
-}
+})
