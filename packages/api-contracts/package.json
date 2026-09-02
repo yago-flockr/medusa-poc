@@ -4,6 +4,7 @@
   "private": true,
   "exports": {
     "./vendor/me": "./src/vendor/me.ts",
+    "./vendor/vendor": "./src/vendor/vendor.ts",
     "./vendor/integration-connection": "./src/vendor/integration-connection.ts",
     "./vendor/profile": "./src/vendor/profile.ts",
     "./vendor/shopify-connection": "./src/vendor/shopify-connection.ts",
