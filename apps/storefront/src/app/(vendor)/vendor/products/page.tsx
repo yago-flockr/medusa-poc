@@ -41,10 +41,7 @@ export default function VendorProductsPage() {
                 <div className="flex-1">
                   <p className="font-medium">{product.title}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>
-                      {product.variant_count} variant
-                      {product.variant_count === 1 ? "" : "s"}
-                    </span>
+                    <span>{product.variant_count} variants</span>
                     {product.external_id && (
                       <div className="flex items-center text-muted-foreground font-medium gap-1">
                         <RiLinksLine size={16} />

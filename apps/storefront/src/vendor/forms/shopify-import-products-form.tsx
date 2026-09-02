@@ -2,10 +2,11 @@
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import type { PostVendorsMeShopifyProductsImportInput } from "@dtc/api-contracts/vendor/shopify-products"
-import type { PulledShopifyProductWithStatus } from "@dtc/api-contracts/vendor/shopify-products"
+import type {
+  PostVendorsMeShopifyProductsImportInput,
+  PulledShopifyProductWithStatus,
+} from "@dtc/api-contracts/vendor/shopify-products"
 import { useState, type FormEvent } from "react"
 import z from "zod"
 import type { CommonFormProps } from "./form-type"
@@ -86,17 +87,17 @@ export function ShopifyImportProductsForm({
             <Checkbox
               id={`shopify-product-${product.shopify_id}`}
               checked={selectedIds.has(product.shopify_id)}
-              disabled={product.already_imported}
               onCheckedChange={(checked) =>
                 toggle(product.shopify_id, checked === true)
               }
             />
-            <Label
-              htmlFor={`shopify-product-${product.shopify_id}`}
-              className="flex-1 font-normal"
-            >
-              {product.title}
-            </Label>
+            <div className="flex-1">
+              <p className="font-medium">{product.title}</p>
+
+              <span className="text-xs text-muted-foreground">
+                {product.variants.length} variants
+              </span>
+            </div>
             {product.already_imported && (
               <span className="text-xs text-muted-foreground">Imported</span>
             )}
