@@ -1,7 +1,7 @@
 "use client"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { DataState } from "@/components/display/data-state"
+import { ErrorAlert } from "@/components/display/error-alert"
 import { InfoList } from "@/components/display/info-list"
 import { VendorSection } from "@/vendor/components/section"
 import {
@@ -63,12 +63,7 @@ export default function VendorProfilePage() {
               }
             />
             {patchVendorsMe.error && (
-              <Alert variant="destructive" className="mt-4">
-                <AlertTitle>An Error Occurred</AlertTitle>
-                <AlertDescription>
-                  {patchVendorsMe.error.message}
-                </AlertDescription>
-              </Alert>
+              <ErrorAlert description={patchVendorsMe.error.message} />
             )}
           </DataState.Content>
         </DataState>

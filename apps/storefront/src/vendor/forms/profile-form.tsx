@@ -48,8 +48,9 @@ export function ProfileForm({
   } = useForm<ProfileSchema>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      first_name: defaultValues?.first_name ?? "",
-      last_name: defaultValues?.last_name ?? "",
+      first_name: "",
+      last_name: "",
+      ...defaultValues,
     },
   })
 

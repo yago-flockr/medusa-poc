@@ -1,6 +1,6 @@
 "use client"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { ErrorAlert } from "@/components/display/error-alert"
 import {
   Card,
   CardContent,
@@ -48,12 +48,7 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
               }
             />
             {postAuthVendorEmailpass.error && (
-              <Alert variant="destructive" className="mt-4">
-                <AlertTitle>An Error Occurred</AlertTitle>
-                <AlertDescription>
-                  {postAuthVendorEmailpass.error.message}
-                </AlertDescription>
-              </Alert>
+              <ErrorAlert description={postAuthVendorEmailpass.error.message} />
             )}
           </CardContent>
         </Card>
