@@ -22,8 +22,8 @@ import {
   createVendorProductResponseSchema,
   createVendorProductSchema,
   deleteVendorProductResponseSchema,
-  updateVendorProductStatusResponseSchema,
-  updateVendorProductStatusSchema,
+  getVendorProductResponseSchema,
+  updateVendorProductSchema,
   vendorProductsListResponseSchema,
   vendorProductsQuerySchema,
 } from "./products"
@@ -110,12 +110,19 @@ export const vendorContract = c.router({
       200: createVendorProductResponseSchema,
     },
   },
-  updateProductStatus: {
+  getProduct: {
+    method: "GET",
+    path: "/vendors/products/:id",
+    responses: {
+      200: getVendorProductResponseSchema,
+    },
+  },
+  updateProduct: {
     method: "POST",
     path: "/vendors/products/:id",
-    body: updateVendorProductStatusSchema,
+    body: updateVendorProductSchema,
     responses: {
-      200: updateVendorProductStatusResponseSchema,
+      200: getVendorProductResponseSchema,
     },
   },
   deleteProduct: {

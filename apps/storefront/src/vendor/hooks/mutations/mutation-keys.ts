@@ -12,7 +12,7 @@ export const mutationKeys = {
   },
   products: {
     createProduct: ["createProduct"] as const,
-    updateProductStatus: ["updateProductStatus"] as const,
+    updateProduct: ["updateProduct"] as const,
     deleteProduct: ["deleteProduct"] as const,
   },
   uploads: {
