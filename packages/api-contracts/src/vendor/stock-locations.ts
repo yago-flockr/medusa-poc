@@ -39,9 +39,9 @@ export const postVendorsStockLocationsAddressInputSchema = z
   .object({
     address_1: z.string().trim().min(1, "Address is required"),
     address_2: z.string().trim().optional(),
-    city: z.string().trim().optional(),
-    province: z.string().trim().optional(),
-    postal_code: z.string().trim().optional(),
+    city: z.string().trim().min(1, "City is required"),
+    province: z.string().trim().min(1, "Province is required"),
+    postal_code: z.string().trim().min(1, "Postal code is required"),
     country_code: z.string().trim().min(2).max(2, "Use a two-letter country code"),
     phone: z.string().trim().optional(),
   })
@@ -54,7 +54,7 @@ export type PostVendorsStockLocationsAddressInput = z.infer<
 export const postVendorsStockLocationsInputSchema = z
   .object({
     name: z.string().trim().min(1, "Name is required"),
-    address: postVendorsStockLocationsAddressInputSchema.optional(),
+    address: postVendorsStockLocationsAddressInputSchema,
   })
   .strict()
 
@@ -68,4 +68,27 @@ export const postVendorsStockLocationsResponseSchema = z.object({
 
 export type PostVendorsStockLocationsResponse = z.infer<
   typeof postVendorsStockLocationsResponseSchema
+>
+
+export const postVendorsStockLocationsByIdInputSchema = z
+  .object({
+    name: z.string().trim().min(1, "Name is required").optional(),
+    address: postVendorsStockLocationsAddressInputSchema.optional(),
+  })
+  .strict()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required",
+  })
+
+export type PostVendorsStockLocationsByIdInput = z.infer<
+  typeof postVendorsStockLocationsByIdInputSchema
+>
+
+export const deleteVendorsStockLocationsByIdResponseSchema = z.object({
+  id: z.string(),
+  deleted: z.boolean(),
+})
+
+export type DeleteVendorsStockLocationsByIdResponse = z.infer<
+  typeof deleteVendorsStockLocationsByIdResponseSchema
 >

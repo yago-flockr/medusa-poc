@@ -26,6 +26,10 @@ export const mutationKeys = {
   },
   stockLocations: {
     postVendorsStockLocations: ["postVendorsStockLocations"] as const,
+    postVendorsStockLocationsById: ["postVendorsStockLocationsById"] as const,
+    deleteVendorsStockLocationsById: [
+      "deleteVendorsStockLocationsById",
+    ] as const,
   },
   productInventory: {
     postVendorsProductsByIdInventory: [

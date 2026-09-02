@@ -48,6 +48,7 @@ export function ShopifyConnectionForm({
   isLoading,
   onSubmit,
   className,
+  ...props
 }: ShopifyConnectionFormProps) {
   const {
     register,
@@ -67,6 +68,7 @@ export function ShopifyConnectionForm({
     <form
       onSubmit={handleSubmit((values) => onSubmit?.(values))}
       className={cn("flex flex-col gap-4", className)}
+      {...props}
     >
       <TextField
         id="shopify-store-domain"

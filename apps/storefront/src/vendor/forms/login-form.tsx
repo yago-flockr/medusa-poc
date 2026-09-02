@@ -36,7 +36,12 @@ export function loginVendorInputToForm(
   }
 }
 
-export function LoginForm({ isLoading, onSubmit, className }: LoginFormProps) {
+export function LoginForm({
+  isLoading,
+  onSubmit,
+  className,
+  ...props
+}: LoginFormProps) {
   const {
     register,
     handleSubmit,
@@ -50,6 +55,7 @@ export function LoginForm({ isLoading, onSubmit, className }: LoginFormProps) {
     <form
       onSubmit={handleSubmit((values) => onSubmit?.(values))}
       className={cn("flex flex-col gap-4", className)}
+      {...props}
     >
       <TextField
         id="vendor-email"

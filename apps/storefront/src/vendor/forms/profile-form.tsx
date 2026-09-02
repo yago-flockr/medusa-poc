@@ -40,6 +40,7 @@ export function ProfileForm({
   isLoading,
   onSubmit,
   className,
+  ...props
 }: ProfileFormProps) {
   const {
     register,
@@ -58,6 +59,7 @@ export function ProfileForm({
     <form
       onSubmit={handleSubmit((values) => onSubmit?.(values))}
       className={cn("flex flex-col gap-4", className)}
+      {...props}
     >
       <TextField
         id="vendor-first-name"

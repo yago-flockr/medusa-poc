@@ -12,7 +12,7 @@ import { resolveSharedSalesChannelStep } from "./steps/resolve-shared-sales-chan
 export type CreateVendorStockLocationWorkflowInput = {
   vendorId: string
   name: string
-  address?: StockLocationAddressInput
+  address: StockLocationAddressInput
 }
 
 export const createVendorStockLocationWorkflow = createWorkflow(

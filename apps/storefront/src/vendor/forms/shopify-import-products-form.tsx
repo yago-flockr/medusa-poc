@@ -38,6 +38,7 @@ export function ShopifyImportProductsForm({
   isLoading,
   onSubmit,
   className,
+  ...props
 }: ShopifyImportProductsFormProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [error, setError] = useState<string>()
@@ -71,7 +72,11 @@ export function ShopifyImportProductsForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4", className)}>
+    <form
+      onSubmit={handleSubmit}
+      className={cn("flex flex-col gap-4", className)}
+      {...props}
+    >
       <ul className="flex flex-col gap-2">
         {products.map((product) => (
           <li

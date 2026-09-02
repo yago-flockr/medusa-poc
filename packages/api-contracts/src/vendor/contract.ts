@@ -28,8 +28,10 @@ import {
   postVendorsProductsResponseSchema,
 } from "./products"
 import {
+  deleteVendorsStockLocationsByIdResponseSchema,
   getVendorsStockLocationsInputSchema,
   getVendorsStockLocationsResponseSchema,
+  postVendorsStockLocationsByIdInputSchema,
   postVendorsStockLocationsInputSchema,
   postVendorsStockLocationsResponseSchema,
 } from "./stock-locations"
@@ -146,6 +148,21 @@ export const vendorContract = c.router({
     body: postVendorsStockLocationsInputSchema,
     responses: {
       200: postVendorsStockLocationsResponseSchema,
+    },
+  },
+  postVendorsStockLocationsById: {
+    method: "POST",
+    path: "/vendors/stock-locations/:id",
+    body: postVendorsStockLocationsByIdInputSchema,
+    responses: {
+      200: postVendorsStockLocationsResponseSchema,
+    },
+  },
+  deleteVendorsStockLocationsById: {
+    method: "DELETE",
+    path: "/vendors/stock-locations/:id",
+    responses: {
+      200: deleteVendorsStockLocationsByIdResponseSchema,
     },
   },
   getVendorsProductsByIdInventory: {
