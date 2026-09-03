@@ -1,0 +1,126 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import type {
+  PostVendorsProductsByIdInventoryInput,
+  VendorVariantInventory,
+} from "@dtc/api-contracts/vendor/product-inventory"
+import { useState, type FormEvent } from "react"
+import z from "zod"
+import { NumberControlField } from "./fields/number-field-control"
+import type { CommonFormProps } from "./form-type"
+import { Badge } from "@/components/ui/badge"
+
+export const productInventorySchema = z.object({
+  levels: z.array(
+    z.object({
+      variant_id: z.string(),
+      location_id: z.string(),
+      quantity: z.number().int().min(0),
+    }),
+  ),
+})
+
+export type ProductInventorySchema = z.infer<typeof productInventorySchema>
+
+type ProductInventoryFormProps = CommonFormProps<ProductInventorySchema> & {
+  variants: VendorVariantInventory[]
+  locations: { id: string; name: string }[]
+}
+
+export function productInventoryFormToInput(
+  values: ProductInventorySchema,
+): PostVendorsProductsByIdInventoryInput[] {
+  return values.levels
+}
+
+function cellKey(variantId: string, locationId: string) {
+  return `${variantId}::${locationId}`
+}
+
+export function ProductInventoryForm({
+  variants,
+  locations,
+  isLoading,
+  onSubmit,
+  className,
+  ...props
+}: ProductInventoryFormProps) {
+  const [quantities, setQuantities] = useState<Record<string, number>>(() => {
+    const initial: Record<string, number> = {}
+    for (const variant of variants) {
+      for (const level of variant.levels) {
+        initial[cellKey(variant.variant_id, level.location_id)] = level.quantity
+      }
+    }
+    return initial
+  })
+  const [error, setError] = useState<string>()
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+
+    const levels = variants.flatMap((variant) =>
+      locations.map((location) => ({
+        variant_id: variant.variant_id,
+        location_id: location.id,
+        quantity: quantities[cellKey(variant.variant_id, location.id)] ?? 0,
+      })),
+    )
+
+    const result = productInventorySchema.safeParse({ levels })
+
+    if (!result.success) {
+      setError(result.error.issues[0]?.message)
+      return
+    }
+
+    setError(undefined)
+    onSubmit?.(result.data)
+  }
+
+  if (locations.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Create a stock location first before setting inventory.
+      </p>
+    )
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={cn("flex flex-col gap-4", className)}
+      {...props}
+    >
+      {variants.map((variant) => (
+        <div
+          key={variant.variant_id}
+          className="flex flex-col gap-2 bg-muted p-2 rounded-md"
+        >
+          <Badge className="mx-auto">{variant.variant_title}</Badge>
+          {locations.map((location) => (
+            <NumberControlField
+              key={location.id}
+              id={`inventory-${variant.variant_id}-${location.id}`}
+              label={location.name}
+              min={0}
+              value={quantities[cellKey(variant.variant_id, location.id)] ?? 0}
+              onValueChange={(value) =>
+                setQuantities((current) => ({
+                  ...current,
+                  [cellKey(variant.variant_id, location.id)]: value ?? 0,
+                }))
+              }
+            />
+          ))}
+        </div>
+      ))}
+      {error && <p className="text-sm text-destructive">{error}</p>}
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Saving…" : "Save"}
+      </Button>
+    </form>
+  )
+}
