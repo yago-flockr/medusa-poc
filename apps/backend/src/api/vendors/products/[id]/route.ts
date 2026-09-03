@@ -61,10 +61,6 @@ export const POST = async (
 
   assertEditableVendorProduct(existingProduct?.external_id ?? null, req.validatedBody)
 
-  if (productFields.status === "published") {
-    await assertPublishableVendorProduct(query, id)
-  }
-
   if (variants?.length) {
     const { storeCurrencies } = await resolveStorePrerequisites(query)
 
@@ -83,6 +79,10 @@ export const POST = async (
         })),
       },
     })
+  }
+
+  if (productFields.status === "published") {
+    await assertPublishableVendorProduct(query, id)
   }
 
   if (Object.keys(productFields).length > 0) {

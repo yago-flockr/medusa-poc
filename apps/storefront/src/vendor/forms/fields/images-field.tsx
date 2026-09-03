@@ -9,6 +9,7 @@ import {
   AttachmentTrigger,
 } from "@/components/ui/attachment"
 import { RiAddLine, RiCloseLine, RiImageLine } from "@remixicon/react"
+import { without } from "lodash"
 import { useRef, useState } from "react"
 
 const MAX_IMAGES = 5
@@ -60,9 +61,7 @@ export function ImagesField({
             <AttachmentActions>
               <AttachmentAction
                 aria-label="Remove image"
-                onClick={() =>
-                  onChange(images.filter((image) => image !== url))
-                }
+                onClick={() => onChange(without(images, url))}
               >
                 <RiCloseLine />
               </AttachmentAction>
