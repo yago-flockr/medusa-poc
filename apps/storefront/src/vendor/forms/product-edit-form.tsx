@@ -1,5 +1,6 @@
 "use client"
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -91,6 +92,7 @@ function StatusField({
       <Select
         value={value}
         onValueChange={(next) => onChange(next as VendorProductStatus)}
+        modal={false}
       >
         <SelectTrigger className="w-full">
           <SelectValue />
@@ -224,53 +226,55 @@ export function ProductEditForm({
     >
       <StatusField value={status} onChange={setStatus} />
 
-      {isExternal ? (
-        <p className="text-sm text-muted-foreground">
-          This product was imported from an external source — its details sync
-          from there and can&apos;t be edited here. Only the status above can be
-          changed.
-        </p>
-      ) : (
-        <>
-          <TextField
-            id="product-edit-title"
-            label="Title"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-          />
-          <TextField
-            id="product-edit-subtitle"
-            label="Subtitle"
-            value={subtitle}
-            onChange={(event) => setSubtitle(event.target.value)}
-          />
-          <TextareaField
-            id="product-edit-description"
-            label="Description"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-          />
-          <TextField
-            id="product-edit-handle"
-            label="Handle"
-            value={handle}
-            onChange={(event) => setHandle(event.target.value)}
-          />
-
-          <ImagesField
-            images={images}
-            onChange={setImages}
-            onUploadImages={onUploadImages}
-            isUploadingImages={isUploadingImages}
-          />
-
-          <VariantsSection
-            variants={product.variants}
-            variantFields={variantFields}
-            onVariantFieldChange={updateVariantField}
-          />
-        </>
+      {isExternal && (
+        <Alert>
+          <AlertTitle>This product is external</AlertTitle>
+          <AlertDescription>
+            You can't edit this product because it is managed by an external
+            system. You can only change its status.
+          </AlertDescription>
+        </Alert>
       )}
+
+      <fieldset disabled={isExternal} className="contents">
+        <TextField
+          id="product-edit-title"
+          label="Title"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+        <TextField
+          id="product-edit-subtitle"
+          label="Subtitle"
+          value={subtitle}
+          onChange={(event) => setSubtitle(event.target.value)}
+        />
+        <TextareaField
+          id="product-edit-description"
+          label="Description"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+        />
+        <TextField
+          id="product-edit-handle"
+          label="Handle"
+          value={handle}
+          onChange={(event) => setHandle(event.target.value)}
+        />
+
+        <ImagesField
+          images={images}
+          onChange={setImages}
+          onUploadImages={onUploadImages}
+          isUploadingImages={isUploadingImages}
+        />
+
+        <VariantsSection
+          variants={product.variants}
+          variantFields={variantFields}
+          onVariantFieldChange={updateVariantField}
+        />
+      </fieldset>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="submit" disabled={isLoading}>
