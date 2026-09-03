@@ -11,32 +11,64 @@ import {
   ProductInventoryForm,
   productInventoryFormToInput,
 } from "@/vendor/forms/product-inventory-form"
+import { ProductForm, productFormToInput } from "@/vendor/forms/product-form"
+import {
+  ProductEditForm,
+  productEditFormToInput,
+} from "@/vendor/forms/product-edit-form"
 import { usePostVendorsProductsByIdInventory } from "@/vendor/hooks/mutations/product-inventory"
+import {
+  usePostVendorsProducts,
+  usePostVendorsProductsById,
+} from "@/vendor/hooks/mutations/products"
+import { usePostVendorsUploads } from "@/vendor/hooks/mutations/uploads"
 import { useGetVendorsProductsByIdInventory } from "@/vendor/hooks/queries/product-inventory"
-import { useGetVendorsProducts } from "@/vendor/hooks/queries/products"
+import {
+  useGetVendorsProducts,
+  useGetVendorsProductsById,
+} from "@/vendor/hooks/queries/products"
 import type { VendorProduct } from "@dtc/api-contracts/vendor/products"
-import { RiLinksLine, RiStackLine } from "@remixicon/react"
+import { RiLinksLine, RiPencilLine, RiStackLine } from "@remixicon/react"
 import { useState } from "react"
 import { toast } from "sonner"
+
+type ProductFormValues = { state: "CREATING" } | { state: "UPDATING"; id: string }
 
 export default function VendorProductsPage() {
   const getVendorsProducts = useGetVendorsProducts()
   const [inventoryProductId, setInventoryProductId] = useState<string | null>(
     null,
   )
+  const [formValues, setFormValues] = useState<ProductFormValues>()
 
   const getVendorsProductsByIdInventory = useGetVendorsProductsByIdInventory(
     inventoryProductId ?? "",
     { enabled: inventoryProductId !== null },
   )
+  const getVendorsProductsById = useGetVendorsProductsById(
+    formValues?.state === "UPDATING" ? formValues.id : "",
+    { enabled: formValues?.state === "UPDATING" },
+  )
   const postVendorsProductsByIdInventory = usePostVendorsProductsByIdInventory()
+  const postVendorsProducts = usePostVendorsProducts()
+  const postVendorsProductsById = usePostVendorsProductsById()
+  const postVendorsUploads = usePostVendorsUploads()
 
   const inventory = getVendorsProductsByIdInventory.data
+  const editingProduct = getVendorsProductsById.data?.product
 
   return (
     <VendorSection
       title="Products"
       description="View your catalogue, publish products yourself, or remove them. Anything synced from Shopify keeps its details in sync from there — this page only controls whether it's visible to customers."
+      action={
+        <Button
+          size="sm"
+          onClick={() => setFormValues({ state: "CREATING" })}
+        >
+          Create
+        </Button>
+      }
       className="flex flex-col gap-3"
     >
       <DataState
@@ -73,6 +105,16 @@ export default function VendorProductsPage() {
                 </ListItem.Group>
                 <ListItem.Group className="flex-row items-center gap-2">
                   <Badge variant="muted">{product.status}</Badge>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon-sm"
+                    onClick={() =>
+                      setFormValues({ state: "UPDATING", id: product.id })
+                    }
+                  >
+                    <RiPencilLine />
+                  </Button>
                   <Button
                     type="button"
                     variant="outline"
@@ -136,6 +178,90 @@ export default function VendorProductsPage() {
           <ErrorAlert
             description={postVendorsProductsByIdInventory.error.message}
           />
+        )}
+      </FormDialog>
+
+      <FormDialog
+        title="Create product"
+        description="Fill in every field you can — a variant missing SKU or weight stays a draft until it's complete."
+        open={formValues?.state === "CREATING"}
+        onOpenChange={(open) => {
+          if (!open) setFormValues(undefined)
+        }}
+      >
+        <ProductForm
+          isLoading={postVendorsProducts.isPending}
+          isUploadingImages={postVendorsUploads.isPending}
+          onUploadImages={async (files) => {
+            const result = await postVendorsUploads.mutateAsync(files)
+            return result.files.map((file) => file.url)
+          }}
+          onSubmit={(values) => {
+            postVendorsProducts.mutate(productFormToInput(values), {
+              onSuccess: (response) => {
+                toast.success(`Product created as ${response.product.status}`)
+                getVendorsProducts.refetch()
+                setFormValues(undefined)
+              },
+            })
+          }}
+        />
+        {postVendorsProducts.error && (
+          <ErrorAlert description={postVendorsProducts.error.message} />
+        )}
+        {postVendorsUploads.error && (
+          <ErrorAlert description={postVendorsUploads.error.message} />
+        )}
+      </FormDialog>
+
+      <FormDialog
+        title="Edit product"
+        open={formValues?.state === "UPDATING"}
+        onOpenChange={(open) => {
+          if (!open) setFormValues(undefined)
+        }}
+      >
+        {getVendorsProductsById.error && (
+          <ErrorAlert description={getVendorsProductsById.error.message} />
+        )}
+        <DataState isLoading={getVendorsProductsById.isLoading}>
+          <DataState.Loading />
+          <DataState.Content>
+            {editingProduct && (
+              <ProductEditForm
+                product={editingProduct}
+                isLoading={postVendorsProductsById.isPending}
+                isUploadingImages={postVendorsUploads.isPending}
+                onUploadImages={async (files) => {
+                  const result = await postVendorsUploads.mutateAsync(files)
+                  return result.files.map((file) => file.url)
+                }}
+                onSubmit={(values) => {
+                  if (formValues?.state !== "UPDATING") return
+
+                  postVendorsProductsById.mutate(
+                    {
+                      id: formValues.id,
+                      ...productEditFormToInput(
+                        values,
+                        Boolean(editingProduct.external_id),
+                      ),
+                    },
+                    {
+                      onSuccess: () => {
+                        toast.success("Product updated")
+                        getVendorsProducts.refetch()
+                        setFormValues(undefined)
+                      },
+                    },
+                  )
+                }}
+              />
+            )}
+          </DataState.Content>
+        </DataState>
+        {postVendorsProductsById.error && (
+          <ErrorAlert description={postVendorsProductsById.error.message} />
         )}
       </FormDialog>
     </VendorSection>
