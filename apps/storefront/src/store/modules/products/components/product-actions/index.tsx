@@ -53,6 +53,34 @@ export default function ProductActions({
     }
   }, [product.variants])
 
+  // Options can be shared across products (see resolve-shared-product-options
+  // on the backend), so an option's values can include ones no variant of
+  // *this* product actually uses — only offer values this product can sell.
+  const usedOptionValues = useMemo(() => {
+    const map = new Map<string, Set<string>>()
+
+    for (const variant of product.variants ?? []) {
+      for (const variantOption of variant.options ?? []) {
+        if (!variantOption.option_id) continue
+        if (!map.has(variantOption.option_id)) {
+          map.set(variantOption.option_id, new Set())
+        }
+        map.get(variantOption.option_id)?.add(variantOption.value)
+      }
+    }
+
+    return map
+  }, [product.variants])
+
+  const filteredProductOptions = useMemo(() => {
+    return (product.options ?? []).map((option) => ({
+      ...option,
+      values: (option.values ?? []).filter((value) =>
+        usedOptionValues.get(option.id)?.has(value.value),
+      ),
+    }))
+  }, [product.options, usedOptionValues])
+
   const selectedVariant = useMemo(() => {
     if (!product.variants || product.variants.length === 0) {
       return
@@ -146,20 +174,18 @@ export default function ProductActions({
         <div>
           {(product.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-4">
-              {(product.options || []).map((option) => {
-                return (
-                  <div key={option.id}>
-                    <OptionSelect
-                      option={option}
-                      current={options[option.id]}
-                      updateOption={setOptionValue}
-                      title={option.title ?? ""}
-                      data-testid="product-options"
-                      disabled={!!disabled || isAdding}
-                    />
-                  </div>
-                )
-              })}
+              {filteredProductOptions.map((option) => (
+                <div key={option.id}>
+                  <OptionSelect
+                    option={option}
+                    current={options[option.id]}
+                    updateOption={setOptionValue}
+                    title={option.title ?? ""}
+                    data-testid="product-options"
+                    disabled={!!disabled || isAdding}
+                  />
+                </div>
+              ))}
               <Divider />
             </div>
           )}
@@ -188,6 +214,7 @@ export default function ProductActions({
         </Button>
         <MobileActions
           product={product}
+          productOptions={filteredProductOptions}
           variant={selectedVariant}
           options={options}
           updateOptions={setOptionValue}

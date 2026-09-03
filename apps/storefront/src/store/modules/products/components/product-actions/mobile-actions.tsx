@@ -18,6 +18,7 @@ import OptionSelect from "./option-select"
 
 type MobileActionsProps = {
   product: HttpTypes.StoreProduct
+  productOptions: HttpTypes.StoreProductOption[]
   variant?: HttpTypes.StoreProductVariant
   options: Record<string, string | undefined>
   updateOptions: (title: string, value: string) => void
@@ -30,6 +31,7 @@ type MobileActionsProps = {
 
 const MobileActions: React.FC<MobileActionsProps> = ({
   product,
+  productOptions,
   variant,
   options,
   updateOptions,
@@ -143,7 +145,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
           </DialogHeader>
           {(product.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-6">
-              {(product.options || []).map((option) => {
+              {productOptions.map((option) => {
                 return (
                   <div key={option.id}>
                     <OptionSelect

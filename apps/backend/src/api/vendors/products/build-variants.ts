@@ -98,7 +98,7 @@ function buildVariantInput(
   return {
     title: titleOverride ?? Object.values(optionValues).join(" / "),
     options: optionValues,
-    manage_inventory: false,
+    manage_inventory: true,
     sku: variant.sku,
     barcode: variant.barcode,
     weight: variant.weight,
