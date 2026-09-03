@@ -1,4 +1,5 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
+import { tc } from "@/vendor/lib/tc"
 import type {
   PostVendorsStockLocationsInput,
   PostVendorsStockLocationsByIdInput,
@@ -9,43 +10,23 @@ import { mutationKeys } from "./mutation-keys"
 export const usePostVendorsStockLocations = () =>
   useMutation({
     mutationKey: mutationKeys.stockLocations.postVendorsStockLocations,
-    mutationFn: async (body: PostVendorsStockLocationsInput) => {
-      const response = await vendorClient.postVendorsStockLocations({ body })
-      if (response.status !== 200) {
-        throw new Error(`Unexpected response status ${response.status}`)
-      }
-      return response.body
-    },
+    mutationFn: (body: PostVendorsStockLocationsInput) =>
+      tc(vendorClient.postVendorsStockLocations({ body })),
   })
 
 export const usePostVendorsStockLocationsById = () =>
   useMutation({
     mutationKey: mutationKeys.stockLocations.postVendorsStockLocationsById,
-    mutationFn: async ({
+    mutationFn: ({
       id,
       ...body
-    }: { id: string } & PostVendorsStockLocationsByIdInput) => {
-      const response = await vendorClient.postVendorsStockLocationsById({
-        params: { id },
-        body,
-      })
-      if (response.status !== 200) {
-        throw new Error(`Unexpected response status ${response.status}`)
-      }
-      return response.body
-    },
+    }: { id: string } & PostVendorsStockLocationsByIdInput) =>
+      tc(vendorClient.postVendorsStockLocationsById({ params: { id }, body })),
   })
 
 export const useDeleteVendorsStockLocationsById = () =>
   useMutation({
     mutationKey: mutationKeys.stockLocations.deleteVendorsStockLocationsById,
-    mutationFn: async (id: string) => {
-      const response = await vendorClient.deleteVendorsStockLocationsById({
-        params: { id },
-      })
-      if (response.status !== 200) {
-        throw new Error(`Unexpected response status ${response.status}`)
-      }
-      return response.body
-    },
+    mutationFn: (id: string) =>
+      tc(vendorClient.deleteVendorsStockLocationsById({ params: { id } })),
   })

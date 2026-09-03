@@ -1,4 +1,5 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
+import { tc } from "@/vendor/lib/tc"
 import type {
   PostVendorsProductsInput,
   PostVendorsProductsByIdInput,
@@ -9,43 +10,23 @@ import { mutationKeys } from "./mutation-keys"
 export const usePostVendorsProducts = () =>
   useMutation({
     mutationKey: mutationKeys.products.postVendorsProducts,
-    mutationFn: async (body: PostVendorsProductsInput) => {
-      const response = await vendorClient.postVendorsProducts({ body })
-      if (response.status !== 200) {
-        throw new Error(`Unexpected response status ${response.status}`)
-      }
-      return response.body
-    },
+    mutationFn: (body: PostVendorsProductsInput) =>
+      tc(vendorClient.postVendorsProducts({ body })),
   })
 
 export const usePostVendorsProductsById = () =>
   useMutation({
     mutationKey: mutationKeys.products.postVendorsProductsById,
-    mutationFn: async ({
+    mutationFn: ({
       id,
       ...body
-    }: { id: string } & PostVendorsProductsByIdInput) => {
-      const response = await vendorClient.postVendorsProductsById({
-        params: { id },
-        body,
-      })
-      if (response.status !== 200) {
-        throw new Error(`Unexpected response status ${response.status}`)
-      }
-      return response.body
-    },
+    }: { id: string } & PostVendorsProductsByIdInput) =>
+      tc(vendorClient.postVendorsProductsById({ params: { id }, body })),
   })
 
 export const useDeleteVendorsProductsById = () =>
   useMutation({
     mutationKey: mutationKeys.products.deleteVendorsProductsById,
-    mutationFn: async (id: string) => {
-      const response = await vendorClient.deleteVendorsProductsById({
-        params: { id },
-      })
-      if (response.status !== 200) {
-        throw new Error(`Unexpected response status ${response.status}`)
-      }
-      return response.body
-    },
+    mutationFn: (id: string) =>
+      tc(vendorClient.deleteVendorsProductsById({ params: { id } })),
   })

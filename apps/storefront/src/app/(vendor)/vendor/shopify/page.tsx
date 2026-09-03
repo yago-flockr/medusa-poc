@@ -1,9 +1,7 @@
 "use client"
 
 import { DataState } from "@/components/display/data-state"
-import { ErrorAlert } from "@/components/display/error-alert"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { VendorSection } from "@/vendor/components/section"
 import {
   ShopifyConnectionForm,
@@ -94,18 +92,6 @@ export default function VendorShopifyPage() {
                 )
               }
             />
-            {patchVendorsMeShopifyConnection.error && (
-              <ErrorAlert
-                description={patchVendorsMeShopifyConnection.error.message}
-              />
-            )}
-            {getVendorsMeShopifyConnectionInstallLink.error && (
-              <ErrorAlert
-                description={
-                  getVendorsMeShopifyConnectionInstallLink.error.message
-                }
-              />
-            )}
           </DataState.Content>
         </DataState>
       </VendorSection>
@@ -143,11 +129,6 @@ export default function VendorShopifyPage() {
                   )
                 }
               />
-              {postVendorsMeShopifyProductsImport.error && (
-                <ErrorAlert
-                  description={postVendorsMeShopifyProductsImport.error.message}
-                />
-              )}
             </DataState.Content>
           </DataState>
         </VendorSection>

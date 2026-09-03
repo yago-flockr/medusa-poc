@@ -2,7 +2,6 @@
 
 import { ConfirmDeleteDialog } from "@/components/display/confirm-delete-dialog"
 import { DataState } from "@/components/display/data-state"
-import { ErrorAlert } from "@/components/display/error-alert"
 import { FormDialog } from "@/components/display/form-dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -168,14 +167,6 @@ export default function VendorLocationsPage() {
             postVendorsStockLocationsById.isPending
           }
         />
-        {postVendorsStockLocations.error && (
-          <ErrorAlert description={postVendorsStockLocations.error.message} />
-        )}
-        {postVendorsStockLocationsById.error && (
-          <ErrorAlert
-            description={postVendorsStockLocationsById.error.message}
-          />
-        )}
       </FormDialog>
       <ConfirmDeleteDialog
         title="Delete this location?"
@@ -195,11 +186,6 @@ export default function VendorLocationsPage() {
           })
         }}
       />
-      {deleteVendorsStockLocationsById.error && (
-        <ErrorAlert
-          description={deleteVendorsStockLocationsById.error.message}
-        />
-      )}
     </VendorSection>
   )
 }

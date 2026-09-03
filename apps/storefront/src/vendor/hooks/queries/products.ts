@@ -1,3 +1,4 @@
+import { tc } from "@/vendor/lib/tc"
 import { vendorClient } from "@/vendor/lib/contract-client"
 import type {
   GetVendorsProductsByIdResponse,
@@ -11,13 +12,7 @@ export const useGetVendorsProducts = createResourceQueryHook<
   GetVendorsProductsResponse
 >({
   queryKey: () => queryKeys.products.getVendorsProducts,
-  queryFn: async () => {
-    const response = await vendorClient.getVendorsProducts({ query: {} })
-    if (response.status !== 200) {
-      throw new Error(`Unexpected response status ${response.status}`)
-    }
-    return response.body
-  },
+  queryFn: () => tc(vendorClient.getVendorsProducts({ query: {} })),
 })
 
 export const useGetVendorsProductsById = createResourceQueryHook<
@@ -25,13 +20,6 @@ export const useGetVendorsProductsById = createResourceQueryHook<
   GetVendorsProductsByIdResponse
 >({
   queryKey: (productId) => queryKeys.products.getVendorsProductsById(productId),
-  queryFn: async (productId) => {
-    const response = await vendorClient.getVendorsProductsById({
-      params: { id: productId },
-    })
-    if (response.status !== 200) {
-      throw new Error(`Unexpected response status ${response.status}`)
-    }
-    return response.body
-  },
+  queryFn: (productId) =>
+    tc(vendorClient.getVendorsProductsById({ params: { id: productId } })),
 })

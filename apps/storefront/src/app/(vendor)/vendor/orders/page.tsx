@@ -1,7 +1,6 @@
 "use client"
 
 import { DataState } from "@/components/display/data-state"
-import { ErrorAlert } from "@/components/display/error-alert"
 import { FormDialog } from "@/components/display/form-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -91,9 +90,6 @@ export default function VendorOrdersPage() {
           if (!open) setViewingOrderId(null)
         }}
       >
-        {getVendorsOrdersById.error && (
-          <ErrorAlert description={getVendorsOrdersById.error.message} />
-        )}
         <DataState isLoading={getVendorsOrdersById.isLoading}>
           <DataState.Loading />
           <DataState.Content>
@@ -201,16 +197,6 @@ export default function VendorOrdersPage() {
                   </p>
                 )}
 
-                {postVendorsOrdersByIdAccept.error && (
-                  <ErrorAlert
-                    description={postVendorsOrdersByIdAccept.error.message}
-                  />
-                )}
-                {postVendorsOrdersByIdDispatch.error && (
-                  <ErrorAlert
-                    description={postVendorsOrdersByIdDispatch.error.message}
-                  />
-                )}
               </div>
             )}
           </DataState.Content>

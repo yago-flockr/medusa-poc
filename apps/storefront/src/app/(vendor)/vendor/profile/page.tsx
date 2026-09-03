@@ -1,7 +1,6 @@
 "use client"
 
 import { DataState } from "@/components/display/data-state"
-import { ErrorAlert } from "@/components/display/error-alert"
 import { InfoList } from "@/components/display/info-list"
 import { VendorSection } from "@/vendor/components/section"
 import {
@@ -62,9 +61,6 @@ export default function VendorProfilePage() {
                 })
               }
             />
-            {patchVendorsMe.error && (
-              <ErrorAlert description={patchVendorsMe.error.message} />
-            )}
           </DataState.Content>
         </DataState>
       </VendorSection>

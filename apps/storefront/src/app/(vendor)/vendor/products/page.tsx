@@ -1,7 +1,6 @@
 "use client"
 
 import { DataState } from "@/components/display/data-state"
-import { ErrorAlert } from "@/components/display/error-alert"
 import { FormDialog } from "@/components/display/form-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -144,11 +143,6 @@ export default function VendorProductsPage() {
           if (!open) setInventoryProductId(null)
         }}
       >
-        {getVendorsProductsByIdInventory.error && (
-          <ErrorAlert
-            description={getVendorsProductsByIdInventory.error.message}
-          />
-        )}
         <DataState isLoading={getVendorsProductsByIdInventory.isLoading}>
           <DataState.Loading />
           <DataState.Content>
@@ -173,18 +167,13 @@ export default function VendorProductsPage() {
                       getVendorsProductsByIdInventory.refetch()
                     })
                     .catch(() => {
-                      // surfaced via postVendorsProductsByIdInventory.error below
+                      // already toasted by the global mutation error handler
                     })
                 }}
               />
             )}
           </DataState.Content>
         </DataState>
-        {postVendorsProductsByIdInventory.error && (
-          <ErrorAlert
-            description={postVendorsProductsByIdInventory.error.message}
-          />
-        )}
       </FormDialog>
 
       <FormDialog
@@ -212,12 +201,6 @@ export default function VendorProductsPage() {
             })
           }}
         />
-        {postVendorsProducts.error && (
-          <ErrorAlert description={postVendorsProducts.error.message} />
-        )}
-        {postVendorsUploads.error && (
-          <ErrorAlert description={postVendorsUploads.error.message} />
-        )}
       </FormDialog>
 
       <FormDialog
@@ -227,9 +210,6 @@ export default function VendorProductsPage() {
           if (!open) setFormValues(undefined)
         }}
       >
-        {getVendorsProductsById.error && (
-          <ErrorAlert description={getVendorsProductsById.error.message} />
-        )}
         <DataState isLoading={getVendorsProductsById.isLoading}>
           <DataState.Loading />
           <DataState.Content>
@@ -266,9 +246,6 @@ export default function VendorProductsPage() {
             )}
           </DataState.Content>
         </DataState>
-        {postVendorsProductsById.error && (
-          <ErrorAlert description={postVendorsProductsById.error.message} />
-        )}
       </FormDialog>
     </VendorSection>
   )
