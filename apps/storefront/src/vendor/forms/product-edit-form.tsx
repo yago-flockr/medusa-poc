@@ -1,14 +1,10 @@
 "use client"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { cn } from "@/lib/utils"
 import type {
   PostVendorsProductsByIdInput,
@@ -86,28 +82,30 @@ function StatusField({
   value: VendorProductStatus
   onChange: (value: VendorProductStatus) => void
 }) {
+  const isSettable = VENDOR_SETTABLE_STATUSES.includes(
+    value as (typeof VENDOR_SETTABLE_STATUSES)[number],
+  )
+
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-medium">Status</p>
-      <Select
+      {!isSettable && (
+        <Badge variant="muted" className="w-fit">
+          Current: {value}
+        </Badge>
+      )}
+      <RadioGroup
         value={value}
         onValueChange={(next) => onChange(next as VendorProductStatus)}
-        modal={false}
+        className="flex-row gap-4"
       >
-        <SelectTrigger className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {VENDOR_SETTABLE_STATUSES.map((status) => (
-            <SelectItem key={status} value={status}>
-              {status}
-            </SelectItem>
-          ))}
-          {!VENDOR_SETTABLE_STATUSES.includes(
-            value as (typeof VENDOR_SETTABLE_STATUSES)[number],
-          ) && <SelectItem value={value}>{value}</SelectItem>}
-        </SelectContent>
-      </Select>
+        {VENDOR_SETTABLE_STATUSES.map((status) => (
+          <Label key={status} className="flex items-center gap-2 capitalize">
+            <RadioGroupItem value={status} />
+            {status}
+          </Label>
+        ))}
+      </RadioGroup>
     </div>
   )
 }
