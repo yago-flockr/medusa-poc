@@ -230,8 +230,8 @@ export function ProductEditForm({
         <Alert>
           <AlertTitle>This product is external</AlertTitle>
           <AlertDescription>
-            You can't edit this product because it is managed by an external
-            system. You can only change its status.
+            You can&apos;t edit this product because it is managed by an
+            external system. You can only change its status.
           </AlertDescription>
         </Alert>
       )}

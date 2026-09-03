@@ -209,6 +209,7 @@ export default function VendorProductsPage() {
         onOpenChange={(open) => {
           if (!open) setFormValues(undefined)
         }}
+        disablePointerDismissal
       >
         <DataState isLoading={getVendorsProductsById.isLoading}>
           <DataState.Loading />

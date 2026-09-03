@@ -5,31 +5,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import type { ComponentProps } from "react"
+import type { ComponentProps, ReactNode } from "react"
 
 type FormDialogProps = {
   title: string
   description?: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
-} & ComponentProps<typeof DialogContent>
+  children: ReactNode
+} & Omit<ComponentProps<typeof Dialog>, "children">
 
 export function FormDialog({
   title,
   description,
-  open,
-  onOpenChange,
   children,
   ...props
 }: FormDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent {...props}>
+    <Dialog {...props}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        {open ? children : null}
+        {props.open ? children : null}
       </DialogContent>
     </Dialog>
   )
