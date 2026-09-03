@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+import { Item } from "@/components/ui/item"
 import { TextField } from "./text-field"
 
 export type ProductVariantFieldsValue = {
@@ -21,8 +22,8 @@ export function ProductVariantFieldsCard({
   onChange,
 }: ProductVariantFieldsCardProps) {
   return (
-    <div className="flex flex-col gap-2 rounded-md border p-3">
-      <Badge>{label}</Badge>
+    <Item variant="outline" className="flex-col items-stretch gap-2">
+      <Badge className="w-fit">{label}</Badge>
       <div className="flex gap-2">
         <TextField
           id={`${idPrefix}-price`}
@@ -51,6 +52,6 @@ export function ProductVariantFieldsCard({
           className="flex-1"
         />
       </div>
-    </div>
+    </Item>
   )
 }

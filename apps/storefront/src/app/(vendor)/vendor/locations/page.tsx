@@ -4,8 +4,15 @@ import { ConfirmDeleteDialog } from "@/components/display/confirm-delete-dialog"
 import { DataState } from "@/components/display/data-state"
 import { ErrorAlert } from "@/components/display/error-alert"
 import { FormDialog } from "@/components/display/form-dialog"
-import { ListItem } from "@/components/display/list-item"
 import { Button } from "@/components/ui/button"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item"
 import { VendorSection } from "@/vendor/components/section"
 import type { CommonFormValuesProps } from "@/vendor/forms/form-type"
 import {
@@ -87,14 +94,14 @@ export default function VendorLocationsPage() {
           <p className="text-sm text-muted-foreground">No locations yet.</p>
         </DataState.Empty>
         <DataState.Content>
-          <ul className="flex flex-col gap-2">
+          <ItemGroup>
             {getVendorsStockLocations.data?.stock_locations.map(
               (location: VendorStockLocation) => (
-                <ListItem.Root key={location.id}>
-                  <ListItem.Group>
-                    <ListItem.Title>{location.name}</ListItem.Title>
+                <Item key={location.id} variant="outline">
+                  <ItemContent>
+                    <ItemTitle>{location.name}</ItemTitle>
                     {location.address && (
-                      <ListItem.Description>
+                      <ItemDescription>
                         {[
                           location.address.address_1,
                           location.address.address_2,
@@ -105,10 +112,10 @@ export default function VendorLocationsPage() {
                         ]
                           .filter(Boolean)
                           .join(", ")}
-                      </ListItem.Description>
+                      </ItemDescription>
                     )}
-                  </ListItem.Group>
-                  <ListItem.Group className="flex-row items-center">
+                  </ItemContent>
+                  <ItemActions>
                     <Button
                       type="button"
                       variant="outline"
@@ -136,11 +143,11 @@ export default function VendorLocationsPage() {
                     >
                       <RiDeleteBinLine />
                     </Button>
-                  </ListItem.Group>
-                </ListItem.Root>
+                  </ItemActions>
+                </Item>
               ),
             )}
-          </ul>
+          </ItemGroup>
         </DataState.Content>
       </DataState>
       <FormDialog

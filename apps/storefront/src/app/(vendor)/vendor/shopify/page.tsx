@@ -29,14 +29,18 @@ export default function VendorShopifyPage() {
   const getVendorsMeShopifyConnectionInstallLink =
     useGetVendorsMeShopifyConnectionInstallLink()
 
-  const shopifyConnection = getVendorsMe.data?.vendor.integration_connections?.find(
-    (connection) => connection.provider === "shopify",
-  )
+  const shopifyConnection =
+    getVendorsMe.data?.vendor.integration_connections?.find(
+      (connection) => connection.provider === "shopify",
+    )
   const isConnected = shopifyConnection?.connected ?? false
 
-  const getVendorsMeShopifyProducts = useGetVendorsMeShopifyProducts(undefined, {
-    enabled: isConnected,
-  })
+  const getVendorsMeShopifyProducts = useGetVendorsMeShopifyProducts(
+    undefined,
+    {
+      enabled: isConnected,
+    },
+  )
   const postVendorsMeShopifyProductsImport =
     usePostVendorsMeShopifyProductsImport()
 
@@ -77,11 +81,14 @@ export default function VendorShopifyPage() {
                   {
                     onSuccess: () => {
                       toast.success("Shopify connection saved")
-                      getVendorsMeShopifyConnectionInstallLink.mutate(undefined, {
-                        onSuccess: (data) => {
-                          window.location.href = data.install_link
+                      getVendorsMeShopifyConnectionInstallLink.mutate(
+                        undefined,
+                        {
+                          onSuccess: (data) => {
+                            window.location.href = data.install_link
+                          },
                         },
-                      })
+                      )
                     },
                   },
                 )
@@ -94,7 +101,9 @@ export default function VendorShopifyPage() {
             )}
             {getVendorsMeShopifyConnectionInstallLink.error && (
               <ErrorAlert
-                description={getVendorsMeShopifyConnectionInstallLink.error.message}
+                description={
+                  getVendorsMeShopifyConnectionInstallLink.error.message
+                }
               />
             )}
           </DataState.Content>
@@ -104,17 +113,6 @@ export default function VendorShopifyPage() {
         <VendorSection
           title="Import products"
           description="Pull products from your Shopify store and choose which ones to bring in."
-          action={
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => getVendorsMeShopifyProducts.refetch()}
-              disabled={getVendorsMeShopifyProducts.isFetching}
-            >
-              Refresh
-            </Button>
-          }
           className="flex flex-col gap-4"
         >
           <DataState

@@ -1,8 +1,16 @@
 "use client"
 
-import { ListItem } from "@/components/display/list-item"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item"
 import { cn } from "@/lib/utils"
 import type {
   PostVendorsMeShopifyProductsImportInput,
@@ -11,7 +19,6 @@ import type {
 import { useState, type FormEvent } from "react"
 import z from "zod"
 import type { CommonFormProps } from "./form-type"
-import { Badge } from "@/components/ui/badge"
 
 export const shopifyImportProductsSchema = z.object({
   shopify_product_ids: z
@@ -80,9 +87,9 @@ export function ShopifyImportProductsForm({
       className={cn("flex flex-col gap-4", className)}
       {...props}
     >
-      <ul className="flex flex-col gap-2">
+      <ItemGroup>
         {products.map((product) => (
-          <ListItem.Root key={product.shopify_id}>
+          <Item key={product.shopify_id} variant="outline">
             <Checkbox
               id={`shopify-product-${product.shopify_id}`}
               checked={selectedIds.has(product.shopify_id)}
@@ -90,20 +97,20 @@ export function ShopifyImportProductsForm({
                 toggle(product.shopify_id, checked === true)
               }
             />
-            <ListItem.Group className="flex-1">
-              <ListItem.Title>{product.title}</ListItem.Title>
-              <ListItem.Description>
+            <ItemContent>
+              <ItemTitle>{product.title}</ItemTitle>
+              <ItemDescription>
                 {product.variants.length} variants
-              </ListItem.Description>
-            </ListItem.Group>
+              </ItemDescription>
+            </ItemContent>
             {product.already_imported && (
-              <ListItem.Group>
+              <ItemActions>
                 <Badge variant="muted">Imported</Badge>
-              </ListItem.Group>
+              </ItemActions>
             )}
-          </ListItem.Root>
+          </Item>
         ))}
-      </ul>
+      </ItemGroup>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="submit" disabled={isLoading || selectedIds.size === 0}>
         {isLoading ? "Importing…" : `Import selected (${selectedIds.size})`}

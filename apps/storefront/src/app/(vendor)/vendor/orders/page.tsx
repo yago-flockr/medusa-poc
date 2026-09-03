@@ -3,9 +3,16 @@
 import { DataState } from "@/components/display/data-state"
 import { ErrorAlert } from "@/components/display/error-alert"
 import { FormDialog } from "@/components/display/form-dialog"
-import { ListItem } from "@/components/display/list-item"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item"
 import { VendorSection } from "@/vendor/components/section"
 import {
   DispatchOrderForm,
@@ -51,14 +58,14 @@ export default function VendorOrdersPage() {
           <p className="text-sm text-muted-foreground">No orders yet.</p>
         </DataState.Empty>
         <DataState.Content>
-          <ul className="flex flex-col gap-2">
+          <ItemGroup>
             {getVendorsOrders.data?.orders.map((order: VendorOrder) => (
-              <ListItem.Root key={order.id}>
-                <ListItem.Group>
-                  <ListItem.Title>Order #{order.display_id}</ListItem.Title>
-                  <ListItem.Description>{order.status}</ListItem.Description>
-                </ListItem.Group>
-                <ListItem.Group className="flex-row items-center">
+              <Item key={order.id} variant="outline">
+                <ItemContent>
+                  <ItemTitle>Order #{order.display_id}</ItemTitle>
+                  <ItemDescription>{order.status}</ItemDescription>
+                </ItemContent>
+                <ItemActions>
                   <Badge variant="muted">
                     {order.total.toFixed(2)} {order.currency_code.toUpperCase()}
                   </Badge>
@@ -70,10 +77,10 @@ export default function VendorOrdersPage() {
                   >
                     <RiPencilLine />
                   </Button>
-                </ListItem.Group>
-              </ListItem.Root>
+                </ItemActions>
+              </Item>
             ))}
-          </ul>
+          </ItemGroup>
         </DataState.Content>
       </DataState>
 
@@ -96,54 +103,56 @@ export default function VendorOrdersPage() {
                   {viewingOrder.consignment_status}
                 </Badge>
 
-                <ul className="flex flex-col gap-2">
+                <ItemGroup>
                   {viewingOrder.items.map((item) => (
-                    <ListItem.Root key={item.id}>
-                      <ListItem.Group>
-                        <ListItem.Title>
+                    <Item key={item.id} variant="outline">
+                      <ItemContent>
+                        <ItemTitle>
                           {item.title} × {item.quantity}
-                        </ListItem.Title>
+                        </ItemTitle>
                         {(item.variant_title || item.variant_sku) && (
-                          <ListItem.Description>
+                          <ItemDescription>
                             {[item.variant_title, item.variant_sku]
                               .filter(Boolean)
                               .join(" — ")}
-                          </ListItem.Description>
+                          </ItemDescription>
                         )}
-                      </ListItem.Group>
-                      <ListItem.Group>
+                      </ItemContent>
+                      <ItemActions>
                         <Badge variant="muted">
                           {item.unit_price.toFixed(2)}{" "}
                           {viewingOrder.currency_code.toUpperCase()}
                         </Badge>
-                      </ListItem.Group>
-                    </ListItem.Root>
+                      </ItemActions>
+                    </Item>
                   ))}
-                </ul>
+                </ItemGroup>
 
                 {viewingOrder.shipping_address && (
-                  <div className="rounded-md border px-4 py-3 text-sm text-muted-foreground">
-                    <p className="font-medium text-foreground">
-                      {[
-                        viewingOrder.shipping_address.first_name,
-                        viewingOrder.shipping_address.last_name,
-                      ]
-                        .filter(Boolean)
-                        .join(" ")}
-                    </p>
-                    <p>
-                      {[
-                        viewingOrder.shipping_address.address_1,
-                        viewingOrder.shipping_address.address_2,
-                        viewingOrder.shipping_address.city,
-                        viewingOrder.shipping_address.province,
-                        viewingOrder.shipping_address.postal_code,
-                        viewingOrder.shipping_address.country_code?.toUpperCase(),
-                      ]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </p>
-                  </div>
+                  <Item variant="outline">
+                    <ItemContent>
+                      <ItemTitle>
+                        {[
+                          viewingOrder.shipping_address.first_name,
+                          viewingOrder.shipping_address.last_name,
+                        ]
+                          .filter(Boolean)
+                          .join(" ")}
+                      </ItemTitle>
+                      <ItemDescription>
+                        {[
+                          viewingOrder.shipping_address.address_1,
+                          viewingOrder.shipping_address.address_2,
+                          viewingOrder.shipping_address.city,
+                          viewingOrder.shipping_address.province,
+                          viewingOrder.shipping_address.postal_code,
+                          viewingOrder.shipping_address.country_code?.toUpperCase(),
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
                 )}
 
                 {viewingOrder.consignment_status === "placed" && (

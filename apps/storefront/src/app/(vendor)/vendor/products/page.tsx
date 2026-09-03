@@ -3,9 +3,17 @@
 import { DataState } from "@/components/display/data-state"
 import { ErrorAlert } from "@/components/display/error-alert"
 import { FormDialog } from "@/components/display/form-dialog"
-import { ListItem } from "@/components/display/list-item"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item"
 import { VendorSection } from "@/vendor/components/section"
 import {
   ProductInventoryForm,
@@ -80,20 +88,18 @@ export default function VendorProductsPage() {
           <p className="text-sm text-muted-foreground">No products yet.</p>
         </DataState.Empty>
         <DataState.Content>
-          <ul className="flex flex-col gap-2">
+          <ItemGroup>
             {getVendorsProducts.data?.products.map((product: VendorProduct) => (
-              <ListItem.Root key={product.id}>
+              <Item key={product.id} variant="outline">
                 {product.thumbnail && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={product.thumbnail}
-                    alt=""
-                    className="size-10 rounded object-cover"
-                  />
+                  <ItemMedia variant="image">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={product.thumbnail} alt="" />
+                  </ItemMedia>
                 )}
-                <ListItem.Group className="flex-1">
-                  <ListItem.Title>{product.title}</ListItem.Title>
-                  <ListItem.Description className="flex items-center gap-2">
+                <ItemContent>
+                  <ItemTitle>{product.title}</ItemTitle>
+                  <ItemDescription className="flex items-center gap-2">
                     <span>{product.variant_count} variants</span>
                     {product.external_id && (
                       <span className="flex items-center gap-1">
@@ -101,9 +107,9 @@ export default function VendorProductsPage() {
                         Imported
                       </span>
                     )}
-                  </ListItem.Description>
-                </ListItem.Group>
-                <ListItem.Group className="flex-row items-center gap-2">
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions>
                   <Badge variant="muted">{product.status}</Badge>
                   <Button
                     type="button"
@@ -123,10 +129,10 @@ export default function VendorProductsPage() {
                   >
                     <RiStackLine />
                   </Button>
-                </ListItem.Group>
-              </ListItem.Root>
+                </ItemActions>
+              </Item>
             ))}
-          </ul>
+          </ItemGroup>
         </DataState.Content>
       </DataState>
 
