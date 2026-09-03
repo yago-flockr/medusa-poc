@@ -15,7 +15,6 @@ export const shopifyPulledProductSchema = z.object({
       title: z.string(),
       sku: z.string().nullable(),
       price: z.string(),
-      inventory_quantity: z.number().nullable(),
       options: z.array(z.object({ name: z.string(), value: z.string() })),
     }),
   ),

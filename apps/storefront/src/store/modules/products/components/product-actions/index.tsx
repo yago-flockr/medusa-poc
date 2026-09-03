@@ -206,7 +206,7 @@ export default function ProductActions({
           data-testid="add-product-button"
         >
           {isAdding && <Spinner />}
-          {!selectedVariant && !options
+          {!selectedVariant && Object.keys(options).length === 0
             ? "Select variant"
             : !inStock || !isValidVariant
               ? "Out of stock"

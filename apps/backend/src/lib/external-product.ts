@@ -10,7 +10,6 @@ export type ExternalProduct = {
     title: string
     sku: string | null
     price: string
-    inventory_quantity: number | null
     options: { name: string; value: string }[]
   }[]
 }

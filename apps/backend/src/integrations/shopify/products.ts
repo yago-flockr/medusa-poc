@@ -16,31 +16,73 @@ export type ShopifyProductsPullResult = {
 
 const PRODUCT_FIELDS_FRAGMENT = `#graphql
   fragment ShopifyProductFields on Product {
-    id title handle description productType vendor status tags totalInventory
+    id
+    title
+    handle
+    description
+    productType
+    vendor
+    status
+    tags
+    totalInventory
     media(first: 10) {
-      edges { node { ... on MediaImage { image { url altText } } } }
-    }
-    options { name values }
-    variants(first: 20) {
       edges {
         node {
-          id title sku price compareAtPrice barcode inventoryQuantity
-          selectedOptions { name value }
+          ... on MediaImage {
+            image {
+              url
+              altText
+            }
+          }
         }
       }
     }
-    collections(first: 10) { edges { node { title handle } } }
+    options {
+      name
+      values
+    }
+    variants(first: 20) {
+      edges {
+        node {
+          id
+          title
+          sku
+          price
+          compareAtPrice
+          barcode
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
+    collections(first: 10) {
+      edges {
+        node {
+          title
+          handle
+        }
+      }
+    }
   }
 `
 
 const PRODUCTS_QUERY = `#graphql
   query ShopifyProductsPull($first: Int!) {
-    shop { currencyCode }
+    shop {
+      currencyCode
+    }
     products(first: $first, sortKey: ID) {
       edges {
-        node { ...ShopifyProductFields }
+        node {
+          ...ShopifyProductFields
+        }
       }
-      pageInfo { hasNextPage endCursor }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
   }
   ${PRODUCT_FIELDS_FRAGMENT}
@@ -48,9 +90,13 @@ const PRODUCTS_QUERY = `#graphql
 
 const PRODUCTS_BY_ID_QUERY = `#graphql
   query ShopifyProductsByIds($ids: [ID!]!) {
-    shop { currencyCode }
+    shop {
+      currencyCode
+    }
     nodes(ids: $ids) {
-      ... on Product { ...ShopifyProductFields }
+      ... on Product {
+        ...ShopifyProductFields
+      }
     }
   }
   ${PRODUCT_FIELDS_FRAGMENT}
@@ -91,7 +137,6 @@ function mapShopifyProductNode(p: ShopifyProductFieldsNode): ShopifyProduct {
       title: v.node.title,
       sku: v.node.sku ?? null,
       price: v.node.price,
-      inventory_quantity: v.node.inventoryQuantity ?? null,
       options: v.node.selectedOptions,
     })),
     collections: p.collections.edges.map((c) => c.node.handle),

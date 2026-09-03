@@ -106,9 +106,6 @@ function StatusField({
           ) && <SelectItem value={value}>{value}</SelectItem>}
         </SelectContent>
       </Select>
-      <p className="text-xs text-muted-foreground">
-        Publishing requires every variant to have both a SKU and a weight.
-      </p>
     </div>
   )
 }
@@ -229,9 +226,9 @@ export function ProductEditForm({
 
       {isExternal ? (
         <p className="text-sm text-muted-foreground">
-          This product was imported from an external source — its details
-          sync from there and can&apos;t be edited here. Only the status
-          above can be changed.
+          This product was imported from an external source — its details sync
+          from there and can&apos;t be edited here. Only the status above can be
+          changed.
         </p>
       ) : (
         <>

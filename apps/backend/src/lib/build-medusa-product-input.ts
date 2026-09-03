@@ -16,10 +16,14 @@ export type MappedProductOption = { title: string; values: string[] }
 
 type MappedProductVariant = {
   title: string
-  sku: string | null
+  sku: string
   manage_inventory: boolean
   options: Record<string, string>
   prices: { amount: number; currency_code: string }[]
+}
+
+function generateFallbackSku(productHandle: string, variantIndex: number) {
+  return `${productHandle}-${variantIndex + 1}`.toUpperCase()
 }
 
 type ProductInputBase = {
@@ -43,7 +47,9 @@ export type UpdateProductInputFromExternal = ProductInputBase & {
   id: string
 }
 
-export function toMedusaOptions(product: ExternalProduct): MappedProductOption[] {
+export function toMedusaOptions(
+  product: ExternalProduct,
+): MappedProductOption[] {
   if (!product.options.length) {
     return [{ title: "Default", values: ["Default"] }]
   }
@@ -72,7 +78,7 @@ function toMedusaVariants(
     return [
       {
         title: "Default",
-        sku: null,
+        sku: generateFallbackSku(product.handle, 0),
         manage_inventory: false,
         options: { Default: "Default" },
         prices: [{ amount: 0, currency_code: currencyCode }],
@@ -80,10 +86,15 @@ function toMedusaVariants(
     ]
   }
 
-  return product.variants.map((variant) => ({
+  return product.variants.map((variant, index) => ({
     title: variant.title,
-    sku: variant.sku,
-    manage_inventory: variant.inventory_quantity !== null,
+    sku: variant.sku ?? generateFallbackSku(product.handle, index),
+    // Stock is never read from Shopify — see docs/plan.md Decisions and
+    // docs/spikes/vendor-shopify-sync.md "Update: stock sync dropped
+    // entirely". An imported variant is managed inventory exactly like a
+    // manually created one: it starts at zero until the vendor books a real
+    // quantity through the existing inventory-management screen.
+    manage_inventory: true,
     options: toMedusaVariantOptions(variant),
     prices: [{ amount: Number(variant.price), currency_code: currencyCode }],
   }))
