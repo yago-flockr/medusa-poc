@@ -4,6 +4,8 @@ export const queryKeys = {
   },
   orders: {
     getVendorsOrders: ["getVendorsOrders"] as const,
+    getVendorsOrdersById: (orderId: string) =>
+      ["getVendorsOrdersById", orderId] as const,
   },
   shopifyProducts: {
     getVendorsMeShopifyProducts: ["getVendorsMeShopifyProducts"] as const,

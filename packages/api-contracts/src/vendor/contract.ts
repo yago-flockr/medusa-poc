@@ -1,8 +1,11 @@
 import { initContract } from "@ts-rest/core"
 import { getVendorsMeResponseSchema } from "./me"
 import {
+  getVendorsOrdersByIdResponseSchema,
   getVendorsOrdersInputSchema,
   getVendorsOrdersResponseSchema,
+  postVendorsOrdersByIdAcceptInputSchema,
+  postVendorsOrdersByIdDispatchInputSchema,
 } from "./orders"
 import {
   patchVendorsMeInputSchema,
@@ -94,6 +97,29 @@ export const vendorContract = c.router({
     query: getVendorsOrdersInputSchema,
     responses: {
       200: getVendorsOrdersResponseSchema,
+    },
+  },
+  getVendorsOrdersById: {
+    method: "GET",
+    path: "/vendors/orders/:id",
+    responses: {
+      200: getVendorsOrdersByIdResponseSchema,
+    },
+  },
+  postVendorsOrdersByIdAccept: {
+    method: "POST",
+    path: "/vendors/orders/:id/accept",
+    body: postVendorsOrdersByIdAcceptInputSchema,
+    responses: {
+      200: getVendorsOrdersByIdResponseSchema,
+    },
+  },
+  postVendorsOrdersByIdDispatch: {
+    method: "POST",
+    path: "/vendors/orders/:id/dispatch",
+    body: postVendorsOrdersByIdDispatchInputSchema,
+    responses: {
+      200: getVendorsOrdersByIdResponseSchema,
     },
   },
   getVendorsProducts: {

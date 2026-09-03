@@ -1,5 +1,6 @@
 "use client"
 
+import { ListItem } from "@/components/display/list-item"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
@@ -10,6 +11,7 @@ import type {
 import { useState, type FormEvent } from "react"
 import z from "zod"
 import type { CommonFormProps } from "./form-type"
+import { Badge } from "@/components/ui/badge"
 
 export const shopifyImportProductsSchema = z.object({
   shopify_product_ids: z
@@ -80,10 +82,7 @@ export function ShopifyImportProductsForm({
     >
       <ul className="flex flex-col gap-2">
         {products.map((product) => (
-          <li
-            key={product.shopify_id}
-            className="flex items-center gap-3 rounded-md border px-4 py-3 text-sm"
-          >
+          <ListItem.Root key={product.shopify_id}>
             <Checkbox
               id={`shopify-product-${product.shopify_id}`}
               checked={selectedIds.has(product.shopify_id)}
@@ -91,17 +90,18 @@ export function ShopifyImportProductsForm({
                 toggle(product.shopify_id, checked === true)
               }
             />
-            <div className="flex-1">
-              <p className="font-medium">{product.title}</p>
-
-              <span className="text-xs text-muted-foreground">
+            <ListItem.Group className="flex-1">
+              <ListItem.Title>{product.title}</ListItem.Title>
+              <ListItem.Description>
                 {product.variants.length} variants
-              </span>
-            </div>
+              </ListItem.Description>
+            </ListItem.Group>
             {product.already_imported && (
-              <span className="text-xs text-muted-foreground">Imported</span>
+              <ListItem.Group>
+                <Badge variant="muted">Imported</Badge>
+              </ListItem.Group>
             )}
-          </li>
+          </ListItem.Root>
         ))}
       </ul>
       {error && <p className="text-sm text-destructive">{error}</p>}

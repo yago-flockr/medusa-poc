@@ -4,6 +4,7 @@ import {
 } from "@medusajs/framework/http"
 import { vendorCors } from "./cors"
 import { vendorMeRoutesMiddlewares } from "./me/middlewares"
+import { vendorOrderRoutesMiddlewares } from "./orders/middlewares"
 import { vendorProductRoutesMiddlewares } from "./products/middlewares"
 import { vendorStockLocationRoutesMiddlewares } from "./stock-locations/middlewares"
 import { vendorUploadRoutesMiddlewares } from "./uploads/middlewares"
@@ -17,6 +18,7 @@ export const vendorRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [vendorCors, authenticate("vendor", ["session", "bearer"])],
   },
   ...vendorMeRoutesMiddlewares,
+  ...vendorOrderRoutesMiddlewares,
   ...vendorProductRoutesMiddlewares,
   ...vendorStockLocationRoutesMiddlewares,
   ...vendorUploadRoutesMiddlewares,

@@ -1,6 +1,8 @@
 "use client"
 
 import { DataState } from "@/components/display/data-state"
+import { ListItem } from "@/components/display/list-item"
+import { Badge } from "@/components/ui/badge"
 import { VendorSection } from "@/vendor/components/section"
 import { useGetVendorsProducts } from "@/vendor/hooks/queries/products"
 import type { VendorProduct } from "@dtc/api-contracts/vendor/products"
@@ -26,10 +28,7 @@ export default function VendorProductsPage() {
         <DataState.Content>
           <ul className="flex flex-col gap-2">
             {getVendorsProducts.data?.products.map((product: VendorProduct) => (
-              <li
-                key={product.id}
-                className="flex items-center gap-3 rounded-md border px-4 py-3 text-sm"
-              >
+              <ListItem.Root key={product.id}>
                 {product.thumbnail && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -38,22 +37,22 @@ export default function VendorProductsPage() {
                     className="size-10 rounded object-cover"
                   />
                 )}
-                <div className="flex-1">
-                  <p className="font-medium">{product.title}</p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <ListItem.Group className="flex-1">
+                  <ListItem.Title>{product.title}</ListItem.Title>
+                  <ListItem.Description className="flex items-center gap-2">
                     <span>{product.variant_count} variants</span>
                     {product.external_id && (
-                      <div className="flex items-center text-muted-foreground font-medium gap-1">
-                        <RiLinksLine size={16} />
-                        <span>Imported</span>
-                      </div>
+                      <span className="flex items-center gap-1">
+                        <RiLinksLine size={14} />
+                        Imported
+                      </span>
                     )}
-                  </div>
-                </div>
-                <span className="text-xs text-muted-foreground uppercase">
-                  {product.status}
-                </span>
-              </li>
+                  </ListItem.Description>
+                </ListItem.Group>
+                <ListItem.Group>
+                  <Badge variant="muted">{product.status}</Badge>
+                </ListItem.Group>
+              </ListItem.Root>
             ))}
           </ul>
         </DataState.Content>

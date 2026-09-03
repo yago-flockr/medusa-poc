@@ -36,4 +36,8 @@ export const mutationKeys = {
       "postVendorsProductsByIdInventory",
     ] as const,
   },
+  orders: {
+    postVendorsOrdersByIdAccept: ["postVendorsOrdersByIdAccept"] as const,
+    postVendorsOrdersByIdDispatch: ["postVendorsOrdersByIdDispatch"] as const,
+  },
 }

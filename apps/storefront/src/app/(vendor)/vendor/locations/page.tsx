@@ -4,6 +4,7 @@ import { ConfirmDeleteDialog } from "@/components/display/confirm-delete-dialog"
 import { DataState } from "@/components/display/data-state"
 import { ErrorAlert } from "@/components/display/error-alert"
 import { FormDialog } from "@/components/display/form-dialog"
+import { ListItem } from "@/components/display/list-item"
 import { Button } from "@/components/ui/button"
 import { VendorSection } from "@/vendor/components/section"
 import type { CommonFormValuesProps } from "@/vendor/forms/form-type"
@@ -89,14 +90,11 @@ export default function VendorLocationsPage() {
           <ul className="flex flex-col gap-2">
             {getVendorsStockLocations.data?.stock_locations.map(
               (location: VendorStockLocation) => (
-                <li
-                  key={location.id}
-                  className="flex items-center justify-between gap-3 rounded-md border px-4 py-3 text-sm"
-                >
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">{location.name}</p>
+                <ListItem.Root key={location.id}>
+                  <ListItem.Group>
+                    <ListItem.Title>{location.name}</ListItem.Title>
                     {location.address && (
-                      <p className="text-xs text-muted-foreground">
+                      <ListItem.Description>
                         {[
                           location.address.address_1,
                           location.address.address_2,
@@ -107,10 +105,10 @@ export default function VendorLocationsPage() {
                         ]
                           .filter(Boolean)
                           .join(", ")}
-                      </p>
+                      </ListItem.Description>
                     )}
-                  </div>
-                  <div className="flex items-center gap-2">
+                  </ListItem.Group>
+                  <ListItem.Group className="flex-row items-center">
                     <Button
                       type="button"
                       variant="outline"
@@ -138,8 +136,8 @@ export default function VendorLocationsPage() {
                     >
                       <RiDeleteBinLine />
                     </Button>
-                  </div>
-                </li>
+                  </ListItem.Group>
+                </ListItem.Root>
               ),
             )}
           </ul>
@@ -179,16 +177,15 @@ export default function VendorLocationsPage() {
         onOpenChange={(open) => !open && setFormValues(undefined)}
         isLoading={deleteVendorsStockLocationsById.isPending}
         onConfirm={() => {
-          deleteVendorsStockLocationsById.mutate(
-            formValues?.customValues!.id!,
-            {
-              onSuccess: () => {
-                toast.success("Location deleted")
-                getVendorsStockLocations.refetch()
-                setFormValues(undefined)
-              },
+          if (formValues?.state !== "DELETING") return
+
+          deleteVendorsStockLocationsById.mutate(formValues.customValues!.id!, {
+            onSuccess: () => {
+              toast.success("Location deleted")
+              getVendorsStockLocations.refetch()
+              setFormValues(undefined)
             },
-          )
+          })
         }}
       />
       {deleteVendorsStockLocationsById.error && (
