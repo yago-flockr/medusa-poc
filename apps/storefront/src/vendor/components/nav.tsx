@@ -4,6 +4,7 @@ import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/display/theme-toggle"
 import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
@@ -36,17 +37,20 @@ export function VendorNav() {
           </Link>
         ))}
       </div>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={() => {
-          clearToken()
-          router.replace("/vendor")
-        }}
-      >
-        Log out
-      </Button>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            clearToken()
+            router.replace("/vendor")
+          }}
+        >
+          Log out
+        </Button>
+      </div>
     </nav>
   )
 }
