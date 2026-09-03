@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { paginationMetaSchema, paginationQuerySchema } from "../common/pagination"
+import { paginationMetaSchema, paginationQuerySchema } from "@dtc/api-contracts/common/pagination"
 
 export const vendorProductStatusSchema = z.enum([
   "draft",

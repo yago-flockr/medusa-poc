@@ -1,6 +1,6 @@
 import { z } from "zod"
 import type { FindParams } from "@medusajs/types"
-import { paginationMetaSchema } from "../common/pagination"
+import { paginationMetaSchema } from "@dtc/api-contracts/common/pagination"
 import {
   vendorIntegrationConnectionProviderSchema,
   vendorIntegrationConnectionSchema,
