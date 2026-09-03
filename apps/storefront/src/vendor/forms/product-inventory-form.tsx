@@ -1,6 +1,8 @@
 "use client"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Item, ItemGroup } from "@/components/ui/item"
 import { cn } from "@/lib/utils"
 import type {
   PostVendorsProductsByIdInventoryInput,
@@ -10,7 +12,6 @@ import { useState, type FormEvent } from "react"
 import z from "zod"
 import { NumberControlField } from "./fields/number-field-control"
 import type { CommonFormProps } from "./form-type"
-import { Badge } from "@/components/ui/badge"
 
 export const productInventorySchema = z.object({
   levels: z.array(
@@ -94,29 +95,32 @@ export function ProductInventoryForm({
       className={cn("flex flex-col gap-4", className)}
       {...props}
     >
-      {variants.map((variant) => (
-        <div
-          key={variant.variant_id}
-          className="flex flex-col gap-2 bg-muted p-2 rounded-md"
-        >
-          <Badge className="mx-auto">{variant.variant_title}</Badge>
-          {locations.map((location) => (
-            <NumberControlField
-              key={location.id}
-              id={`inventory-${variant.variant_id}-${location.id}`}
-              label={location.name}
-              min={0}
-              value={quantities[cellKey(variant.variant_id, location.id)] ?? 0}
-              onValueChange={(value) =>
-                setQuantities((current) => ({
-                  ...current,
-                  [cellKey(variant.variant_id, location.id)]: value ?? 0,
-                }))
-              }
-            />
-          ))}
-        </div>
-      ))}
+      <ItemGroup>
+        {variants.map((variant) => (
+          <Item
+            key={variant.variant_id}
+            variant="outline"
+            className="flex-col items-stretch gap-2"
+          >
+            <Badge className="w-fit">{variant.variant_title}</Badge>
+            {locations.map((location) => (
+              <NumberControlField
+                key={location.id}
+                id={`inventory-${variant.variant_id}-${location.id}`}
+                label={location.name}
+                min={0}
+                value={quantities[cellKey(variant.variant_id, location.id)] ?? 0}
+                onValueChange={(value) =>
+                  setQuantities((current) => ({
+                    ...current,
+                    [cellKey(variant.variant_id, location.id)]: value ?? 0,
+                  }))
+                }
+              />
+            ))}
+          </Item>
+        ))}
+      </ItemGroup>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="submit" disabled={isLoading}>
         {isLoading ? "Saving…" : "Save"}
