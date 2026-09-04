@@ -170,11 +170,14 @@ each was found while building or adversarially testing the marketplace spine
 
 ## Cross-origin and transport
 
-- **`VENDOR_CORS` is a single manually-set origin per environment.**
-  Correctly scoped today (verified: an unlisted origin gets no CORS headers,
-  a valid one does), but it's a manual value that has to be kept in sync
-  per environment and could be misconfigured overly broad later. Worth a
-  deliberate check whenever a new environment is stood up.
+- **`VENDOR_CORS` is a single manually-set origin per environment, falling
+  back to `STORE_CORS` when unset** (`src/api/vendors/cors.ts`) — added
+  since the vendor UI and storefront have shared one origin in every deploy
+  so far, so the two vars no longer need to be kept in sync by hand. Set
+  `VENDOR_CORS` explicitly only once that stops being true. Correctly
+  scoped today (verified: an unlisted origin gets no CORS headers, a valid
+  one does), but still worth a deliberate check whenever a new environment
+  is stood up in case the fallback's assumption no longer holds.
 - **CORS is not an authorization boundary — it only restricts which browser
   origins can make the call.** A stolen token still works fine from curl or
   any non-browser client regardless of `VENDOR_CORS`. Worth remembering so

@@ -1,6 +1,6 @@
 import type { MedusaRequestHandler } from "@medusajs/framework/http"
 
-const allowedOrigins = (process.env.VENDOR_CORS ?? "")
+const allowedOrigins = (process.env.VENDOR_CORS ?? process.env.STORE_CORS ?? "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean)
