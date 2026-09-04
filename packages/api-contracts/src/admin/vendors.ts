@@ -5,7 +5,7 @@ import {
   vendorIntegrationConnectionProviderSchema,
   vendorIntegrationConnectionSchema,
   type VendorIntegrationConnection,
-} from "../vendor/integration-connection"
+} from "@dtc/api-contracts/vendor/integration-connection"
 
 export {
   vendorIntegrationConnectionProviderSchema,

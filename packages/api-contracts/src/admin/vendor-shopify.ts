@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { shopifyPulledProductSchema } from "../vendor/shopify-products"
+import { shopifyPulledProductSchema } from "@dtc/api-contracts/vendor/shopify-products"
 
 export const generateVendorShopifyInstallLinkResponseSchema = z.object({
   install_link: z.string(),

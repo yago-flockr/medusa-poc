@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { vendorIntegrationConnectionSchema } from "./integration-connection"
+import { vendorIntegrationConnectionSchema } from "@dtc/api-contracts/vendor/integration-connection"
 
 export const vendorUserSchema = z.object({
   id: z.string(),

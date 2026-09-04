@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { vendorUserSchema } from "./vendor"
+import { vendorUserSchema } from "@dtc/api-contracts/vendor/vendor"
 
 export const patchVendorsMeInputSchema = z.object({
   first_name: z.string().min(1),

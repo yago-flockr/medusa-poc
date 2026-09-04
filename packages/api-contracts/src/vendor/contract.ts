@@ -1,26 +1,26 @@
 import { initContract } from "@ts-rest/core"
-import { getVendorsMeResponseSchema } from "./me"
+import { getVendorsMeResponseSchema } from "@dtc/api-contracts/vendor/me"
 import {
   getVendorsOrdersByIdResponseSchema,
   getVendorsOrdersInputSchema,
   getVendorsOrdersResponseSchema,
   postVendorsOrdersByIdAcceptInputSchema,
   postVendorsOrdersByIdDispatchInputSchema,
-} from "./orders"
+} from "@dtc/api-contracts/vendor/orders"
 import {
   patchVendorsMeInputSchema,
   patchVendorsMeResponseSchema,
-} from "./profile"
+} from "@dtc/api-contracts/vendor/profile"
 import {
   patchVendorsMeShopifyConnectionInputSchema,
   patchVendorsMeShopifyConnectionResponseSchema,
   getVendorsMeShopifyConnectionInstallLinkResponseSchema,
-} from "./shopify-connection"
+} from "@dtc/api-contracts/vendor/shopify-connection"
 import {
   postVendorsMeShopifyProductsImportInputSchema,
   postVendorsMeShopifyProductsImportResponseSchema,
   getVendorsMeShopifyProductsResponseSchema,
-} from "./shopify-products"
+} from "@dtc/api-contracts/vendor/shopify-products"
 import {
   deleteVendorsProductsByIdResponseSchema,
   getVendorsProductsByIdResponseSchema,
@@ -29,7 +29,7 @@ import {
   postVendorsProductsByIdInputSchema,
   postVendorsProductsInputSchema,
   postVendorsProductsResponseSchema,
-} from "./products"
+} from "@dtc/api-contracts/vendor/products"
 import {
   deleteVendorsStockLocationsByIdResponseSchema,
   getVendorsStockLocationsInputSchema,
@@ -37,11 +37,11 @@ import {
   postVendorsStockLocationsByIdInputSchema,
   postVendorsStockLocationsInputSchema,
   postVendorsStockLocationsResponseSchema,
-} from "./stock-locations"
+} from "@dtc/api-contracts/vendor/stock-locations"
 import {
   getVendorsProductsByIdInventoryResponseSchema,
   postVendorsProductsByIdInventoryInputSchema,
-} from "./product-inventory"
+} from "@dtc/api-contracts/vendor/product-inventory"
 
 const c = initContract()
 
