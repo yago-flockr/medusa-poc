@@ -13,6 +13,7 @@ export const mutationKeys = {
   vendorUsers: {
     createOne: ["createOneVendorUser"] as const,
     updateOne: ["updateOneVendorUser"] as const,
+    deleteOne: ["deleteOneVendorUser"] as const,
     regeneratePassword: ["regenerateVendorUserPassword"] as const,
   },
 }

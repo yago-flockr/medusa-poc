@@ -1,5 +1,11 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { ArrowPath, CheckCircle, PencilSquare, XCircle } from "@medusajs/icons"
+import {
+  ArrowPath,
+  CheckCircle,
+  PencilSquare,
+  Trash,
+  XCircle,
+} from "@medusajs/icons"
 import {
   Button,
   createDataTableColumnHelper,
@@ -17,6 +23,7 @@ import { Card } from "../../components/card"
 import { OtpShow } from "../../components/otp-show"
 import { TitleSubtitle } from "../../components/title-subtitle"
 import {
+  useDeleteOneVendorUser,
   useRegenerateVendorUserPassword,
   useUpdateOneVendorUser,
 } from "../../hooks/mutations/vendor-users"
@@ -32,6 +39,7 @@ const VendorUsersPage = () => {
   const prompt = usePrompt()
   const regeneratePassword = useRegenerateVendorUserPassword()
   const updateOneVendorUser = useUpdateOneVendorUser()
+  const deleteOneVendorUser = useDeleteOneVendorUser()
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: PAGINATION_LIMIT,
     pageIndex: 0,
@@ -140,6 +148,32 @@ const VendorUsersPage = () => {
                 },
               },
             )
+          },
+        },
+        {
+          label: "Delete",
+          icon: <Trash />,
+          onClick: async () => {
+            const vendorUser = ctx.row.original
+            const confirmed = await prompt({
+              title: "Delete vendor user?",
+              description: `Delete ${vendorUser.email}? This only removes their login — it does not affect the vendor's products, orders, or stock.`,
+              confirmText: "Delete",
+              cancelText: "Cancel",
+              variant: "danger",
+            })
+
+            if (!confirmed) {
+              return
+            }
+
+            deleteOneVendorUser.mutate(vendorUser.id, {
+              onError: (error) => {
+                toast.error("Failed to delete vendor user", {
+                  description: error.message,
+                })
+              },
+            })
           },
         },
       ],

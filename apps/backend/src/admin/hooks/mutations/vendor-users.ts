@@ -2,6 +2,7 @@ import type {
   CreateVendorUser,
   RegenerateVendorUserPasswordResponse,
   UpdateVendorUser,
+  VendorUserDeleteResponse,
   VendorUserResponse,
   VendorUserWithPasswordResponse,
 } from "@dtc/api-contracts/admin/vendor-users"
@@ -32,6 +33,19 @@ export const useUpdateOneVendorUser = createResourceMutationHook<
     sdk.client.fetch<VendorUserResponse>(
       `/admin/vendor-users/${vendorUserId}`,
       { method: "POST", body },
+    ),
+  invalidateKey: queryKeys.vendorUsers.findMany,
+})
+
+export const useDeleteOneVendorUser = createResourceMutationHook<
+  string,
+  VendorUserDeleteResponse
+>({
+  mutationKey: mutationKeys.vendorUsers.deleteOne,
+  mutationFn: (vendorUserId) =>
+    sdk.client.fetch<VendorUserDeleteResponse>(
+      `/admin/vendor-users/${vendorUserId}`,
+      { method: "DELETE" },
     ),
   invalidateKey: queryKeys.vendorUsers.findMany,
 })

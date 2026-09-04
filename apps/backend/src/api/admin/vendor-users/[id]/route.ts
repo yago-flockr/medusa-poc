@@ -4,8 +4,10 @@ import {
   ContainerRegistrationKeys,
 } from "@medusajs/framework/utils"
 import { updateVendorUserWorkflow } from "../../../../workflows/update-vendor-user"
+import { deleteVendorUserWorkflow } from "../../../../workflows/delete-vendor-user"
 import { toIsoString } from "../../../../lib/normalize-timestamps"
 import {
+  vendorUserDeleteResponseSchema,
   vendorUserResponseSchema,
   type UpdateVendorUser,
 } from "@dtc/api-contracts/admin/vendor-users"
@@ -60,6 +62,22 @@ export const POST = async (
         created_at: toIsoString(result.created_at),
         updated_at: toIsoString(result.updated_at),
       },
+    }),
+  )
+}
+
+export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
+  const { id } = req.params
+
+  await deleteVendorUserWorkflow(req.scope).run({
+    input: { id },
+  })
+
+  res.json(
+    vendorUserDeleteResponseSchema.parse({
+      id,
+      object: "vendor_user",
+      deleted: true,
     }),
   )
 }

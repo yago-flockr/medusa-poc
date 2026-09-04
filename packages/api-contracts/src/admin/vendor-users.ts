@@ -37,6 +37,16 @@ export const vendorUserResponseSchema = z.object({
 
 export type VendorUserResponse = z.infer<typeof vendorUserResponseSchema>
 
+export const vendorUserDeleteResponseSchema = z.object({
+  id: z.string(),
+  object: z.literal("vendor_user"),
+  deleted: z.boolean(),
+})
+
+export type VendorUserDeleteResponse = z.infer<
+  typeof vendorUserDeleteResponseSchema
+>
+
 export const vendorUserWithPasswordResponseSchema = z.object({
   vendor_user: vendorUserSchema,
   password: z.string(),
