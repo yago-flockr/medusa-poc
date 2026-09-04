@@ -16,13 +16,55 @@ export type ResolvedProductOption = NonNullable<
 
 type ResolvedOption = ResolvedProductOption
 
+// Normalized option title -> the title actually attached to the product
+// (the DB's existing casing for a matched shared option, or the vendor's
+// own casing when the option is newly created). Every variant's `options`
+// map must be rewritten through this before it reaches Medusa core — see
+// remapOptionTitles.
+export type CanonicalTitleByNormalized = Record<string, string>
+
+// Canonical title -> (normalized value -> the value's actual stored
+// casing). Same problem as the title map, one level down: a shared
+// option's values also have a case-insensitive uniqueness rule, so a
+// vendor typing "s" against an already-established "S" must have their
+// variant rewritten to "S", or Medusa's exact-match variant/value lookup
+// fails the same way.
+export type CanonicalValuesByTitle = Record<string, Record<string, string>>
+
 type OptionCompensation = {
   id: string
   previousValues: string[]
 }
 
-function normalize(value: string): string {
+export function normalize(value: string): string {
   return value.trim().toLowerCase()
+}
+
+// Medusa core links a variant to its option by an exact, case-sensitive
+// title match against the option rows actually attached to the product.
+// When a shared option gets resolved to an existing row (see
+// resolveSharedOptionsWithLocking), that row's title can carry different
+// casing than whatever the vendor originally typed — e.g. a vendor types
+// "size" but the shared option was first created as "Size" by an earlier
+// vendor or a Shopify import. Left alone, the variant would still carry the
+// vendor's original casing and Medusa's exact-match lookup would fail with
+// "Option value <v> does not exist for option <title>". This rewrites a
+// variant's option-title keys to whatever title actually ended up on the
+// product, falling back to the original title when there's no entry (a
+// freshly created option, or the exclusive/no-options path).
+export function remapOptionTitles(
+  options: Record<string, string>,
+  canonicalTitleByNormalized: CanonicalTitleByNormalized,
+  canonicalValuesByTitle: CanonicalValuesByTitle = {},
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(options).map(([title, value]) => {
+      const canonicalTitle = canonicalTitleByNormalized[normalize(title)] ?? title
+      const canonicalValue =
+        canonicalValuesByTitle[canonicalTitle]?.[normalize(value)] ?? value
+      return [canonicalTitle, canonicalValue]
+    }),
+  )
 }
 
 function resolveExclusiveOptions(
@@ -38,7 +80,12 @@ function resolveExclusiveOptions(
 async function resolveSharedOptionsWithLocking(
   options: { title: string; values: string[] }[],
   container: MedusaContainer,
-): Promise<{ resolved: ResolvedOption[]; compensation: OptionCompensation[] }> {
+): Promise<{
+  resolved: ResolvedOption[]
+  compensation: OptionCompensation[]
+  canonicalTitleByNormalized: CanonicalTitleByNormalized
+  canonicalValuesByTitle: CanonicalValuesByTitle
+}> {
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
   const productModuleService = container.resolve(Modules.PRODUCT)
   const lockingModuleService = container.resolve(Modules.LOCKING)
@@ -53,11 +100,16 @@ async function resolveSharedOptionsWithLocking(
     existingOptions.map((option) => [normalize(option.title), option]),
   )
 
+  const canonicalValuesByTitle: CanonicalValuesByTitle = {}
+
   const updates = (
     await Promise.all(
       options.flatMap((option) => {
         const existing = existingByNormalizedTitle.get(normalize(option.title))
         if (!existing) {
+          canonicalValuesByTitle[option.title] = Object.fromEntries(
+            option.values.map((value) => [normalize(value), value]),
+          )
           return []
         }
 
@@ -83,12 +135,17 @@ async function resolveSharedOptionsWithLocking(
               (value) => !existingValuesNormalized.has(normalize(value)),
             )
 
+            const allValues = [...existingValues, ...missingValues]
+            canonicalValuesByTitle[existing.title] = Object.fromEntries(
+              allValues.map((value) => [normalize(value), value]),
+            )
+
             if (!missingValues.length) {
               return null
             }
 
             await productModuleService.updateProductOptions(existing.id, {
-              values: [...existingValues, ...missingValues],
+              values: allValues,
             })
 
             return { id: existing.id, previousValues: existingValues }
@@ -105,7 +162,14 @@ async function resolveSharedOptionsWithLocking(
       : { title: option.title, values: option.values, is_exclusive: false }
   })
 
-  return { resolved, compensation: updates }
+  const canonicalTitleByNormalized: CanonicalTitleByNormalized = Object.fromEntries(
+    options.map((option) => {
+      const existing = existingByNormalizedTitle.get(normalize(option.title))
+      return [normalize(option.title), existing?.title ?? option.title]
+    }),
+  )
+
+  return { resolved, compensation: updates, canonicalTitleByNormalized, canonicalValuesByTitle }
 }
 
 // resolveSharedProductOptionsStep resolves one flat list of raw options at a
@@ -127,18 +191,32 @@ export function chunkResolvedOptions(
   return chunks
 }
 
+export type ResolvedProductOptionsResult = {
+  options: ResolvedOption[]
+  canonicalTitleByNormalized: CanonicalTitleByNormalized
+  canonicalValuesByTitle: CanonicalValuesByTitle
+}
+
 export const resolveSharedProductOptionsStep = createStep(
   "resolve-shared-product-options",
   async (input: ResolveSharedProductOptionsStepInput, { container }) => {
     if (!input.shared) {
-      return new StepResponse(resolveExclusiveOptions(input.options), [])
+      return new StepResponse(
+        {
+          options: resolveExclusiveOptions(input.options),
+          canonicalTitleByNormalized: {},
+          canonicalValuesByTitle: {},
+        },
+        [],
+      )
     }
 
-    const { resolved, compensation } = await resolveSharedOptionsWithLocking(
-      input.options,
-      container,
+    const { resolved, compensation, canonicalTitleByNormalized, canonicalValuesByTitle } =
+      await resolveSharedOptionsWithLocking(input.options, container)
+    return new StepResponse(
+      { options: resolved, canonicalTitleByNormalized, canonicalValuesByTitle },
+      compensation,
     )
-    return new StepResponse(resolved, compensation)
   },
   async (compensation: OptionCompensation[] | undefined, { container }) => {
     if (!compensation?.length) {

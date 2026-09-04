@@ -5,7 +5,10 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
 import type { CreateProductWorkflowInputDTO } from "@medusajs/framework/types"
-import { resolveSharedProductOptionsStep } from "../shared/steps/resolve-shared-product-options"
+import {
+  remapOptionTitles,
+  resolveSharedProductOptionsStep,
+} from "../shared/steps/resolve-shared-product-options"
 
 export type CreateVendorProductWorkflowInput = {
   product: Omit<CreateProductWorkflowInputDTO, "options">
@@ -26,7 +29,22 @@ export const createVendorProductWorkflow = createWorkflow(
     const createProductsInput = transform(
       { input, resolvedOptions },
       (data) => ({
-        products: [{ ...data.input.product, options: data.resolvedOptions }],
+        products: [
+          {
+            ...data.input.product,
+            options: data.resolvedOptions.options,
+            variants: data.input.product.variants?.map((variant) => ({
+              ...variant,
+              options: variant.options
+                ? remapOptionTitles(
+                    variant.options,
+                    data.resolvedOptions.canonicalTitleByNormalized,
+                    data.resolvedOptions.canonicalValuesByTitle,
+                  )
+                : variant.options,
+            })),
+          },
+        ],
         additional_data: { vendor_id: data.input.vendor_id },
       }),
     )

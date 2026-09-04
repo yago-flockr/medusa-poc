@@ -16,6 +16,7 @@ import { pruneStaleProductOptionValuesStep } from "./steps/prune-stale-product-o
 import { resolveShopifyProductPrerequisitesStep } from "../shared/steps/resolve-shopify-product-prerequisites"
 import {
   chunkResolvedOptions,
+  remapOptionTitles,
   resolveSharedProductOptionsStep,
 } from "../shared/steps/resolve-shared-product-options"
 import {
@@ -64,19 +65,40 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
     const resolvedOptionsPerProduct = transform(
       { rawOptionsPerProduct, resolvedFlatOptions },
       (data) =>
-        chunkResolvedOptions(data.rawOptionsPerProduct, data.resolvedFlatOptions),
+        chunkResolvedOptions(
+          data.rawOptionsPerProduct,
+          data.resolvedFlatOptions.options,
+        ),
     )
 
     const createInput = transform(
-      { matched, prerequisites, vendorId: input.vendorId, resolvedOptionsPerProduct },
+      {
+        matched,
+        prerequisites,
+        vendorId: input.vendorId,
+        resolvedOptionsPerProduct,
+        resolvedFlatOptions,
+      },
       (data) => ({
-        products: data.matched.created.map((product, index) =>
-          buildCreateShopifyProductInput(
+        products: data.matched.created.map((product, index) => {
+          const built = buildCreateShopifyProductInput(
             product,
             data.prerequisites,
             data.resolvedOptionsPerProduct[index],
-          ),
-        ),
+          )
+
+          return {
+            ...built,
+            variants: built.variants.map((variant) => ({
+              ...variant,
+              options: remapOptionTitles(
+                variant.options,
+                data.resolvedFlatOptions.canonicalTitleByNormalized,
+                data.resolvedFlatOptions.canonicalValuesByTitle,
+              ),
+            })),
+          }
+        }),
         additional_data: { vendor_id: data.vendorId },
       }),
     )
@@ -85,13 +107,30 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
       { matched, prerequisites, vendorId: input.vendorId },
       (data) => ({
         products: data.matched.updated.map(
-          ({ shopifyProduct, medusaProductId, existingVariants }) =>
-            buildUpdateShopifyProductInput(
+          ({
+            shopifyProduct,
+            medusaProductId,
+            existingVariants,
+            canonicalOptionTitleByNormalized,
+          }) => {
+            const built = buildUpdateShopifyProductInput(
               medusaProductId,
               shopifyProduct,
               data.prerequisites,
               existingVariants,
-            ),
+            )
+
+            return {
+              ...built,
+              variants: built.variants.map((variant) => ({
+                ...variant,
+                options: remapOptionTitles(
+                  variant.options,
+                  canonicalOptionTitleByNormalized,
+                ),
+              })),
+            }
+          },
         ),
         additional_data: { vendor_id: data.vendorId },
       }),
