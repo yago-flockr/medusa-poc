@@ -35,16 +35,17 @@ export function normalize(value: string): string {
 }
 
 // The single source of truth for option/value casing: no matter who typed
-// "size", "Size", "SIZE" or "SiZe", it always becomes "Size" — same for
-// values ("s" / "S" / "SMALL" / "Small" all become "Small"/"S"). This
-// replaces ever asking "what casing does the existing option already use" —
-// there's only ever one canonical answer, so two vendors (or a vendor and a
-// Shopify import) can never disagree on it.
+// "size", "Size", "SIZE" or "SiZe", it always becomes "size" — same for
+// values ("s" / "S" / "SMALL" / "SmAlL" all become "s"/"small"). Always
+// lowercase, no exceptions — this replaces ever asking "what casing does the
+// existing option already use," so two vendors (or a vendor and a Shopify
+// import) can never disagree on it. Identical to `normalize` today by
+// design: the canonical stored form and the case-insensitive comparison
+// form are the same rule. Kept as a separate named function anyway, since
+// the two express different intents at each call site (what gets matched vs.
+// what gets stored) even though they currently compute the same thing.
 export function canonicalize(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/(^|\s)\S/g, (char) => char.toUpperCase())
+  return normalize(value)
 }
 
 // Medusa core links a variant to its option by an exact, case-sensitive
