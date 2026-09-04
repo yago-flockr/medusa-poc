@@ -180,10 +180,6 @@ function VariantsSection({
           )
         })
       )}
-      <p className="text-xs text-muted-foreground">
-        SKU is optional, but a variant without one stays a draft until you
-        fill it in.
-      </p>
     </div>
   )
 }
@@ -234,7 +230,9 @@ export function ProductForm({
       .filter(Boolean)
 
     setOptions((current) =>
-      current.map((option, i) => (i === index ? { ...option, values } : option)),
+      current.map((option, i) =>
+        i === index ? { ...option, values } : option,
+      ),
     )
   }
 
@@ -247,10 +245,13 @@ export function ProductForm({
     field: keyof ProductVariantFieldsValue,
     value: string,
   ) {
-    setVariantFields((current) => ({
-      ...current,
-      [key]: { ...current[key], [field]: value },
-    }))
+    setVariantFields((current) => {
+      const existing = current[key] ?? { price: "", sku: "" }
+      return {
+        ...current,
+        [key]: { ...existing, [field]: value },
+      }
+    })
   }
 
   function handleSubmit(event: FormEvent) {
