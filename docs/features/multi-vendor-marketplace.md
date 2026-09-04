@@ -62,9 +62,16 @@ dispatch dates differ inside a single consignment, it may split again — and st
 does not become a second order.
 
 **Fulfilling.** The vendor accepts its consignment, confirming the dispatch window.
-It packs and ships using a label we generate on our own carrier account. Vendors
-never book their own couriers, so we keep control of cost, tracking and the
-customer's experience.
+It packs and ships using a label from its own existing carrier account (via its own
+Shopify, for a Shopify-connected vendor) — no carrier is mandated centrally. Real
+carrier cost, rate shopping and label generation all stay inside the vendor's own
+Shopify; nothing of that reaches our system except a fulfillment-status update
+(already core scope, `docs/sensus/question-answers.md` Q1). We never calculate or
+integrate a real carrier rate ourselves.
+(Corrected: an earlier version of this brief said the opposite, that we generate
+labels centrally and vendors never book their own couriers — that contradicted the
+client's actual answer, Q11/Q12. If we ever want central label generation instead,
+that's a real product change to flag to the client, not something to assume.)
 
 **Following the order.** The customer sees one order containing several deliveries,
 each with its own status and tracking. Mixed states are normal and must read
@@ -79,7 +86,9 @@ when a vendor handles the physical return.
 
 - **We are the seller.** We take the payment, own the customer relationship, apply
   the taxes and issue the refunds. Vendors supply.
-- **Vendors hold and ship their own stock**, but do not arrange their own couriers.
+- **Vendors hold and ship their own stock, and arrange their own couriers** — on
+  their own existing carrier account, no carrier mandated centrally
+  (`docs/sensus/question-answers.md` Q11/Q12).
 - **A vendor sees only its own data.** Isolation is a hard requirement, not a
   filter someone remembers to apply. A vendor must never reach another vendor's
   orders, customers or performance.
@@ -150,7 +159,24 @@ on a customer's behalf without asking an engineer.
   again on differing dispatch dates says the answer is no, and that changes how
   everything downstream is counted.
 - What does the customer pay for shipping when one basket becomes several parcels,
-  and do we absorb the difference?
+  and do we absorb the difference? **Answered, but only as a placeholder:**
+  `docs/sensus/question-answers.md` Q11 says the actual charge model (blended flat
+  rate, free-over-threshold, or summed parcels) is "a commercial decision the
+  founders will confirm," and says to assume a simple blended rate with free
+  shipping over a threshold for estimating only — not a real decision yet. **Our
+  recommendation when it's time to confirm this with the founders:** keep the
+  blended/free-threshold model, not summed real parcel costs. Real per-vendor
+  shipping cost never reaches us anyway (each vendor ships on its own carrier
+  account, see "Fulfilling" above) — charging the customer a real per-parcel sum
+  would need us to either ask each vendor for their actual cost per order (fragile,
+  a vendor could misreport it) or build our own carrier-rate integration we were
+  never asked to build. A simple platform-level rate sidesteps both. Refined
+  further: a vendor holding stock at more than one location is a second, independent
+  trigger for a consignment to split into several parcels, not just differing
+  dispatch dates — this is an inventory-correctness problem (which location's stock
+  gets decremented, not what the customer is charged) — see
+  `docs/spikes/multi-vendor-order.md`, "Follow-up: location, not vendor, is the
+  shipping-split axis."
 - **How does a vendor's catalogue arrive — answered.** By connecting a store the
   vendor already runs (currently Shopify), synced two-way — not by hand or upload.
   Full behaviour: `docs/features/vendor-shopify-sync.md`.

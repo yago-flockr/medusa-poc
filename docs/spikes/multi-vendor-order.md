@@ -164,3 +164,119 @@ actually built the consignment-record alternative here to confirm a partial
 refund is genuinely simpler that way, or forced proof #5 (mid-split failure)
 against either shape. Treat this as the next comparison to run, not as the
 answer recorded and closed.
+
+## Follow-up: location, not vendor, is the shipping-split axis
+
+Raised mid-implementation: everything above splits by **vendor** (a product's
+`vendor.id`), including the official recipe this spike followed. But a vendor
+can hold stock at more than one location, and stock/location is what actually
+determines where a parcel physically ships from and what it costs to ship —
+not which vendor owns the product. "One consignment per vendor" and "one
+parcel per shipping origin" are two different axes that happen to coincide
+today (every vendor currently has exactly one location) and will stop
+coinciding the moment a vendor gets a second one.
+
+### What Medusa itself says and doesn't say
+
+- The [official marketplace recipe](https://docs.medusajs.com/resources/recipes/marketplace/examples/vendors)
+  (the one this spike is built on) groups strictly by vendor
+  (`group-vendor-items.ts`) and explicitly leaves per-part shipping cost as a
+  `// TODO format order data` in `prepareOrderData` — Medusa doesn't prescribe
+  an answer, officially or otherwise.
+- Medusa core's cart/checkout ties a shipping option to *one* stock location's
+  fulfillment set; there's no native concept of routing different cart items
+  to different locations at checkout time.
+- A real, currently open Medusa core bug,
+  [GitHub #16338](https://github.com/medusajs/medusa/issues/16338), is this
+  exact scenario: Admin's "Create Fulfillment" defaults to the location tied
+  to the chosen shipping method rather than the location where the item is
+  actually reserved, and submitting the mismatch silently drives one
+  location's stock negative while dropping the other location's reservation —
+  confirmed on 2.15.3 through 2.18.0, not yet fixed upstream. Not yet
+  reproduced against this repo specifically — only confirmed as a live upstream
+  issue.
+
+### What Mercur does (closest real reference)
+
+Mercur (the Medusa-based open-source marketplace framework) splits by
+**seller** (`item.offer.seller_id`), same axis as our existing vendor split —
+its docs never treat location as a distinct concept, and don't document
+whether a seller can even have more than one. What *is* useful: each seller
+owns its own `shipping_profile_id` and its own shipping options, and the
+storefront shipping-options API returns them grouped by seller, each with its
+own cost (e.g. seller A "Standard Shipping" 900, seller B "Express" 1500) —
+shown and charged as separate per-seller amounts summed into one payment,
+never blended into one averaged shipping charge.
+
+### What Amazon / Shopee / AliExpress / Mercado Libre do
+
+All four confirmed the same pattern Mercur uses: shipping is computed and
+charged **per seller**, shown as separate line items, summed into the
+checkout total — never unified into one blended charge, never absorbed by the
+platform. The seller arranges and pays for their own courier in every case.
+Mercado Libre goes further and refuses to combine different sellers into one
+cart/checkout at all (weaker sourcing than the other three — user-report
+sites, not official docs, though consistent across multiple reports).
+
+### Correction: this does transfer — an earlier version of this section said it didn't
+
+An earlier draft of this section reasoned that Mercur's per-seller shipping
+model "doesn't apply here" because this project's feature brief said vendors
+never book their own couriers. That premise was wrong: the brief had drifted
+from what the client actually answered. `docs/sensus/question-answers.md`
+Q11/Q12 says the opposite — each vendor generates its own label on its own
+existing carrier account (via its own Shopify, for a Shopify-connected
+vendor), no carrier mandated centrally. The feature brief has been corrected
+to match. That makes Mercur's design — each seller owns its own
+`shipping_profile_id` and its own shipping options, shown and charged as
+separate per-seller amounts summed into one payment — a directly applicable
+reference after all, not one to set aside.
+
+The one rule every platform (Mercur, Amazon, Shopee, AliExpress, Mercado
+Libre) agreed on regardless of who books the courier still holds and is worth
+keeping regardless of how this resolves: **compute and show shipping cost per
+physical shipment, sum into one payment, never blend into a single average.**
+
+### How location still matters, vendor-booked couriers or not
+
+Vendors booking their own couriers answers *who* arranges shipping — it
+doesn't answer this spike's actual question, which is *what splits a
+consignment into more than one physical parcel*. A vendor's own courier still
+ships from wherever that vendor's stock physically sits, so a vendor with two
+locations still produces two parcels (and, per Sensus Q11, two shipping
+charges to sum) for one consignment, exactly as before. Location remains the
+right axis for *parcel* splitting; vendor remains the right axis for
+*consignment* (business/payment/visibility) splitting — the correction above
+changes who books the courier, not that these are two separate axes.
+
+### How this fits the existing model, not replaces it
+
+`docs/features/multi-vendor-marketplace.md` already anticipates a consignment
+splitting further: *"Where dispatch dates differ inside a single consignment,
+it may split again — and still does not become a second order."* Location is
+the same mechanism, just a second trigger for that same "split again," not a
+new concept: a vendor's consignment stays one consignment (one business/
+payment/visibility boundary), but can still produce more than one parcel —
+and more than one shipping cost — if its items sit at more than one location.
+
+### Not yet answered — needs a spike proof, not more reading
+
+- Does location-splitting require touching `groupVendorItemsStep`/
+  `createVendorOrdersStep`, or can it layer underneath the existing vendor
+  split as a second, nested grouping (vendor → location → parcel)?
+- Does a consignment need its own sub-concept for "the parcel(s) it produced,"
+  distinct from the consignment itself, so a vendor-scoped business boundary
+  and a location-scoped shipping boundary can vary independently?
+- **Narrower than first thought:** since `docs/sensus/question-answers.md` Q11
+  says the customer-facing charge should stay a simple platform-level blended/
+  free-threshold rate (not a real sum of each vendor's actual carrier cost — see
+  the feature brief's "Open questions"), a vendor does *not* need Mercur's
+  per-seller `shipping_profile_id`/rate-configuration UI for what the customer
+  pays. What a vendor likely does need, much smaller in scope: a way to mark
+  their consignment (or its parcels, once split by location) shipped with a
+  tracking reference — no rate calculation, since the real shipping happened
+  in their own Shopify already.
+- Is GitHub #16338 actually triggerable against this repo's own flow today, or
+  only a risk once a vendor genuinely has two locations with stock in the same
+  cart? Matters for inventory correctness regardless of the shipping-charge
+  question above.
