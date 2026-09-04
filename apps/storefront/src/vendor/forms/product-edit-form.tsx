@@ -205,6 +205,7 @@ export function ProductEditForm({
     })
 
     if (!result.success) {
+      console.error("Form validation failed:", result.error.issues)
       setError(result.error.issues[0]?.message)
       return
     }

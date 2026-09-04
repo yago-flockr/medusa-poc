@@ -57,7 +57,10 @@ export function ProfileForm({
 
   return (
     <form
-      onSubmit={handleSubmit((values) => onSubmit?.(values))}
+      onSubmit={handleSubmit(
+        (values) => onSubmit?.(values),
+        (formErrors) => console.error("Form validation failed:", formErrors),
+      )}
       className={cn("flex flex-col gap-4", className)}
       {...props}
     >

@@ -2,6 +2,7 @@ import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 function toastError(error: Error) {
+  console.error("Request failed:", error)
   toast.error(error.message)
 }
 
