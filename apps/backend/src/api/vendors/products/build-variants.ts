@@ -101,7 +101,6 @@ function buildVariantInput(
     manage_inventory: true,
     sku: variant.sku,
     barcode: variant.barcode,
-    weight: variant.weight,
     length: variant.length,
     height: variant.height,
     width: variant.width,

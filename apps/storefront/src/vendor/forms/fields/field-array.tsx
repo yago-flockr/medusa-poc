@@ -1,12 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import {
-  Item,
-  ItemActions,
-  ItemGroup,
-  ItemHeader,
-  ItemTitle,
-} from "@/components/ui/item"
+import { Item, ItemActions, ItemGroup, ItemTitle } from "@/components/ui/item"
 import { cn } from "@/lib/utils"
 import {
   RiAddLine,
@@ -59,7 +53,7 @@ export function FieldArray({
             variant="outline"
             className="flex-col items-stretch gap-2"
           >
-            <ItemHeader>
+            <div className="flex items-center justify-between gap-2">
               <ItemTitle>
                 {label} {index + 1}
               </ItemTitle>
@@ -95,7 +89,7 @@ export function FieldArray({
                   <RiDeleteBinLine />
                 </Button>
               </ItemActions>
-            </ItemHeader>
+            </div>
             {children(index)}
           </Item>
         ))}

@@ -1,6 +1,3 @@
-export function isVariantComplete(variant: {
-  sku?: string | null
-  weight?: number | null
-}) {
-  return Boolean(variant.sku) && variant.weight != null
+export function isVariantComplete(variant: { sku?: string | null }) {
+  return Boolean(variant.sku)
 }

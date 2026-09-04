@@ -30,7 +30,6 @@ export const productFormVariantSchema = z.object({
   optionValues: z.record(z.string(), z.string()),
   price: z.number().positive("Price must be greater than 0"),
   sku: z.string().trim().min(1).optional(),
-  weight: z.number().positive().optional(),
 })
 
 export const productFormSchema = z
@@ -166,11 +165,7 @@ function VariantsSection({
       ) : (
         (combos.length > 0 ? combos : [{}]).map((combo) => {
           const key = comboKey(combo)
-          const fields = variantFields[key] ?? {
-            price: "",
-            sku: "",
-            weight: "",
-          }
+          const fields = variantFields[key] ?? { price: "", sku: "" }
 
           return (
             <ProductVariantFieldsCard
@@ -186,8 +181,8 @@ function VariantsSection({
         })
       )}
       <p className="text-xs text-muted-foreground">
-        SKU and weight are optional, but a variant missing either stays a
-        draft until you fill them in.
+        SKU is optional, but a variant without one stays a draft until you
+        fill it in.
       </p>
     </div>
   )
@@ -263,13 +258,12 @@ export function ProductForm({
 
     const variants = (combos.length > 0 ? combos : [{}]).map((combo) => {
       const key = comboKey(combo)
-      const fields = variantFields[key] ?? { price: "", sku: "", weight: "" }
+      const fields = variantFields[key] ?? { price: "", sku: "" }
 
       return {
         optionValues: combo,
         price: Number(fields.price),
         sku: fields.sku.trim() || undefined,
-        weight: fields.weight.trim() ? Number(fields.weight) : undefined,
       }
     })
 

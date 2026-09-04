@@ -5,7 +5,6 @@ type VariantWithPricesAndOptions = {
   id: string
   title: string
   sku: string | null
-  weight: number | null
   prices?: { amount: number; currency_code: string }[]
   options?: { value: string; option?: { title: string } | null }[]
 }
@@ -33,7 +32,6 @@ export async function buildVendorProductDetail(
       "variants.id",
       "variants.title",
       "variants.sku",
-      "variants.weight",
       "variants.options.value",
       "variants.options.option.title",
       "variants.prices.amount",
@@ -64,7 +62,6 @@ export async function buildVendorProductDetail(
       id: variant.id,
       title: variant.title,
       sku: variant.sku,
-      weight: variant.weight,
       price: variant.prices?.[0]?.amount ?? null,
       optionValues: Object.fromEntries(
         (variant.options ?? []).map((optionValue) => [

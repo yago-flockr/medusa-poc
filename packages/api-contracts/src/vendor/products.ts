@@ -87,7 +87,6 @@ export const postVendorsProductsVariantInputSchema = z
     optionValues: z.record(z.string(), z.string()),
     price: z.number().positive("Price must be greater than 0"),
     sku: z.string().trim().min(1).optional(),
-    weight: z.number().positive().optional(),
     barcode: z.string().trim().min(1).optional(),
     length: z.number().positive().optional(),
     height: z.number().positive().optional(),
@@ -137,7 +136,6 @@ export const postVendorsProductsByIdVariantInputSchema = z
     id: z.string(),
     price: z.number().positive("Price must be greater than 0").optional(),
     sku: z.string().trim().min(1).optional(),
-    weight: z.number().positive().optional(),
   })
   .strict()
 
@@ -177,7 +175,6 @@ export const vendorProductVariantDetailSchema = z.object({
   id: z.string(),
   title: z.string(),
   sku: z.string().nullable(),
-  weight: z.number().nullable(),
   price: z.number().nullable(),
   optionValues: z.record(z.string(), z.string()),
 })

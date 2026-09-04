@@ -69,7 +69,6 @@ export const POST = async (
         product_variants: variants.map((variant) => ({
           id: variant.id,
           sku: variant.sku,
-          weight: variant.weight,
           prices: variant.price
             ? storeCurrencies.map((currency) => ({
                 amount: variant.price as number,

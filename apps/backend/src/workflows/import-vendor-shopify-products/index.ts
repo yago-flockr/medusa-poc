@@ -85,11 +85,12 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
       { matched, prerequisites, vendorId: input.vendorId },
       (data) => ({
         products: data.matched.updated.map(
-          ({ shopifyProduct, medusaProductId }) =>
+          ({ shopifyProduct, medusaProductId, existingVariants }) =>
             buildUpdateShopifyProductInput(
               medusaProductId,
               shopifyProduct,
               data.prerequisites,
+              existingVariants,
             ),
         ),
         additional_data: { vendor_id: data.vendorId },

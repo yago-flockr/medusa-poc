@@ -35,7 +35,6 @@ export const productEditVariantSchema = z.object({
   id: z.string(),
   price: z.number().positive("Price must be greater than 0").optional(),
   sku: z.string().trim().min(1).optional(),
-  weight: z.number().positive().optional(),
 })
 
 export const productEditSchema = z.object({
@@ -167,7 +166,6 @@ export function ProductEditForm({
     mapValues(keyBy(product.variants, "id"), (variant) => ({
       price: variant.price?.toString() ?? "",
       sku: variant.sku ?? "",
-      weight: variant.weight?.toString() ?? "",
     })),
   )
   const [error, setError] = useState<string>()
@@ -193,7 +191,6 @@ export function ProductEditForm({
         id: variant.id,
         price: fields.price.trim() ? Number(fields.price) : undefined,
         sku: fields.sku.trim() || undefined,
-        weight: fields.weight.trim() ? Number(fields.weight) : undefined,
       }
     })
 

@@ -4,6 +4,7 @@ import {
   buildUpdateProductInputFromExternal,
   toMedusaOptions as toMedusaOptionsFromExternal,
   type CreateProductInputFromExternal,
+  type ExistingProductVariant,
   type MappedProductOption,
   type ProductPrerequisites,
   type ResolvedProductOption,
@@ -51,10 +52,12 @@ export function buildUpdateShopifyProductInput(
   medusaProductId: string,
   product: ShopifyProduct,
   prerequisites: ShopifyProductPrerequisites,
+  existingVariants: ExistingProductVariant[],
 ): UpdateShopifyProductInput {
   return buildUpdateProductInputFromExternal(
     medusaProductId,
     toExternalProduct(product),
     prerequisites,
+    existingVariants,
   )
 }

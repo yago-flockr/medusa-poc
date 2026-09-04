@@ -5,7 +5,6 @@ import { TextField } from "./text-field"
 export type ProductVariantFieldsValue = {
   price: string
   sku: string
-  weight: string
 }
 
 type ProductVariantFieldsCardProps = {
@@ -40,15 +39,6 @@ export function ProductVariantFieldsCard({
           label="SKU"
           value={value.sku}
           onChange={(event) => onChange("sku", event.target.value)}
-          className="flex-1"
-        />
-        <TextField
-          id={`${idPrefix}-weight`}
-          label="Weight (g)"
-          type="number"
-          min={0}
-          value={value.weight}
-          onChange={(event) => onChange("weight", event.target.value)}
           className="flex-1"
         />
       </div>
