@@ -15,6 +15,7 @@
     "./vendor/products": "./src/vendor/products.ts",
     "./vendor/uploads": "./src/vendor/uploads.ts",
     "./vendor/stock-locations": "./src/vendor/stock-locations.ts",
+    "./vendor/regions": "./src/vendor/regions.ts",
     "./vendor/product-inventory": "./src/vendor/product-inventory.ts",
     "./vendor/contract": "./src/vendor/contract.ts",
     "./admin/brands": "./src/admin/brands.ts",

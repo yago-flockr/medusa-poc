@@ -1,11 +1,13 @@
-import { listRegions } from "@/store/lib/data/regions"
+import { vendorClient } from "@/vendor/lib/contract-client"
+import { tc } from "@/vendor/lib/tc"
+import type { GetVendorsRegionsResponse } from "@dtc/api-contracts/vendor/regions"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export const useListRegions = createResourceQueryHook<
+export const useGetVendorsRegions = createResourceQueryHook<
   void,
-  Awaited<ReturnType<typeof listRegions>>
+  GetVendorsRegionsResponse
 >({
-  queryKey: () => queryKeys.regions.listRegions,
-  queryFn: () => listRegions(),
+  queryKey: () => queryKeys.regions.getVendorsRegions,
+  queryFn: () => tc(vendorClient.getVendorsRegions()),
 })

@@ -23,6 +23,6 @@ export const queryKeys = {
       ["getVendorsProductsByIdInventory", productId] as const,
   },
   regions: {
-    listRegions: ["listRegions"] as const,
+    getVendorsRegions: ["getVendorsRegions"] as const,
   },
 }

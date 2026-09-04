@@ -25,7 +25,7 @@ import {
   usePostVendorsStockLocations,
   usePostVendorsStockLocationsById,
 } from "@/vendor/hooks/mutations/stock-locations"
-import { useListRegions } from "@/vendor/hooks/queries/regions"
+import { useGetVendorsRegions } from "@/vendor/hooks/queries/regions"
 import { useGetVendorsStockLocations } from "@/vendor/hooks/queries/stock-locations"
 import type { VendorStockLocation } from "@dtc/api-contracts/vendor/stock-locations"
 import { RiDeleteBinLine, RiPencilLine } from "@remixicon/react"
@@ -42,29 +42,16 @@ export default function VendorLocationsPage() {
   const postVendorsStockLocations = usePostVendorsStockLocations()
   const postVendorsStockLocationsById = usePostVendorsStockLocationsById()
   const deleteVendorsStockLocationsById = useDeleteVendorsStockLocationsById()
-  const listRegions = useListRegions()
+  const getVendorsRegions = useGetVendorsRegions()
 
-  const countryOptions = useMemo(() => {
-    const countries = (listRegions.data ?? []).flatMap(
-      (region) => region.countries ?? [],
-    )
-
-    const seen = new Set<string>()
-    return countries
-      .filter((country): country is typeof country & { iso_2: string } =>
-        Boolean(country.iso_2),
-      )
-      .filter((country) => {
-        if (seen.has(country.iso_2)) return false
-        seen.add(country.iso_2)
-        return true
-      })
-      .map((country) => ({
+  const countryOptions = useMemo(
+    () =>
+      (getVendorsRegions.data?.countries ?? []).map((country) => ({
         value: country.iso_2,
-        label: country.display_name ?? country.iso_2.toUpperCase(),
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label))
-  }, [listRegions.data])
+        label: country.display_name,
+      })),
+    [getVendorsRegions.data],
+  )
 
   const [formValues, setFormValues] = useState<LocationFormValues>()
 
