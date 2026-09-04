@@ -12,6 +12,7 @@ export type CreateVendorUserWorkflowInput = {
   email: string
   first_name?: string
   last_name?: string
+  password?: string
 }
 
 export const createVendorUserWorkflow = createWorkflow(
@@ -19,6 +20,7 @@ export const createVendorUserWorkflow = createWorkflow(
   function (input: CreateVendorUserWorkflowInput) {
     const { authIdentity, password } = registerVendorAuthIdentityStep({
       email: input.email,
+      password: input.password,
     })
 
     const vendorUser = createVendorUserStep({

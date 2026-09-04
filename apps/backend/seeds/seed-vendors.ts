@@ -1,13 +1,10 @@
 import { ExecArgs } from "@medusajs/framework/types"
-import {
-  ContainerRegistrationKeys,
-  ProductStatus,
-  toHandle,
-} from "@medusajs/framework/utils"
-import { faker } from "@faker-js/faker"
+import { ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
 import { createVendorWorkflow } from "../src/workflows/create-vendor"
 import { createVendorUserWorkflow } from "../src/workflows/create-vendor-user"
 import { createVendorProductWorkflow } from "../src/workflows/create-vendor-product"
+import { createVendorStockLocationWorkflow } from "../src/workflows/create-vendor-stock-location"
+import { setVendorInventoryLevelWorkflow } from "../src/workflows/set-vendor-inventory-level"
 import { resolveStorePrerequisites } from "../src/lib/resolve-store-prerequisites"
 import {
   resolveProductVariants,
@@ -17,7 +14,6 @@ import {
 type ProductFixture = {
   title: string
   description: string
-  optionTitle: string
   optionValues: string[]
   basePrice: number
   images: string[]
@@ -27,7 +23,16 @@ type VendorFixture = {
   name: string
   handle: string
   email: string
+  password: string
   firstName: string
+  location: {
+    name: string
+    address_1: string
+    city: string
+    province: string
+    postal_code: string
+    country_code: string
+  }
   products: ProductFixture[]
 }
 
@@ -43,90 +48,77 @@ const SHORTS_IMAGES = [
   "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
   "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
 ]
-const IMAGE_SETS = [TEE_IMAGES, SWEATSHIRT_IMAGES, SHORTS_IMAGES]
 
-const SIZES = ["S", "M", "L", "XL"]
+const SEED_STOCK_QUANTITY = 100
 
-// Real product/inventory images can't be faked, so only text and counts are
-// generated — everything else (URLs) stays picked from a known-good set.
-const FAKER_SEED = 20260831
-
-function uniqueBy<T>(
-  count: number,
-  generate: () => T,
-  key: (value: T) => string,
-  usedKeys: Set<string>,
-): T[] {
-  const values: T[] = []
-  while (values.length < count) {
-    const value = generate()
-    const generatedKey = key(value)
-    if (usedKeys.has(generatedKey)) {
-      continue
-    }
-    usedKeys.add(generatedKey)
-    values.push(value)
-  }
-  return values
-}
-
-function buildProductFixture(vendorHandle: string, usedHandles: Set<string>): ProductFixture {
-  const [title] = uniqueBy(
-    1,
-    () => faker.commerce.productName(),
-    (value) => `${vendorHandle}-${toHandle(value)}`,
-    usedHandles,
-  )
-
-  const variantCount = faker.number.int({ min: 2, max: 3 })
-  const optionValues = faker.helpers
-    .arrayElements(SIZES, variantCount)
-    .sort((a, b) => SIZES.indexOf(a) - SIZES.indexOf(b))
-
-  return {
-    title,
-    description: faker.commerce.productDescription(),
-    optionTitle: "Size",
-    optionValues,
-    basePrice: faker.number.int({ min: 10, max: 50 }),
-    images: faker.helpers.arrayElement(IMAGE_SETS),
-  }
-}
-
-function buildVendorFixture(usedVendorHandles: Set<string>): VendorFixture {
-  const [name] = uniqueBy(
-    1,
-    () => faker.company.name(),
-    (value) => toHandle(value),
-    usedVendorHandles,
-  )
-  const handle = toHandle(name)
-
-  const productCount = faker.number.int({ min: 2, max: 3 })
-  const usedProductHandles = new Set<string>()
-  const products = Array.from({ length: productCount }, () =>
-    buildProductFixture(handle, usedProductHandles),
-  )
-
-  return {
-    name,
-    handle,
-    email: `${handle}@example.com`,
-    firstName: faker.person.firstName(),
-    products,
-  }
-}
-
-function buildVendorFixtures(): VendorFixture[] {
-  faker.seed(FAKER_SEED)
-
-  const vendorCount = faker.number.int({ min: 2, max: 3 })
-  const usedVendorHandles = new Set<string>()
-
-  return Array.from({ length: vendorCount }, () =>
-    buildVendorFixture(usedVendorHandles),
-  )
-}
+// Fixed, memorable test fixtures — not randomly generated. A POC's seed
+// data exists so anyone on the team can log in with a login they actually
+// remember (`asd@asd.com` / `zxc@zxc.com`), not a different faker-generated
+// email every time someone rebuilds the fixture list.
+const VENDOR_FIXTURES: VendorFixture[] = [
+  {
+    name: "Asd Apparel",
+    handle: "asd-apparel",
+    email: "asd@asd.com",
+    password: "asd",
+    firstName: "Asd",
+    location: {
+      name: "Asd Apparel Warehouse",
+      address_1: "1 Test Street",
+      city: "London",
+      province: "London",
+      postal_code: "E1 6AN",
+      country_code: "gb",
+    },
+    products: [
+      {
+        title: "Classic Tee",
+        description: "A timeless, comfortable everyday t-shirt.",
+        optionValues: ["S", "M", "L"],
+        basePrice: 20,
+        images: TEE_IMAGES,
+      },
+      {
+        title: "Vintage Sweatshirt",
+        description: "A cozy sweatshirt with a vintage finish.",
+        optionValues: ["S", "M", "L"],
+        basePrice: 35,
+        images: SWEATSHIRT_IMAGES,
+      },
+    ],
+  },
+  {
+    name: "Zxc Threads",
+    handle: "zxc-threads",
+    email: "zxc@zxc.com",
+    password: "zxc",
+    firstName: "Zxc",
+    location: {
+      name: "Zxc Threads Warehouse",
+      address_1: "2 Test Street",
+      city: "Manchester",
+      province: "Manchester",
+      postal_code: "M1 1AE",
+      country_code: "gb",
+    },
+    products: [
+      {
+        title: "Weekend Shorts",
+        description: "Relaxed-fit shorts for warm days.",
+        optionValues: ["S", "M", "L"],
+        basePrice: 25,
+        images: SHORTS_IMAGES,
+      },
+      {
+        title: "Everyday Tee",
+        description: "A soft cotton tee for daily wear.",
+        optionValues: ["S", "M", "L"],
+        basePrice: 18,
+        images: TEE_IMAGES,
+      },
+    ],
+  },
+]
 
 export default async function seedVendors({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
@@ -135,11 +127,9 @@ export default async function seedVendors({ container }: ExecArgs) {
   const { shippingProfileId, salesChannelId, storeCurrencies } =
     await resolveStorePrerequisites(query)
 
-  logger.info("Seeding demo vendors, vendor users, and vendor products...")
+  logger.info("Seeding demo vendors, vendor users, locations, and products...")
 
-  const vendorFixtures = buildVendorFixtures()
-
-  for (const vendorFixture of vendorFixtures) {
+  for (const vendorFixture of VENDOR_FIXTURES) {
     const { data: existingVendors } = await query.graph({
       entity: "vendor",
       fields: ["id"],
@@ -165,7 +155,7 @@ export default async function seedVendors({ container }: ExecArgs) {
 
     if (existingVendorUsers[0]) {
       logger.info(
-        `Vendor user "${vendorFixture.email}" already exists, skipping — its password was only shown once, at creation.`,
+        `Vendor user "${vendorFixture.email}" already exists, skipping — password is the fixed "${vendorFixture.password}" from VENDOR_FIXTURES.`,
       )
     } else {
       const { result: vendorUser } = await createVendorUserWorkflow(
@@ -174,6 +164,7 @@ export default async function seedVendors({ container }: ExecArgs) {
         input: {
           vendor_id: vendorId,
           email: vendorFixture.email,
+          password: vendorFixture.password,
           first_name: vendorFixture.firstName,
         },
       })
@@ -182,8 +173,43 @@ export default async function seedVendors({ container }: ExecArgs) {
       )
     }
 
+    const { data: existingStockLocations } = await query.graph({
+      entity: "stock_location",
+      fields: ["id"],
+      filters: { vendor: { id: vendorId } },
+    })
+
+    let locationId = existingStockLocations[0]?.id
+
+    if (locationId) {
+      logger.info(
+        `Location for "${vendorFixture.name}" already exists, skipping.`,
+      )
+    } else {
+      // Same workflow the vendor panel's own "create location" action calls
+      // — auto-provisions free shipping for it, nothing extra to seed here.
+      const location = await createVendorStockLocationWorkflow(
+        container,
+      ).run({
+        input: {
+          vendorId,
+          name: vendorFixture.location.name,
+          address: {
+            address_1: vendorFixture.location.address_1,
+            city: vendorFixture.location.city,
+            province: vendorFixture.location.province,
+            postal_code: vendorFixture.location.postal_code,
+            country_code: vendorFixture.location.country_code,
+          },
+        },
+      })
+      locationId = location.result.id
+    }
+
     for (const productFixture of vendorFixture.products) {
-      const handle = `${vendorFixture.handle}-${toHandle(productFixture.title)}`
+      const handle = `${vendorFixture.handle}-${productFixture.title
+        .toLowerCase()
+        .replace(/\s+/g, "-")}`
 
       const { data: existingProducts } = await query.graph({
         entity: "product",
@@ -196,12 +222,10 @@ export default async function seedVendors({ container }: ExecArgs) {
         continue
       }
 
-      const options = [
-        { title: productFixture.optionTitle, values: productFixture.optionValues },
-      ]
+      const options = [{ title: "Size", values: productFixture.optionValues }]
       const variants: VendorVariantInput[] = productFixture.optionValues.map(
         (value, index) => ({
-          optionValues: { [productFixture.optionTitle]: value },
+          optionValues: { Size: value },
           price: productFixture.basePrice + index * 5,
           sku: `${handle}-${value}`.toUpperCase(),
         }),
@@ -213,7 +237,9 @@ export default async function seedVendors({ container }: ExecArgs) {
         storeCurrencies,
       )
 
-      await createVendorProductWorkflow(container).run({
+      const { result: products } = await createVendorProductWorkflow(
+        container,
+      ).run({
         input: {
           product: {
             title: productFixture.title,
@@ -234,8 +260,18 @@ export default async function seedVendors({ container }: ExecArgs) {
         },
       })
 
+      for (const variant of products[0]?.variants ?? []) {
+        await setVendorInventoryLevelWorkflow(container).run({
+          input: {
+            variantId: variant.id,
+            locationId,
+            quantity: SEED_STOCK_QUANTITY,
+          },
+        })
+      }
+
       logger.info(
-        `Created vendor product "${productFixture.title}" for "${vendorFixture.name}" (${variants.length} variants).`,
+        `Created vendor product "${productFixture.title}" for "${vendorFixture.name}" (${variants.length} variants, ${SEED_STOCK_QUANTITY} stock each at "${vendorFixture.location.name}").`,
       )
     }
   }

@@ -1,10 +1,11 @@
-import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { MedusaError, Modules } from "@medusajs/framework/utils"
 import type { AuthenticationInput } from "@medusajs/framework/types"
+import { MedusaError, Modules } from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { generateRandomPassword } from "../../../lib/generate-random-password"
 
 export type RegisterVendorAuthIdentityStepInput = {
   email: string
+  password?: string
 }
 
 /**
@@ -18,7 +19,7 @@ export const registerVendorAuthIdentityStep = createStep(
   "register-vendor-auth-identity",
   async (input: RegisterVendorAuthIdentityStepInput, { container }) => {
     const authModuleService = container.resolve(Modules.AUTH)
-    const password = generateRandomPassword()
+    const password = input.password ?? generateRandomPassword()
 
     const { success, authIdentity, error } = await authModuleService.register(
       "emailpass",

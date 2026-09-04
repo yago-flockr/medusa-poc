@@ -3,8 +3,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { cn } from "@/lib/utils"
 import type {
   PostVendorsProductsByIdInput,
@@ -20,6 +18,7 @@ import {
   ProductVariantFieldsCard,
   type ProductVariantFieldsValue,
 } from "./fields/product-variant-fields-card"
+import { RadioGroupField } from "./fields/radio-group-field"
 import { TextField } from "./fields/text-field"
 import { TextareaField } from "./fields/textarea-field"
 import type { CommonFormProps } from "./form-type"
@@ -87,24 +86,20 @@ function StatusField({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm font-medium">Status</p>
       {!isSettable && (
         <Badge variant="muted" className="w-fit">
           Current: {value}
         </Badge>
       )}
-      <RadioGroup
+      <RadioGroupField
+        label="Status"
         value={value}
         onValueChange={(next) => onChange(next as VendorProductStatus)}
-        className="flex-row gap-4"
-      >
-        {VENDOR_SETTABLE_STATUSES.map((status) => (
-          <Label key={status} className="flex items-center gap-2 capitalize">
-            <RadioGroupItem value={status} />
-            {status}
-          </Label>
-        ))}
-      </RadioGroup>
+        options={VENDOR_SETTABLE_STATUSES.map((status) => ({
+          value: status,
+          label: status,
+        }))}
+      />
     </div>
   )
 }

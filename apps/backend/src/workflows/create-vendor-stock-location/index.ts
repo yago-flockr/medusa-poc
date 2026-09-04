@@ -39,6 +39,18 @@ export const createVendorStockLocationWorkflow = createWorkflow(
       },
     })
 
+    const vendorLinkDefs = transform(
+      { stockLocation, vendorId: input.vendorId },
+      (data): LinkDefinition[] => [
+        {
+          [Modules.STOCK_LOCATION]: { stock_location_id: data.stockLocation.id },
+          [VENDOR_MODULE]: { vendor_id: data.vendorId },
+        },
+      ],
+    )
+
+    createRemoteLinkStep(vendorLinkDefs).config({ name: "link-vendor" })
+
     // Every vendor location gets its own free shipping automatically — no
     // staff step, no Admin visit. The vendor arranges and pays for delivery
     // themselves (docs/features/multi-vendor-marketplace.md, "Fulfilling"),
@@ -52,6 +64,27 @@ export const createVendorStockLocationWorkflow = createWorkflow(
     const fulfillmentSet = createFreeShippingFulfillmentSetStep({
       stockLocationId: stockLocation.id,
     })
+
+    // The provider and fulfillment-set links must exist *before* a shipping
+    // option is created for this service zone — Medusa validates the
+    // service zone's location has that provider enabled, and creating the
+    // shipping option first throws "Providers (manual_manual) are not
+    // enabled for the service location."
+    const fulfillmentLinkDefs = transform(
+      { stockLocation, fulfillmentSet },
+      (data): LinkDefinition[] => [
+        {
+          [Modules.STOCK_LOCATION]: { stock_location_id: data.stockLocation.id },
+          [Modules.FULFILLMENT]: { fulfillment_provider_id: "manual_manual" },
+        },
+        {
+          [Modules.STOCK_LOCATION]: { stock_location_id: data.stockLocation.id },
+          [Modules.FULFILLMENT]: { fulfillment_set_id: data.fulfillmentSet.fulfillmentSetId },
+        },
+      ],
+    )
+
+    createRemoteLinkStep(fulfillmentLinkDefs).config({ name: "link-fulfillment" })
 
     const shippingOptionsInput = transform(
       { fulfillmentSet, shippingProfiles },
@@ -80,26 +113,6 @@ export const createVendorStockLocationWorkflow = createWorkflow(
     )
 
     createShippingOptionsWorkflow.runAsStep({ input: shippingOptionsInput })
-
-    const linkDefs = transform(
-      { stockLocation, vendorId: input.vendorId, fulfillmentSet },
-      (data): LinkDefinition[] => [
-        {
-          [Modules.STOCK_LOCATION]: { stock_location_id: data.stockLocation.id },
-          [VENDOR_MODULE]: { vendor_id: data.vendorId },
-        },
-        {
-          [Modules.STOCK_LOCATION]: { stock_location_id: data.stockLocation.id },
-          [Modules.FULFILLMENT]: { fulfillment_provider_id: "manual_manual" },
-        },
-        {
-          [Modules.STOCK_LOCATION]: { stock_location_id: data.stockLocation.id },
-          [Modules.FULFILLMENT]: { fulfillment_set_id: data.fulfillmentSet.fulfillmentSetId },
-        },
-      ],
-    )
-
-    createRemoteLinkStep(linkDefs)
 
     return new WorkflowResponse(stockLocation)
   },

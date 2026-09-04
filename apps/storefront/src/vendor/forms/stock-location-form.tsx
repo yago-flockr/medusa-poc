@@ -5,8 +5,12 @@ import { cn } from "@/lib/utils"
 import type { PostVendorsStockLocationsInput } from "@dtc/api-contracts/vendor/stock-locations"
 import type { VendorStockLocation } from "@dtc/api-contracts/vendor/stock-locations"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import z from "zod"
+import {
+  RadioGroupField,
+  type RadioGroupFieldOption,
+} from "./fields/radio-group-field"
 import { TextField } from "./fields/text-field"
 import type { CommonFormProps } from "./form-type"
 
@@ -26,7 +30,9 @@ export const stockLocationSchema = z.object({
 
 export type StockLocationSchema = z.infer<typeof stockLocationSchema>
 
-type StockLocationFormProps = CommonFormProps<StockLocationSchema>
+type StockLocationFormProps = CommonFormProps<StockLocationSchema> & {
+  countryOptions: RadioGroupFieldOption[]
+}
 
 export function stockLocationFormToInput(
   values: StockLocationSchema,
@@ -65,10 +71,12 @@ export function StockLocationForm({
   isLoading,
   onSubmit,
   className,
+  countryOptions,
   ...props
 }: StockLocationFormProps) {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<StockLocationSchema>({
@@ -131,12 +139,18 @@ export function StockLocationForm({
         error={errors.postal_code?.message}
         {...register("postal_code")}
       />
-      <TextField
-        id="location-country-code"
-        label="Country code"
-        placeholder="US"
-        error={errors.country_code?.message}
-        {...register("country_code")}
+      <Controller
+        name="country_code"
+        control={control}
+        render={({ field }) => (
+          <RadioGroupField
+            label="Country"
+            value={field.value}
+            onValueChange={field.onChange}
+            options={countryOptions}
+            error={errors.country_code?.message}
+          />
+        )}
       />
       <TextField
         id="location-phone"

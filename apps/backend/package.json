@@ -19,7 +19,7 @@
     "dev": "medusa develop",
     "predev": "graphql-codegen",
     "lint": "medusa lint",
-    "seed": "pnpm run seed:catalog && pnpm run seed:identity && pnpm run seed:vendors",
+    "seed": "medusa exec ./seeds/seed.ts",
     "seed:catalog": "medusa exec ./seeds/seed-catalog.ts",
     "seed:identity": "medusa exec ./seeds/seed-identity.ts",
     "seed:vendors": "medusa exec ./seeds/seed-vendors.ts",
@@ -51,7 +51,6 @@
     "zod": "4.2.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "9.9.0",
     "@graphql-codegen/cli": "^7.3.0",
     "@jest/globals": "^29.7.0",
     "@medusajs/test-utils": "2.18.0",

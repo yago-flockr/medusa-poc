@@ -1,5 +1,5 @@
-import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ModuleRegistrationName } from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { deleteFulfillmentSetsWorkflow } from "@medusajs/medusa/core-flows"
 import { ALL_MARKET_COUNTRY_CODES, countryGeoZones } from "../../../lib/markets"
 
@@ -10,18 +10,22 @@ export type CreateFreeShippingFulfillmentSetStepInput = {
 export const createFreeShippingFulfillmentSetStep = createStep(
   "create-free-shipping-fulfillment-set",
   async (input: CreateFreeShippingFulfillmentSetStepInput, { container }) => {
-    const fulfillmentModuleService = container.resolve(ModuleRegistrationName.FULFILLMENT)
+    const fulfillmentModuleService = container.resolve(
+      ModuleRegistrationName.FULFILLMENT,
+    )
 
-    const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-      name: `Vendor location ${input.stockLocationId} — free shipping`,
-      type: "shipping",
-      service_zones: [
-        {
-          name: "All markets",
-          geo_zones: countryGeoZones(ALL_MARKET_COUNTRY_CODES),
-        },
-      ],
-    })
+    const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets(
+      {
+        name: `Vendor location ${input.stockLocationId} — free shipping`,
+        type: "shipping",
+        service_zones: [
+          {
+            name: "All" + input.stockLocationId,
+            geo_zones: countryGeoZones(ALL_MARKET_COUNTRY_CODES),
+          },
+        ],
+      },
+    )
 
     return new StepResponse(
       {
