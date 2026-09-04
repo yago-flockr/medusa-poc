@@ -1,11 +1,13 @@
 "use client"
 
+import { ThemeToggle } from "@/components/display/theme-toggle"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
+import { RiLogoutCircleLine, RiRefreshLine } from "@remixicon/react"
+import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/display/theme-toggle"
-import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
   { href: "/vendor", label: "Dashboard" },
@@ -19,6 +21,7 @@ const NAV_ITEMS = [
 export function VendorNav() {
   const router = useRouter()
   const pathname = usePathname()
+  const queryClient = useQueryClient()
   const clearToken = useVendorAuthStore((state) => state.clearToken)
 
   return (
@@ -42,13 +45,23 @@ export function VendorNav() {
         <Button
           type="button"
           variant="outline"
-          size="sm"
+          size="icon-sm"
+          onClick={() => {
+            queryClient.clear()
+          }}
+        >
+          <RiRefreshLine />
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
           onClick={() => {
             clearToken()
             router.replace("/vendor")
           }}
         >
-          Log out
+          <RiLogoutCircleLine />
         </Button>
       </div>
     </nav>

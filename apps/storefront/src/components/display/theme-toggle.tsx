@@ -10,11 +10,7 @@ type ThemeToggleProps = Omit<
   "onClick" | "children"
 >
 
-export function ThemeToggle({
-  variant = "outline",
-  size = "icon-sm",
-  ...props
-}: ThemeToggleProps) {
+export function ThemeToggle({ ...props }: ThemeToggleProps) {
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -23,8 +19,8 @@ export function ThemeToggle({
   return (
     <Button
       type="button"
-      variant={variant}
-      size={size}
+      variant="outline"
+      size="icon-sm"
       aria-label="Toggle theme"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       {...props}
