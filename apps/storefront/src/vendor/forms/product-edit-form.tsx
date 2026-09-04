@@ -59,7 +59,11 @@ export function productEditFormToInput(
   isExternal: boolean,
 ): PostVendorsProductsByIdInput {
   if (isExternal) {
-    return { status: values.status }
+    return {
+      handle: values.handle || undefined,
+      status: values.status,
+      variants: values.variants,
+    }
   }
 
   return {
@@ -221,8 +225,10 @@ export function ProductEditForm({
         <Alert>
           <AlertTitle>This product is external</AlertTitle>
           <AlertDescription>
-            You can&apos;t edit this product because it is managed by an
-            external system. You can only change its status.
+            Its title, subtitle, description, and images are managed by the
+            external system and can&apos;t be edited here. Its handle,
+            status, and each variant&apos;s price and SKU are still yours to
+            change.
           </AlertDescription>
         </Alert>
       )}
@@ -246,12 +252,6 @@ export function ProductEditForm({
           value={description}
           onChange={(event) => setDescription(event.target.value)}
         />
-        <TextField
-          id="product-edit-handle"
-          label="Handle"
-          value={handle}
-          onChange={(event) => setHandle(event.target.value)}
-        />
 
         <ImagesField
           images={images}
@@ -259,13 +259,20 @@ export function ProductEditForm({
           onUploadImages={onUploadImages}
           isUploadingImages={isUploadingImages}
         />
-
-        <VariantsSection
-          variants={product.variants}
-          variantFields={variantFields}
-          onVariantFieldChange={updateVariantField}
-        />
       </fieldset>
+
+      <TextField
+        id="product-edit-handle"
+        label="Handle"
+        value={handle}
+        onChange={(event) => setHandle(event.target.value)}
+      />
+
+      <VariantsSection
+        variants={product.variants}
+        variantFields={variantFields}
+        onVariantFieldChange={updateVariantField}
+      />
 
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="submit" disabled={isLoading}>

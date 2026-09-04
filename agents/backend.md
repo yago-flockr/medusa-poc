@@ -265,6 +265,17 @@ starts.
   at this stage and can come back later if actually needed. Images
   upload via `POST /vendors/uploads` (Medusa's File module, PNG/JPEG/WEBP/GIF
   only, 5MB/5-file limits enforced as clean 400s, not left as a raw 500).
+  **What a vendor can edit on an external (Shopify-imported) product is
+  narrower, not zero.** `assert-editable-product.ts` locks only `title`,
+  `subtitle`, `description`, and `images` — the external source stays their
+  source of truth, since they'd just get overwritten on the next sync
+  anyway. `handle`, `status`, and each variant's `price`/`sku` (via
+  `variants`) are the vendor's own regardless of where the product came
+  from. Because a variant's price/sku is now genuinely editable on an
+  external product, `assert-publishable-product.ts`'s SKU-completeness gate
+  applies to external products too — it used to skip them outright, on the
+  reasoning that a vendor had no way to ever satisfy it; that reasoning no
+  longer holds once they can edit SKU.
   Not done: vendor-assignable categories/collections/tags (would need its own
   staff-curated-taxonomy listing endpoint, a bigger separate feature than the
   per-variant fields above), and real per-vendor inventory tracking (needs a
