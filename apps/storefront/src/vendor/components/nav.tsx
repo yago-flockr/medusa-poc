@@ -1,5 +1,6 @@
 "use client"
 
+import { TextTooltip } from "@/components/display/text-tooltip"
 import { ThemeToggle } from "@/components/display/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -42,27 +43,33 @@ export function VendorNav() {
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-sm"
-          onClick={() => {
-            queryClient.clear()
-          }}
-        >
-          <RiRefreshLine />
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-sm"
-          onClick={() => {
-            clearToken()
-            router.replace("/vendor")
-          }}
-        >
-          <RiLogoutCircleLine />
-        </Button>
+        <TextTooltip content="Refresh everything">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            aria-label="Refresh everything"
+            onClick={() => {
+              queryClient.clear()
+            }}
+          >
+            <RiRefreshLine />
+          </Button>
+        </TextTooltip>
+        <TextTooltip content="Sign out">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            aria-label="Sign out"
+            onClick={() => {
+              clearToken()
+              router.replace("/vendor")
+            }}
+          >
+            <RiLogoutCircleLine />
+          </Button>
+        </TextTooltip>
       </div>
     </nav>
   )

@@ -2,6 +2,7 @@
 
 import { DataState } from "@/components/display/data-state"
 import { FormDialog } from "@/components/display/form-dialog"
+import { TextTooltip } from "@/components/display/text-tooltip"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -68,14 +69,17 @@ export default function VendorOrdersPage() {
                   <Badge variant="muted">
                     {order.total.toFixed(2)} {order.currency_code.toUpperCase()}
                   </Badge>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    onClick={() => setViewingOrderId(order.id)}
-                  >
-                    <RiPencilLine />
-                  </Button>
+                  <TextTooltip content="Manage order">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon-sm"
+                      aria-label="Manage order"
+                      onClick={() => setViewingOrderId(order.id)}
+                    >
+                      <RiPencilLine />
+                    </Button>
+                  </TextTooltip>
                 </ItemActions>
               </Item>
             ))}

@@ -3,6 +3,7 @@
 import { ConfirmDeleteDialog } from "@/components/display/confirm-delete-dialog"
 import { DataState } from "@/components/display/data-state"
 import { FormDialog } from "@/components/display/form-dialog"
+import { TextTooltip } from "@/components/display/text-tooltip"
 import { Button } from "@/components/ui/button"
 import {
   Item,
@@ -126,33 +127,39 @@ export default function VendorLocationsPage() {
                     )}
                   </ItemContent>
                   <ItemActions>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon-sm"
-                      onClick={() =>
-                        setFormValues({
-                          state: "UPDATING",
-                          defaultValues: stockLocationInputToForm(location),
-                          customValues: location,
-                        })
-                      }
-                    >
-                      <RiPencilLine />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon-sm"
-                      onClick={() =>
-                        setFormValues({
-                          state: "DELETING",
-                          customValues: location,
-                        })
-                      }
-                    >
-                      <RiDeleteBinLine />
-                    </Button>
+                    <TextTooltip content="Edit location">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon-sm"
+                        aria-label="Edit location"
+                        onClick={() =>
+                          setFormValues({
+                            state: "UPDATING",
+                            defaultValues: stockLocationInputToForm(location),
+                            customValues: location,
+                          })
+                        }
+                      >
+                        <RiPencilLine />
+                      </Button>
+                    </TextTooltip>
+                    <TextTooltip content="Delete location">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon-sm"
+                        aria-label="Delete location"
+                        onClick={() =>
+                          setFormValues({
+                            state: "DELETING",
+                            customValues: location,
+                          })
+                        }
+                      >
+                        <RiDeleteBinLine />
+                      </Button>
+                    </TextTooltip>
                   </ItemActions>
                 </Item>
               ),

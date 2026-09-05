@@ -1,5 +1,6 @@
 "use client"
 
+import { TextTooltip } from "@/components/display/text-tooltip"
 import { Button } from "@/components/ui/button"
 import { RiMoonLine, RiSunLine } from "@remixicon/react"
 import { useTheme } from "next-themes"
@@ -17,15 +18,17 @@ export function ThemeToggle({ ...props }: ThemeToggleProps) {
   useEffect(() => setMounted(true), [])
 
   return (
-    <Button
-      type="button"
-      variant="outline"
-      size="icon-sm"
-      aria-label="Toggle theme"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      {...props}
-    >
-      {mounted && resolvedTheme === "dark" ? <RiSunLine /> : <RiMoonLine />}
-    </Button>
+    <TextTooltip content="Toggle theme">
+      <Button
+        type="button"
+        variant="outline"
+        size="icon-sm"
+        aria-label="Toggle theme"
+        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+        {...props}
+      >
+        {mounted && resolvedTheme === "dark" ? <RiSunLine /> : <RiMoonLine />}
+      </Button>
+    </TextTooltip>
   )
 }

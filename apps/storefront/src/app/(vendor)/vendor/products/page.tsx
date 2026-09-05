@@ -2,6 +2,7 @@
 
 import { DataState } from "@/components/display/data-state"
 import { FormDialog } from "@/components/display/form-dialog"
+import { TextTooltip } from "@/components/display/text-tooltip"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -110,24 +111,30 @@ export default function VendorProductsPage() {
                 </ItemContent>
                 <ItemActions>
                   <Badge variant="muted">{product.status}</Badge>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    onClick={() =>
-                      setFormValues({ state: "UPDATING", id: product.id })
-                    }
-                  >
-                    <RiPencilLine />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    onClick={() => setInventoryProductId(product.id)}
-                  >
-                    <RiStackLine />
-                  </Button>
+                  <TextTooltip content="Edit product">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon-sm"
+                      aria-label="Edit product"
+                      onClick={() =>
+                        setFormValues({ state: "UPDATING", id: product.id })
+                      }
+                    >
+                      <RiPencilLine />
+                    </Button>
+                  </TextTooltip>
+                  <TextTooltip content="Manage inventory">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon-sm"
+                      aria-label="Manage inventory"
+                      onClick={() => setInventoryProductId(product.id)}
+                    >
+                      <RiStackLine />
+                    </Button>
+                  </TextTooltip>
                 </ItemActions>
               </Item>
             ))}

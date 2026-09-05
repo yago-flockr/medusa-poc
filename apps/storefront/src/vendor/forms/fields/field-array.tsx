@@ -1,3 +1,4 @@
+import { TextTooltip } from "@/components/display/text-tooltip"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Item, ItemActions, ItemGroup, ItemTitle } from "@/components/ui/item"
@@ -59,35 +60,44 @@ export function FieldArray({
               </ItemTitle>
               <ItemActions>
                 {onMoveUp && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    disabled={index === 0}
-                    onClick={() => onMoveUp(index)}
-                  >
-                    <RiArrowUpLine />
-                  </Button>
+                  <TextTooltip content="Move up">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-xs"
+                      aria-label="Move up"
+                      disabled={index === 0}
+                      onClick={() => onMoveUp(index)}
+                    >
+                      <RiArrowUpLine />
+                    </Button>
+                  </TextTooltip>
                 )}
                 {onMoveDown && (
+                  <TextTooltip content="Move down">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-xs"
+                      aria-label="Move down"
+                      disabled={index === values.length - 1}
+                      onClick={() => onMoveDown(index)}
+                    >
+                      <RiArrowDownLine />
+                    </Button>
+                  </TextTooltip>
+                )}
+                <TextTooltip content="Remove option">
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon-xs"
-                    disabled={index === values.length - 1}
-                    onClick={() => onMoveDown(index)}
+                    aria-label="Remove option"
+                    onClick={() => onRemove(index)}
                   >
-                    <RiArrowDownLine />
+                    <RiDeleteBinLine />
                   </Button>
-                )}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={() => onRemove(index)}
-                >
-                  <RiDeleteBinLine />
-                </Button>
+                </TextTooltip>
               </ItemActions>
             </div>
             {children(index)}
