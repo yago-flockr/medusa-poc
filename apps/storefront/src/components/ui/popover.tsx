@@ -21,11 +21,15 @@ function PopoverContent({
   Pick<PopoverPrimitive.Positioner.Props, "sideOffset" | "align" | "side">) {
   return (
     <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Positioner sideOffset={sideOffset} align={align}>
+      <PopoverPrimitive.Positioner
+        sideOffset={sideOffset}
+        align={align}
+        className="z-100"
+      >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            "z-50 rounded-md border bg-popover text-popover-foreground shadow-md outline-none",
+            "z-100 rounded-md border bg-popover text-popover-foreground shadow-md outline-none",
             className,
           )}
           {...props}
@@ -35,4 +39,4 @@ function PopoverContent({
   )
 }
 
-export { Popover, PopoverTrigger, PopoverContent }
+export { Popover, PopoverContent, PopoverTrigger }

@@ -42,11 +42,11 @@ function SelectContent({
 }: SelectPrimitive.Popup.Props) {
   return (
     <SelectPrimitive.Portal>
-      <SelectPrimitive.Positioner sideOffset={4}>
+      <SelectPrimitive.Positioner sideOffset={4} className="z-100">
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            "z-50 min-w-(--anchor-width) overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
+            "z-100 min-w-(--anchor-width) overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
             className,
           )}
           {...props}
@@ -82,4 +82,4 @@ function SelectItem({
   )
 }
 
-export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem }
+export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue }
