@@ -2,6 +2,7 @@
 
 import { DataState } from "@/components/display/data-state"
 import { FormDialog } from "@/components/display/form-dialog"
+import { Steps, type Step } from "@/components/display/steps"
 import { TextTooltip } from "@/components/display/text-tooltip"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -26,10 +27,41 @@ import {
   useGetVendorsOrders,
   useGetVendorsOrdersById,
 } from "@/vendor/hooks/queries/orders"
-import type { VendorOrder } from "@dtc/api-contracts/vendor/orders"
+import type {
+  GetVendorsOrdersByIdResponse,
+  VendorOrder,
+} from "@dtc/api-contracts/vendor/orders"
 import { RiPencilLine } from "@remixicon/react"
 import { useState } from "react"
 import { toast } from "sonner"
+
+function getOrderSteps(order: GetVendorsOrdersByIdResponse): Step[] {
+  let doneCount = { placed: 1, accepted: 2, dispatched: 3 }[
+    order.consignment_status
+  ]
+
+  if (
+    order.fulfillment_status === "delivered" ||
+    order.fulfillment_status === "partially_delivered"
+  ) {
+    doneCount = Math.max(doneCount, 4)
+  }
+  if (order.status === "completed") {
+    doneCount = 5
+  }
+
+  return ["placed", "accepted", "dispatched", "delivered", "completed"].map(
+    (label, index) => ({
+      label,
+      state:
+        index < doneCount
+          ? "done"
+          : index === doneCount
+            ? "current"
+            : "upcoming",
+    }),
+  )
+}
 
 export default function VendorOrdersPage() {
   const getVendorsOrders = useGetVendorsOrders()
@@ -99,9 +131,13 @@ export default function VendorOrdersPage() {
           <DataState.Content>
             {viewingOrder && (
               <div className="flex flex-col gap-4">
-                <Badge variant="muted" className="w-fit">
-                  {viewingOrder.consignment_status}
-                </Badge>
+                {viewingOrder.status === "canceled" ? (
+                  <Badge variant="destructive" className="w-fit">
+                    Canceled
+                  </Badge>
+                ) : (
+                  <Steps steps={getOrderSteps(viewingOrder)} />
+                )}
 
                 <ItemGroup>
                   {viewingOrder.items.map((item) => (
@@ -194,13 +230,6 @@ export default function VendorOrdersPage() {
                     }
                   />
                 )}
-
-                {viewingOrder.consignment_status === "dispatched" && (
-                  <p className="text-sm text-muted-foreground">
-                    This order has been dispatched.
-                  </p>
-                )}
-
               </div>
             )}
           </DataState.Content>

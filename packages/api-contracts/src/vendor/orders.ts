@@ -65,10 +65,26 @@ export const vendorOrderItemSchema = z.object({
 
 export type VendorOrderItem = z.infer<typeof vendorOrderItemSchema>
 
+export const vendorOrderFulfillmentStatusSchema = z.enum([
+  "not_fulfilled",
+  "partially_fulfilled",
+  "fulfilled",
+  "partially_shipped",
+  "shipped",
+  "partially_delivered",
+  "delivered",
+  "canceled",
+])
+
+export type VendorOrderFulfillmentStatus = z.infer<
+  typeof vendorOrderFulfillmentStatusSchema
+>
+
 export const getVendorsOrdersByIdResponseSchema = z.object({
   id: z.string(),
   display_id: z.number(),
   status: z.string(),
+  fulfillment_status: vendorOrderFulfillmentStatusSchema,
   consignment_status: vendorConsignmentStatusSchema,
   total: z.number(),
   currency_code: z.string(),
