@@ -41,7 +41,7 @@ async function buildProductInventoryResponse(
   const { data: levels } = inventoryItemIds.length
     ? await query.graph({
         entity: "inventory_level",
-        fields: ["inventory_item_id", "location_id", "stocked_quantity"],
+        fields: ["inventory_item_id", "location_id", "stocked_quantity", "reserved_quantity"],
         filters: { inventory_item_id: inventoryItemIds },
       })
     : { data: [] }
@@ -60,6 +60,7 @@ async function buildProductInventoryResponse(
             .map((level) => ({
               location_id: level.location_id,
               quantity: Number(level.stocked_quantity),
+              reserved_quantity: Number(level.reserved_quantity),
             })),
         }
       }),

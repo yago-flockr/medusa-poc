@@ -3,6 +3,7 @@ import { z } from "zod"
 export const vendorInventoryLevelSchema = z.object({
   location_id: z.string(),
   quantity: z.number(),
+  reserved_quantity: z.number(),
 })
 
 export type VendorInventoryLevel = z.infer<typeof vendorInventoryLevelSchema>

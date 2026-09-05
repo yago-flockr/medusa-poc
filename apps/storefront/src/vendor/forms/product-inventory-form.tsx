@@ -104,21 +104,32 @@ export function ProductInventoryForm({
             className="flex-col items-stretch gap-2"
           >
             <Badge className="w-fit">{variant.variant_title}</Badge>
-            {locations.map((location) => (
-              <NumberControlField
-                key={location.id}
-                id={`inventory-${variant.variant_id}-${location.id}`}
-                label={location.name}
-                min={0}
-                value={quantities[cellKey(variant.variant_id, location.id)] ?? 0}
-                onValueChange={(value) =>
-                  setQuantities((current) => ({
-                    ...current,
-                    [cellKey(variant.variant_id, location.id)]: value ?? 0,
-                  }))
-                }
-              />
-            ))}
+            {locations.map((location) => {
+              const reserved =
+                variant.levels.find((level) => level.location_id === location.id)
+                  ?.reserved_quantity ?? 0
+              const stocked = quantities[cellKey(variant.variant_id, location.id)] ?? 0
+
+              return (
+                <div key={location.id} className="flex flex-col gap-1">
+                  <NumberControlField
+                    id={`inventory-${variant.variant_id}-${location.id}`}
+                    label={location.name}
+                    min={0}
+                    value={stocked}
+                    onValueChange={(value) =>
+                      setQuantities((current) => ({
+                        ...current,
+                        [cellKey(variant.variant_id, location.id)]: value ?? 0,
+                      }))
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {reserved} reserved · {stocked - reserved} available
+                  </p>
+                </div>
+              )
+            })}
           </Item>
         ))}
       </ItemGroup>
