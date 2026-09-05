@@ -1,7 +1,6 @@
 "use client"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type {
@@ -18,7 +17,7 @@ import {
   ProductVariantFieldsCard,
   type ProductVariantFieldsValue,
 } from "./fields/product-variant-fields-card"
-import { RadioGroupField } from "./fields/radio-group-field"
+import { SelectField } from "./fields/select-field"
 import { TextField } from "./fields/text-field"
 import { TextareaField } from "./fields/textarea-field"
 import type { CommonFormProps } from "./form-type"
@@ -87,24 +86,19 @@ function StatusField({
   const isSettable = VENDOR_SETTABLE_STATUSES.includes(
     value as (typeof VENDOR_SETTABLE_STATUSES)[number],
   )
+  const options = [
+    ...VENDOR_SETTABLE_STATUSES,
+    ...(isSettable ? [] : [value]),
+  ].map((status) => ({ value: status, label: status }))
 
   return (
-    <div className="flex flex-col gap-2">
-      {!isSettable && (
-        <Badge variant="muted" className="w-fit">
-          Current: {value}
-        </Badge>
-      )}
-      <RadioGroupField
-        label="Status"
-        value={value}
-        onValueChange={(next) => onChange(next as VendorProductStatus)}
-        options={VENDOR_SETTABLE_STATUSES.map((status) => ({
-          value: status,
-          label: status,
-        }))}
-      />
-    </div>
+    <SelectField
+      id="product-edit-status"
+      label="Status"
+      value={value}
+      onValueChange={(next) => onChange(next as VendorProductStatus)}
+      options={options}
+    />
   )
 }
 

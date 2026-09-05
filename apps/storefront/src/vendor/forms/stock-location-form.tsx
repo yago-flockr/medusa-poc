@@ -7,10 +7,7 @@ import type { VendorStockLocation } from "@dtc/api-contracts/vendor/stock-locati
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import z from "zod"
-import {
-  RadioGroupField,
-  type RadioGroupFieldOption,
-} from "./fields/radio-group-field"
+import { SelectField, type SelectFieldOption } from "./fields/select-field"
 import { TextField } from "./fields/text-field"
 import type { CommonFormProps } from "./form-type"
 
@@ -31,7 +28,7 @@ export const stockLocationSchema = z.object({
 export type StockLocationSchema = z.infer<typeof stockLocationSchema>
 
 type StockLocationFormProps = CommonFormProps<StockLocationSchema> & {
-  countryOptions: RadioGroupFieldOption[]
+  countryOptions: SelectFieldOption[]
 }
 
 export function stockLocationFormToInput(
@@ -143,7 +140,8 @@ export function StockLocationForm({
         name="country_code"
         control={control}
         render={({ field }) => (
-          <RadioGroupField
+          <SelectField
+            id="location-country"
             label="Country"
             value={field.value}
             onValueChange={field.onChange}
