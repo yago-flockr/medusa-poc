@@ -8,9 +8,15 @@ export type ResolveVendorShippingProfileStepInput = {
 
 export const resolveVendorShippingProfileStep = createStep(
   "resolve-vendor-shipping-profile",
-  async ({ vendorId }: ResolveVendorShippingProfileStepInput, { container }) => {
+  async (
+    { vendorId }: ResolveVendorShippingProfileStepInput,
+    { container },
+  ) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
-    const shippingProfileId = await resolveVendorShippingProfileId(query, vendorId)
+    const shippingProfileId = await resolveVendorShippingProfileId(
+      query,
+      vendorId,
+    )
 
     return new StepResponse({ shippingProfileId })
   },

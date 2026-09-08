@@ -155,13 +155,15 @@ Current but replaceable:
 - `docs/v1-scope-proposal.md`: client-facing scope proposal (not an engineering spec) mapping which marketplace areas can ship simple for a short-deadline v1 vs. which commercial decisions block further building
 - `bruno/`: Bruno `.bru` collection at repo root. `admin/` gets its JWT from a `folder.bru` pre-request script (one shared admin credential). `vendors/` is a step-by-step practice flow instead (create vendor → create vendor user → login → list/create/update products) — staff-driven end to end, no public self-registration — because each vendor mints its own token. Run `vendors/isolation/` afterwards to see two vendors fail to see or edit each other's data.
 - `docker-compose.yml`: local Postgres and Redis
-- `TEMP-ADR-workflows-refactor.md` (repo root): **in-flight** ADR for a
-  routes/workflows/steps refactor of `apps/backend` — read it before
-  touching any file under `apps/backend/src/api` or
-  `apps/backend/src/workflows`. Deleted once the reference domain
-  (vendor-products) is refactored and proven, at which point the finalized
-  convention moves into `agents/backend.md`. If this bullet is still here
-  and the file is gone, remove the bullet too.
+- `WORKFLOWS-REFACTOR-NOTES.md` (repo root): a point-in-time snapshot of
+  progress and open questions for the ongoing routes/workflows/steps
+  refactor of `apps/backend` — **not a plan to follow or a checklist to
+  check off**; a prior version of this idea (a long-lived ADR) was tried and
+  explicitly abandoned because it rotted out of sync with the real code.
+  Re-verify anything in it against the actual code before acting on it. The
+  finalized convention itself lives in `agents/backend.md` (`workflows/`
+  entry), not in this file. Delete this bullet once the notes file is gone
+  (it's expected to be rewritten or deleted as the refactor progresses).
 
 ## Conventions
 

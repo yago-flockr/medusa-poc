@@ -13,7 +13,7 @@ import { setVendorInventoryLevelWorkflow } from "../../../../../workflows/set-ve
 import { resolveVendorUser } from "../../../resolve-vendor-user"
 import { assertOwnedVendorProduct } from "../../assert-owned-product"
 import { assertOwnedVendorVariant } from "../../assert-owned-variant"
-import { assertOwnedVendorStockLocation } from "../../../stock-locations/assert-owned-stock-location"
+import { assertOwnedVendorStockLocation } from "../../assert-owned-stock-location"
 
 async function buildProductInventoryResponse(
   query: Omit<RemoteQueryFunction, symbol>,

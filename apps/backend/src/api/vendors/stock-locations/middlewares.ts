@@ -11,7 +11,9 @@ export const vendorStockLocationRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["POST"],
     matcher: "/vendors/stock-locations",
-    middlewares: [validateAndTransformBody(postVendorsStockLocationsInputSchema)],
+    middlewares: [
+      validateAndTransformBody(postVendorsStockLocationsInputSchema),
+    ],
   },
   {
     method: ["POST"],

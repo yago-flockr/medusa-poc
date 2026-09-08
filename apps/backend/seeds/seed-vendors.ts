@@ -1,9 +1,12 @@
 import { ExecArgs } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  ProductStatus,
+} from "@medusajs/framework/utils"
 import { createVendorWorkflow } from "../src/workflows/create-vendor"
 import { createVendorUserWorkflow } from "../src/workflows/create-vendor-user"
 import { createVendorProductWorkflow } from "../src/workflows/create-vendor-product"
-import { createVendorStockLocationWorkflow } from "../src/workflows/create-vendor-stock-location"
+import { createVendorStockLocationWorkflow } from "../src/workflows/vendor-stock-locations/create-vendor-stock-location"
 import { setVendorInventoryLevelWorkflow } from "../src/workflows/set-vendor-inventory-level"
 import { resolveStorePrerequisites } from "../src/lib/resolve-store-prerequisites"
 import { resolveVendorShippingProfileId } from "../src/lib/resolve-vendor-shipping-profile"
@@ -125,7 +128,8 @@ export default async function seedVendors({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-  const { salesChannelId, storeCurrencies } = await resolveStorePrerequisites(query)
+  const { salesChannelId, storeCurrencies } =
+    await resolveStorePrerequisites(query)
 
   logger.info("Seeding demo vendors, vendor users, locations, and products...")
 
@@ -147,7 +151,10 @@ export default async function seedVendors({ container }: ExecArgs) {
       vendorId = vendor.id
     }
 
-    const shippingProfileId = await resolveVendorShippingProfileId(query, vendorId)
+    const shippingProfileId = await resolveVendorShippingProfileId(
+      query,
+      vendorId,
+    )
 
     const { data: existingVendorUsers } = await query.graph({
       entity: "vendor_user",
@@ -155,7 +162,9 @@ export default async function seedVendors({ container }: ExecArgs) {
       filters: { email: vendorFixture.email },
     })
 
-    if (existingVendorUsers[0]) {
+    let vendorUserId = existingVendorUsers[0]?.id
+
+    if (vendorUserId) {
       logger.info(
         `Vendor user "${vendorFixture.email}" already exists, skipping — password is the fixed "${vendorFixture.password}" from VENDOR_FIXTURES.`,
       )
@@ -170,6 +179,7 @@ export default async function seedVendors({ container }: ExecArgs) {
           first_name: vendorFixture.firstName,
         },
       })
+      vendorUserId = vendorUser.id
       logger.info(
         `Vendor login for "${vendorFixture.name}" — email: ${vendorUser.email}  password: ${vendorUser.password}`,
       )
@@ -190,11 +200,9 @@ export default async function seedVendors({ container }: ExecArgs) {
     } else {
       // Same workflow the vendor panel's own "create location" action calls
       // — auto-provisions free shipping for it, nothing extra to seed here.
-      const location = await createVendorStockLocationWorkflow(
-        container,
-      ).run({
+      const location = await createVendorStockLocationWorkflow(container).run({
         input: {
-          vendorId,
+          actorId: vendorUserId,
           name: vendorFixture.location.name,
           address: {
             address_1: vendorFixture.location.address_1,
@@ -205,7 +213,7 @@ export default async function seedVendors({ container }: ExecArgs) {
           },
         },
       })
-      locationId = location.result.id
+      locationId = location.result.stock_location.id
     }
 
     for (const productFixture of vendorFixture.products) {

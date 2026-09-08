@@ -39,7 +39,49 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
   - Per Admin feature: `validators.ts`, `query-config.ts` (when the feature has list/retrieve), `middlewares.ts` (wire that feature’s matchers only).
   - Product `additional_data`: each feature that extends product create/update exports a fragment from `api/admin/<feature>/additional-data.ts` (e.g. `brands`) — or, for a feature with no `/admin/*` CRUD surface of its own, from `api/<feature>/additional-data.ts` (e.g. `vendors`, since there is no `/admin/vendors`). Compose them in `api/admin/products/additional-data.ts` and pass the result from `products/middlewares.ts`. Do not put foreign-route matchers in the feature’s middlewares, and do not bury cross-route fields inside CRUD validators. Every fragment is a one-property `nullish()` zod object (string to set/change, `null` to clear) — copy that shape, don't invent a new one per feature.
 - `modules/`: custom domain modules (models, services, migrations)
-- `workflows/`: orchestration; prefer over fat route handlers. **Every workflow is a folder, never a flat file**: `workflows/<name>/index.ts` holds only the `createWorkflow` composition (read top-to-bottom as the actual sequence of operations); `workflows/<name>/steps/<step-name>.ts` holds one `createStep` per file, each with its own input type (don't borrow a slice of the workflow's input type — a step should read standalone). No `steps/index.ts` barrel — `index.ts` imports each step from its own path. Applies even to a single-step workflow (e.g. `create-brand/`, `create-vendor/`) — consistency of shape matters more than saving one file for the smallest cases. `workflows/hooks/*.ts` is a different thing (callbacks registered onto an *existing* core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat — it was never a workflow of its own. `workflows/shared/steps/<step-name>.ts` is for a step genuinely used by more than one workflow (e.g. `resolve-shopify-product-prerequisites`, used by both `sync-shopify-products` and `import-vendor-shopify-products`) — extract it here the moment a second workflow needs it, rather than having one workflow reach into a sibling's private `steps/` folder. A step's home in `workflows/shared/` doesn't imply it's more "special" than a single-workflow step — same `createStep` shape, same one-file-per-step rule — it only means more than one workflow currently composes it.
+- `workflows/`: orchestration; prefer over fat route handlers. **Every route, including GETs, calls exactly one workflow** — a deliberate departure from Medusa's own default (a plain read may call `query.graph` straight from the route); this codebase's reads are not simple gets, they join across multiple `query.graph` calls, apply vendor-ownership scoping, and do real response-shaping, so they get the same route→workflow discipline as a mutation.
+
+  **One file per workflow, one file per step — no `index.ts` wrapper, no folder-per-workflow.** (Supersedes the old "every workflow is a folder" shape below; being migrated domain by domain, so both shapes coexist mid-migration — don't be surprised by that.) Structure per domain, one domain = one resource a route tree exposes:
+
+  ```
+  workflows/<domain>/              # kebab, singular resource: vendor-regions, vendor-stock-locations
+    list-<domain>.ts               # GET collection  -> list<Domain>Workflow
+    get-<domain-singular>.ts       # GET /:id        -> get<Domain>Workflow
+    create-<domain-singular>.ts    # POST            -> create<Domain>Workflow
+    update-<domain-singular>.ts    # POST/PATCH /:id -> update<Domain>Workflow
+    delete-<domain-singular>.ts    # DELETE /:id     -> delete<Domain>Workflow
+    steps/<step-name>.ts           # one createStep per file
+    mappers/<fn-name>.ts           # pure, I/O-free shape functions, called from transform()
+  ```
+
+  Names are mechanically derived from the HTTP verb + resource, the same way `@dtc/api-contracts` derives a schema name from method + path — never hand-picked. Step file names follow a fixed verb vocabulary that also tells you whether it needs compensation:
+
+  | Step does | File | Const | Compensation |
+  | --- | --- | --- | --- |
+  | I/O precondition check, throws if invalid | `assert-<thing>.ts` | `assert<Thing>Step` | none — nothing mutated |
+  | Fetch + return a value (may also assert) | `resolve-<thing>.ts` | `resolve<Thing>Step` | none |
+  | Pure read, no assert | `list-`/`get-<thing>.ts` | `list<Thing>Step` | none |
+  | Mutation | `create-`/`update-`/`delete-<thing>.ts` | `create<Thing>Step` | real, always (rule 8 below) |
+
+  Input/output types: `<PascalCase(name)>WorkflowInput`, `<PascalCase(name)>StepInput`/`StepOutput`. Mapper functions: plain camelCase of the filename, no suffix (`build-countries.ts` → `buildCountries`). Named exports only — no `export default`; that existed only to make a folder importable as one path, which one-file-per-thing no longer needs.
+
+  **`transform()`'s callback is always exactly one line: call a named mapper and return its result — never inline object/array construction, however small.** `mappers/` already covers this (both response-shaping and input-building use the same `build-*` naming — no separate "transforms" folder). The one exception: picking a single element out of a Medusa core-flow's array result (`createXWorkflow.runAsStep()` always returns an array even for one item) — use the generic `first()` helper (`workflows/shared/lib/first.ts`) instead of a domain mapper, since that pattern recurs in every create-workflow. A step call's result const still follows the naming rule above even when it's a Medusa core-flow accessed via `.runAsStep()` — same table, `Workflow` suffix stripped instead of `Step`.
+
+  **A step is never called twice in the same workflow.** The mechanical
+  result-const rule has no fallback name for a second call (no `Step2`, no
+  suffix) — if a workflow seems to need the same step twice (e.g. touching
+  two different variants), that's a sign the step should take a batch/array
+  input and operate on all of them in one call, matching Medusa's own idiom
+  (core-flows operate on arrays, not one call per item). Redesign the step,
+  don't call it twice.
+
+  **Never use `as` to cast a `query.graph` result into a shape TypeScript didn't infer.** Define a small Zod schema for exactly the fields requested and `.safeParse()` it instead — real runtime validation instead of lying to the compiler, and `@medusajs/framework/zod` (not plain `zod`) matching every other backend-internal Zod usage (`lib/list-query.ts`, `integrations/external-source.ts`). Plain `zod` stays reserved for `packages/api-contracts`, where it matters for frontend-bundle safety.
+
+  Shared-step tiering, promoted only once a second real consumer at that tier needs it, never speculatively: `workflows/shared/steps/` crosses actors entirely (vendor + admin + storefront); `workflows/<actor>/shared/steps/` (plural actor, e.g. `workflows/vendors/shared/`) crosses 2+ sub-domains of one actor (e.g. `resolve-vendor-user`, called from most `/vendors/*` domains); a step used by exactly one domain stays in that domain's own `steps/`.
+
+  `workflows/hooks/*.ts` is a different thing (callbacks registered onto an *existing* core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat, outside this convention — it was never a workflow of its own.
+
+  **Old shape, still present in unmigrated domains:** `workflows/<name>/index.ts` holds the `createWorkflow` composition; `workflows/<name>/steps/<step-name>.ts` holds one `createStep` per file. No `steps/index.ts` barrel either way.
 - `links/`: links between module data models
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
@@ -67,7 +109,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 8. **A step's compensation function is part of that step's own contract, not scoped to how many steps the workflow currently has.** Write real, correct undo logic for any step whose action needs undoing, even in a workflow that today has only that one step (e.g. `update-brand/steps/update-brand.ts` retrieves the brand's current name/handle before overwriting them, purely so its compensation function has something to restore — unreachable today since nothing follows it, but correct the moment a second step is added later). A step should never rely on "I happen to be the only/last step right now" — that awareness of its neighbors is exactly what a workflow's composability is supposed to make unnecessary.
 9. **Fixed pattern per "how am I extending this" scenario** — pick the one that matches, don't improvise a new shape:
    - **Read a linked module's data on a core Medusa model** (e.g. the vendor on a product) → a Module Link, never a core-model change. Copy `links/product-vendor.ts` / `links/product-brand.ts`. Read it via `fields` (`query.graph({ fields: ["*", "vendor.*"] })` in code, `?fields=+vendor.*` on the route) — no new route needed. `db:migrate` after adding the link file.
-   - **Create a new standalone custom module** (no relation to core) → Brand's shape: `modules/<name>/{models,service.ts,index.ts}`, register in `medusa-config.ts`, `pnpm exec medusa db:generate <module>` → `db:migrate`, `workflows/create-<name>/` + `workflows/update-<name>/` (rule 8 applies), a route, then update `docs/ER_MODEL.md`.
+   - **Create a new standalone custom module** (no relation to core) → Brand's shape: `modules/<name>/{models,service.ts,index.ts}`, register in `medusa-config.ts`, `pnpm exec medusa db:generate <module>` → `db:migrate`, `workflows/<name>/create-<name>.ts` + `update-<name>.ts` (naming convention and rule 8 above), a route, then update `docs/ER_MODEL.md`.
    - **Create a new standalone module that's also linked to Medusa** (Vendor's shape) → the same, plus one `links/<core>-<name>.ts` per relationship (Vendor has three: `product-vendor.ts`, `consignment-order.ts`, `order-line-item-consignment.ts`). Decide `isList` deliberately per direction; `db:migrate` again after the link file.
    - **Update a standalone or linked model's fields** → edit `models/<name>.ts` → `db:generate <module>` (review the generated migration) → `db:migrate` → propagate the field through every workflow step / validator / `@dtc/api-contracts` schema that touches it → `docs/ER_MODEL.md`. Identical whether or not the model has links — a link lives in its own file and is untouched by a field-only change; only touch a `links/` file if the relationship itself changes.
    - **Assign a linked entity at core-model create/update time** (write side, the complement to the first bullet) → `additional_data` fragment + workflow hook. Copy `api/vendors/additional-data.ts` → composed into `api/admin/products/additional-data.ts` → consumed in `workflows/hooks/created-product.ts` (`createProductsWorkflow.hooks.productsCreated`). One handler per hook name — extend the existing handler for a new module, never register a second one.
