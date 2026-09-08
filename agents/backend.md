@@ -281,6 +281,33 @@ starts.
   applies to external products too — it used to skip them outright, on the
   reasoning that a vendor had no way to ever satisfy it; that reasoning no
   longer holds once they can edit SKU.
+  **Real bug found and fixed against a real Shopify store's data (not just
+  synthetic test data): editing a variant's SKU through `POST
+  /vendors/products/:id` never reached the variant's linked InventoryItem
+  row.** Every synced-in Shopify variant is created with `sku: null` (real
+  Shopify catalogues commonly have no SKU set), so filling one in through the
+  edit form — required before publish, per the gate above — is the *only*
+  way an external product's variant ever gets a SKU. Confirmed by direct
+  inspection and live testing: Medusa's core `updateProductVariantsWorkflow`
+  (what this route calls to save the new SKU) only ever writes
+  `product_variant.sku`; it has no code path that reaches the variant's own
+  linked InventoryItem at all. Admin's own Inventory list reads
+  `inventory_item.sku`, not `product_variant.sku`, so every Shopify-imported
+  variant kept showing a blank SKU there forever — even after publishing,
+  even though the real SKU was correct everywhere else (storefront, this
+  same edit form, order line items). This is the same root cause already
+  named above for stock levels ("`updateProductsWorkflow` ... has no code
+  path that creates or updates an inventory level for any variant, in either
+  direction") — Medusa's update-side variant workflows simply don't reach
+  InventoryItem at all, for any of its own fields — just a different
+  symptom (the item's `sku` column, not its stock). Fixed in the same route:
+  after `updateProductVariantsWorkflow` runs, explicitly sync
+  `inventory_item.sku` via Medusa's core `updateInventoryItemsWorkflow` for
+  exactly the variants whose `sku` was part of the request. Verified live
+  against `sensus-en0h00hi.myshopify.com`'s real catalogue: re-saved all 3
+  imported products (15 variants) and confirmed every inventory item's `sku`
+  now matches its variant's, both via the Admin API and the Admin Inventory
+  page itself.
   Not done: vendor-assignable categories/collections/tags (would need its own
   staff-curated-taxonomy listing endpoint, a bigger separate feature than the
   per-variant fields above), and real per-vendor inventory tracking (needs a
