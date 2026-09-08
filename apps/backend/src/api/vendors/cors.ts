@@ -1,16 +1,44 @@
 import type { MedusaRequestHandler } from "@medusajs/framework/http"
+import { parseCorsOrigins } from "@medusajs/framework/utils"
 
-const allowedOrigins = (process.env.VENDOR_CORS ?? process.env.STORE_CORS ?? "")
+const rawOrigins = (process.env.VENDOR_CORS ?? process.env.STORE_CORS ?? "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean)
 
-export const vendorPanelOrigin = allowedOrigins[0]
+// Medusa's own storeCors/adminCors/authCors support a `/regex/flags`-shaped
+// entry (see @medusajs/utils buildRegexpIfValid) alongside plain origin
+// strings — Medusa Cloud's own "CORS auto-configured for the storefront"
+// behavior for those three vars relies on exactly this, since a Cloud
+// preview deployment's domain isn't known ahead of time. This custom
+// /vendors/* CORS layer previously only ever did a plain string
+// `.includes()` check, so falling back to an auto-configured STORE_CORS
+// that happens to be a regex entry would compare a real Origin header
+// against literal regex syntax and never match. This is the most likely
+// explanation for a real prod CORS failure seen against
+// /vendors/stock-locations (preflight rejected, no
+// Access-Control-Allow-Origin header) — not confirmed against the actual
+// Cloud env var value, since that isn't inspectable from here, but this is
+// a genuine correctness gap either way: reuses Medusa's own parser instead
+// of re-deriving the regex-detection logic here.
+const allowedOrigins = parseCorsOrigins(rawOrigins.join(","))
+
+function isAllowedOrigin(origin: string): boolean {
+  return allowedOrigins.some((allowed) =>
+    allowed instanceof RegExp ? allowed.test(origin) : allowed === origin,
+  )
+}
+
+// Kept as the first *raw* origin string (never a regex) — this is used
+// to build a real redirect URL after Shopify OAuth completes
+// (see api/hooks/shopify/oauth/callback), which needs an actual origin to
+// redirect to, not a matching pattern.
+export const vendorPanelOrigin = rawOrigins[0]
 
 export const vendorCors: MedusaRequestHandler = (req, res, next) => {
   const origin = req.headers.origin
 
-  if (origin && allowedOrigins.includes(origin)) {
+  if (origin && isAllowedOrigin(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin)
     res.setHeader("Access-Control-Allow-Credentials", "true")
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS")
