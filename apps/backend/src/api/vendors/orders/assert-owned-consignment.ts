@@ -21,7 +21,7 @@ export async function assertOwnedConsignment(
   if (!consignment || consignmentVendorId !== vendorId) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      `Order with id: ${consignmentId} was not found`,
+      `Consignment with id: ${consignmentId} was not found`,
     )
   }
 }

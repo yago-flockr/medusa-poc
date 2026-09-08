@@ -75,7 +75,7 @@ export async function buildConsignmentDetail(
   if (!consignment?.order?.id) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      `Order with id: ${consignmentId} was not found`,
+      `Consignment with id: ${consignmentId} was not found`,
     )
   }
 
@@ -131,6 +131,13 @@ export async function buildConsignmentDetail(
       delivered_quantity: Number(item.detail?.delivered_quantity ?? 0),
     }))
 
+  // Each item.total is already tax/promotion-inclusive — Medusa computes it
+  // per line (triggered by the sibling summary/tax_lines/adjustments fields
+  // requested above), so summing it here already nets in this vendor's own
+  // tax and discount allocation correctly. What's NOT included: this
+  // vendor's own shipping cost — every vendor's shipping is free today (see
+  // create-vendor-stock-location), so it's a no-op in practice, but a real
+  // per-vendor shipping price would need its cost added in here explicitly.
   const total = items.reduce((sum, item) => sum + item.total, 0)
 
   return {

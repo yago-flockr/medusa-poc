@@ -3,7 +3,7 @@ import {
   createOrderFulfillmentWorkflow,
   createOrderShipmentWorkflow,
 } from "@medusajs/medusa/core-flows"
-import { setConsignmentStatusStep } from "../accept-consignment/steps/set-consignment-status"
+import { setConsignmentStatusStep } from "../shared/steps/set-consignment-status"
 
 export type DispatchConsignmentWorkflowInput = {
   consignmentId: string

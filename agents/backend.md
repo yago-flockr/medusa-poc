@@ -113,8 +113,13 @@ starts.
   "admin" would overclaim; see `docs/ER_MODEL.md`.
   **Vendor and VendorUser are two separate, independent CRUDs, not one
   combined step.** `Vendor` (`src/workflows/create-vendor/`,
-  `src/workflows/update-vendor/`) is a plain CRUD exactly like Brand — just
-  name/handle, no linked side effects. `VendorUser`
+  `src/workflows/update-vendor/`) is CRUD exactly like Brand for its own
+  fields (name/handle) — plus one linked side effect: it also creates and
+  links this vendor's own `ShippingProfile` (see the per-vendor shipping
+  profile section below), since every vendor needs exactly one, unconditionally,
+  from the moment it exists — unlike a stock location or product, which are
+  genuinely optional and linked later, a shipping profile has no independent
+  meaning without its vendor and isn't worth a separate creation step. `VendorUser`
   (`src/workflows/create-vendor-user/`, `src/workflows/update-vendor-user/`,
   `src/workflows/regenerate-vendor-user-password/`) is created and managed
   separately, scoped to an existing `vendor_id`. This was a deliberate

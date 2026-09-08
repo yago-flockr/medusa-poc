@@ -2,8 +2,8 @@ import { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createAdminUserWorkflow } from "../src/workflows/create-admin-user"
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "qwe@flockr.com"
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "qwe"
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "yago@flockr.com"
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "secret"
 
 export default async function seedIdentity({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)

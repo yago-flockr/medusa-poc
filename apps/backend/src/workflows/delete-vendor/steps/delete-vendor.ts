@@ -13,6 +13,7 @@ type DeleteVendorCompensation = {
   userIds: string[]
   connectionIds: string[]
   links: LinkDefinition[]
+  shippingProfileLink: LinkDefinition | null
 }
 
 export const deleteVendorStep = createStep(
@@ -30,7 +31,13 @@ export const deleteVendorStep = createStep(
     } = await query.graph({
       entity: "vendor",
       filters: { id: input.id },
-      fields: ["id", "users.id", "integration_connections.id", "products.id"],
+      fields: [
+        "id",
+        "users.id",
+        "integration_connections.id",
+        "products.id",
+        "shipping_profile.id",
+      ],
     })
 
     const userIds = (vendor?.users ?? [])
@@ -51,8 +58,24 @@ export const deleteVendorStep = createStep(
       [VENDOR_MODULE]: { vendor_id: input.id },
     }))
 
+    // Not soft-deleted alongside the vendor: the Fulfillment module exposes
+    // softDeleteShippingProfiles but no matching restore method, so there's
+    // no safe way to compensate that delete if a later step in this workflow
+    // fails. The link is dismissed (fully compensatable, like the product
+    // links above); the shipping_profile row itself is left behind as a
+    // harmless orphan rather than an uncompensated delete.
+    const shippingProfileLink: LinkDefinition | null = vendor?.shipping_profile?.id
+      ? {
+          [VENDOR_MODULE]: { vendor_id: input.id },
+          [Modules.FULFILLMENT]: { shipping_profile_id: vendor.shipping_profile.id },
+        }
+      : null
+
     if (links.length) {
       await link.dismiss(links)
+    }
+    if (shippingProfileLink) {
+      await link.dismiss([shippingProfileLink])
     }
     if (userIds.length) {
       await vendorModuleService.softDeleteVendorUsers(userIds)
@@ -68,6 +91,7 @@ export const deleteVendorStep = createStep(
       userIds,
       connectionIds,
       links,
+      shippingProfileLink,
     } satisfies DeleteVendorCompensation)
   },
   async (compensation: DeleteVendorCompensation | undefined, { container }) => {
@@ -90,6 +114,9 @@ export const deleteVendorStep = createStep(
     }
     if (compensation.links.length) {
       await link.create(compensation.links)
+    }
+    if (compensation.shippingProfileLink) {
+      await link.create([compensation.shippingProfileLink])
     }
   },
 )

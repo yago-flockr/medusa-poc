@@ -38,7 +38,7 @@ export const POST = async (
     data: [consignment],
   } = await query.graph({
     entity: "consignment",
-    fields: ["id", "order.id"],
+    fields: ["id", "order.id", "order.shipping_methods.shipping_option_id"],
     filters: { id },
   })
 
@@ -72,15 +72,30 @@ export const POST = async (
     )
   }
 
-  const shippingOptionId = vendorLocation.fulfillment_sets
-    ?.flatMap((set) => set?.service_zones ?? [])
-    .flatMap((zone) => zone?.shipping_options ?? [])
-    .find((option) => option?.id)?.id
+  const vendorShippingOptionIds = new Set(
+    vendorLocation.fulfillment_sets
+      ?.flatMap((set) => set?.service_zones ?? [])
+      .flatMap((zone) => zone?.shipping_options ?? [])
+      .map((option) => option?.id)
+      .filter((optionId): optionId is string => Boolean(optionId)),
+  )
+
+  // A vendor's stock location can carry more than one shipping option, but
+  // only one of them is the one the customer actually selected (and paid
+  // for) at checkout — cross-referencing against the order's own chosen
+  // shipping methods picks that one instead of an arbitrary option this
+  // vendor happens to offer.
+  const shippingOptionId = (consignment?.order?.shipping_methods ?? [])
+    .map((method) => method?.shipping_option_id)
+    .find(
+      (optionId): optionId is string =>
+        !!optionId && vendorShippingOptionIds.has(optionId),
+    )
 
   if (!shippingOptionId) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      "This vendor's stock location has no shipping option to dispatch with.",
+      "This order has no shipping method matching this vendor's stock location.",
     )
   }
 

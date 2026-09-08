@@ -1,10 +1,24 @@
 import { z } from "zod"
 import { paginationMetaSchema, paginationQuerySchema } from "@dtc/api-contracts/common/pagination"
 
+// "placed" is the implicit starting state (no metadata set yet). Only
+// "accepted" and "dispatched" are reachable through the vendor panel today —
+// unfulfillable/in-production/return states are intentionally not modeled
+// yet, scoped out of this first pass.
+export const vendorConsignmentStatusSchema = z.enum([
+  "placed",
+  "accepted",
+  "dispatched",
+])
+
+export type VendorConsignmentStatus = z.infer<
+  typeof vendorConsignmentStatusSchema
+>
+
 export const vendorOrderSchema = z.object({
   id: z.string(),
   display_id: z.number(),
-  status: z.string(),
+  consignment_status: vendorConsignmentStatusSchema,
   total: z.number(),
   currency_code: z.string(),
   items: z.array(
@@ -25,20 +39,6 @@ export type GetVendorsOrdersResponse = z.infer<
 export const getVendorsOrdersInputSchema = paginationQuerySchema
 
 export type GetVendorsOrdersInput = z.infer<typeof getVendorsOrdersInputSchema>
-
-// "placed" is the implicit starting state (no metadata set yet). Only
-// "accepted" and "dispatched" are reachable through the vendor panel today —
-// unfulfillable/in-production/return states are intentionally not modeled
-// yet, scoped out of this first pass.
-export const vendorConsignmentStatusSchema = z.enum([
-  "placed",
-  "accepted",
-  "dispatched",
-])
-
-export type VendorConsignmentStatus = z.infer<
-  typeof vendorConsignmentStatusSchema
->
 
 export const vendorOrderAddressSchema = z.object({
   first_name: z.string().nullable(),

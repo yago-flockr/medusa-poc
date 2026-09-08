@@ -33,20 +33,32 @@ export const getCacheTag = async (tag: string): Promise<string> => {
   }
 }
 
+// Bounding staleness this way, in the one place every data-layer fetch's
+// `next` options come from, matters even when a request-scoped cache tag is
+// also present: that tag is only ever invalidated by the same visitor's own
+// actions (getCacheTag appends `_medusa_cache_id`), so it can never react to
+// a change made outside this Next.js server entirely — a vendor's product or
+// a staff-created region, most concretely. Without this, the very first
+// force-cache fetch for a resource — before that resource existed, e.g. a
+// fresh anonymous visitor hitting the storefront the moment a brand-new
+// backend is bootstrapped — gets cached with no expiry at all and never
+// recovers until the server process restarts.
+const DEFAULT_REVALIDATE_SECONDS = 60
+
 export const getCacheOptions = async (
   tag: string
-): Promise<{ tags: string[] } | Record<string, never>> => {
+): Promise<{ tags: string[]; revalidate: number } | { revalidate: number }> => {
   if (typeof window !== "undefined") {
-    return {}
+    return { revalidate: DEFAULT_REVALIDATE_SECONDS }
   }
 
   const cacheTag = await getCacheTag(tag)
 
   if (!cacheTag) {
-    return {}
+    return { revalidate: DEFAULT_REVALIDATE_SECONDS }
   }
 
-  return { tags: [`${cacheTag}`] }
+  return { tags: [`${cacheTag}`], revalidate: DEFAULT_REVALIDATE_SECONDS }
 }
 
 export const setAuthToken = async (token: string) => {

@@ -12,7 +12,7 @@ import { RadioGroup } from "@/components/ui/radio-group"
 import { RiCheckboxCircleFill, RiLoader4Line } from "@remixicon/react"
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
@@ -72,9 +72,6 @@ const Shipping: React.FC<ShippingProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingPrices, setIsLoadingPrices] = useState(true)
-
-  const [showPickupOptions, setShowPickupOptions] =
-    useState<string>(PICKUP_OPTION_OFF)
   const [calculatedPricesMap, setCalculatedPricesMap] = useState<
     Record<string, number>
   >({})
@@ -97,22 +94,46 @@ const Shipping: React.FC<ShippingProps> = ({
     Record<string, string>
   >(initialSelectionByGroup)
 
+  // Computed once, from the cart's already-selected method at mount (the
+  // same source `initialSelectionByGroup` reads) — this only needs to
+  // reflect what the cart arrived with, not react to the user's own later
+  // clicks, so it's a lazy initializer rather than an effect.
+  const [showPickupOptions, setShowPickupOptions] = useState<string>(() =>
+    availableShippingOptions
+      ?.filter(
+        (sm) =>
+          (sm as unknown as FulfillmentSetInfo).service_zone?.fulfillment_set
+            ?.type === "pickup",
+      )
+      .some((m) => initialSelectionByGroup()[UNGROUPED_KEY] === m.id)
+      ? PICKUP_OPTION_ON
+      : PICKUP_OPTION_OFF,
+  )
+
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
 
   const isOpen = searchParams.get("step") === "delivery"
 
-  const _pickupMethods = availableShippingOptions?.filter(
-    (sm) =>
-      (sm as unknown as FulfillmentSetInfo).service_zone?.fulfillment_set
-        ?.type === "pickup",
+  const _pickupMethods = useMemo(
+    () =>
+      availableShippingOptions?.filter(
+        (sm) =>
+          (sm as unknown as FulfillmentSetInfo).service_zone?.fulfillment_set
+            ?.type === "pickup",
+      ),
+    [availableShippingOptions],
   )
 
-  const _shippingMethods = availableShippingOptions?.filter(
-    (sm) =>
-      (sm as unknown as FulfillmentSetInfo).service_zone?.fulfillment_set
-        ?.type !== "pickup",
+  const _shippingMethods = useMemo(
+    () =>
+      availableShippingOptions?.filter(
+        (sm) =>
+          (sm as unknown as FulfillmentSetInfo).service_zone?.fulfillment_set
+            ?.type !== "pickup",
+      ),
+    [availableShippingOptions],
   )
 
   const hasPickupOptions = !!_pickupMethods?.length
@@ -132,7 +153,7 @@ const Shipping: React.FC<ShippingProps> = ({
 
   const requiredGroupKeys = [
     ...vendorGroups.keys(),
-    ...(ungroupedMethods.length ? [UNGROUPED_KEY] : []),
+    ...(ungroupedMethods.length || hasPickupOptions ? [UNGROUPED_KEY] : []),
   ]
   const everyGroupHasASelection = requiredGroupKeys.every(
     (key) => !!selectedByGroup[key],
@@ -166,15 +187,7 @@ const Shipping: React.FC<ShippingProps> = ({
     } else {
       setIsLoadingPrices(false)
     }
-
-    if (
-      _pickupMethods?.some(
-        (m) => selectedByGroup[UNGROUPED_KEY] === m.id,
-      )
-    ) {
-      setShowPickupOptions(PICKUP_OPTION_ON)
-    }
-  }, [availableShippingOptions])
+  }, [_shippingMethods, cart.id])
 
   const handleEdit = () => {
     router.push(pathname + "?step=delivery", { scroll: false })
@@ -328,7 +341,7 @@ const Shipping: React.FC<ShippingProps> = ({
             </div>
           ))}
 
-          {!!ungroupedMethods.length && (
+          {(hasPickupOptions || !!ungroupedMethods.length) && (
             <div className="grid">
               <div className="flex flex-col">
                 <span className="font-medium text-foreground">
@@ -374,26 +387,28 @@ const Shipping: React.FC<ShippingProps> = ({
                       </RadioPrimitive.Root>
                     </RadioGroup>
                   )}
-                  <RadioGroup
-                    value={selectedByGroup[UNGROUPED_KEY] ?? null}
-                    onValueChange={(v) => {
-                      if (v) {
-                        return handleSetShippingMethod(
+                  {!!ungroupedMethods.length && (
+                    <RadioGroup
+                      value={selectedByGroup[UNGROUPED_KEY] ?? null}
+                      onValueChange={(v) => {
+                        if (v) {
+                          return handleSetShippingMethod(
+                            UNGROUPED_KEY,
+                            v as string,
+                            "shipping",
+                          )
+                        }
+                      }}
+                    >
+                      {ungroupedMethods.map((option) =>
+                        renderOption(
+                          option,
                           UNGROUPED_KEY,
-                          v as string,
-                          "shipping",
-                        )
-                      }
-                    }}
-                  >
-                    {ungroupedMethods.map((option) =>
-                      renderOption(
-                        option,
-                        UNGROUPED_KEY,
-                        selectedByGroup[UNGROUPED_KEY],
-                      ),
-                    )}
-                  </RadioGroup>
+                          selectedByGroup[UNGROUPED_KEY],
+                        ),
+                      )}
+                    </RadioGroup>
+                  )}
                 </div>
               </div>
             </div>

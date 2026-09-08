@@ -1,5 +1,5 @@
 import { createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
-import { setConsignmentStatusStep } from "./steps/set-consignment-status"
+import { setConsignmentStatusStep } from "../shared/steps/set-consignment-status"
 
 export type AcceptConsignmentWorkflowInput = {
   consignmentId: string

@@ -168,12 +168,22 @@ async function resolveSharedOptionsWithLocking(
         // could otherwise create or update this same title between our
         // initial snapshot and this write.
         await lockingModuleService.execute(`product-option:title:${normalizedTitle}`, async () => {
+          // Matched case-insensitively in JS, not by an exact-title DB
+          // filter — a pre-existing row can carry non-canonical casing
+          // (created before this normalization existed), and an exact
+          // `title: canonicalTitle` filter would miss it, creating a
+          // duplicate row that only differs by case. This mirrors the
+          // same normalize-then-compare approach as the outer snapshot,
+          // just re-read fresh inside the lock so a concurrent creator's
+          // just-committed row is also seen.
           const { data: freshExisting } = await query.graph({
             entity: "product_option",
             fields: ["id", "title", "values.value"],
-            filters: { title: canonicalTitle, is_exclusive: false },
+            filters: { is_exclusive: false },
           })
-          const fresh = freshExisting[0]
+          const fresh = freshExisting.find(
+            (option) => normalize(option.title) === normalizedTitle,
+          )
 
           if (!fresh) {
             const [created] = await productModuleService.createProductOptions([

@@ -4,7 +4,6 @@ import {
   createShippingOptionsWorkflow,
   createStockLocationsWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
-  useQueryGraphStep,
 } from "@medusajs/medusa/core-flows"
 import { Modules } from "@medusajs/framework/utils"
 import type { LinkDefinition, StockLocationAddressInput } from "@medusajs/framework/types"
@@ -12,7 +11,7 @@ import { VENDOR_MODULE } from "../../modules/vendor"
 import { STORE_SUPPORTED_CURRENCIES } from "../../lib/markets"
 import { resolveSharedSalesChannelStep } from "./steps/resolve-shared-sales-channel"
 import { createFreeShippingFulfillmentSetStep } from "./steps/create-free-shipping-fulfillment-set"
-import { assertVendorHasShippingProfileStep } from "./steps/assert-vendor-has-shipping-profile"
+import { resolveVendorShippingProfileStep } from "./steps/resolve-vendor-shipping-profile"
 
 export type CreateVendorStockLocationWorkflowInput = {
   vendorId: string
@@ -61,22 +60,8 @@ export const createVendorStockLocationWorkflow = createWorkflow(
     // create-vendor/index.ts) rather than the store's shared default, so a
     // multi-vendor cart can hold one shipping method per vendor later
     // without one evicting another.
-    const { data: vendorResults } = useQueryGraphStep({
-      entity: "vendor",
-      fields: ["id", "shipping_profile.id"],
-      filters: { id: input.vendorId },
-    }).config({ name: "retrieve-vendor-shipping-profile" })
-
-    const vendor = transform({ vendorResults }, (data) => data.vendorResults[0])
-
-    const shippingProfileIdCandidate = transform(
-      { vendor },
-      (data) => data.vendor.shipping_profile?.id,
-    )
-
-    assertVendorHasShippingProfileStep({
+    const { shippingProfileId } = resolveVendorShippingProfileStep({
       vendorId: input.vendorId,
-      shippingProfileId: shippingProfileIdCandidate,
     })
 
     const fulfillmentSet = createFreeShippingFulfillmentSetStep({
@@ -105,7 +90,7 @@ export const createVendorStockLocationWorkflow = createWorkflow(
     createRemoteLinkStep(fulfillmentLinkDefs).config({ name: "link-fulfillment" })
 
     const shippingOptionsInput = transform(
-      { fulfillmentSet, shippingProfileIdCandidate },
+      { fulfillmentSet, shippingProfileId },
       (data) => {
         return [
           {
@@ -113,7 +98,7 @@ export const createVendorStockLocationWorkflow = createWorkflow(
             price_type: "flat" as const,
             provider_id: "manual_manual",
             service_zone_id: data.fulfillmentSet.serviceZoneId,
-            shipping_profile_id: data.shippingProfileIdCandidate!,
+            shipping_profile_id: data.shippingProfileId,
             type: {
               label: "Free Shipping",
               description: "The vendor arranges and pays for delivery themselves.",

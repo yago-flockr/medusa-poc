@@ -5,6 +5,7 @@ import type {
 } from "@medusajs/framework/http"
 import {
   getVendorsOrdersResponseSchema,
+  type VendorConsignmentStatus,
   type VendorOrder,
   type GetVendorsOrdersResponse,
 } from "@dtc/api-contracts/vendor/orders"
@@ -13,10 +14,10 @@ import { resolveVendorUser } from "../resolve-vendor-user"
 
 type ConsignmentListRow = {
   id: string
+  status: VendorConsignmentStatus
   order?: {
     id: string
     display_id: number
-    status: string
     currency_code: string
     items?:
       | ({
@@ -45,9 +46,9 @@ export const GET = async (
     entity: "consignment",
     fields: [
       "id",
+      "status",
       "order.id",
       "order.display_id",
-      "order.status",
       "order.currency_code",
       "order.total",
       "order.summary.*",
@@ -73,7 +74,7 @@ export const GET = async (
       return {
         id: consignment.id,
         display_id: consignment.order.display_id,
-        status: consignment.order.status,
+        consignment_status: consignment.status,
         total: items.reduce((sum, item) => sum + Number(item.total ?? 0), 0),
         currency_code: consignment.order.currency_code,
         items: items.map((item) => ({
@@ -86,7 +87,7 @@ export const GET = async (
 
   const response: GetVendorsOrdersResponse = {
     orders,
-    count: metadata?.count ?? orders.length,
+    count: metadata?.count ?? 0,
     limit,
     offset,
   }

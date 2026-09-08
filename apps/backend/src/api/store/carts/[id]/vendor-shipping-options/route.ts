@@ -62,5 +62,41 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
       : null,
   }))
 
-  res.json({ shipping_options: options })
+  // listShippingOptionsForCartWorkflow scopes options to every fulfillment
+  // set reachable through the cart's sales channel — every vendor sharing
+  // that channel, not just the ones the cart is actually buying from. Narrow
+  // down to the vendors this cart's line items belong to (an option with no
+  // vendor, e.g. a store-level pickup option, is kept regardless — it isn't
+  // vendor-scoped in the first place).
+  const {
+    data: [cart],
+  } = await query.graph({
+    entity: "cart",
+    fields: ["id", "items.product_id"],
+    filters: { id: cartId },
+  })
+
+  const productIds = [
+    ...new Set(
+      (cart?.items ?? [])
+        .map((item) => item?.product_id)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ]
+
+  const { data: products } = await query.graph({
+    entity: "product",
+    fields: ["id", "vendor.id"],
+    filters: { id: productIds },
+  })
+
+  const cartVendorIds = new Set(
+    products.map((product) => product.vendor?.id).filter((id): id is string => Boolean(id)),
+  )
+
+  const scopedOptions = options.filter(
+    (option) => !option.vendor || cartVendorIds.has(option.vendor.id),
+  )
+
+  res.json({ shipping_options: scopedOptions })
 }

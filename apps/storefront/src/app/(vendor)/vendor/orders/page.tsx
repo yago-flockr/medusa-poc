@@ -95,7 +95,7 @@ export default function VendorOrdersPage() {
               <Item key={order.id} variant="outline">
                 <ItemContent>
                   <ItemTitle>Order #{order.display_id}</ItemTitle>
-                  <ItemDescription>{order.status}</ItemDescription>
+                  <ItemDescription>{order.consignment_status}</ItemDescription>
                 </ItemContent>
                 <ItemActions>
                   <Badge variant="muted">
