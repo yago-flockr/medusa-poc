@@ -44,6 +44,7 @@ export const importVendorShopifyProductsWorkflow = createWorkflow(
       matchExistingShopifyProductsStep({ products: pulled.products }),
       resolveShopifyProductPrerequisitesStep({
         shopCurrencyCode: pulled.currency_code,
+        vendorId: input.vendorId,
       }),
     )
 

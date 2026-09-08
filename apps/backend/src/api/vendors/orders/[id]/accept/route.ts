@@ -4,10 +4,10 @@ import type {
 } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
 import { getVendorsOrdersByIdResponseSchema } from "@dtc/api-contracts/vendor/orders"
-import { acceptVendorOrderWorkflow } from "../../../../../workflows/accept-vendor-order"
+import { acceptConsignmentWorkflow } from "../../../../../workflows/accept-consignment"
 import { resolveVendorUser } from "../../../resolve-vendor-user"
-import { assertOwnedVendorOrder } from "../../assert-owned-order"
-import { buildVendorOrderDetail } from "../../build-order-detail"
+import { assertOwnedConsignment } from "../../assert-owned-consignment"
+import { buildConsignmentDetail } from "../../build-consignment-detail"
 
 export const POST = async (
   req: AuthenticatedMedusaRequest,
@@ -20,9 +20,9 @@ export const POST = async (
     "vendor_id",
   ])
 
-  await assertOwnedVendorOrder(query, id, vendorUser.vendor_id)
+  await assertOwnedConsignment(query, id, vendorUser.vendor_id)
 
-  const current = await buildVendorOrderDetail(req.scope, id)
+  const current = await buildConsignmentDetail(req.scope, id)
 
   if (current.consignment_status !== "placed") {
     throw new MedusaError(
@@ -31,9 +31,9 @@ export const POST = async (
     )
   }
 
-  await acceptVendorOrderWorkflow(req.scope).run({ input: { orderId: id } })
+  await acceptConsignmentWorkflow(req.scope).run({ input: { consignmentId: id } })
 
-  const detail = await buildVendorOrderDetail(req.scope, id)
+  const detail = await buildConsignmentDetail(req.scope, id)
 
   res.json(getVendorsOrdersByIdResponseSchema.parse(detail))
 }

@@ -1,4 +1,4 @@
-import { listCartShippingMethods } from "@/store/lib/data/fulfillment"
+import { listVendorShippingOptions } from "@/store/lib/data/fulfillment"
 import { listCartPaymentMethods } from "@/store/lib/data/payment"
 import Addresses from "@/store/modules/checkout/components/addresses"
 import Payment from "@/store/modules/checkout/components/payment"
@@ -17,10 +17,10 @@ export default async function CheckoutForm({
     return null
   }
 
-  const shippingMethods = await listCartShippingMethods(cart.id)
+  const shippingOptions = await listVendorShippingOptions(cart.id)
   const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? "")
 
-  if (!shippingMethods || !paymentMethods) {
+  if (!shippingOptions || !paymentMethods) {
     return null
   }
 
@@ -28,7 +28,7 @@ export default async function CheckoutForm({
     <div className="w-full grid grid-cols-1 gap-y-8">
       <Addresses cart={cart} customer={customer} />
 
-      <Shipping cart={cart} availableShippingMethods={shippingMethods} />
+      <Shipping cart={cart} availableShippingOptions={shippingOptions} />
 
       <Payment cart={cart} availablePaymentMethods={paymentMethods} />
 

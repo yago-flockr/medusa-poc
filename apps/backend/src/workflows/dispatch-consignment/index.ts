@@ -3,21 +3,30 @@ import {
   createOrderFulfillmentWorkflow,
   createOrderShipmentWorkflow,
 } from "@medusajs/medusa/core-flows"
-import { setVendorOrderConsignmentStatusStep } from "../accept-vendor-order/steps/set-vendor-order-consignment-status"
+import { setConsignmentStatusStep } from "../accept-consignment/steps/set-consignment-status"
 
-export type DispatchVendorOrderWorkflowInput = {
+export type DispatchConsignmentWorkflowInput = {
+  consignmentId: string
   orderId: string
+  locationId: string
+  shippingOptionId: string
   items: { id: string; quantity: number }[]
   trackingNumber: string
   trackingUrl?: string
 }
 
-export const dispatchVendorOrderWorkflow = createWorkflow(
-  "dispatch-vendor-order",
-  function (input: DispatchVendorOrderWorkflowInput) {
+// Fulfills just this consignment's own items on the one real order — Medusa
+// already supports fulfilling a subset of an order's items natively (partial
+// fulfillment), so there's no need for a separate order per vendor to get an
+// independent per-vendor dispatch.
+export const dispatchConsignmentWorkflow = createWorkflow(
+  "dispatch-consignment",
+  function (input: DispatchConsignmentWorkflowInput) {
     const fulfillment = createOrderFulfillmentWorkflow.runAsStep({
       input: {
         order_id: input.orderId,
+        location_id: input.locationId,
+        shipping_option_id: input.shippingOptionId,
         items: input.items,
       },
     })
@@ -37,8 +46,8 @@ export const dispatchVendorOrderWorkflow = createWorkflow(
 
     createOrderShipmentWorkflow.runAsStep({ input: shipmentInput })
 
-    const result = setVendorOrderConsignmentStatusStep({
-      orderId: input.orderId,
+    const result = setConsignmentStatusStep({
+      consignmentId: input.consignmentId,
       status: "dispatched",
     })
 
@@ -46,4 +55,4 @@ export const dispatchVendorOrderWorkflow = createWorkflow(
   },
 )
 
-export default dispatchVendorOrderWorkflow
+export default dispatchConsignmentWorkflow

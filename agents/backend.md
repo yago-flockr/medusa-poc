@@ -68,7 +68,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 9. **Fixed pattern per "how am I extending this" scenario** — pick the one that matches, don't improvise a new shape:
    - **Read a linked module's data on a core Medusa model** (e.g. the vendor on a product) → a Module Link, never a core-model change. Copy `links/product-vendor.ts` / `links/product-brand.ts`. Read it via `fields` (`query.graph({ fields: ["*", "vendor.*"] })` in code, `?fields=+vendor.*` on the route) — no new route needed. `db:migrate` after adding the link file.
    - **Create a new standalone custom module** (no relation to core) → Brand's shape: `modules/<name>/{models,service.ts,index.ts}`, register in `medusa-config.ts`, `pnpm exec medusa db:generate <module>` → `db:migrate`, `workflows/create-<name>/` + `workflows/update-<name>/` (rule 8 applies), a route, then update `docs/ER_MODEL.md`.
-   - **Create a new standalone module that's also linked to Medusa** (Vendor's shape) → the same, plus one `links/<core>-<name>.ts` per relationship (Vendor has two: `product-vendor.ts`, `vendor-order.ts`). Decide `isList` deliberately per direction; `db:migrate` again after the link file.
+   - **Create a new standalone module that's also linked to Medusa** (Vendor's shape) → the same, plus one `links/<core>-<name>.ts` per relationship (Vendor has three: `product-vendor.ts`, `consignment-order.ts`, `order-line-item-consignment.ts`). Decide `isList` deliberately per direction; `db:migrate` again after the link file.
    - **Update a standalone or linked model's fields** → edit `models/<name>.ts` → `db:generate <module>` (review the generated migration) → `db:migrate` → propagate the field through every workflow step / validator / `@dtc/api-contracts` schema that touches it → `docs/ER_MODEL.md`. Identical whether or not the model has links — a link lives in its own file and is untouched by a field-only change; only touch a `links/` file if the relationship itself changes.
    - **Assign a linked entity at core-model create/update time** (write side, the complement to the first bullet) → `additional_data` fragment + workflow hook. Copy `api/vendors/additional-data.ts` → composed into `api/admin/products/additional-data.ts` → consumed in `workflows/hooks/created-product.ts` (`createProductsWorkflow.hooks.productsCreated`). One handler per hook name — extend the existing handler for a new module, never register a second one.
    - **Sync external, non-Medusa data into a local model** (the Shopify shape) → not a link, not a hook: a typed external client (`integrations/shopify/client.ts` for the transport + `integrations/shopify/products.ts` for the resource-specific queries, generated via codegen, not hand-typed) feeding a workflow that pulls → resolves Medusa prerequisites → dedupes by `external_id` → calls the real core workflow (e.g. `createProductsWorkflow`) as a step. Never bypass workflows because the source of truth is external.
@@ -299,7 +299,7 @@ starts.
   profile (`query.graph({entity: "shipping_profile"})`, same row
   `seeds/seed-catalog.ts` already uses) and setting it on every vendor
   product at creation (`src/api/vendors/products/route.ts`) — no new model,
-  no per-vendor warehouse system. Additionally, `create-vendor-orders`
+  no per-vendor warehouse system. Additionally, `create-consignments`
   (`steps/assert-items-fulfillable.ts`) now checks every cart item's product
   has a shipping profile *before* the cart is ever completed into an order,
   not after — so a still-missing profile (e.g. on data from before this fix)
@@ -320,25 +320,45 @@ starts.
   vendor route's own unnecessary link-dismissal workflow) were both removed
   rather than fixed, once testing showed neither was solving a real problem.
   See `docs/ER_MODEL.md` "Deleting a vendor's product" for the full story.
-- **Order splitting is spiked, not settled — `docs/spikes/multi-vendor-order.md`.**
-  `src/links/vendor-order.ts`, `src/workflows/create-vendor-orders/`,
-  `POST /store/carts/:id/complete-vendor` (replaces the store's own
-  complete-cart call), `GET /vendors/orders`. Verified: a two-vendor cart
-  produces one payment collection, one parent order, and one child order per
-  vendor, each scoped correctly by vendor. Completing the same cart twice no
-  longer duplicates child orders (fixed by checking `order.metadata.parent_order_id`
-  in addition to the recipe's own vendor-order-link check, which only covered
-  its single-vendor branch). Stress-tested all three anticipated friction
-  points with real evidence: a child order's fulfillment never rolls up to the
-  parent (status must be computed from every child, never read off the parent);
-  Medusa's native partial fulfillment already lets one vendor's order dispatch
-  in waves without a second order (this friction point turned out to be a
-  non-issue); child orders have no `payment_collections` of their own — only
-  the parent does — so refunding one vendor's line needs custom logic, since
-  Medusa's standard per-order refund tooling has nothing to act on for a child
-  order. That last point is real evidence leaning toward consignment records
-  over child orders, but the consignment-record alternative hasn't been built
-  to confirm it — treat this as a lean, not the settled answer.
+- **Order splitting is settled: consignments, not child orders —
+  `docs/spikes/multi-vendor-order.md`.** The official marketplace recipe
+  (parent order + one child order per vendor via `createOrderWorkflow`,
+  `src/links/vendor-order.ts`) was implemented, then retired after real bugs:
+  `createOrderWorkflow` never creates inventory reservations (every child
+  order's fulfillment threw `"No stock reservation found"`), never gets the
+  parent's promo codes forwarded (silently wrong totals shown to vendors),
+  and has no `payment_collection` of its own (`cancelOrderWorkflow` against
+  a child order finds nothing to refund and silently no-ops — no error, no
+  refund). All three trace back to one cause: a child order is shaped like
+  a full order without owning its own payment, and `docs/plan.md` fixes this
+  project's payment as centralized ("one basket, one payment, however many
+  vendors") — so a second order-shaped thing without its own money will
+  always be second-class for anything payment-touching.
+  Replaced with: `src/modules/vendor/models/consignment.ts` (a `Consignment`
+  linked to one vendor, intra-module), `src/links/consignment-order.ts`
+  (one order has many consignments) and
+  `src/links/order-line-item-consignment.ts` (one consignment has many of
+  that order's own line items) — no duplicate order, ever.
+  `src/workflows/create-consignments/` replaces `create-vendor-orders/`
+  (invoked the same way, from `POST /store/carts/:id/complete-vendor`):
+  `completeCartWorkflow` creates the one real order as normal (correct
+  payment/promotions/tax for free), then one `Consignment` per vendor is
+  created and linked to that order's own items — no reservation transfer,
+  no promo forwarding, no second idempotency mechanism, because nothing is
+  duplicated. `src/workflows/accept-consignment/` and
+  `dispatch-consignment/` replace `accept-vendor-order/`/
+  `dispatch-vendor-order/`, operating on the consignment's own `status`
+  column (a real field now, not `order.metadata.consignment_status`) and on
+  the one order's own items scoped to that consignment (Medusa's native
+  partial fulfillment already supports this — one order dispatching in
+  waves per vendor was never actually a problem). `GET /vendors/orders`
+  and `build-consignment-detail.ts` derive a vendor-scoped
+  `fulfillment_status` from that consignment's own items'
+  `detail.{fulfilled,shipped,delivered}_quantity` — never read off the
+  order's own (whole-order) `fulfillment_status`, which would blend every
+  vendor together. If per-vendor payment splitting is ever genuinely needed
+  (independent capture/refund per vendor), that's a separate Stripe
+  Connect-shaped project, not a reason to bring child orders back.
 - **Shopify pull is spiked, not settled — `docs/spikes/vendor-shopify-sync.md`.**
   `src/integrations/shopify/client.ts` (the generic Admin GraphQL transport —
   `runShopifyQuery` + `ShopifyStoreCredentials`, no resource-specific knowledge;
@@ -466,6 +486,27 @@ starts.
   before this change stays exclusive; only new creates get shared. Verified
   against real data: deleted an already-imported product, re-imported it,
   confirmed it reused an existing shared option rather than creating its own.
+
+  **Real bug hit in production use, now fixed:** importing two or more
+  brand-new products in the *same* batch that both introduce the same
+  never-before-seen shared option title (e.g. two new products both getting
+  a "Color" option for the first time) threw `"Product option with title:
+  color, already exists."` `resolveSharedOptionsWithLocking` used to defer
+  creating a missing shared option to the later bulk `createProductsWorkflow`
+  call, and only handled races for options that *already* existed (locked
+  per-id, re-read under the lock) — a title with no existing row at all had
+  no such guard, so two occurrences of it in one flattened batch each built
+  their own fresh `{title, values, is_exclusive: false}` object, and the
+  second insert tripped `product_option`'s global unique index on `title`.
+  Fixed by grouping every occurrence of a title (across the whole batch, not
+  per-product) into one entry before resolving it, and creating a missing
+  option's row directly in this step — locked per title, re-checked under
+  the lock — instead of leaving creation to whatever calls this step next.
+  Every returned entry is now `{id}`, existing or brand new; nothing
+  downstream ever receives a fresh option object for a shared option, so
+  there's nothing left to collide. Verified: two occurrences of the same
+  new title (including a case-variant) in one call resolve to the same
+  option id with values unioned, not two competing rows.
 
   **The Shopify→Medusa product mapping is split into a generic core (`lib/
   external-product.ts` + `lib/build-medusa-product-input.ts`) and a thin
@@ -617,15 +658,17 @@ starts.
 - **Ledger entries are append-only.** A refund or correction is a new row; nothing is
   updated in place.
 - **Checkout must be idempotent.** Lock the cart and guard the split, or a retry or
-  double-click produces duplicate parts that are very hard to unwind. (Currently
-  violated by the spike above — see the note there.)
+  double-click produces duplicate parts that are very hard to unwind.
+  `create-consignments/` does this: `acquireLockStep`/`releaseLockStep` around
+  the cart, one idempotency check (an existing consignment-order link) before
+  creating consignments.
 - **Per-vendor stock means a stock location per vendor**, with reservation on
   placement and release on cancellation.
 - **Extend core flows, never fork them.** Product creation and approval hook into
   Medusa's own product workflow rather than growing a parallel product path.
-- The order container itself is **still open** — child orders (the official
-  marketplace recipe) versus one order plus consignment records. Settle it with
-  `docs/spikes/multi-vendor-order.md` before building a module to keep.
+- The order container question is **settled**: one order plus consignment
+  records, not child orders — see `docs/spikes/multi-vendor-order.md` and
+  the order-splitting bullet above.
 
 ## Conventions and standards
 

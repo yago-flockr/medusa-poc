@@ -6,6 +6,7 @@ import { createVendorProductWorkflow } from "../src/workflows/create-vendor-prod
 import { createVendorStockLocationWorkflow } from "../src/workflows/create-vendor-stock-location"
 import { setVendorInventoryLevelWorkflow } from "../src/workflows/set-vendor-inventory-level"
 import { resolveStorePrerequisites } from "../src/lib/resolve-store-prerequisites"
+import { resolveVendorShippingProfileId } from "../src/lib/resolve-vendor-shipping-profile"
 import {
   resolveProductVariants,
   type VendorVariantInput,
@@ -124,8 +125,7 @@ export default async function seedVendors({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-  const { shippingProfileId, salesChannelId, storeCurrencies } =
-    await resolveStorePrerequisites(query)
+  const { salesChannelId, storeCurrencies } = await resolveStorePrerequisites(query)
 
   logger.info("Seeding demo vendors, vendor users, locations, and products...")
 
@@ -146,6 +146,8 @@ export default async function seedVendors({ container }: ExecArgs) {
       })
       vendorId = vendor.id
     }
+
+    const shippingProfileId = await resolveVendorShippingProfileId(query, vendorId)
 
     const { data: existingVendorUsers } = await query.graph({
       entity: "vendor_user",

@@ -16,6 +16,7 @@ import {
 } from "@dtc/api-contracts/vendor/products"
 import { createVendorProductWorkflow } from "../../../workflows/create-vendor-product"
 import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
+import { resolveVendorShippingProfileId } from "../../../lib/resolve-vendor-shipping-profile"
 import { parseListQuery } from "../../../lib/list-query"
 import { resolveVendorUser } from "../resolve-vendor-user"
 import { resolveProductVariants } from "./build-variants"
@@ -75,8 +76,8 @@ export const POST = async (
     "vendor_id",
   ])
 
-  const { shippingProfileId, salesChannelId, storeCurrencies } =
-    await resolveStorePrerequisites(query)
+  const { salesChannelId, storeCurrencies } = await resolveStorePrerequisites(query)
+  const shippingProfileId = await resolveVendorShippingProfileId(query, vendorUser.vendor_id)
 
   const { title, subtitle, description, handle, images, options, variants } =
     req.validatedBody

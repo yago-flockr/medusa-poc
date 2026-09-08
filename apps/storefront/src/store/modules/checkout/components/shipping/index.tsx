@@ -1,6 +1,7 @@
 "use client"
 import { setShippingMethod } from "@/store/lib/data/cart"
 import { calculatePriceForShippingOption } from "@/store/lib/data/fulfillment"
+import type { VendorShippingOption } from "@/store/lib/data/fulfillment"
 import { convertToLocale } from "@/store/lib/util/money"
 import ErrorMessage from "@/store/modules/checkout/components/error-message"
 import Divider from "@/store/modules/common/components/divider"
@@ -16,9 +17,23 @@ import { useEffect, useState } from "react"
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
 
+// Options with no vendor (e.g. a store-level pickup option) are grouped
+// under this key so every group — vendor-owned or not — goes through the
+// same "one radio group, one selection" logic.
+const UNGROUPED_KEY = "__UNGROUPED"
+
 type ShippingProps = {
   cart: HttpTypes.StoreCart
-  availableShippingMethods: HttpTypes.StoreCartShippingOption[] | null
+  availableShippingOptions: VendorShippingOption[] | null
+}
+
+type FulfillmentSetInfo = {
+  service_zone?: {
+    fulfillment_set?: {
+      type?: string
+      location?: { address: HttpTypes.StoreCartAddress }
+    }
+  }
 }
 
 function formatAddress(address: HttpTypes.StoreCartAddress) {
@@ -47,9 +62,13 @@ function formatAddress(address: HttpTypes.StoreCartAddress) {
   return ret
 }
 
+function groupKeyFor(option: VendorShippingOption) {
+  return option.vendor?.id ?? UNGROUPED_KEY
+}
+
 const Shipping: React.FC<ShippingProps> = ({
   cart,
-  availableShippingMethods,
+  availableShippingOptions,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingPrices, setIsLoadingPrices] = useState(true)
@@ -60,9 +79,23 @@ const Shipping: React.FC<ShippingProps> = ({
     Record<string, number>
   >({})
   const [error, setError] = useState<string | null>(null)
-  const [shippingMethodId, setShippingMethodId] = useState<string | null>(
-    cart.shipping_methods?.at(-1)?.shipping_option_id || null,
-  )
+
+  const initialSelectionByGroup = () => {
+    const selection: Record<string, string> = {}
+    for (const method of cart.shipping_methods ?? []) {
+      const option = availableShippingOptions?.find(
+        (o) => o.id === method.shipping_option_id,
+      )
+      if (option) {
+        selection[groupKeyFor(option)] = option.id
+      }
+    }
+    return selection
+  }
+
+  const [selectedByGroup, setSelectedByGroup] = useState<
+    Record<string, string>
+  >(initialSelectionByGroup)
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -70,35 +103,40 @@ const Shipping: React.FC<ShippingProps> = ({
 
   const isOpen = searchParams.get("step") === "delivery"
 
-  const _shippingMethods = availableShippingMethods?.filter(
+  const _pickupMethods = availableShippingOptions?.filter(
     (sm) =>
-      (
-        sm as unknown as {
-          service_zone?: {
-            fulfillment_set?: {
-              type?: string
-              location?: { address: HttpTypes.StoreCartAddress }
-            }
-          }
-        }
-      ).service_zone?.fulfillment_set?.type !== "pickup",
+      (sm as unknown as FulfillmentSetInfo).service_zone?.fulfillment_set
+        ?.type === "pickup",
   )
 
-  const _pickupMethods = availableShippingMethods?.filter(
+  const _shippingMethods = availableShippingOptions?.filter(
     (sm) =>
-      (
-        sm as unknown as {
-          service_zone?: {
-            fulfillment_set?: {
-              type?: string
-              location?: { address: HttpTypes.StoreCartAddress }
-            }
-          }
-        }
-      ).service_zone?.fulfillment_set?.type === "pickup",
+      (sm as unknown as FulfillmentSetInfo).service_zone?.fulfillment_set
+        ?.type !== "pickup",
   )
 
   const hasPickupOptions = !!_pickupMethods?.length
+
+  const vendorGroups = new Map<string, VendorShippingOption[]>()
+  const ungroupedMethods: VendorShippingOption[] = []
+
+  for (const option of _shippingMethods ?? []) {
+    if (option.vendor) {
+      const group = vendorGroups.get(option.vendor.id) ?? []
+      group.push(option)
+      vendorGroups.set(option.vendor.id, group)
+    } else {
+      ungroupedMethods.push(option)
+    }
+  }
+
+  const requiredGroupKeys = [
+    ...vendorGroups.keys(),
+    ...(ungroupedMethods.length ? [UNGROUPED_KEY] : []),
+  ]
+  const everyGroupHasASelection = requiredGroupKeys.every(
+    (key) => !!selectedByGroup[key],
+  )
 
   useEffect(() => {
     setIsLoadingPrices(true)
@@ -122,13 +160,21 @@ const Shipping: React.FC<ShippingProps> = ({
           setCalculatedPricesMap(pricesMap)
           setIsLoadingPrices(false)
         })
+      } else {
+        setIsLoadingPrices(false)
       }
+    } else {
+      setIsLoadingPrices(false)
     }
 
-    if (_pickupMethods?.find((m) => m.id === shippingMethodId)) {
+    if (
+      _pickupMethods?.some(
+        (m) => selectedByGroup[UNGROUPED_KEY] === m.id,
+      )
+    ) {
       setShowPickupOptions(PICKUP_OPTION_ON)
     }
-  }, [availableShippingMethods])
+  }, [availableShippingOptions])
 
   const handleEdit = () => {
     router.push(pathname + "?step=delivery", { scroll: false })
@@ -139,6 +185,7 @@ const Shipping: React.FC<ShippingProps> = ({
   }
 
   const handleSetShippingMethod = async (
+    groupKey: string,
     id: string,
     variant: "shipping" | "pickup",
   ) => {
@@ -150,17 +197,13 @@ const Shipping: React.FC<ShippingProps> = ({
       setShowPickupOptions(PICKUP_OPTION_OFF)
     }
 
-    let currentId: string | null = null
+    const previousId = selectedByGroup[groupKey]
     setIsLoading(true)
-    setShippingMethodId((prev) => {
-      currentId = prev
-      return id
-    })
+    setSelectedByGroup((prev) => ({ ...prev, [groupKey]: id }))
 
     await setShippingMethod({ cartId: cart.id, shippingMethodId: id })
       .catch((err) => {
-        setShippingMethodId(currentId)
-
+        setSelectedByGroup((prev) => ({ ...prev, [groupKey]: previousId }))
         setError(err.message)
       })
       .finally(() => {
@@ -171,6 +214,55 @@ const Shipping: React.FC<ShippingProps> = ({
   useEffect(() => {
     setError(null)
   }, [isOpen])
+
+  const renderOption = (
+    option: VendorShippingOption,
+    groupKey: string,
+    selectedId: string | undefined,
+  ) => {
+    const isDisabled =
+      option.price_type === "calculated" &&
+      !isLoadingPrices &&
+      typeof calculatedPricesMap[option.id] !== "number"
+
+    return (
+      <RadioPrimitive.Root
+        key={option.id}
+        value={option.id}
+        data-testid="delivery-option-radio"
+        disabled={isDisabled}
+        className={cn(
+          "mb-2 flex cursor-pointer items-center justify-between rounded-md border px-8 py-4 text-sm hover:shadow-sm",
+          option.id === selectedId && "border-primary",
+          isDisabled && "cursor-not-allowed hover:shadow-none",
+        )}
+      >
+        <div className="flex items-center gap-x-4">
+          <span className="flex size-4 items-center justify-center rounded-full border border-input">
+            <RadioPrimitive.Indicator className="size-2 rounded-full bg-primary" />
+          </span>
+          <span>{option.name}</span>
+        </div>
+        <span className="justify-self-end text-foreground">
+          {option.price_type === "flat" ? (
+            convertToLocale({
+              amount: option.amount!,
+              currency_code: cart?.currency_code,
+            })
+          ) : calculatedPricesMap[option.id] ? (
+            convertToLocale({
+              amount: calculatedPricesMap[option.id],
+              currency_code: cart?.currency_code,
+            })
+          ) : isLoadingPrices ? (
+            <RiLoader4Line className="animate-spin" />
+          ) : (
+            "-"
+          )}
+        </span>
+      </RadioPrimitive.Root>
+    )
+  }
 
   return (
     <div className="bg-background">
@@ -203,107 +295,109 @@ const Shipping: React.FC<ShippingProps> = ({
       </div>
       {isOpen ? (
         <>
-          <div className="grid">
-            <div className="flex flex-col">
-              <span className="font-medium text-foreground">
-                Shipping method
-              </span>
-              <span className="mb-4 text-muted-foreground">
-                How would you like you order delivered
-              </span>
-            </div>
-            <div data-testid="delivery-options-container">
-              <div className="pt-2 pb-8 md:pt-0">
-                {hasPickupOptions && (
+          {[...vendorGroups.entries()].map(([vendorId, options]) => (
+            <div className="grid" key={vendorId}>
+              <div className="flex flex-col">
+                <span className="font-medium text-foreground">
+                  Shipping from {options[0].vendor?.name}
+                </span>
+                <span className="mb-4 text-muted-foreground">
+                  How would you like this part of your order delivered
+                </span>
+              </div>
+              <div data-testid="delivery-options-container">
+                <div className="pt-2 pb-8 md:pt-0">
                   <RadioGroup
-                    value={showPickupOptions}
-                    onValueChange={(_value) => {
-                      const id = _pickupMethods.find(
-                        (option) => !option.insufficient_inventory,
-                      )?.id
-
-                      if (id) {
-                        handleSetShippingMethod(id, "pickup")
+                    value={selectedByGroup[vendorId] ?? null}
+                    onValueChange={(v) => {
+                      if (v) {
+                        return handleSetShippingMethod(
+                          vendorId,
+                          v as string,
+                          "shipping",
+                        )
                       }
                     }}
                   >
-                    <RadioPrimitive.Root
-                      value={PICKUP_OPTION_ON}
-                      data-testid="delivery-option-radio"
-                      className={cn(
-                        "mb-2 flex cursor-pointer items-center justify-between rounded-md border px-8 py-4 text-sm hover:shadow-sm",
-                        showPickupOptions === PICKUP_OPTION_ON &&
-                          "border-primary",
-                      )}
-                    >
-                      <div className="flex items-center gap-x-4">
-                        <span className="flex size-4 items-center justify-center rounded-full border border-input">
-                          <RadioPrimitive.Indicator className="size-2 rounded-full bg-primary" />
-                        </span>
-                        <span>Pick up your order</span>
-                      </div>
-                      <span className="justify-self-end text-foreground">
-                        -
-                      </span>
-                    </RadioPrimitive.Root>
+                    {options.map((option) =>
+                      renderOption(option, vendorId, selectedByGroup[vendorId]),
+                    )}
                   </RadioGroup>
-                )}
-                <RadioGroup
-                  value={shippingMethodId}
-                  onValueChange={(v) => {
-                    if (v) {
-                      return handleSetShippingMethod(v as string, "shipping")
-                    }
-                  }}
-                >
-                  {_shippingMethods?.map((option) => {
-                    const isDisabled =
-                      option.price_type === "calculated" &&
-                      !isLoadingPrices &&
-                      typeof calculatedPricesMap[option.id] !== "number"
+                </div>
+              </div>
+            </div>
+          ))}
 
-                    return (
+          {!!ungroupedMethods.length && (
+            <div className="grid">
+              <div className="flex flex-col">
+                <span className="font-medium text-foreground">
+                  Shipping method
+                </span>
+                <span className="mb-4 text-muted-foreground">
+                  How would you like you order delivered
+                </span>
+              </div>
+              <div data-testid="delivery-options-container">
+                <div className="pt-2 pb-8 md:pt-0">
+                  {hasPickupOptions && (
+                    <RadioGroup
+                      value={showPickupOptions}
+                      onValueChange={(_value) => {
+                        const id = _pickupMethods.find(
+                          (option) => !option.insufficient_inventory,
+                        )?.id
+
+                        if (id) {
+                          handleSetShippingMethod(UNGROUPED_KEY, id, "pickup")
+                        }
+                      }}
+                    >
                       <RadioPrimitive.Root
-                        key={option.id}
-                        value={option.id}
+                        value={PICKUP_OPTION_ON}
                         data-testid="delivery-option-radio"
-                        disabled={isDisabled}
                         className={cn(
                           "mb-2 flex cursor-pointer items-center justify-between rounded-md border px-8 py-4 text-sm hover:shadow-sm",
-                          option.id === shippingMethodId && "border-primary",
-                          isDisabled && "cursor-not-allowed hover:shadow-none",
+                          showPickupOptions === PICKUP_OPTION_ON &&
+                            "border-primary",
                         )}
                       >
                         <div className="flex items-center gap-x-4">
                           <span className="flex size-4 items-center justify-center rounded-full border border-input">
                             <RadioPrimitive.Indicator className="size-2 rounded-full bg-primary" />
                           </span>
-                          <span>{option.name}</span>
+                          <span>Pick up your order</span>
                         </div>
                         <span className="justify-self-end text-foreground">
-                          {option.price_type === "flat" ? (
-                            convertToLocale({
-                              amount: option.amount!,
-                              currency_code: cart?.currency_code,
-                            })
-                          ) : calculatedPricesMap[option.id] ? (
-                            convertToLocale({
-                              amount: calculatedPricesMap[option.id],
-                              currency_code: cart?.currency_code,
-                            })
-                          ) : isLoadingPrices ? (
-                            <RiLoader4Line className="animate-spin" />
-                          ) : (
-                            "-"
-                          )}
+                          -
                         </span>
                       </RadioPrimitive.Root>
-                    )
-                  })}
-                </RadioGroup>
+                    </RadioGroup>
+                  )}
+                  <RadioGroup
+                    value={selectedByGroup[UNGROUPED_KEY] ?? null}
+                    onValueChange={(v) => {
+                      if (v) {
+                        return handleSetShippingMethod(
+                          UNGROUPED_KEY,
+                          v as string,
+                          "shipping",
+                        )
+                      }
+                    }}
+                  >
+                    {ungroupedMethods.map((option) =>
+                      renderOption(
+                        option,
+                        UNGROUPED_KEY,
+                        selectedByGroup[UNGROUPED_KEY],
+                      ),
+                    )}
+                  </RadioGroup>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {showPickupOptions === PICKUP_OPTION_ON && (
             <div className="grid">
@@ -316,10 +410,14 @@ const Shipping: React.FC<ShippingProps> = ({
               <div data-testid="delivery-options-container">
                 <div className="pt-2 pb-8 md:pt-0">
                   <RadioGroup
-                    value={shippingMethodId}
+                    value={selectedByGroup[UNGROUPED_KEY] ?? null}
                     onValueChange={(v) => {
                       if (v) {
-                        return handleSetShippingMethod(v as string, "pickup")
+                        return handleSetShippingMethod(
+                          UNGROUPED_KEY,
+                          v as string,
+                          "pickup",
+                        )
                       }
                     }}
                   >
@@ -332,7 +430,7 @@ const Shipping: React.FC<ShippingProps> = ({
                           data-testid="delivery-option-radio"
                           className={cn(
                             "mb-2 flex cursor-pointer items-center justify-between rounded-md border px-8 py-4 text-sm hover:shadow-sm",
-                            option.id === shippingMethodId &&
+                            option.id === selectedByGroup[UNGROUPED_KEY] &&
                               "border-primary",
                             option.insufficient_inventory &&
                               "cursor-not-allowed hover:shadow-none",
@@ -346,17 +444,8 @@ const Shipping: React.FC<ShippingProps> = ({
                               <span>{option.name}</span>
                               <span className="text-muted-foreground">
                                 {formatAddress(
-                                  (
-                                    option as unknown as {
-                                      service_zone?: {
-                                        fulfillment_set?: {
-                                          location?: {
-                                            address: HttpTypes.StoreCartAddress
-                                          }
-                                        }
-                                      }
-                                    }
-                                  ).service_zone?.fulfillment_set?.location
+                                  (option as unknown as FulfillmentSetInfo)
+                                    .service_zone?.fulfillment_set?.location
                                     ?.address as HttpTypes.StoreCartAddress,
                                 )}
                               </span>
@@ -385,7 +474,7 @@ const Shipping: React.FC<ShippingProps> = ({
             <Button
               size="lg"
               onClick={handleSubmit}
-              disabled={isLoading || !cart.shipping_methods?.[0]}
+              disabled={isLoading || !everyGroupHasASelection}
               data-testid="submit-delivery-option-button"
             >
               {isLoading ? "Loading..." : "Continue to payment"}
@@ -396,17 +485,23 @@ const Shipping: React.FC<ShippingProps> = ({
         <div>
           <div className="text-sm">
             {cart && (cart.shipping_methods?.length ?? 0) > 0 && (
-              <div className="flex w-1/3 flex-col">
-                <span className="mb-1 font-medium text-foreground">
-                  Method
-                </span>
-                <span className="text-muted-foreground">
-                  {cart.shipping_methods!.at(-1)!.name}{" "}
-                  {convertToLocale({
-                    amount: cart.shipping_methods!.at(-1)!.amount!,
-                    currency_code: cart?.currency_code,
-                  })}
-                </span>
+              <div className="flex flex-col gap-y-2">
+                {cart.shipping_methods!.map((method) => (
+                  <div key={method.id} className="flex w-1/3 flex-col">
+                    <span className="mb-1 font-medium text-foreground">
+                      {availableShippingOptions?.find(
+                        (o) => o.id === method.shipping_option_id,
+                      )?.vendor?.name ?? "Method"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {method.name}{" "}
+                      {convertToLocale({
+                        amount: method.amount!,
+                        currency_code: cart?.currency_code,
+                      })}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </div>

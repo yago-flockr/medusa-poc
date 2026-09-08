@@ -1,6 +1,7 @@
 import { model } from "@medusajs/framework/utils"
 import { VendorUser } from "./vendor-user"
 import { VendorIntegrationConnection } from "./vendor-integration-connection"
+import { Consignment } from "./consignment"
 
 export const Vendor = model.define("vendor", {
   id: model.id().primaryKey(),
@@ -11,6 +12,9 @@ export const Vendor = model.define("vendor", {
     mappedBy: "vendor",
   }),
   integration_connections: model.hasMany(() => VendorIntegrationConnection, {
+    mappedBy: "vendor",
+  }),
+  consignments: model.hasMany(() => Consignment, {
     mappedBy: "vendor",
   }),
 })

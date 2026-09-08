@@ -1,13 +1,13 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
 
-export type AssertVendorHasNoOrdersStepInput = {
+export type AssertVendorHasNoConsignmentsStepInput = {
   id: string
 }
 
-export const assertVendorHasNoOrdersStep = createStep(
-  "assert-vendor-has-no-orders",
-  async (input: AssertVendorHasNoOrdersStepInput, { container }) => {
+export const assertVendorHasNoConsignmentsStep = createStep(
+  "assert-vendor-has-no-consignments",
+  async (input: AssertVendorHasNoConsignmentsStepInput, { container }) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
     const {
@@ -15,14 +15,14 @@ export const assertVendorHasNoOrdersStep = createStep(
     } = await query.graph({
       entity: "vendor",
       filters: { id: input.id },
-      fields: ["id", "orders.id"],
+      fields: ["id", "consignments.id"],
     })
 
-    const orderCount = vendor?.orders?.length ?? 0
-    if (orderCount > 0) {
+    const consignmentCount = vendor?.consignments?.length ?? 0
+    if (consignmentCount > 0) {
       throw new MedusaError(
         MedusaError.Types.NOT_ALLOWED,
-        `Vendor ${input.id} has ${orderCount} order(s) — remove or reassign them before deleting this vendor.`,
+        `Vendor ${input.id} has ${consignmentCount} consignment(s) — remove or reassign them before deleting this vendor.`,
       )
     }
 

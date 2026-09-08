@@ -5,8 +5,8 @@ import type {
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { getVendorsOrdersByIdResponseSchema } from "@dtc/api-contracts/vendor/orders"
 import { resolveVendorUser } from "../../resolve-vendor-user"
-import { assertOwnedVendorOrder } from "../assert-owned-order"
-import { buildVendorOrderDetail } from "../build-order-detail"
+import { assertOwnedConsignment } from "../assert-owned-consignment"
+import { buildConsignmentDetail } from "../build-consignment-detail"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -19,9 +19,9 @@ export const GET = async (
     "vendor_id",
   ])
 
-  await assertOwnedVendorOrder(query, id, vendorUser.vendor_id)
+  await assertOwnedConsignment(query, id, vendorUser.vendor_id)
 
-  const detail = await buildVendorOrderDetail(req.scope, id)
+  const detail = await buildConsignmentDetail(req.scope, id)
 
   res.json(getVendorsOrdersByIdResponseSchema.parse(detail))
 }

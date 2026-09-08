@@ -24,11 +24,19 @@ export type CanonicalTitleByNormalized = Record<string, string>
 // value). Same idea one level down, for option values.
 export type CanonicalValuesByTitle = Record<string, Record<string, string>>
 
-type OptionCompensation = {
+type OptionUpdateCompensation = {
+  kind: "updated"
   id: string
   previousTitle: string
   previousValues: string[]
 }
+
+type OptionCreateCompensation = {
+  kind: "created"
+  id: string
+}
+
+type OptionCompensation = OptionUpdateCompensation | OptionCreateCompensation
 
 export function normalize(value: string): string {
   return value.trim().toLowerCase()
@@ -102,9 +110,17 @@ function canonicalValuesFor(
 // Medusa's shared (is_exclusive: false) product options are looked up by
 // title with a DB-level unique constraint, so every product with the same
 // option title (compared case-insensitively) must resolve to the same
-// underlying row — and that row's title/values are forced to canonical
-// casing every time they're touched, correcting any stale casing left over
-// from before this normalization existed.
+// underlying row. Every option in `options` — whether it already exists or
+// is being introduced for the first time — is resolved here to a real row
+// id before this step returns; nothing downstream (createProductsWorkflow)
+// is ever handed a fresh `{title, values}` object for a shared option. That
+// matters because a single call to this step can carry the same brand-new
+// title more than once (two products in one Shopify import batch both
+// introducing "color" for the first time, say) — if creation were left to
+// createProductsWorkflow instead, each occurrence would try to insert its
+// own row and the second would trip the option's global unique title index.
+// Grouping every occurrence of a title into one entry, resolved exactly
+// once, is what prevents that regardless of how many products share it.
 async function resolveSharedOptionsWithLocking(
   options: { title: string; values: string[] }[],
   container: MedusaContainer,
@@ -124,96 +140,105 @@ async function resolveSharedOptionsWithLocking(
     filters: { is_exclusive: false },
   })
 
-  const existingByNormalizedTitle = new Map(
-    existingOptions.map((option) => [normalize(option.title), option]),
+  const resolvedByNormalizedTitle = new Map(
+    existingOptions.map((option) => [normalize(option.title), { id: option.id }]),
   )
 
   const canonicalValuesByTitle: CanonicalValuesByTitle = {}
+  const compensation: OptionCompensation[] = []
 
-  const updates = (
-    await Promise.all(
-      options.flatMap((option) => {
-        const canonicalTitle = canonicalize(option.title)
-        const existing = existingByNormalizedTitle.get(normalize(option.title))
+  const occurrencesByNormalizedTitle = new Map<string, { title: string; values: string[] }[]>()
+  for (const option of options) {
+    const key = normalize(option.title)
+    const list = occurrencesByNormalizedTitle.get(key) ?? []
+    list.push(option)
+    occurrencesByNormalizedTitle.set(key, list)
+  }
 
-        if (!existing) {
-          canonicalValuesByTitle[canonicalTitle] = Object.fromEntries(
-            option.values.map((value) => [normalize(value), canonicalize(value)]),
-          )
-          return []
-        }
+  await Promise.all(
+    Array.from(occurrencesByNormalizedTitle.entries()).map(
+      async ([normalizedTitle, occurrences]) => {
+        const canonicalTitle = canonicalize(occurrences[0].title)
+        const incomingValues = Array.from(
+          new Set(occurrences.flatMap((option) => option.values).map(canonicalize)),
+        )
 
-        return [
-          // Locked per option id, with a fresh read inside the lock — two
-          // concurrent writers adding different values would otherwise both
-          // read the same stale list and one's addition would silently
-          // overwrite the other's.
-          lockingModuleService.execute(`product-option:${existing.id}`, async () => {
-            const {
-              data: [fresh],
-            } = await query.graph({
-              entity: "product_option",
-              fields: ["values.value"],
-              filters: { id: existing.id },
-            })
+        // Locked per title, with a fresh read inside the lock — a
+        // concurrent request (a second import running at the same time)
+        // could otherwise create or update this same title between our
+        // initial snapshot and this write.
+        await lockingModuleService.execute(`product-option:title:${normalizedTitle}`, async () => {
+          const { data: freshExisting } = await query.graph({
+            entity: "product_option",
+            fields: ["id", "title", "values.value"],
+            filters: { title: canonicalTitle, is_exclusive: false },
+          })
+          const fresh = freshExisting[0]
 
-            const existingValues = (fresh.values ?? [])
-              .filter((value) => value != null)
-              .map((value) => value!.value)
+          if (!fresh) {
+            const [created] = await productModuleService.createProductOptions([
+              { title: canonicalTitle, values: incomingValues, is_exclusive: false },
+            ])
 
-            // Existing values are matched case-insensitively but never
-            // renamed/removed in place — Medusa refuses to drop a value
-            // that's already linked to a real variant, and correctly so
-            // (renaming "s" to "S" here would look like deleting "s" and
-            // adding "S"). Only genuinely new values get added, and they're
-            // added in canonical casing so the option converges over time
-            // as new values get introduced.
-            const existingValuesNormalized = new Set(existingValues.map(normalize))
-            const missingValues = option.values
-              .map(canonicalize)
-              .filter((value) => !existingValuesNormalized.has(normalize(value)))
-            const finalValues = [...existingValues, ...missingValues]
-
+            resolvedByNormalizedTitle.set(normalizedTitle, { id: created.id })
             canonicalValuesByTitle[canonicalTitle] = Object.fromEntries(
-              finalValues.map((v) => [normalize(v), v]),
+              incomingValues.map((v) => [normalize(v), v]),
             )
+            compensation.push({ kind: "created", id: created.id })
+            return
+          }
 
-            const titleChanged = existing.title !== canonicalTitle
+          const existingValues = (fresh.values ?? [])
+            .filter((value) => value != null)
+            .map((value) => value!.value)
 
-            if (!missingValues.length && !titleChanged) {
-              return null
-            }
+          // Existing values are matched case-insensitively but never
+          // renamed/removed in place — Medusa refuses to drop a value
+          // that's already linked to a real variant, and correctly so
+          // (renaming "s" to "S" here would look like deleting "s" and
+          // adding "S"). Only genuinely new values get added, and they're
+          // added in canonical casing so the option converges over time
+          // as new values get introduced.
+          const existingValuesNormalized = new Set(existingValues.map(normalize))
+          const missingValues = incomingValues.filter(
+            (value) => !existingValuesNormalized.has(normalize(value)),
+          )
+          const finalValues = [...existingValues, ...missingValues]
 
-            await productModuleService.updateProductOptions(existing.id, {
-              title: canonicalTitle,
-              values: finalValues,
-            })
+          canonicalValuesByTitle[canonicalTitle] = Object.fromEntries(
+            finalValues.map((v) => [normalize(v), v]),
+          )
 
-            return {
-              id: existing.id,
-              previousTitle: existing.title,
-              previousValues: existingValues,
-            }
-          }),
-        ]
-      }),
-    )
-  ).filter((update): update is OptionCompensation => update !== null)
+          resolvedByNormalizedTitle.set(normalizedTitle, { id: fresh.id })
 
-  const resolved: ResolvedOption[] = options.map((option) => {
-    const existing = existingByNormalizedTitle.get(normalize(option.title))
-    return existing
-      ? { id: existing.id }
-      : {
-          title: canonicalize(option.title),
-          values: option.values.map(canonicalize),
-          is_exclusive: false,
-        }
-  })
+          const titleChanged = fresh.title !== canonicalTitle
+          if (!missingValues.length && !titleChanged) {
+            return
+          }
+
+          await productModuleService.updateProductOptions(fresh.id, {
+            title: canonicalTitle,
+            values: finalValues,
+          })
+
+          compensation.push({
+            kind: "updated",
+            id: fresh.id,
+            previousTitle: fresh.title,
+            previousValues: existingValues,
+          })
+        })
+      },
+    ),
+  )
+
+  const resolved: ResolvedOption[] = options.map((option) => ({
+    id: resolvedByNormalizedTitle.get(normalize(option.title))!.id,
+  }))
 
   return {
     resolved,
-    compensation: updates,
+    compensation,
     canonicalTitleByNormalized: canonicalTitlesFor(options),
     canonicalValuesByTitle,
   }
@@ -272,13 +297,21 @@ export const resolveSharedProductOptionsStep = createStep(
 
     const productModuleService = container.resolve(Modules.PRODUCT)
 
-    await Promise.all(
-      compensation.map((entry) =>
+    const createdIds = compensation
+      .filter((entry): entry is OptionCreateCompensation => entry.kind === "created")
+      .map((entry) => entry.id)
+    const updatedEntries = compensation.filter(
+      (entry): entry is OptionUpdateCompensation => entry.kind === "updated",
+    )
+
+    await Promise.all([
+      createdIds.length ? productModuleService.deleteProductOptions(createdIds) : null,
+      ...updatedEntries.map((entry) =>
         productModuleService.updateProductOptions(entry.id, {
           title: entry.previousTitle,
           values: entry.previousValues,
         }),
       ),
-    )
+    ])
   },
 )

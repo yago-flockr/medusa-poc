@@ -4,8 +4,8 @@ import { defineLink } from "@medusajs/framework/utils"
 
 export default defineLink(
   {
-    linkable: OrderModule.linkable.order,
+    linkable: VendorModule.linkable.consignment,
     isList: true,
   },
-  VendorModule.linkable.vendor,
+  OrderModule.linkable.order,
 )

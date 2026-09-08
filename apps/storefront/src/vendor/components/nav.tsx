@@ -50,7 +50,7 @@ export function VendorNav() {
             size="icon-sm"
             aria-label="Refresh everything"
             onClick={() => {
-              queryClient.clear()
+              queryClient.invalidateQueries()
             }}
           >
             <RiRefreshLine />

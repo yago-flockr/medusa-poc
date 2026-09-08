@@ -1,9 +1,15 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
-import type { CartLineItemDTO } from "@medusajs/framework/types"
+
+// Works for either cart or order line items — both carry these two fields,
+// and grouping-by-vendor never needs anything else.
+export type VendorRoutableItem = {
+  id: string
+  product_id?: string | null
+}
 
 export type GroupVendorItemsStepInput = {
-  items: CartLineItemDTO[]
+  items: VendorRoutableItem[]
 }
 
 export const groupVendorItemsStep = createStep(
@@ -29,7 +35,7 @@ export const groupVendorItemsStep = createStep(
         .map((product) => [product.id, product.vendor!.id]),
     )
 
-    const vendorsItems: Record<string, CartLineItemDTO[]> = {}
+    const vendorsItems: Record<string, VendorRoutableItem[]> = {}
 
     for (const item of items) {
       const vendorId = item.product_id

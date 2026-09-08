@@ -12,6 +12,7 @@ import { VENDOR_MODULE } from "../../modules/vendor"
 import { STORE_SUPPORTED_CURRENCIES } from "../../lib/markets"
 import { resolveSharedSalesChannelStep } from "./steps/resolve-shared-sales-channel"
 import { createFreeShippingFulfillmentSetStep } from "./steps/create-free-shipping-fulfillment-set"
+import { assertVendorHasShippingProfileStep } from "./steps/assert-vendor-has-shipping-profile"
 
 export type CreateVendorStockLocationWorkflowInput = {
   vendorId: string
@@ -55,11 +56,28 @@ export const createVendorStockLocationWorkflow = createWorkflow(
     // staff step, no Admin visit. The vendor arranges and pays for delivery
     // themselves (docs/features/multi-vendor-marketplace.md, "Fulfilling"),
     // so this is a placeholder to satisfy Medusa's "a shipping method must
-    // exist to complete checkout" rule, not a real shipping cost.
-    const { data: shippingProfiles } = useQueryGraphStep({
-      entity: "shipping_profile",
-      fields: ["id"],
-    }).config({ name: "retrieve-shipping-profile" })
+    // exist to complete checkout" rule, not a real shipping cost. It's tied
+    // to this vendor's own shipping profile (created with the vendor, see
+    // create-vendor/index.ts) rather than the store's shared default, so a
+    // multi-vendor cart can hold one shipping method per vendor later
+    // without one evicting another.
+    const { data: vendorResults } = useQueryGraphStep({
+      entity: "vendor",
+      fields: ["id", "shipping_profile.id"],
+      filters: { id: input.vendorId },
+    }).config({ name: "retrieve-vendor-shipping-profile" })
+
+    const vendor = transform({ vendorResults }, (data) => data.vendorResults[0])
+
+    const shippingProfileIdCandidate = transform(
+      { vendor },
+      (data) => data.vendor.shipping_profile?.id,
+    )
+
+    assertVendorHasShippingProfileStep({
+      vendorId: input.vendorId,
+      shippingProfileId: shippingProfileIdCandidate,
+    })
 
     const fulfillmentSet = createFreeShippingFulfillmentSetStep({
       stockLocationId: stockLocation.id,
@@ -87,29 +105,31 @@ export const createVendorStockLocationWorkflow = createWorkflow(
     createRemoteLinkStep(fulfillmentLinkDefs).config({ name: "link-fulfillment" })
 
     const shippingOptionsInput = transform(
-      { fulfillmentSet, shippingProfiles },
-      (data) => [
-        {
-          name: "Free Shipping",
-          price_type: "flat" as const,
-          provider_id: "manual_manual",
-          service_zone_id: data.fulfillmentSet.serviceZoneId,
-          shipping_profile_id: data.shippingProfiles[0].id,
-          type: {
-            label: "Free Shipping",
-            description: "The vendor arranges and pays for delivery themselves.",
-            code: "free",
+      { fulfillmentSet, shippingProfileIdCandidate },
+      (data) => {
+        return [
+          {
+            name: "Free Shipping",
+            price_type: "flat" as const,
+            provider_id: "manual_manual",
+            service_zone_id: data.fulfillmentSet.serviceZoneId,
+            shipping_profile_id: data.shippingProfileIdCandidate!,
+            type: {
+              label: "Free Shipping",
+              description: "The vendor arranges and pays for delivery themselves.",
+              code: "free",
+            },
+            prices: STORE_SUPPORTED_CURRENCIES.map((currency) => ({
+              currency_code: currency.currency_code,
+              amount: 0,
+            })),
+            rules: [
+              { attribute: "enabled_in_store", value: "true", operator: "eq" as const },
+              { attribute: "is_return", value: "false", operator: "eq" as const },
+            ],
           },
-          prices: STORE_SUPPORTED_CURRENCIES.map((currency) => ({
-            currency_code: currency.currency_code,
-            amount: 0,
-          })),
-          rules: [
-            { attribute: "enabled_in_store", value: "true", operator: "eq" as const },
-            { attribute: "is_return", value: "false", operator: "eq" as const },
-          ],
-        },
-      ],
+        ]
+      },
     )
 
     createShippingOptionsWorkflow.runAsStep({ input: shippingOptionsInput })

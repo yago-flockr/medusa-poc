@@ -1,27 +1,27 @@
 import { MedusaError } from "@medusajs/framework/utils"
 import type { RemoteQueryFunction } from "@medusajs/framework/types"
 
-export async function assertOwnedVendorOrder(
+export async function assertOwnedConsignment(
   query: Omit<RemoteQueryFunction, symbol>,
-  orderId: string,
+  consignmentId: string,
   vendorId: string | undefined,
 ) {
   const {
-    data: [order],
+    data: [consignment],
   } = await query.graph({
-    entity: "order",
+    entity: "consignment",
     fields: ["id", "vendor.id"],
-    filters: { id: orderId },
+    filters: { id: consignmentId },
   })
 
-  const orderVendorId = (
-    order as { vendor?: { id: string } | null } | undefined
+  const consignmentVendorId = (
+    consignment as { vendor?: { id: string } | null } | undefined
   )?.vendor?.id
 
-  if (!order || orderVendorId !== vendorId) {
+  if (!consignment || consignmentVendorId !== vendorId) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      `Order with id: ${orderId} was not found`,
+      `Order with id: ${consignmentId} was not found`,
     )
   }
 }

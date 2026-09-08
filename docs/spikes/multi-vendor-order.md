@@ -5,10 +5,12 @@
 > about implementation on purpose. The bar to clear is **What "working" means for
 > the marketplace** in `docs/plan.md`.
 
-**Status:** in progress — proof #1, #2 pass; #6 fixed; all three anticipated friction
-points stress-tested with evidence (one turned out to be a non-issue, two confirmed).
-Evidence leans toward consignment records for the payment/refund friction, but the
-comparison hasn't actually been built to check that lean. Proof #3, #4, #5 still open.
+**Status:** decided — consignment records won. Child orders (the official
+recipe's shape) hit real bugs once used for real (missing reservations,
+stripped promo codes, cancel not refunding, Admin fulfilling the wrong
+thing) that all traced back to the same cause: a child order looks like a
+full order without owning its own payment. See "Outcome: consignments
+replace parent + child orders" below for the implementation.
 **Prerequisite:** study plan blocks A and B (`docs/study/README.md`)
 
 ## Question
@@ -164,6 +166,84 @@ actually built the consignment-record alternative here to confirm a partial
 refund is genuinely simpler that way, or forced proof #5 (mid-split failure)
 against either shape. Treat this as the next comparison to run, not as the
 answer recorded and closed.
+
+## Superseded: "keep the parent order, add a subscriber" — reversed after real bugs
+
+The paragraphs below were the call made the first time this question came
+up (given friction #1: parent's status never reflects its children). They're
+kept for the record, but the actual decision reversed — see "Outcome:
+consignments replace parent + child orders" further down, which is current.
+
+Raised separately: given friction #1 above (parent's status never reflects its
+children, nothing syncs it), is the parent/child shape itself wrong? Could we
+just drop the parent order and create one order per vendor, nothing else?
+
+Checked against Medusa's own docs (`ask_medusa_question`, not just this
+repo's code): what's implemented here already **is** the official recipe,
+close to verbatim — `completeCartWorkflow.runAsStep` for the parent,
+`createOrderWorkflow` per vendor for the children, `metadata.parent_order_id`,
+the existing-links idempotency check. Medusa documents no alternate shape for
+"no parent order" — the recipe's starting assumption is exactly one parent
+per cart.
+
+Dropping the parent isn't available as a smaller/simpler version of the same
+proven pattern — it's a different, unproven one. `completeCartWorkflow` is
+what attaches `payment_collection` to an order, and it does so for exactly
+one order per cart. Without a parent, that payment would have to be split
+across N independent vendor orders with no unifying record, which is not
+something Medusa's cart-completion flow provides — building it would mean
+inventing our own payment-splitting design from scratch, the opposite of
+reusing an established pattern.
+
+**Decision (superseded): keep parent + child orders as implemented.** The
+real gap is the one already documented in friction #1 (no code rolls a
+child's status up to the parent) — that's a missing piece to add, not a
+reason to remove the parent. The fix, not yet built: a Medusa subscriber
+listening for order/fulfillment events on vendor (child) orders that
+computes and writes a derived status onto the parent order. This reuses
+Medusa's existing subscriber primitive for "react to an event elsewhere,
+update related state" rather than adding new architecture.
+
+## Outcome: consignments replace parent + child orders
+
+The decision above held right up until child orders actually got used for
+real: fulfilling one threw `"No stock reservation found"` for every vendor
+(`createOrderWorkflow` never creates reservations — only
+`completeCartWorkflow` does, and only for the order it creates), and fixing
+that surfaced more of the same shape of bug on audit — promo codes never
+forwarded into child orders (silently wrong totals shown to vendors),
+`cancelOrderWorkflow` against a child order finding no `payment_collection`
+to refund and silently no-oping, and Admin now able to try fulfilling the
+*parent's* now-unreserved items directly. Every one of these traces back to
+the same root cause: a child order is shaped like a full Medusa order
+(payment, promotions, cancel/refund, admin visibility) without actually
+having its own payment behind it, because `docs/plan.md` already fixes this
+project's payment as centralized — **"One basket, one payment, however many
+vendors."** Real marketplaces (Amazon, Shopee, Mercado Libre, AliExpress) do
+give each vendor its own order, but only because they *also* give each
+vendor its own split payment (their own ledger/payment-rail infrastructure).
+Copying the order-shape half without the payment-shape half is what kept
+breaking here.
+
+**Final decision: one real order per checkout, no child orders at all.**
+Vendor scoping is now a `Consignment` (`src/modules/vendor/models/
+consignment.ts`) — a lightweight record linking one vendor to one order and
+a subset of that order's own line items (`src/links/consignment-order.ts`,
+`src/links/order-line-item-consignment.ts`), replacing
+`src/workflows/create-vendor-orders/` entirely with
+`src/workflows/create-consignments/`. Payment, promotions, tax, and totals
+are correct for free because there is only ever one real order for Medusa's
+own machinery to act on. A vendor's fulfillment status is derived from that
+consignment's own items' fulfillment quantities (`build-consignment-detail.ts`),
+never read off the order's own (whole-order) `fulfillment_status` — this is
+friction #1's answer, structurally, not through a subscriber: there's no
+second status to keep in sync in the first place.
+
+If per-vendor payment splitting is ever genuinely needed (each vendor
+capturing/refunding independently), that's a Stripe Connect-shaped project —
+connected accounts, destination charges, vendor KYC — decoupled from this
+question, and not something this repo has today (no payment provider beyond
+the default is configured).
 
 ## Follow-up: location, not vendor, is the shipping-split axis
 
