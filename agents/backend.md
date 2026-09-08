@@ -750,9 +750,18 @@ starts.
 - Files kebab-case; DB columns snake_case.
 - No semicolons; double quotes; 2-space indent (starter / Prettier style).
 
+## Testing
+
+Two tiers, both real Jest (`pnpm run test:unit` / `pnpm run test:integration:http`), no third mocking-heavy tier:
+
+- **Unit** (`src/**/__tests__/**/*.unit.spec.ts`, colocated with the source it tests) — **pure functions only**, zero container, zero DB, zero mocking of Medusa internals. Every `mappers/` function is exactly this shape by construction, so it gets a matching `mappers/__tests__/<name>.unit.spec.ts` — one spec file per mapper file, same one-thing-per-file discipline as everything else in `workflows/`. A step or workflow itself (I/O-based) is not unit-tested this way — Medusa's step/workflow engine isn't meaningfully testable without a real container.
+- **Integration** (`integration-tests/http/<domain>.spec.ts`, `@medusajs/test-utils`'s `medusaIntegrationTestRunner`) — a full real app boot + real temp Postgres DB + real HTTP requests through `api` (a plain axios instance — non-2xx throws, assert with `.rejects.toMatchObject({ response: { status } })`, not a `try/catch`). This is the actual replacement for hand-verifying a route with `curl`/`medusa exec` during development — it exercises auth middleware, CORS, the route, the workflow, and response validation together, which a mapper unit test or a direct `medusa exec` workflow call both skip. Seed test fixtures (vendor, vendor user, region, etc.) directly through the same workflows the real app uses, via `getContainer()` in `beforeAll` — never hand-insert rows. Always `jest.setTimeout(60000)` at the top of the file — Jest's 5s default is far too short for a full migration + app boot.
+
+**Gotcha, costs real setup time if missed**: `@medusajs/test-utils` completely ignores `DATABASE_URL` and reads `DB_HOST`/`DB_PORT`/`DB_USERNAME`/`DB_PASSWORD` instead (defaulting to `postgres` with no password) to create its own temp DB — these must be set in `.env`/`.env.template` matching the real Postgres credentials or `test:integration:http` fails immediately trying to authenticate as the wrong user.
+
 ## Environment variables
 
-Declared in `.env.template`. Required locally: `DATABASE_URL`, CORS vars, JWT/cookie secrets. Prefer setting `REDIS_URL` to match Docker Compose. Do not set `projectConfig.databaseUrl` or `projectConfig.redisUrl` in `medusa-config.ts` (Cloud injects them; explicit env reads override defaults with `undefined` at Cloud build). Locally, `defineConfig` still reads `DATABASE_URL` from `.env`.
+Declared in `.env.template`. Required locally: `DATABASE_URL`, CORS vars, JWT/cookie secrets, and (for `pnpm run test:integration:http` — see Testing above) `DB_HOST`/`DB_PORT`/`DB_USERNAME`/`DB_PASSWORD` matching the same Postgres. Prefer setting `REDIS_URL` to match Docker Compose. Do not set `projectConfig.databaseUrl` or `projectConfig.redisUrl` in `medusa-config.ts` (Cloud injects them; explicit env reads override defaults with `undefined` at Cloud build). Locally, `defineConfig` still reads `DATABASE_URL` from `.env`.
 
 ## Scripts / commands
 
@@ -762,6 +771,8 @@ From `apps/backend`:
 - `pnpm exec medusa db:migrate`
 - `pnpm exec medusa user -e ... -p ...`
 - `pnpm exec medusa exec ./seeds/<file>.ts`
+- `pnpm run test:unit` — pure-function tests, fast, no DB.
+- `pnpm run test:integration:http` — real app + temp DB + real HTTP, ~15s per spec file.
 
 ## Gotchas and notes
 

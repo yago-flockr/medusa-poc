@@ -101,6 +101,29 @@ freely.
   the same step twice, that's a signal the step should take a batch/array
   input instead (Medusa's own core-flows already work this way).
 
+## Testing — the old ADR's open question is resolved
+
+The deleted ADR flagged "should every refactored route/workflow get a
+contract spec, or is manual bruno verification sufficient?" as unresolved.
+It's resolved now: real Jest tests, two tiers (`agents/backend.md`
+"Testing" has the full convention) —
+
+- `mappers/__tests__/*.unit.spec.ts` for every pure mapper function.
+- `integration-tests/http/<domain>.spec.ts` (`medusaIntegrationTestRunner`)
+  for the real route → middleware → workflow → response path, replacing
+  manual `curl`/`medusa exec` verification going forward.
+
+Both tiers now exist for `vendor-regions` and `vendor-stock-locations` (42
+unit tests, 5 integration tests, all passing). The integration tier needed
+one real environment fix, now documented: `@medusajs/test-utils` ignores
+`DATABASE_URL` and needs `DB_HOST`/`DB_PORT`/`DB_USERNAME`/`DB_PASSWORD` set
+separately (added to `.env`/`.env.template`).
+
+Going forward, migrating a domain should include both tiers as part of
+"done," not as a follow-up — that's what would have caught the
+`update-vendor-stock-location` bug immediately instead of it surviving
+undetected until this session's manual verification.
+
 ## Fresh audit — candidates for the next domain
 
 ### `vendor-orders` (445 lines across 7 files)
