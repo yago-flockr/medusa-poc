@@ -1,63 +1,30 @@
-import crypto from "node:crypto"
-import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
+import { MedusaError } from "@medusajs/framework/utils"
 import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import {
-  getVendorsMeShopifyConnectionInstallLinkResponseSchema,
-  type GetVendorsMeShopifyConnectionInstallLinkResponse,
-} from "@dtc/api-contracts/vendor/shopify-connection"
-import { resolveVendorUser } from "../../../../resolve-vendor-user"
-import { updateVendorWorkflow } from "../../../../../../workflows/update-vendor"
-import { buildShopifyInstallLink } from "../../../../../../integrations/shopify/oauth"
+import { getVendorsMeShopifyConnectionInstallLinkResponseSchema } from "@dtc/api-contracts/vendor/shopify-connection"
+import { generateMyShopifyInstallLinkWorkflow } from "../../../../../../workflows/vendor-shopify-connection/generate-my-shopify-install-link"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse,
 ) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-
-  const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
-    "vendor.id",
-    "vendor.integration_connections.provider",
-    "vendor.integration_connections.external_account_identifier",
-    "vendor.integration_connections.client_id",
-  ])
-  const { vendor } = vendorUser
-  const shopifyConnection = vendor.integration_connections?.find(
-    (connection) => connection?.provider === "shopify",
-  )
-
-  if (!shopifyConnection?.external_account_identifier || !shopifyConnection.client_id) {
+  const host = req.get("x-forwarded-host") ?? req.get("host")
+  if (!host) {
     throw new MedusaError(
-      MedusaError.Types.INVALID_DATA,
-      "Set your Shopify store domain and client ID first (PATCH /vendors/me/shopify/connection).",
+      MedusaError.Types.UNEXPECTED_STATE,
+      "Request is missing a Host header",
     )
   }
 
-  const state = crypto.randomUUID()
-  await updateVendorWorkflow(req.scope).run({
+  const { result } = await generateMyShopifyInstallLinkWorkflow(req.scope).run({
     input: {
-      id: vendor.id,
-      integration_connection: { provider: "shopify", oauth_state: state },
+      actorId: req.auth_context.actor_id,
+      protocol: req.get("x-forwarded-proto") ?? req.protocol,
+      host,
     },
   })
 
-  const host = req.get("x-forwarded-host") ?? req.get("host")
-  if (!host) {
-    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "Request is missing a Host header")
-  }
-
-  const installLink = buildShopifyInstallLink({
-    storeDomain: shopifyConnection.external_account_identifier,
-    clientId: shopifyConnection.client_id,
-    state,
-    protocol: req.get("x-forwarded-proto") ?? req.protocol,
-    host,
-  })
-
-  const response: GetVendorsMeShopifyConnectionInstallLinkResponse = { install_link: installLink }
-
-  res.json(getVendorsMeShopifyConnectionInstallLinkResponseSchema.parse(response))
+  res.json(getVendorsMeShopifyConnectionInstallLinkResponseSchema.parse(result))
 }
