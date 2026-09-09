@@ -6,8 +6,8 @@ import {
   createSalesChannelsWorkflow,
 } from "@medusajs/medusa/core-flows"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
-import { createVendorWorkflow } from "../../src/workflows/create-vendor"
-import { createVendorUserWorkflow } from "../../src/workflows/create-vendor-user"
+import { createVendorWorkflow } from "../../src/workflows/vendors/create-vendor"
+import { createVendorUserWorkflow } from "../../src/workflows/vendor-users/create-vendor-user"
 import { createVendorStockLocationWorkflow } from "../../src/workflows/vendor-stock-locations/create-vendor-stock-location"
 import { acceptVendorConsignmentWorkflow } from "../../src/workflows/vendor-consignments/accept-vendor-consignment"
 import { dispatchVendorConsignmentWorkflow } from "../../src/workflows/vendor-consignments/dispatch-vendor-consignment"
@@ -112,7 +112,7 @@ medusaIntegrationTestRunner({
             first_name: "Orders",
           },
         })
-        vendorUserId = vendorUser.id
+        vendorUserId = vendorUser.vendor_user.id
 
         const { result: location } = await createVendorStockLocationWorkflow(
           container,

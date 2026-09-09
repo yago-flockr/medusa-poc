@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it, jest } from "@jest/globals"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { createVendorWorkflow } from "../../src/workflows/create-vendor"
-import { createVendorUserWorkflow } from "../../src/workflows/create-vendor-user"
+import { createVendorWorkflow } from "../../src/workflows/vendors/create-vendor"
+import { createVendorUserWorkflow } from "../../src/workflows/vendor-users/create-vendor-user"
 
 jest.setTimeout(60000)
 

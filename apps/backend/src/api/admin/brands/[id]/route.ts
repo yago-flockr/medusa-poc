@@ -1,11 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import {
-  MedusaError,
-  ContainerRegistrationKeys,
-} from "@medusajs/framework/utils"
-import { updateBrandWorkflow } from "../../../../workflows/update-brand"
-import { deleteBrandWorkflow } from "../../../../workflows/delete-brand"
-import { toIsoString, toIsoStringOrNull } from "../../../../lib/normalize-timestamps"
+import { getBrandWorkflow } from "../../../../workflows/brands/get-brand"
+import { updateBrandWorkflow } from "../../../../workflows/brands/update-brand"
+import { deleteBrandWorkflow } from "../../../../workflows/brands/delete-brand"
 import {
   brandDeleteResponseSchema,
   brandResponseSchema,
@@ -13,34 +9,13 @@ import {
 } from "@dtc/api-contracts/admin/brands"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { id } = req.params
 
-  const {
-    data: [brand],
-  } = await query.graph({
-    entity: "brand",
-    filters: { id },
-    ...req.queryConfig,
+  const { result } = await getBrandWorkflow(req.scope).run({
+    input: { id, queryConfig: req.queryConfig },
   })
 
-  if (!brand) {
-    throw new MedusaError(
-      MedusaError.Types.NOT_FOUND,
-      `Brand with id: ${id} was not found`,
-    )
-  }
-
-  res.json(
-    brandResponseSchema.parse({
-      brand: {
-        ...brand,
-        created_at: toIsoString(brand.created_at),
-        updated_at: toIsoString(brand.updated_at),
-        deleted_at: toIsoStringOrNull(brand.deleted_at),
-      },
-    }),
-  )
+  res.json(brandResponseSchema.parse({ brand: result }))
 }
 
 export const POST = async (
@@ -56,16 +31,7 @@ export const POST = async (
     },
   })
 
-  res.json(
-    brandResponseSchema.parse({
-      brand: {
-        ...result,
-        created_at: toIsoString(result.created_at),
-        updated_at: toIsoString(result.updated_at),
-        deleted_at: toIsoStringOrNull(result.deleted_at),
-      },
-    }),
-  )
+  res.json(brandResponseSchema.parse({ brand: result }))
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {

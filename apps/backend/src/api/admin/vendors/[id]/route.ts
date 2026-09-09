@@ -1,11 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import {
-  MedusaError,
-  ContainerRegistrationKeys,
-} from "@medusajs/framework/utils"
-import { updateVendorWorkflow } from "../../../../workflows/update-vendor"
-import { deleteVendorWorkflow } from "../../../../workflows/delete-vendor"
-import { mapVendorConnectionFields } from "../map-vendor-response"
+import { getVendorWorkflow } from "../../../../workflows/vendors/get-vendor"
+import { updateVendorWorkflow } from "../../../../workflows/vendors/update-vendor"
+import { deleteVendorWorkflow } from "../../../../workflows/vendors/delete-vendor"
 import {
   vendorDeleteResponseSchema,
   vendorResponseSchema,
@@ -13,25 +9,13 @@ import {
 } from "@dtc/api-contracts/admin/vendors"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { id } = req.params
 
-  const {
-    data: [vendor],
-  } = await query.graph({
-    entity: "vendor",
-    filters: { id },
-    ...req.queryConfig,
+  const { result } = await getVendorWorkflow(req.scope).run({
+    input: { id, queryConfig: req.queryConfig },
   })
 
-  if (!vendor) {
-    throw new MedusaError(
-      MedusaError.Types.NOT_FOUND,
-      `Vendor with id: ${id} was not found`,
-    )
-  }
-
-  res.json(vendorResponseSchema.parse({ vendor: mapVendorConnectionFields(vendor) }))
+  res.json(vendorResponseSchema.parse({ vendor: result }))
 }
 
 export const POST = async (
@@ -39,21 +23,16 @@ export const POST = async (
   res: MedusaResponse,
 ) => {
   const { id } = req.params
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   await updateVendorWorkflow(req.scope).run({
     input: { id, ...req.validatedBody },
   })
 
-  const {
-    data: [vendor],
-  } = await query.graph({
-    entity: "vendor",
-    filters: { id },
-    ...req.queryConfig,
+  const { result } = await getVendorWorkflow(req.scope).run({
+    input: { id, queryConfig: req.queryConfig },
   })
 
-  res.json(vendorResponseSchema.parse({ vendor: mapVendorConnectionFields(vendor) }))
+  res.json(vendorResponseSchema.parse({ vendor: result }))
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {

@@ -1,7 +1,6 @@
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { createVendorUserWorkflow } from "../../../workflows/create-vendor-user"
-import { toIsoString } from "../../../lib/normalize-timestamps"
+import { listVendorUsersWorkflow } from "../../../workflows/vendor-users/list-vendor-users"
+import { createVendorUserWorkflow } from "../../../workflows/vendor-users/create-vendor-user"
 import {
   vendorUserListResponseSchema,
   vendorUserWithPasswordResponseSchema,
@@ -9,29 +8,11 @@ import {
 } from "@dtc/api-contracts/admin/vendor-users"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-
-  const {
-    data: vendorUsers,
-    metadata: { count, take, skip } = {},
-  } = await query.graph({
-    entity: "vendor_user",
-    filters: req.filterableFields,
-    ...req.queryConfig,
+  const { result } = await listVendorUsersWorkflow(req.scope).run({
+    input: { filters: req.filterableFields, queryConfig: req.queryConfig },
   })
 
-  res.json(
-    vendorUserListResponseSchema.parse({
-      vendor_users: vendorUsers.map((vendorUser) => ({
-        ...vendorUser,
-        created_at: toIsoString(vendorUser.created_at),
-        updated_at: toIsoString(vendorUser.updated_at),
-      })),
-      count,
-      limit: take,
-      offset: skip,
-    }),
-  )
+  res.json(vendorUserListResponseSchema.parse(result))
 }
 
 export const POST = async (
@@ -42,16 +23,5 @@ export const POST = async (
     input: req.validatedBody,
   })
 
-  const { password, ...vendor_user } = result
-
-  res.json(
-    vendorUserWithPasswordResponseSchema.parse({
-      vendor_user: {
-        ...vendor_user,
-        created_at: toIsoString(vendor_user.created_at),
-        updated_at: toIsoString(vendor_user.updated_at),
-      },
-      password,
-    }),
-  )
+  res.json(vendorUserWithPasswordResponseSchema.parse(result))
 }

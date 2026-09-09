@@ -6,10 +6,8 @@ export type ResolveConsignmentsStepInput = {
   orderId: string
 }
 
-// Runs unconditionally, whether this call just created the consignments or
-// they already existed from an earlier, successful attempt — so a retry
-// after a client timeout still gets the real consignments back instead of
-// losing them from the response.
+// Runs unconditionally so a retry after a timeout still returns the real
+// consignments, whether just created or already existing.
 export const resolveConsignmentsStep = createStep(
   "resolve-consignments",
   async ({ orderId }: ResolveConsignmentsStepInput, { container }) => {
@@ -23,7 +21,10 @@ export const resolveConsignmentsStep = createStep(
 
     const consignments = links
       .map((link) => link.consignment)
-      .filter((consignment): consignment is NonNullable<typeof consignment> => consignment != null)
+      .filter(
+        (consignment): consignment is NonNullable<typeof consignment> =>
+          consignment != null,
+      )
       .map((consignment) => ({
         id: consignment.id,
         status: consignment.status,

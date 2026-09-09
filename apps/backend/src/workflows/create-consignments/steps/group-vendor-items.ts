@@ -1,5 +1,8 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
 
 // Works for either cart or order line items — both carry these two fields,
 // and grouping-by-vendor never needs anything else.
@@ -19,7 +22,9 @@ export const groupVendorItemsStep = createStep(
 
     const productIds = [
       ...new Set(
-        items.map((item) => item.product_id).filter((id): id is string => Boolean(id)),
+        items
+          .map((item) => item.product_id)
+          .filter((id): id is string => Boolean(id)),
       ),
     ]
 
@@ -43,9 +48,7 @@ export const groupVendorItemsStep = createStep(
         : undefined
 
       if (!vendorId) {
-        // assert-items-fulfillable.ts should have already blocked checkout
-        // for this — reaching here means that guarantee broke somewhere, so
-        // fail loud rather than silently drop an already-paid-for item.
+        // assert-items-fulfillable.ts should already guarantee this.
         throw new MedusaError(
           MedusaError.Types.UNEXPECTED_STATE,
           `Cart item for product ${item.product_id ?? "(unknown)"} has no vendor to route it to.`,

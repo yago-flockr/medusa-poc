@@ -1,0 +1,47 @@
+import type { AuthenticationInput } from "@medusajs/framework/types"
+import { MedusaError, Modules } from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { generateRandomPassword } from "../../../lib/generate-random-password"
+
+export type RegisterVendorAuthIdentityStepInput = {
+  email: string
+  password?: string
+}
+
+// Random password, never staff-typed — no self-service reset yet, only
+// regenerate-vendor-user-password.
+export const registerVendorAuthIdentityStep = createStep(
+  "register-vendor-auth-identity",
+  async (input: RegisterVendorAuthIdentityStepInput, { container }) => {
+    const authModuleService = container.resolve(Modules.AUTH)
+    const password = input.password ?? generateRandomPassword()
+
+    const { success, authIdentity, error } = await authModuleService.register(
+      "emailpass",
+      {
+        url: "",
+        headers: {},
+        query: {},
+        protocol: "https",
+        body: { email: input.email, password },
+      } as AuthenticationInput,
+    )
+
+    if (!success || !authIdentity) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        error ?? "Could not create a login for this vendor user.",
+      )
+    }
+
+    return new StepResponse({ authIdentity, password }, authIdentity.id)
+  },
+  async (authIdentityId: string | undefined, { container }) => {
+    if (!authIdentityId) {
+      return
+    }
+
+    const authModuleService = container.resolve(Modules.AUTH)
+    await authModuleService.deleteAuthIdentities([authIdentityId])
+  },
+)

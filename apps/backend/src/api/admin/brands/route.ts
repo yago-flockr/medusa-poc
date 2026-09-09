@@ -1,7 +1,6 @@
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { createBrandWorkflow } from "../../../workflows/create-brand"
-import { toIsoString, toIsoStringOrNull } from "../../../lib/normalize-timestamps"
+import { listBrandsWorkflow } from "../../../workflows/brands/list-brands"
+import { createBrandWorkflow } from "../../../workflows/brands/create-brand"
 import {
   brandListResponseSchema,
   brandResponseSchema,
@@ -9,28 +8,11 @@ import {
 } from "@dtc/api-contracts/admin/brands"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const { result } = await listBrandsWorkflow(req.scope).run({
+    input: { filters: req.filterableFields, queryConfig: req.queryConfig },
+  })
 
-  const { data: brands, metadata: { count, take, skip } = {} } =
-    await query.graph({
-      entity: "brand",
-      filters: req.filterableFields,
-      ...req.queryConfig,
-    })
-
-  res.json(
-    brandListResponseSchema.parse({
-      brands: brands.map((brand) => ({
-        ...brand,
-        created_at: toIsoString(brand.created_at),
-        updated_at: toIsoString(brand.updated_at),
-        deleted_at: toIsoStringOrNull(brand.deleted_at),
-      })),
-      count,
-      limit: take,
-      offset: skip,
-    }),
-  )
+  res.json(brandListResponseSchema.parse(result))
 }
 
 export const POST = async (

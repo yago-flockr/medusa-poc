@@ -40,9 +40,14 @@ describe("updateVendorSchema integration_connection.external_account_identifier"
 
   it("treats an empty string as an explicit clear (null), not no-op", () => {
     const result = updateVendorSchema.parse({
-      integration_connection: { provider: "shopify", external_account_identifier: "" },
+      integration_connection: {
+        provider: "shopify",
+        external_account_identifier: "",
+      },
     })
-    expect(result.integration_connection?.external_account_identifier).toBeNull()
+    expect(
+      result.integration_connection?.external_account_identifier,
+    ).toBeNull()
   })
 })
 
@@ -74,7 +79,10 @@ describe("updateVendorSchema integration_connection.client_secret", () => {
 
   it("passes through a non-empty secret trimmed", () => {
     const result = updateVendorSchema.parse({
-      integration_connection: { provider: "shopify", client_secret: "  shpss_abc  " },
+      integration_connection: {
+        provider: "shopify",
+        client_secret: "  shpss_abc  ",
+      },
     })
     expect(result.integration_connection?.client_secret).toBe("shpss_abc")
   })

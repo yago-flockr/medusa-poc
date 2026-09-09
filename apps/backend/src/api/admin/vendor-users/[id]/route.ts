@@ -1,11 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import {
-  MedusaError,
-  ContainerRegistrationKeys,
-} from "@medusajs/framework/utils"
-import { updateVendorUserWorkflow } from "../../../../workflows/update-vendor-user"
-import { deleteVendorUserWorkflow } from "../../../../workflows/delete-vendor-user"
-import { toIsoString } from "../../../../lib/normalize-timestamps"
+import { getVendorUserWorkflow } from "../../../../workflows/vendor-users/get-vendor-user"
+import { updateVendorUserWorkflow } from "../../../../workflows/vendor-users/update-vendor-user"
+import { deleteVendorUserWorkflow } from "../../../../workflows/vendor-users/delete-vendor-user"
 import {
   vendorUserDeleteResponseSchema,
   vendorUserResponseSchema,
@@ -13,33 +9,13 @@ import {
 } from "@dtc/api-contracts/admin/vendor-users"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { id } = req.params
 
-  const {
-    data: [vendorUser],
-  } = await query.graph({
-    entity: "vendor_user",
-    filters: { id },
-    ...req.queryConfig,
+  const { result } = await getVendorUserWorkflow(req.scope).run({
+    input: { id, queryConfig: req.queryConfig },
   })
 
-  if (!vendorUser) {
-    throw new MedusaError(
-      MedusaError.Types.NOT_FOUND,
-      `Vendor user with id: ${id} was not found`,
-    )
-  }
-
-  res.json(
-    vendorUserResponseSchema.parse({
-      vendor_user: {
-        ...vendorUser,
-        created_at: toIsoString(vendorUser.created_at),
-        updated_at: toIsoString(vendorUser.updated_at),
-      },
-    }),
-  )
+  res.json(vendorUserResponseSchema.parse({ vendor_user: result }))
 }
 
 export const POST = async (
@@ -49,21 +25,10 @@ export const POST = async (
   const { id } = req.params
 
   const { result } = await updateVendorUserWorkflow(req.scope).run({
-    input: {
-      id,
-      ...req.validatedBody,
-    },
+    input: { id, ...req.validatedBody },
   })
 
-  res.json(
-    vendorUserResponseSchema.parse({
-      vendor_user: {
-        ...result,
-        created_at: toIsoString(result.created_at),
-        updated_at: toIsoString(result.updated_at),
-      },
-    }),
-  )
+  res.json(vendorUserResponseSchema.parse({ vendor_user: result }))
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {

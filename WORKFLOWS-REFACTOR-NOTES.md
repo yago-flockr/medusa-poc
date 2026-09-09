@@ -186,18 +186,93 @@ undetected until this session's manual verification.
   `agents/backend.md`'s integrations bullet and
   `docs/vendor-contract-hook-pattern.md` for the corrected convention.
 
-## Not investigated yet
+### Domain 3: everything else except `vendor-products` — DONE
 
-`vendors/me` (base route), `vendors/shopify` (products/import), `vendors/uploads`,
-`admin/**` more broadly. Only looked at what's needed to scope the three
-items above.
+A follow-up "migrate everything, leave `vendor-products` for now" pass swept
+the rest of the backend into the same domain-folder/workflow/step convention:
+
+- **`brands`** (admin CRUD) — `create-`/`update-`/`delete-brand` moved into
+  one `workflows/brands/` folder; added `list-brands`/`get-brand` workflows
+  to replace the raw `query.graph` that lived directly in
+  `api/admin/brands/{route,[id]/route}.ts`; added `mappers/build-brand{,-list}.ts`
+  (with unit tests) so every response — including create/update, which had
+  never normalized `Date` → ISO string before — goes through one function.
+- **`vendors`** (admin CRUD for the `Vendor` entity itself) — same shape:
+  `create-`/`update-`/`delete-vendor` moved into `workflows/vendors/`
+  (sitting alongside the pre-existing `vendors/shared/` cross-domain tier);
+  added `list-vendors`/`get-vendor`; moved `map-vendor-response.ts`'s
+  `mapVendorConnectionFields` out of `src/api/**` (a rule-2 violation) into
+  `workflows/vendors/mappers/build-vendor.ts`. The admin update route's old
+  "mutate then raw-refetch" pattern became two workflow calls from the route
+  (`updateVendorWorkflow` then `getVendorWorkflow`) — allowed under "route
+  calls one or more workflows."
+- **`vendor-users`** (admin CRUD) — `create-`/`update-`/`delete-vendor-user`
+  and `regenerate-vendor-user-password` moved into `workflows/vendor-users/`;
+  added `list-vendor-users`/`get-vendor-user` + `mappers/build-vendor-user{,-list}.ts`.
+- **`vendor-me`** (new domain) — `api/vendors/me/route.ts` (GET+PATCH) still
+  called a plain `resolveVendorUser(query, ...)` helper living directly under
+  `src/api/vendors/` (a rule-2 violation) with a raw `query.graph` inline (a
+  rule-1 violation), plus an `as unknown as` cast on the PATCH result. Fixed
+  with `workflows/vendor-me/{get-,update-}vendor-me.ts` + a Zod-validated
+  `get-vendor-me` step + `mappers/build-vendor-me.ts`. The old
+  `api/vendors/resolve-vendor-user.ts` helper itself is **left in place** —
+  it's still the active (if old-pattern) dependency of the deferred
+  `vendors/products/**` routes, so deleting it now would break in-scope-later
+  code; it'll go away when `vendor-products` is finally migrated.
+- **Shopify, finished** — the two folders flagged as Domain "2b" last time
+  (`complete-vendor-shopify-connection`, `import-vendor-shopify-products`)
+  were folded into `vendor-shopify-connection/` and a new
+  `vendor-shopify-products/` domain folder respectively (mechanical rename
+  only, logic untouched). Then a deeper look found the **routes themselves**
+  hadn't been migrated: `vendors/shopify/{connection,products,products/import}/route.ts`
+  still called the same old `resolveVendorUser` helper vendor-me used, and
+  the products GET route ran `pullShopifyProducts` + a dedupe check directly
+  in the route body. Fixed with `resolve-vendor-shopify-credentials` (a
+  sibling to the existing `resolve-vendor-shopify-connection` step, since the
+  two need different fields — client_id for OAuth install-link generation vs.
+  access_token for actually calling the Shopify API), `pull-shopify-products`/
+  `find-existing-shopify-products` steps, and a `pull-vendor-shopify-products`
+  workflow **shared** between the vendor route (`list-my-shopify-products`,
+  wraps it via `.runAsStep()`) and the admin route
+  (`admin/vendors/[id]/shopify/products/route.ts`, which had the exact same
+  raw-query violation and now calls the shared workflow directly) — same
+  "one capability, one shared workflow" rule as the install-link fix.
+- **`create-consignments`** (store checkout, `POST /store/carts/:id/complete-vendor`)
+  — already had a clean `steps/` split; just renamed `index.ts` →
+  `create-consignments.ts` and dropped an unused `export default`.
+- **`vendor-shipping-options`** (new domain, store-facing) —
+  `store/carts/[id]/vendor-shipping-options/route.ts` had 3 raw `query.graph`
+  calls plus vendor-scoping/filtering logic inline. Fixed with
+  `resolve-shipping-profile-vendors`/`resolve-cart-vendor-ids` steps and a
+  `build-vendor-shipping-options` mapper; response shape kept byte-identical
+  (no contract/schema added — this route has no `@dtc/api-contracts` entry at
+  all, pre-existing and out of scope for this pass) to avoid a storefront
+  break.
+- Every new mapper got a `mappers/__tests__/*.unit.spec.ts` (mirroring the
+  vendor-regions/stock-locations/consignments convention); full suite is 79
+  unit tests, all green. Integration tests need a live DB (`medusaIntegrationTestRunner`),
+  which needs Docker — down for this whole session (WSL integration dropped),
+  so none of this was verified against a real running server. Do that before
+  calling any of it done-done.
+
+## Not investigated
+
+`vendors/uploads` (checked — it's already clean: the route calls Medusa's own
+`uploadFilesWorkflow` core-flow directly, no custom workflow, nothing to
+migrate). `admin/products`, `admin/custom` (checked — Medusa's own
+additional-data/health-check extension points, not custom business routes).
+`create-admin-user` (checked — only a seed script calls it, no route at all,
+so the route/workflow/step rule doesn't apply).
 
 ## Suggested next conversation, not a decision
 
-`vendor-products` is now the only remaining domain from the original audit
-still fully old-pattern. It's the biggest (774 lines, 9 stray files) and has
-two real old-pattern workflow dependencies (`create-vendor-product`,
-`set-vendor-inventory-level`) to migrate alongside it, not TODO-duplicate —
-worth treating as its own dedicated stretch rather than something to start
-at the end of a session. Domain 2 (Shopify install-link duplication) is
-still open too, and is unrelated/smaller — either could go first.
+`vendor-products` is now the **only** remaining domain from the original
+audit still fully old-pattern — everything else in the backend has been
+migrated. It's the biggest (774 lines, 9 stray files) and has two real
+old-pattern workflow dependencies (`create-vendor-product`,
+`set-vendor-inventory-level`) to migrate alongside it, not TODO-duplicate.
+Once it's done, `api/vendors/resolve-vendor-user.ts` (the old-pattern helper
+kept alive above) can finally be deleted too. Before starting, re-verify
+against a real running server (Docker/dev server) — this session's Shopify/
+brands/vendors/vendor-users/vendor-me/vendor-shipping-options work is
+typecheck-and-unit-test verified only, not HTTP-verified.

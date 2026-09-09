@@ -1,9 +1,14 @@
 import { z } from "zod"
+import { normalizeShopifyStoreDomain } from "@dtc/api-contracts/common/normalize-shopify-domain"
 
 export const patchVendorsShopifyConnectionInputSchema = z.object({
-  shopify_store_domain: z.string().min(1),
-  shopify_client_id: z.string().min(1),
-  shopify_client_secret: z.string().min(1),
+  shopify_store_domain: z
+    .string()
+    .min(1)
+    .trim()
+    .transform(normalizeShopifyStoreDomain),
+  shopify_client_id: z.string().min(1).trim(),
+  shopify_client_secret: z.string().min(1).trim(),
 })
 
 export type PatchVendorsShopifyConnectionInput = z.infer<

@@ -1,5 +1,5 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { createConsignmentsWorkflow } from "../../../../../workflows/create-consignments"
+import { createConsignmentsWorkflow } from "../../../../../workflows/create-consignments/create-consignments"
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const { id } = req.params

@@ -1,6 +1,7 @@
 import { z } from "zod"
 import type { FindParams } from "@medusajs/types"
 import { paginationMetaSchema } from "@dtc/api-contracts/common/pagination"
+import { normalizeShopifyStoreDomain } from "@dtc/api-contracts/common/normalize-shopify-domain"
 import {
   vendorIntegrationConnectionProviderSchema,
   vendorIntegrationConnectionSchema,
@@ -31,7 +32,9 @@ export const vendorSchema = z.object({
   updated_at: z.string(),
   deleted_at: z.string().nullable(),
   users: z.array(vendorUserSchema).optional(),
-  integration_connections: z.array(vendorIntegrationConnectionSchema).optional(),
+  integration_connections: z
+    .array(vendorIntegrationConnectionSchema)
+    .optional(),
 })
 
 export type Vendor = z.infer<typeof vendorSchema>
@@ -91,9 +94,7 @@ export const updateVendorIntegrationConnectionSchema = z
       })
       .optional()
       .transform((value) =>
-        value
-          ? value.replace(/^https?:\/\//i, "").replace(/\/+$/, "").toLowerCase()
-          : value,
+        value ? normalizeShopifyStoreDomain(value) : value,
       ),
     client_id: z
       .string()

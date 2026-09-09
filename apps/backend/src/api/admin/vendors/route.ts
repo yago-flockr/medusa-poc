@@ -1,7 +1,6 @@
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { createVendorWorkflow } from "../../../workflows/create-vendor"
-import { mapVendorConnectionFields } from "./map-vendor-response"
+import { listVendorsWorkflow } from "../../../workflows/vendors/list-vendors"
+import { createVendorWorkflow } from "../../../workflows/vendors/create-vendor"
 import {
   vendorListResponseSchema,
   vendorResponseSchema,
@@ -9,25 +8,11 @@ import {
 } from "@dtc/api-contracts/admin/vendors"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-
-  const {
-    data: vendors,
-    metadata: { count, take, skip } = {},
-  } = await query.graph({
-    entity: "vendor",
-    filters: req.filterableFields,
-    ...req.queryConfig,
+  const { result } = await listVendorsWorkflow(req.scope).run({
+    input: { filters: req.filterableFields, queryConfig: req.queryConfig },
   })
 
-  res.json(
-    vendorListResponseSchema.parse({
-      vendors: vendors.map(mapVendorConnectionFields),
-      count,
-      limit: take,
-      offset: skip,
-    }),
-  )
+  res.json(vendorListResponseSchema.parse(result))
 }
 
 export const POST = async (
@@ -38,5 +23,5 @@ export const POST = async (
     input: req.validatedBody,
   })
 
-  res.json(vendorResponseSchema.parse({ vendor: mapVendorConnectionFields(result) }))
+  res.json(vendorResponseSchema.parse({ vendor: result }))
 }

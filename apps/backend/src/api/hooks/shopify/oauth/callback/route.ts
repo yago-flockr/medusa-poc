@@ -1,12 +1,15 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
-import { completeVendorShopifyConnectionWorkflow } from "../../../../../workflows/complete-vendor-shopify-connection"
+import { completeVendorShopifyConnectionWorkflow } from "../../../../../workflows/vendor-shopify-connection/complete-vendor-shopify-connection"
 import { parseRawQuery } from "../../../../../integrations/shopify/oauth"
 import { vendorPanelOrigin } from "../../../../vendors/cors"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   if (!vendorPanelOrigin) {
-    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "VENDOR_CORS is not configured")
+    throw new MedusaError(
+      MedusaError.Types.UNEXPECTED_STATE,
+      "VENDOR_CORS is not configured",
+    )
   }
 
   const query = parseRawQuery(req.originalUrl.split("?")[1] ?? "")

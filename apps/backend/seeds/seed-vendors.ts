@@ -3,8 +3,8 @@ import {
   ContainerRegistrationKeys,
   ProductStatus,
 } from "@medusajs/framework/utils"
-import { createVendorWorkflow } from "../src/workflows/create-vendor"
-import { createVendorUserWorkflow } from "../src/workflows/create-vendor-user"
+import { createVendorWorkflow } from "../src/workflows/vendors/create-vendor"
+import { createVendorUserWorkflow } from "../src/workflows/vendor-users/create-vendor-user"
 import { createVendorProductWorkflow } from "../src/workflows/create-vendor-product"
 import { createVendorStockLocationWorkflow } from "../src/workflows/vendor-stock-locations/create-vendor-stock-location"
 import { setVendorInventoryLevelWorkflow } from "../src/workflows/set-vendor-inventory-level"
@@ -55,10 +55,7 @@ const SHORTS_IMAGES = [
 
 const SEED_STOCK_QUANTITY = 100
 
-// Fixed, memorable test fixtures — not randomly generated. A POC's seed
-// data exists so anyone on the team can log in with a login they actually
-// remember (`asd@asd.com` / `zxc@zxc.com`), not a different faker-generated
-// email every time someone rebuilds the fixture list.
+// Fixed, memorable fixtures (asd@asd.com etc.), not faker-generated ones.
 const VENDOR_FIXTURES: VendorFixture[] = [
   {
     name: "Asd Apparel",
@@ -179,9 +176,9 @@ export default async function seedVendors({ container }: ExecArgs) {
           first_name: vendorFixture.firstName,
         },
       })
-      vendorUserId = vendorUser.id
+      vendorUserId = vendorUser.vendor_user.id
       logger.info(
-        `Vendor login for "${vendorFixture.name}" — email: ${vendorUser.email}  password: ${vendorUser.password}`,
+        `Vendor login for "${vendorFixture.name}" — email: ${vendorUser.vendor_user.email}  password: ${vendorUser.password}`,
       )
     }
 
@@ -255,9 +252,7 @@ export default async function seedVendors({ container }: ExecArgs) {
             title: productFixture.title,
             description: productFixture.description,
             handle,
-            // Real vendor submissions default to PROPOSED, pending staff
-            // review — seed products are published outright so they're
-            // immediately browsable/purchasable for testing.
+            // Real submissions default to PROPOSED; seeded ones publish outright.
             status: ProductStatus.PUBLISHED,
             shipping_profile_id: shippingProfileId,
             images: productFixture.images.map((url) => ({ url })),

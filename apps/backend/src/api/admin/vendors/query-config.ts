@@ -2,10 +2,8 @@ export enum Entities {
   vendor = "vendor",
 }
 
-// Vendors typically have very few users, so unlike Brand's `products`
-// (opt-in only, never actually shown in Brand's own UI), `users` is
-// defaulted here — the Admin UI always needs it, for the list's user
-// count and the detail drawer's user list alike.
+// Unlike Brand's opt-in `products`, `users` defaults here — the Admin UI
+// always needs it (list count, detail drawer).
 export const defaultAdminVendorFields = [
   "id",
   "name",
@@ -23,7 +21,10 @@ export const defaultAdminVendorFields = [
   "users.last_name",
 ]
 
-export const defaultAdminVendorAllowed = [...defaultAdminVendorFields, "deleted_at"]
+export const defaultAdminVendorAllowed = [
+  ...defaultAdminVendorFields,
+  "deleted_at",
+]
 
 export const retrieveTransformQueryConfig = {
   defaults: defaultAdminVendorFields,

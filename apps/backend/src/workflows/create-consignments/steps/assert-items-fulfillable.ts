@@ -1,17 +1,16 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
 import type { CartLineItemDTO } from "@medusajs/framework/types"
 
 export type AssertItemsFulfillableStepInput = {
   items: CartLineItemDTO[]
 }
 
-// Checked before the cart is ever completed into an order, not after: a
-// product with no shipping profile completes checkout today but throws
-// when staff later tries to fulfill it — by then the customer already has
-// a "successful" order that can never ship. Blocking here means that
-// failure surfaces as a checkout error instead, before an unshippable
-// order can exist at all.
+// Checked before order completion — a product with no shipping profile
+// would otherwise complete checkout but fail fulfillment later.
 export const assertItemsFulfillableStep = createStep(
   "assert-items-fulfillable",
   async ({ items }: AssertItemsFulfillableStepInput, { container }) => {
@@ -48,9 +47,7 @@ export const assertItemsFulfillableStep = createStep(
       )
     }
 
-    // A product with no vendor link can't be routed to any vendor order
-    // downstream (group-vendor-items.ts) — blocking here means that never
-    // happens after the customer has already been charged.
+    // A vendor-less product can't be routed downstream (group-vendor-items.ts).
     const unassigned = products.filter((product) => !product.vendor?.id)
 
     if (unassigned.length) {
