@@ -2,7 +2,10 @@ import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
 import { getVendorsOrdersByIdResponseSchema } from "@dtc/api-contracts/vendor/orders"
 import { acceptConsignmentWorkflow } from "../../../../../workflows/accept-consignment"
 import { resolveVendorUser } from "../../../resolve-vendor-user"
@@ -31,7 +34,9 @@ export const POST = async (
     )
   }
 
-  await acceptConsignmentWorkflow(req.scope).run({ input: { consignmentId: id } })
+  await acceptConsignmentWorkflow(req.scope).run({
+    input: { consignmentId: id },
+  })
 
   const detail = await buildConsignmentDetail(req.scope, id)
 

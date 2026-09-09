@@ -1,5 +1,8 @@
 import type { MedusaContainer } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
 import { getOrderDetailWorkflow } from "@medusajs/medusa/core-flows"
 import type {
   GetVendorsOrdersByIdResponse,
@@ -23,7 +26,9 @@ type ConsignmentItem = {
 // a vendor needs to know the state of just its own slice, so it's derived
 // here from that consignment's own items rather than read off a shared
 // field. See docs/spikes/multi-vendor-order.md, friction #1.
-function deriveFulfillmentStatus(items: ConsignmentItem[]): VendorOrderFulfillmentStatus {
+function deriveFulfillmentStatus(
+  items: ConsignmentItem[],
+): VendorOrderFulfillmentStatus {
   const totals = items.reduce(
     (sum, item) => ({
       quantity: sum.quantity + item.quantity,
@@ -109,11 +114,15 @@ export async function buildConsignmentDetail(
     },
   })
 
-  type OrderItemWithConsignment = NonNullable<NonNullable<typeof order.items>[number]> & {
+  type OrderItemWithConsignment = NonNullable<
+    NonNullable<typeof order.items>[number]
+  > & {
     consignment?: { id: string } | null
   }
 
-  const items: ConsignmentItem[] = ((order.items ?? []) as OrderItemWithConsignment[])
+  const items: ConsignmentItem[] = (
+    (order.items ?? []) as OrderItemWithConsignment[]
+  )
     .filter(
       (item): item is OrderItemWithConsignment =>
         item != null && item.consignment?.id === consignmentId,

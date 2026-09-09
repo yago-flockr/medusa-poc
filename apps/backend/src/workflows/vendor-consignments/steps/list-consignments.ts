@@ -6,8 +6,8 @@ import { vendorConsignmentStatusSchema } from "@dtc/api-contracts/vendor/orders"
 const consignmentListItemSchema = z.object({
   id: z.string().nullable(),
   title: z.string().nullable(),
-  quantity: z.number().nullable(),
-  total: z.number().nullable(),
+  quantity: z.coerce.number().nullable(),
+  total: z.coerce.number().nullable(),
   consignment: z.object({ id: z.string().nullable() }).nullable().optional(),
 })
 
