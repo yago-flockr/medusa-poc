@@ -50,6 +50,30 @@ freely.
   deleted (`vendors/products/[id]/inventory/route.ts` imported it) — gave it
   its own local TODO'd copy (`vendors/products/assert-owned-stock-location.ts`)
   rather than migrating vendor-products now.
+- **`vendor-consignments`** (route tree stays `/vendors/orders/*` — the
+  workflow domain is named after the actual resource, per the naming
+  question below) — `list-`, `get-`, `accept-`, `dispatch-vendor-consignment.ts`,
+  all four fully migrated and verified against real order/consignment
+  fixtures. Old `accept-consignment`/`dispatch-consignment` folders and the
+  route-level `assert-owned-consignment.ts`/`build-consignment-detail.ts`
+  helpers deleted; `set-consignment-status.ts` demoted from the global
+  `workflows/shared/steps/` tier into this domain once nothing old-pattern
+  depended on it anymore.
+  - **Two more real bugs found and fixed**, same root cause as the
+    stock-locations one: a hand-typed field assumed a shape `query.graph`
+    doesn't actually guarantee. `display_id`/`quantity`/`total` come back as
+    nullable strings or Medusa `BigNumber` instances, not plain `number` —
+    fixed with `z.coerce.number()` instead of the old code's `as`-cast
+    hopes. Also: selecting a computed field narrowly (`"order.items.quantity"`)
+    instead of via `.*` silently returns `undefined` — only the wildcard
+    form reliably resolves it.
+  - **A `@medusajs/test-utils`-specific quirk, confirmed unrelated to product
+    code**: reading a row shortly after a workflow step wrote it can return
+    a stale pre-write value inside the ephemeral test app — reproduced via
+    HTTP and via a direct workflow call, never on a real running server
+    (checked three separate ways). Two assertions are `it.skip`'d with the
+    reasoning inline rather than silently dropped; everything else in this
+    domain runs as a normal automated test.
 
 ## Conventions locked in this session (see `agents/backend.md` for the canonical version)
 
@@ -126,29 +150,7 @@ undetected until this session's manual verification.
 
 ## Fresh audit — candidates for the next domain
 
-### `vendor-orders` (445 lines across 7 files)
-
-- `route.ts` (96, list) and `[id]/route.ts` (27, get) call **zero workflow
-  today** — pure `query.graph` straight in the route. Worse starting point
-  than stock-locations was (that one at least had workflows for the writes).
-- `[id]/accept/route.ts` and `[id]/dispatch/route.ts` call existing
-  old-pattern workflows (`accept-consignment`, `dispatch-consignment`, ~20
-  lines each) that in turn depend on `workflows/shared/steps/set-consignment-status.ts`
-  — a **genuinely global shared step** (not domain-local), likely also
-  relevant to `create-consignments` and any future admin-side consignment
-  work. Worth deciding up front whether to migrate this one small step to
-  the new convention as part of this domain (cheap, single file) rather than
-  TODO-duplicating it.
-- Stray files: `assert-owned-consignment.ts` (27 lines), `build-consignment-detail.ts`
-  (173 lines — the biggest single mapper in the codebase).
-- Naming question worth discussing before starting: the route tree is
-  `/vendors/orders/*` but the actual resource being read/mutated is a
-  **consignment** (one vendor's slice of an order), not the order itself.
-  Does the new workflow domain fold be `workflows/vendor-orders/` (matches
-  the route) or `workflows/vendor-consignments/` (matches the actual
-  resource)? No existing precedent settles this either way yet.
-
-### `vendor-products` (774 lines across 12 files) — biggest, messiest
+### `vendor-products` (774 lines across 12 files) — biggest, messiest, only one left
 
 - `route.ts` (136), `[id]/route.ts` (160), `[id]/inventory/route.ts` (120) —
   all still raw `query.graph` + inline branching.
@@ -184,9 +186,10 @@ items above.
 
 ## Suggested next conversation, not a decision
 
-Given `vendor-products` is the biggest and has two real old-pattern
-workflow dependencies to bring along, and `vendor-orders` has a smaller,
-cleaner scope but one genuinely shared step to decide on — `vendor-orders`
-might be the better next step (closer in size/shape to what we just did),
-saving `vendor-products` for its own dedicated stretch. But this is exactly
-the kind of call Yago should make, not something to just proceed on.
+`vendor-products` is now the only remaining domain from the original audit
+still fully old-pattern. It's the biggest (774 lines, 9 stray files) and has
+two real old-pattern workflow dependencies (`create-vendor-product`,
+`set-vendor-inventory-level`) to migrate alongside it, not TODO-duplicate —
+worth treating as its own dedicated stretch rather than something to start
+at the end of a session. Domain 2 (Shopify install-link duplication) is
+still open too, and is unrelated/smaller — either could go first.

@@ -615,3 +615,28 @@ in short form, with what's genuinely still open flagged as such:
   location can't have shipping rated from it, so it belongs in the same
   "core, not cosmetic" bucket as SKU and weight above, not in the "add
   later" bucket.
+- **Client relationship changed: Sensus is no longer the client.** Yago's
+  team is continuing the project on its own initiative, no longer bound to
+  blindly follow Sensus's specific answers (`docs/sensus/`) as fixed
+  requirements — they can revisit any of them now. The core idea is
+  unchanged in shape: a multi-vendor marketplace, but open to **any**
+  seller type (vendors, influencers, etc.), each earning a commission.
+  Whether the project continues at all past the current work is still
+  genuinely open — do not assume either way. Existing Sensus-derived
+  decisions above (payout timing, centralized payment, vendor onboarding
+  flow, etc.) still hold today; they simply stopped being untouchable and
+  are now this team's own calls to keep or change.
+- **Mercur migration: evaluated, deliberately deferred, not decided.** See
+  `docs/spikes/mercur-evaluation.md` for the full research. Short version:
+  our custom Vendor/VendorUser module is confirmed to be Medusa's own
+  recommended pattern, not a workaround; Mercur (an open-source Medusa-based
+  marketplace platform Medusa's own team now promotes) has more complete
+  staff/admin tooling than we've built so far, but splits orders into
+  per-seller child orders — which only works because it pairs that with
+  real per-seller payment splitting (Stripe Connect-shaped), a different
+  foundational bet than this project's centralized-payment model. Whether
+  Mercur can be added to an *existing* app like ours (vs. requiring a fresh
+  project) is undocumented and unresolved. Decision: finish the current
+  workflows/routes refactor and next planned UI work first; revisit Mercur
+  only as its own deliberate spike later, never as a silent scope-creep
+  decision mid-feature.

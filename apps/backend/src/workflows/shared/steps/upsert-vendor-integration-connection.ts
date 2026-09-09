@@ -29,17 +29,19 @@ export const upsertVendorIntegrationConnectionStep = createStep(
       Object.entries(fields).filter(([, value]) => value !== undefined),
     )
 
-    const [existing] = await vendorModuleService.listVendorIntegrationConnections({
-      vendor_id,
-      provider,
-    })
-
-    if (!existing) {
-      const created = await vendorModuleService.createVendorIntegrationConnections({
+    const [existing] =
+      await vendorModuleService.listVendorIntegrationConnections({
         vendor_id,
         provider,
-        ...updatableFields,
       })
+
+    if (!existing) {
+      const created =
+        await vendorModuleService.createVendorIntegrationConnections({
+          vendor_id,
+          provider,
+          ...updatableFields,
+        })
 
       return new StepResponse(created, {
         existed: false,
@@ -54,10 +56,11 @@ export const upsertVendorIntegrationConnectionStep = createStep(
       ]),
     )
 
-    const updated = await vendorModuleService.updateVendorIntegrationConnections({
-      id: existing.id,
-      ...updatableFields,
-    })
+    const updated =
+      await vendorModuleService.updateVendorIntegrationConnections({
+        id: existing.id,
+        ...updatableFields,
+      })
 
     return new StepResponse(updated, {
       existed: true,
@@ -74,7 +77,9 @@ export const upsertVendorIntegrationConnectionStep = createStep(
       container.resolve(VENDOR_MODULE)
 
     if (!compensation.existed) {
-      await vendorModuleService.deleteVendorIntegrationConnections(compensation.id)
+      await vendorModuleService.deleteVendorIntegrationConnections(
+        compensation.id,
+      )
       return
     }
 
