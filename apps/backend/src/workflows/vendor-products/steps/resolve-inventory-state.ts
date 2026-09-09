@@ -27,8 +27,7 @@ export const resolveInventoryStateStep = createStep(
       filters: { id: variantId },
     })
 
-    const inventoryItemId =
-      variant?.inventory_items?.[0]?.inventory?.id ?? null
+    const inventoryItemId = variant?.inventory_items?.[0]?.inventory?.id ?? null
 
     if (!inventoryItemId) {
       return new StepResponse({ inventoryItemId: null, existingLevelId: null })

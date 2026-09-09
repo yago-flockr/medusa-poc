@@ -19,7 +19,7 @@ import { buildStockLocation } from "./mappers/build-stock-location"
 import { buildVendorLinkDefs } from "./mappers/build-vendor-link-defs"
 import { createFreeShippingFulfillmentSetStep } from "./steps/create-free-shipping-fulfillment-set"
 import { resolveSharedSalesChannelStep } from "./steps/resolve-shared-sales-channel"
-import { resolveVendorShippingProfileStep } from "./steps/resolve-vendor-shipping-profile"
+import { resolveVendorShippingProfileStep } from "../vendors/shared/steps/resolve-vendor-shipping-profile"
 
 export type CreateVendorStockLocationWorkflowInput = {
   actorId: string

@@ -8,7 +8,7 @@ import {
 import { updateStockLocationsWorkflow } from "@medusajs/medusa/core-flows"
 import { resolveVendorUserStep } from "../vendors/shared/steps/resolve-vendor-user"
 import { buildStockLocation } from "./mappers/build-stock-location"
-import { assertOwnedStockLocationStep } from "./steps/assert-owned-stock-location"
+import { assertOwnedStockLocationStep } from "../vendors/shared/steps/assert-owned-stock-location"
 import { getStockLocationStep } from "./steps/get-stock-location"
 
 export type UpdateVendorStockLocationWorkflowInput = {

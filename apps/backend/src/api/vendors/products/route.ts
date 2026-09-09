@@ -3,134 +3,37 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import {
-  ContainerRegistrationKeys,
-  MedusaError,
-  ProductStatus,
-} from "@medusajs/framework/utils"
-import {
-  postVendorsProductsResponseSchema,
   getVendorsProductsResponseSchema,
+  postVendorsProductsResponseSchema,
   type PostVendorsProductsInput,
-  type PostVendorsProductsResponse,
-  type GetVendorsProductsResponse,
 } from "@dtc/api-contracts/vendor/products"
-import { createVendorProductWorkflow } from "../../../workflows/create-vendor-product"
-import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
-import { resolveVendorShippingProfileId } from "../../../lib/resolve-vendor-shipping-profile"
 import { parseListQuery } from "../../../lib/list-query"
-import { resolveVendorUser } from "../resolve-vendor-user"
-import { resolveProductVariants } from "./build-variants"
-import { isVariantComplete } from "./product-completeness"
+import { listVendorProductsWorkflow } from "../../../workflows/vendor-products/list-vendor-products"
+import { createVendorProductWorkflow } from "../../../workflows/vendor-products/create-vendor-product"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse,
 ) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { limit, offset } = parseListQuery(req.query)
 
-  const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
-    "vendor_id",
-  ])
-
-  const { data: products, metadata } = await query.graph({
-    entity: "product",
-    fields: [
-      "id",
-      "title",
-      "handle",
-      "status",
-      "thumbnail",
-      "external_id",
-      "variants.id",
-    ],
-    filters: { vendor: { id: vendorUser.vendor_id } },
-    pagination: { skip: offset, take: limit },
+  const { result } = await listVendorProductsWorkflow(req.scope).run({
+    input: { actorId: req.auth_context.actor_id, limit, offset },
   })
 
-  const response: GetVendorsProductsResponse = {
-    products: products.map((product) => ({
-      id: product.id,
-      title: product.title,
-      handle: product.handle,
-      status: product.status,
-      thumbnail: product.thumbnail,
-      external_id: product.external_id,
-      variant_count: product.variants?.length ?? 0,
-    })),
-    count: metadata?.count ?? 0,
-    limit,
-    offset,
-  }
-
-  res.json(getVendorsProductsResponseSchema.parse(response))
+  res.json(getVendorsProductsResponseSchema.parse(result))
 }
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<PostVendorsProductsInput>,
   res: MedusaResponse,
 ) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-
-  const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
-    "vendor_id",
-  ])
-
-  const { salesChannelId, storeCurrencies } = await resolveStorePrerequisites(query)
-  const shippingProfileId = await resolveVendorShippingProfileId(query, vendorUser.vendor_id)
-
-  const { title, subtitle, description, handle, images, options, variants } =
-    req.validatedBody
-
-  if (!storeCurrencies.length) {
-    throw new MedusaError(
-      MedusaError.Types.UNEXPECTED_STATE,
-      "The store has no supported currencies configured — cannot price a product.",
-    )
-  }
-
-  const { productOptions, productVariants } = resolveProductVariants(
-    options,
-    variants,
-    storeCurrencies,
-  )
-
-  const status = variants.every(isVariantComplete)
-    ? ProductStatus.PROPOSED
-    : ProductStatus.DRAFT
-
   const { result } = await createVendorProductWorkflow(req.scope).run({
     input: {
-      product: {
-        title,
-        subtitle,
-        description,
-        handle,
-        status,
-        shipping_profile_id: shippingProfileId,
-        images: images ?? [],
-        variants: productVariants,
-        sales_channels: salesChannelId ? [{ id: salesChannelId }] : [],
-      },
-      options: productOptions,
-      shared: Boolean(options?.length),
-      vendor_id: vendorUser.vendor_id,
+      actorId: req.auth_context.actor_id,
+      ...req.validatedBody,
     },
   })
 
-  const product = result[0]
-
-  const response: PostVendorsProductsResponse = {
-    product: {
-      id: product.id,
-      title: product.title,
-      handle: product.handle,
-      status: product.status,
-      thumbnail: product.thumbnail,
-      external_id: product.external_id,
-      variant_count: product.variants?.length ?? 0,
-    },
-  }
-
-  res.json(postVendorsProductsResponseSchema.parse(response))
+  res.json(postVendorsProductsResponseSchema.parse({ product: result }))
 }

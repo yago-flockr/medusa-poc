@@ -150,20 +150,35 @@ undetected until this session's manual verification.
 
 ## Fresh audit — candidates for the next domain
 
-### `vendor-products` (774 lines across 12 files) — biggest, messiest, only one left
+### `vendor-products` — DONE
 
-- `route.ts` (136), `[id]/route.ts` (160), `[id]/inventory/route.ts` (120) —
-  all still raw `query.graph` + inline branching.
-- 9 stray helper files: 4 `assert-*` (owned-product, owned-variant,
-  editable-product, publishable-product), `build-product-detail.ts` (74),
-  `build-variants.ts` (113), `product-completeness.ts` (3), plus the new
-  TODO'd `assert-owned-stock-location.ts` duplicate from this session.
-- Depends on `create-vendor-product` (old, flat single file, no `steps/`)
-  and `set-vendor-inventory-level` (old, folder + one step). Both would need
-  full migration alongside this domain, not TODO'd — they're the actual
-  mutation workflows this domain's create/update routes call.
-- This is the domain the original (deleted) ADR called the reference
-  domain — by far the largest single unit of work of the three.
+Migrated to `workflows/vendor-products/`: `list-`/`get-`/`create-`/`update-`/
+`delete-vendor-product.ts` plus `get-vendor-product-inventory.ts` and
+`set-vendor-inventory-level.ts` (moved in from its own old top-level folder),
+each with `steps/`/`mappers/` and unit tests. All 9 stray helper files under
+`api/vendors/products/**` deleted; the routes now only contain `route.ts`,
+`middlewares.ts`, and the `[id]/` subtree. `assert-owned-stock-location` and
+`resolve-vendor-shipping-profile` were promoted from
+`vendor-stock-locations/steps/` to `vendors/shared/steps/` since this domain
+became their second consumer. The old `api/vendors/resolve-vendor-user.ts`
+helper (kept alive specifically for this domain) is now fully deleted.
+
+**Two real things caught only by testing, not typechecking:**
+- A **nested `when().then()`** inside `update-vendor-product.ts` (the
+  variant-sku-sync block nested inside the update-variants block) compiled
+  fine but crashed the whole app at workflow-registration time
+  (`Cannot read properties of undefined (reading 'steps')`) — surfaced as
+  every other module failing to resolve, not as an error pointing at the
+  real cause. Medusa's workflow builder needs every `when()` as a sibling
+  top-level call, never nested inside another's `.then()`. Fixed by
+  flattening to two independent top-level `when()` blocks.
+- `.medusa/server` (gitignored build cache) had gone stale from early in the
+  whole multi-session refactor and was causing bizarre, misleading
+  `AwilixResolutionError: Could not resolve 'region'`-style failures in the
+  integration test harness. `rm -rf .medusa` and re-running fixed it —
+  worth remembering as a first troubleshooting step if `medusaIntegrationTestRunner`
+  ever fails to bootstrap with a core-module resolution error that makes no
+  sense given the actual code.
 
 ### Domain 2 (separate concern from either of the above): Shopify install-link duplication — DONE
 
@@ -264,15 +279,15 @@ additional-data/health-check extension points, not custom business routes).
 `create-admin-user` (checked — only a seed script calls it, no route at all,
 so the route/workflow/step rule doesn't apply).
 
-## Suggested next conversation, not a decision
+## Status: every domain from the original audit is migrated
 
-`vendor-products` is now the **only** remaining domain from the original
-audit still fully old-pattern — everything else in the backend has been
-migrated. It's the biggest (774 lines, 9 stray files) and has two real
-old-pattern workflow dependencies (`create-vendor-product`,
-`set-vendor-inventory-level`) to migrate alongside it, not TODO-duplicate.
-Once it's done, `api/vendors/resolve-vendor-user.ts` (the old-pattern helper
-kept alive above) can finally be deleted too. Before starting, re-verify
-against a real running server (Docker/dev server) — this session's Shopify/
-brands/vendors/vendor-users/vendor-me/vendor-shipping-options work is
-typecheck-and-unit-test verified only, not HTTP-verified.
+`vendor-products` (the last one) is done — see above. There is no known
+remaining old-pattern route/workflow in the backend. Everything from this
+whole multi-session effort (Shopify, brands, vendors, vendor-users,
+vendor-me, vendor-shipping-options, vendor-products) has now been verified
+live against a real running server and a real Postgres DB, not just
+typecheck/unit tests — including a real multi-vendor, multi-location
+checkout flow exercised through the actual storefront in a browser.
+
+Nothing structural is left on this refactor's original scope. Future work on
+this codebase is normal feature work, not "finish the migration."

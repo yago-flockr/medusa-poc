@@ -1,6 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import { resolveVendorShippingProfileId } from "../../../lib/resolve-vendor-shipping-profile"
+import { resolveVendorShippingProfileId } from "../../../../lib/resolve-vendor-shipping-profile"
 
 export type ResolveVendorShippingProfileStepInput = {
   vendorId: string

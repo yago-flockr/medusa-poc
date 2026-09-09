@@ -5,15 +5,12 @@ import {
 } from "@medusajs/framework/utils"
 import { createVendorWorkflow } from "../src/workflows/vendors/create-vendor"
 import { createVendorUserWorkflow } from "../src/workflows/vendor-users/create-vendor-user"
-import { createVendorProductWorkflow } from "../src/workflows/create-vendor-product"
+import { createVendorProductWorkflow } from "../src/workflows/vendor-products/create-vendor-product"
+import { updateVendorProductWorkflow } from "../src/workflows/vendor-products/update-vendor-product"
+import { getVendorProductWorkflow } from "../src/workflows/vendor-products/get-vendor-product"
+import { setVendorInventoryLevelWorkflow } from "../src/workflows/vendor-products/set-vendor-inventory-level"
 import { createVendorStockLocationWorkflow } from "../src/workflows/vendor-stock-locations/create-vendor-stock-location"
-import { setVendorInventoryLevelWorkflow } from "../src/workflows/set-vendor-inventory-level"
-import { resolveStorePrerequisites } from "../src/lib/resolve-store-prerequisites"
-import { resolveVendorShippingProfileId } from "../src/lib/resolve-vendor-shipping-profile"
-import {
-  resolveProductVariants,
-  type VendorVariantInput,
-} from "../src/api/vendors/products/build-variants"
+import type { VendorVariantInput } from "../src/workflows/vendor-products/mappers/resolve-product-variants"
 
 type ProductFixture = {
   title: string
@@ -125,9 +122,6 @@ export default async function seedVendors({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-  const { salesChannelId, storeCurrencies } =
-    await resolveStorePrerequisites(query)
-
   logger.info("Seeding demo vendors, vendor users, locations, and products...")
 
   for (const vendorFixture of VENDOR_FIXTURES) {
@@ -147,11 +141,6 @@ export default async function seedVendors({ container }: ExecArgs) {
       })
       vendorId = vendor.id
     }
-
-    const shippingProfileId = await resolveVendorShippingProfileId(
-      query,
-      vendorId,
-    )
 
     const { data: existingVendorUsers } = await query.graph({
       entity: "vendor_user",
@@ -238,36 +227,41 @@ export default async function seedVendors({ container }: ExecArgs) {
         }),
       )
 
-      const { productOptions, productVariants } = resolveProductVariants(
-        options,
-        variants,
-        storeCurrencies,
-      )
-
-      const { result: products } = await createVendorProductWorkflow(
+      const { result: createdProduct } = await createVendorProductWorkflow(
         container,
       ).run({
         input: {
-          product: {
-            title: productFixture.title,
-            description: productFixture.description,
-            handle,
-            // Real submissions default to PROPOSED; seeded ones publish outright.
-            status: ProductStatus.PUBLISHED,
-            shipping_profile_id: shippingProfileId,
-            images: productFixture.images.map((url) => ({ url })),
-            variants: productVariants,
-            sales_channels: salesChannelId ? [{ id: salesChannelId }] : [],
-          },
-          options: productOptions,
-          shared: true,
-          vendor_id: vendorId,
+          actorId: vendorUserId,
+          title: productFixture.title,
+          description: productFixture.description,
+          handle,
+          images: productFixture.images.map((url) => ({ url })),
+          options,
+          variants,
         },
       })
 
-      for (const variant of products[0]?.variants ?? []) {
+      // Real submissions default to PROPOSED; seeded ones publish outright —
+      // same path a vendor's own "publish" action takes.
+      await updateVendorProductWorkflow(container).run({
+        input: {
+          actorId: vendorUserId,
+          productId: createdProduct.id,
+          status: ProductStatus.PUBLISHED,
+        },
+      })
+
+      const { result: productDetail } = await getVendorProductWorkflow(
+        container,
+      ).run({
+        input: { actorId: vendorUserId, productId: createdProduct.id },
+      })
+
+      for (const variant of productDetail.variants) {
         await setVendorInventoryLevelWorkflow(container).run({
           input: {
+            actorId: vendorUserId,
+            productId: createdProduct.id,
             variantId: variant.id,
             locationId,
             quantity: SEED_STOCK_QUANTITY,

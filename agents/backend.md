@@ -41,7 +41,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `modules/`: custom domain modules (models, services, migrations)
 - `workflows/`: orchestration; prefer over fat route handlers. **Every route, including GETs, calls exactly one workflow** — a deliberate departure from Medusa's own default (a plain read may call `query.graph` straight from the route); this codebase's reads are not simple gets, they join across multiple `query.graph` calls, apply vendor-ownership scoping, and do real response-shaping, so they get the same route→workflow discipline as a mutation.
 
-  **One file per workflow, one file per step — no `index.ts` wrapper, no folder-per-workflow.** (Supersedes the old "every workflow is a folder" shape below.) Every domain has been migrated to this shape except `vendor-products` (`create-vendor-product`, `set-vendor-inventory-level`, `api/vendors/products/**` — deliberately deferred, biggest/messiest domain, tracked in `WORKFLOWS-REFACTOR-NOTES.md`); if you see the old folder-per-workflow shape anywhere else, that's a regression, not an in-progress migration. Structure per domain, one domain = one resource a route tree exposes:
+  **One file per workflow, one file per step — no `index.ts` wrapper, no folder-per-workflow.** (Supersedes the old "every workflow is a folder" shape below.) Every domain has been migrated to this shape, including `vendor-products` (the last one, tracked in `WORKFLOWS-REFACTOR-NOTES.md`); if you see the old folder-per-workflow shape anywhere, that's a regression, not an in-progress migration. Structure per domain, one domain = one resource a route tree exposes:
 
   ```
   workflows/<domain>/              # kebab, singular resource: vendor-regions, vendor-stock-locations

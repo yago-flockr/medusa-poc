@@ -5,7 +5,7 @@ import {
 import { deleteStockLocationsWorkflow } from "@medusajs/medusa/core-flows"
 import type { DeleteVendorsStockLocationsByIdResponse } from "@dtc/api-contracts/vendor/stock-locations"
 import { resolveVendorUserStep } from "../vendors/shared/steps/resolve-vendor-user"
-import { assertOwnedStockLocationStep } from "./steps/assert-owned-stock-location"
+import { assertOwnedStockLocationStep } from "../vendors/shared/steps/assert-owned-stock-location"
 
 export type DeleteVendorStockLocationWorkflowInput = {
   actorId: string
