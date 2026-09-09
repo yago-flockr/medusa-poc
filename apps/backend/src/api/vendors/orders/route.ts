@@ -1,96 +1,20 @@
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import {
-  getVendorsOrdersResponseSchema,
-  type VendorConsignmentStatus,
-  type VendorOrder,
-  type GetVendorsOrdersResponse,
-} from "@dtc/api-contracts/vendor/orders"
+import { getVendorsOrdersResponseSchema } from "@dtc/api-contracts/vendor/orders"
+import { listVendorConsignmentsWorkflow } from "../../../workflows/vendor-consignments/list-vendor-consignments"
 import { parseListQuery } from "../../../lib/list-query"
-import { resolveVendorUser } from "../resolve-vendor-user"
-
-type ConsignmentListRow = {
-  id: string
-  status: VendorConsignmentStatus
-  order?: {
-    id: string
-    display_id: number
-    currency_code: string
-    items?:
-      | ({
-          id: string | null
-          title: string | null
-          quantity: number | null
-          total: number | null
-          consignment?: { id: string | null } | null
-        } | null)[]
-      | null
-  } | null
-}
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse,
 ) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { limit, offset } = parseListQuery(req.query)
 
-  const vendorUser = await resolveVendorUser(query, req.auth_context.actor_id, [
-    "vendor_id",
-  ])
-
-  const { data: consignments, metadata } = await query.graph({
-    entity: "consignment",
-    fields: [
-      "id",
-      "status",
-      "order.id",
-      "order.display_id",
-      "order.currency_code",
-      "order.total",
-      "order.summary.*",
-      "order.items.*",
-      "order.items.tax_lines.*",
-      "order.items.adjustments.*",
-      "order.items.consignment.id",
-    ],
-    filters: { vendor_id: vendorUser.vendor_id },
-    pagination: { skip: offset, take: limit },
+  const { result } = await listVendorConsignmentsWorkflow(req.scope).run({
+    input: { actorId: req.auth_context.actor_id, limit, offset },
   })
 
-  const orders: VendorOrder[] = (consignments as ConsignmentListRow[])
-    .filter((consignment): consignment is ConsignmentListRow & { order: NonNullable<ConsignmentListRow["order"]> } =>
-      consignment.order != null,
-    )
-    .map((consignment) => {
-      const items = (consignment.order.items ?? []).filter(
-        (item): item is NonNullable<typeof item> =>
-          item?.id != null && item.consignment?.id === consignment.id,
-      )
-
-      return {
-        id: consignment.id,
-        display_id: consignment.order.display_id,
-        consignment_status: consignment.status,
-        total: items.reduce((sum, item) => sum + Number(item.total ?? 0), 0),
-        currency_code: consignment.order.currency_code,
-        items: items.map((item) => ({
-          id: item.id!,
-          title: item.title ?? "",
-          quantity: Number(item.quantity ?? 0),
-        })),
-      }
-    })
-
-  const response: GetVendorsOrdersResponse = {
-    orders,
-    count: metadata?.count ?? 0,
-    limit,
-    offset,
-  }
-
-  res.json(getVendorsOrdersResponseSchema.parse(response))
+  res.json(getVendorsOrdersResponseSchema.parse(result))
 }
