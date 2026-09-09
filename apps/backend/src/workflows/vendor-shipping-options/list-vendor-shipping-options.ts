@@ -5,7 +5,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { listShippingOptionsForCartWorkflow } from "@medusajs/medusa/core-flows"
 import { resolveShippingProfileVendorsStep } from "./steps/resolve-shipping-profile-vendors"
-import { resolveCartVendorIdsStep } from "./steps/resolve-cart-vendor-ids"
+import { resolveVendorCartItemsStep } from "./steps/resolve-vendor-cart-items"
 import { buildVendorShippingOptions } from "./mappers/build-vendor-shipping-options"
 
 const SHIPPING_OPTION_FIELDS = [
@@ -44,15 +44,17 @@ export const listVendorShippingOptionsWorkflow = createWorkflow(
       ),
     ])
     const vendorByProfileId = resolveShippingProfileVendorsStep({ profileIds })
-    const cartVendorIds = resolveCartVendorIdsStep({ cartId: input.cartId })
+    const itemsByVendorId = resolveVendorCartItemsStep({
+      cartId: input.cartId,
+    })
 
     const response = transform(
-      { shippingOptions, vendorByProfileId, cartVendorIds },
+      { shippingOptions, vendorByProfileId, itemsByVendorId },
       (data) => ({
         shipping_options: buildVendorShippingOptions(
           data.shippingOptions,
           data.vendorByProfileId,
-          data.cartVendorIds,
+          data.itemsByVendorId,
         ),
       }),
     )

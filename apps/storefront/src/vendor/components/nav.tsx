@@ -52,6 +52,7 @@ export function VendorNav() {
             onClick={() => {
               queryClient.invalidateQueries()
             }}
+            disabled={queryClient.isFetching() > 0}
           >
             <RiRefreshLine />
           </Button>
