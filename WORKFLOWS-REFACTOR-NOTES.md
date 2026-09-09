@@ -165,22 +165,30 @@ undetected until this session's manual verification.
 - This is the domain the original (deleted) ADR called the reference
   domain — by far the largest single unit of work of the three.
 
-### Domain 2 (separate concern from either of the above): Shopify install-link duplication
+### Domain 2 (separate concern from either of the above): Shopify install-link duplication — DONE
 
 - `admin/vendors/[id]/shopify/connection/install-link/route.ts` and
-  `vendors/me/shopify/connection/install-link/route.ts` are **line-for-line
-  identical business logic**, confirmed by diff this session — only the
-  vendor-identity resolution differs (route param vs. authenticated actor).
-  Per the "one capability, one workflow" rule: needs one shared workflow
-  taking `vendorId`, each route only differing in how it resolves that id.
-  This touches both `admin/` and `vendor/` route trees at once, so it's a
-  different shape of work than a single-actor domain migration — flagged
-  separately rather than folded into vendor-products just because it also
-  touches Shopify.
+  `vendors/shopify/connection/install-link/route.ts` were **line-for-line
+  identical business logic**, confirmed by diff — only the vendor-identity
+  resolution differed (route param vs. authenticated actor). Fixed with one
+  shared `generate-vendor-shopify-install-link` workflow taking `vendorId`,
+  composed via `.runAsStep()` from a thin `generate-my-shopify-install-link`
+  wrapper for the vendor route.
+- Along the way, Yago caught a real naming inconsistency: the vendor route
+  lived at `/vendors/me/shopify/*` while every other actor-scoped vendor
+  route (`/vendors/products`, `/vendors/orders`, `/vendors/stock-locations`,
+  `/vendors/regions`) has no `me` segment, even though all are equally
+  scoped via `auth_context.actor_id`. Fixed by moving Shopify to
+  `/vendors/shopify/*` and reserving `/vendors/me` exclusively for the
+  vendor's own identity/profile (matching Medusa's own `/store/customers/me`
+  convention) — rippled through `packages/api-contracts`, backend routes +
+  middlewares, and the storefront hooks/forms/page. See
+  `agents/backend.md`'s integrations bullet and
+  `docs/vendor-contract-hook-pattern.md` for the corrected convention.
 
 ## Not investigated yet
 
-`vendors/me` (base route + Shopify products/import), `vendors/uploads`,
+`vendors/me` (base route), `vendors/shopify` (products/import), `vendors/uploads`,
 `admin/**` more broadly. Only looked at what's needed to scope the three
 items above.
 

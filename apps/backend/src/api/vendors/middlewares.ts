@@ -1,11 +1,9 @@
-import {
-  authenticate,
-  type MiddlewareRoute,
-} from "@medusajs/framework/http"
+import { authenticate, type MiddlewareRoute } from "@medusajs/framework/http"
 import { vendorCors } from "./cors"
 import { vendorMeRoutesMiddlewares } from "./me/middlewares"
 import { vendorOrderRoutesMiddlewares } from "./orders/middlewares"
 import { vendorProductRoutesMiddlewares } from "./products/middlewares"
+import { vendorShopifyRoutesMiddlewares } from "./shopify/middlewares"
 import { vendorStockLocationRoutesMiddlewares } from "./stock-locations/middlewares"
 import { vendorUploadRoutesMiddlewares } from "./uploads/middlewares"
 
@@ -20,6 +18,7 @@ export const vendorRoutesMiddlewares: MiddlewareRoute[] = [
   ...vendorMeRoutesMiddlewares,
   ...vendorOrderRoutesMiddlewares,
   ...vendorProductRoutesMiddlewares,
+  ...vendorShopifyRoutesMiddlewares,
   ...vendorStockLocationRoutesMiddlewares,
   ...vendorUploadRoutesMiddlewares,
 ]

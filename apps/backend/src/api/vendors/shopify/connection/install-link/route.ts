@@ -3,8 +3,8 @@ import type {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { getVendorsMeShopifyConnectionInstallLinkResponseSchema } from "@dtc/api-contracts/vendor/shopify-connection"
-import { generateMyShopifyInstallLinkWorkflow } from "../../../../../../workflows/vendor-shopify-connection/generate-my-shopify-install-link"
+import { getVendorsShopifyConnectionInstallLinkResponseSchema } from "@dtc/api-contracts/vendor/shopify-connection"
+import { generateMyShopifyInstallLinkWorkflow } from "../../../../../workflows/vendor-shopify-connection/generate-my-shopify-install-link"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -26,5 +26,5 @@ export const GET = async (
     },
   })
 
-  res.json(getVendorsMeShopifyConnectionInstallLinkResponseSchema.parse(result))
+  res.json(getVendorsShopifyConnectionInstallLinkResponseSchema.parse(result))
 }

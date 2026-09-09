@@ -12,14 +12,14 @@ import {
   patchVendorsMeResponseSchema,
 } from "@dtc/api-contracts/vendor/profile"
 import {
-  patchVendorsMeShopifyConnectionInputSchema,
-  patchVendorsMeShopifyConnectionResponseSchema,
-  getVendorsMeShopifyConnectionInstallLinkResponseSchema,
+  patchVendorsShopifyConnectionInputSchema,
+  patchVendorsShopifyConnectionResponseSchema,
+  getVendorsShopifyConnectionInstallLinkResponseSchema,
 } from "@dtc/api-contracts/vendor/shopify-connection"
 import {
-  postVendorsMeShopifyProductsImportInputSchema,
-  postVendorsMeShopifyProductsImportResponseSchema,
-  getVendorsMeShopifyProductsResponseSchema,
+  postVendorsShopifyProductsImportInputSchema,
+  postVendorsShopifyProductsImportResponseSchema,
+  getVendorsShopifyProductsResponseSchema,
 } from "@dtc/api-contracts/vendor/shopify-products"
 import {
   deleteVendorsProductsByIdResponseSchema,
@@ -62,34 +62,34 @@ export const vendorContract = c.router({
       200: patchVendorsMeResponseSchema,
     },
   },
-  patchVendorsMeShopifyConnection: {
+  patchVendorsShopifyConnection: {
     method: "PATCH",
-    path: "/vendors/me/shopify/connection",
-    body: patchVendorsMeShopifyConnectionInputSchema,
+    path: "/vendors/shopify/connection",
+    body: patchVendorsShopifyConnectionInputSchema,
     responses: {
-      200: patchVendorsMeShopifyConnectionResponseSchema,
+      200: patchVendorsShopifyConnectionResponseSchema,
     },
   },
-  getVendorsMeShopifyConnectionInstallLink: {
+  getVendorsShopifyConnectionInstallLink: {
     method: "GET",
-    path: "/vendors/me/shopify/connection/install-link",
+    path: "/vendors/shopify/connection/install-link",
     responses: {
-      200: getVendorsMeShopifyConnectionInstallLinkResponseSchema,
+      200: getVendorsShopifyConnectionInstallLinkResponseSchema,
     },
   },
-  getVendorsMeShopifyProducts: {
+  getVendorsShopifyProducts: {
     method: "GET",
-    path: "/vendors/me/shopify/products",
+    path: "/vendors/shopify/products",
     responses: {
-      200: getVendorsMeShopifyProductsResponseSchema,
+      200: getVendorsShopifyProductsResponseSchema,
     },
   },
-  postVendorsMeShopifyProductsImport: {
+  postVendorsShopifyProductsImport: {
     method: "POST",
-    path: "/vendors/me/shopify/products/import",
-    body: postVendorsMeShopifyProductsImportInputSchema,
+    path: "/vendors/shopify/products/import",
+    body: postVendorsShopifyProductsImportInputSchema,
     responses: {
-      200: postVendorsMeShopifyProductsImportResponseSchema,
+      200: postVendorsShopifyProductsImportResponseSchema,
     },
   },
   getVendorsOrders: {

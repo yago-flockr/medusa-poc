@@ -8,7 +8,7 @@ export const queryKeys = {
       ["getVendorsOrdersById", orderId] as const,
   },
   shopifyProducts: {
-    getVendorsMeShopifyProducts: ["getVendorsMeShopifyProducts"] as const,
+    getVendorsShopifyProducts: ["getVendorsShopifyProducts"] as const,
   },
   products: {
     getVendorsProducts: ["getVendorsProducts"] as const,

@@ -6,14 +6,12 @@ export const mutationKeys = {
     patchVendorsMe: ["patchVendorsMe"] as const,
   },
   shopify: {
-    patchVendorsMeShopifyConnection: [
-      "patchVendorsMeShopifyConnection",
+    patchVendorsShopifyConnection: ["patchVendorsShopifyConnection"] as const,
+    getVendorsShopifyConnectionInstallLink: [
+      "getVendorsShopifyConnectionInstallLink",
     ] as const,
-    getVendorsMeShopifyConnectionInstallLink: [
-      "getVendorsMeShopifyConnectionInstallLink",
-    ] as const,
-    postVendorsMeShopifyProductsImport: [
-      "postVendorsMeShopifyProductsImport",
+    postVendorsShopifyProductsImport: [
+      "postVendorsShopifyProductsImport",
     ] as const,
   },
   products: {

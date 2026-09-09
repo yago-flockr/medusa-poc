@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/item"
 import { cn } from "@/lib/utils"
 import type {
-  PostVendorsMeShopifyProductsImportInput,
+  PostVendorsShopifyProductsImportInput,
   PulledShopifyProductWithStatus,
 } from "@dtc/api-contracts/vendor/shopify-products"
 import { useState, type FormEvent } from "react"
@@ -37,7 +37,7 @@ type ShopifyImportProductsFormProps =
 
 export function shopifyImportProductsFormToInput(
   values: ShopifyImportProductsSchema,
-): PostVendorsMeShopifyProductsImportInput {
+): PostVendorsShopifyProductsImportInput {
   return {
     shopify_product_ids: values.shopify_product_ids,
   }

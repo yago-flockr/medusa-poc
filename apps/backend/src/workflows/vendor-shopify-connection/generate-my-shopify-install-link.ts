@@ -21,7 +21,7 @@ export const generateMyShopifyInstallLinkWorkflow = createWorkflow(
         input: {
           vendorId: resolveVendorUser.vendorId,
           notConfiguredMessage:
-            "Set your Shopify store domain and client ID first (PATCH /vendors/me/shopify/connection).",
+            "Set your Shopify store domain and client ID first (PATCH /vendors/shopify/connection).",
           protocol: input.protocol,
           host: input.host,
         },

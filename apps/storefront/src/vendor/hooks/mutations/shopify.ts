@@ -1,27 +1,26 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
 import { tc } from "@/vendor/lib/tc"
-import type { PatchVendorsMeShopifyConnectionInput } from "@dtc/api-contracts/vendor/shopify-connection"
-import type { PostVendorsMeShopifyProductsImportInput } from "@dtc/api-contracts/vendor/shopify-products"
+import type { PatchVendorsShopifyConnectionInput } from "@dtc/api-contracts/vendor/shopify-connection"
+import type { PostVendorsShopifyProductsImportInput } from "@dtc/api-contracts/vendor/shopify-products"
 import { useMutation } from "@tanstack/react-query"
 import { mutationKeys } from "./mutation-keys"
 
-export const usePatchVendorsMeShopifyConnection = () =>
+export const usePatchVendorsShopifyConnection = () =>
   useMutation({
-    mutationKey: mutationKeys.shopify.patchVendorsMeShopifyConnection,
-    mutationFn: (input: PatchVendorsMeShopifyConnectionInput) =>
-      tc(vendorClient.patchVendorsMeShopifyConnection({ body: input })),
+    mutationKey: mutationKeys.shopify.patchVendorsShopifyConnection,
+    mutationFn: (input: PatchVendorsShopifyConnectionInput) =>
+      tc(vendorClient.patchVendorsShopifyConnection({ body: input })),
   })
 
-export const useGetVendorsMeShopifyConnectionInstallLink = () =>
+export const useGetVendorsShopifyConnectionInstallLink = () =>
   useMutation({
-    mutationKey: mutationKeys.shopify.getVendorsMeShopifyConnectionInstallLink,
-    mutationFn: () =>
-      tc(vendorClient.getVendorsMeShopifyConnectionInstallLink()),
+    mutationKey: mutationKeys.shopify.getVendorsShopifyConnectionInstallLink,
+    mutationFn: () => tc(vendorClient.getVendorsShopifyConnectionInstallLink()),
   })
 
-export const usePostVendorsMeShopifyProductsImport = () =>
+export const usePostVendorsShopifyProductsImport = () =>
   useMutation({
-    mutationKey: mutationKeys.shopify.postVendorsMeShopifyProductsImport,
-    mutationFn: (input: PostVendorsMeShopifyProductsImportInput) =>
-      tc(vendorClient.postVendorsMeShopifyProductsImport({ body: input })),
+    mutationKey: mutationKeys.shopify.postVendorsShopifyProductsImport,
+    mutationFn: (input: PostVendorsShopifyProductsImportInput) =>
+      tc(vendorClient.postVendorsShopifyProductsImport({ body: input })),
   })

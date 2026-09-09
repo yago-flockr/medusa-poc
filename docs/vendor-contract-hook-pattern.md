@@ -34,10 +34,10 @@ exact same word, every time.
 |---|---|
 | `GET /vendors/me` | `getVendorsMe` |
 | `PATCH /vendors/me` | `patchVendorsMe` |
-| `PATCH /vendors/me/shopify/connection` | `patchVendorsMeShopifyConnection` |
-| `GET /vendors/me/shopify/connection/install-link` | `getVendorsMeShopifyConnectionInstallLink` |
-| `GET /vendors/me/shopify/products` | `getVendorsMeShopifyProducts` |
-| `POST /vendors/me/shopify/products/import` | `postVendorsMeShopifyProductsImport` |
+| `PATCH /vendors/shopify/connection` | `patchVendorsShopifyConnection` |
+| `GET /vendors/shopify/connection/install-link` | `getVendorsShopifyConnectionInstallLink` |
+| `GET /vendors/shopify/products` | `getVendorsShopifyProducts` |
+| `POST /vendors/shopify/products/import` | `postVendorsShopifyProductsImport` |
 | `GET /vendors/orders` | `getVendorsOrders` |
 | `GET /vendors/products` | `getVendorsProducts` |
 | `POST /vendors/products` | `postVendorsProducts` |

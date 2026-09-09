@@ -4,13 +4,13 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import {
-  getVendorsMeShopifyProductsResponseSchema,
-  type GetVendorsMeShopifyProductsResponse,
+  getVendorsShopifyProductsResponseSchema,
+  type GetVendorsShopifyProductsResponse,
 } from "@dtc/api-contracts/vendor/shopify-products"
-import { resolveVendorUser } from "../../../resolve-vendor-user"
-import { pullShopifyProducts } from "../../../../../integrations/shopify/products"
-import { findExistingShopifyProductIds } from "../../../../../integrations/shopify/helpers/resolve-existing-products"
-import { assertShopifyConnectionCredentials } from "../../../../../integrations/shopify/helpers/assert-shopify-connection-credentials"
+import { resolveVendorUser } from "../../resolve-vendor-user"
+import { pullShopifyProducts } from "../../../../integrations/shopify/products"
+import { findExistingShopifyProductIds } from "../../../../integrations/shopify/helpers/resolve-existing-products"
+import { assertShopifyConnectionCredentials } from "../../../../integrations/shopify/helpers/assert-shopify-connection-credentials"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -40,7 +40,7 @@ export const GET = async (
     pulled.products.map((product) => product.shopify_id),
   )
 
-  const result: GetVendorsMeShopifyProductsResponse = {
+  const result: GetVendorsShopifyProductsResponse = {
     ...pulled,
     products: pulled.products.map((product) => ({
       ...product,
@@ -48,5 +48,5 @@ export const GET = async (
     })),
   }
 
-  res.json(getVendorsMeShopifyProductsResponseSchema.parse(result))
+  res.json(getVendorsShopifyProductsResponseSchema.parse(result))
 }

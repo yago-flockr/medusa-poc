@@ -1,13 +1,13 @@
 import { vendorClient } from "@/vendor/lib/contract-client"
 import { tc } from "@/vendor/lib/tc"
-import type { GetVendorsMeShopifyProductsResponse } from "@dtc/api-contracts/vendor/shopify-products"
+import type { GetVendorsShopifyProductsResponse } from "@dtc/api-contracts/vendor/shopify-products"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
-export const useGetVendorsMeShopifyProducts = createResourceQueryHook<
+export const useGetVendorsShopifyProducts = createResourceQueryHook<
   void,
-  GetVendorsMeShopifyProductsResponse
+  GetVendorsShopifyProductsResponse
 >({
-  queryKey: () => queryKeys.shopifyProducts.getVendorsMeShopifyProducts,
-  queryFn: () => tc(vendorClient.getVendorsMeShopifyProducts()),
+  queryKey: () => queryKeys.shopifyProducts.getVendorsShopifyProducts,
+  queryFn: () => tc(vendorClient.getVendorsShopifyProducts()),
 })

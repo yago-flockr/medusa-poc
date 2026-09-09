@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { VendorIntegrationConnection } from "@dtc/api-contracts/vendor/integration-connection"
-import type { PatchVendorsMeShopifyConnectionInput } from "@dtc/api-contracts/vendor/shopify-connection"
+import type { PatchVendorsShopifyConnectionInput } from "@dtc/api-contracts/vendor/shopify-connection"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import z from "zod"
@@ -22,7 +22,7 @@ type ShopifyConnectionFormProps = CommonFormProps<ShopifyConnectionSchema>
 
 export function shopifyConnectionFormToInput(
   values: ShopifyConnectionSchema,
-): PatchVendorsMeShopifyConnectionInput {
+): PatchVendorsShopifyConnectionInput {
   return {
     shopify_store_domain: values.shopify_store_domain,
     shopify_client_id: values.shopify_client_id,

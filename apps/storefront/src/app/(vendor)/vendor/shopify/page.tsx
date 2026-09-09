@@ -13,19 +13,19 @@ import {
   shopifyImportProductsFormToInput,
 } from "@/vendor/forms/shopify-import-products-form"
 import { useGetVendorsMe } from "@/vendor/hooks/queries/vendor"
-import { useGetVendorsMeShopifyProducts } from "@/vendor/hooks/queries/shopify-products"
+import { useGetVendorsShopifyProducts } from "@/vendor/hooks/queries/shopify-products"
 import {
-  useGetVendorsMeShopifyConnectionInstallLink,
-  usePatchVendorsMeShopifyConnection,
-  usePostVendorsMeShopifyProductsImport,
+  useGetVendorsShopifyConnectionInstallLink,
+  usePatchVendorsShopifyConnection,
+  usePostVendorsShopifyProductsImport,
 } from "@/vendor/hooks/mutations/shopify"
 import { toast } from "sonner"
 
 export default function VendorShopifyPage() {
   const getVendorsMe = useGetVendorsMe()
-  const patchVendorsMeShopifyConnection = usePatchVendorsMeShopifyConnection()
-  const getVendorsMeShopifyConnectionInstallLink =
-    useGetVendorsMeShopifyConnectionInstallLink()
+  const patchVendorsShopifyConnection = usePatchVendorsShopifyConnection()
+  const getVendorsShopifyConnectionInstallLink =
+    useGetVendorsShopifyConnectionInstallLink()
 
   const shopifyConnection =
     getVendorsMe.data?.vendor.integration_connections?.find(
@@ -33,14 +33,10 @@ export default function VendorShopifyPage() {
     )
   const isConnected = shopifyConnection?.connected ?? false
 
-  const getVendorsMeShopifyProducts = useGetVendorsMeShopifyProducts(
-    undefined,
-    {
-      enabled: isConnected,
-    },
-  )
-  const postVendorsMeShopifyProductsImport =
-    usePostVendorsMeShopifyProductsImport()
+  const getVendorsShopifyProducts = useGetVendorsShopifyProducts(undefined, {
+    enabled: isConnected,
+  })
+  const postVendorsShopifyProductsImport = usePostVendorsShopifyProductsImport()
 
   return (
     <>
@@ -70,23 +66,20 @@ export default function VendorShopifyPage() {
                   : undefined
               }
               isLoading={
-                patchVendorsMeShopifyConnection.isPending ||
-                getVendorsMeShopifyConnectionInstallLink.isPending
+                patchVendorsShopifyConnection.isPending ||
+                getVendorsShopifyConnectionInstallLink.isPending
               }
               onSubmit={(values) =>
-                patchVendorsMeShopifyConnection.mutate(
+                patchVendorsShopifyConnection.mutate(
                   shopifyConnectionFormToInput(values),
                   {
                     onSuccess: () => {
                       toast.success("Shopify connection saved")
-                      getVendorsMeShopifyConnectionInstallLink.mutate(
-                        undefined,
-                        {
-                          onSuccess: (data) => {
-                            window.location.href = data.install_link
-                          },
+                      getVendorsShopifyConnectionInstallLink.mutate(undefined, {
+                        onSuccess: (data) => {
+                          window.location.href = data.install_link
                         },
-                      )
+                      })
                     },
                   },
                 )
@@ -102,8 +95,8 @@ export default function VendorShopifyPage() {
           className="flex flex-col gap-4"
         >
           <DataState
-            isLoading={getVendorsMeShopifyProducts.isLoading}
-            isEmpty={getVendorsMeShopifyProducts.data?.products.length === 0}
+            isLoading={getVendorsShopifyProducts.isLoading}
+            isEmpty={getVendorsShopifyProducts.data?.products.length === 0}
           >
             <DataState.Loading />
             <DataState.Empty>
@@ -113,17 +106,17 @@ export default function VendorShopifyPage() {
             </DataState.Empty>
             <DataState.Content>
               <ShopifyImportProductsForm
-                products={getVendorsMeShopifyProducts.data?.products ?? []}
-                isLoading={postVendorsMeShopifyProductsImport.isPending}
+                products={getVendorsShopifyProducts.data?.products ?? []}
+                isLoading={postVendorsShopifyProductsImport.isPending}
                 onSubmit={(values) =>
-                  postVendorsMeShopifyProductsImport.mutate(
+                  postVendorsShopifyProductsImport.mutate(
                     shopifyImportProductsFormToInput(values),
                     {
                       onSuccess: (data) => {
                         toast.success(
                           `${data.created_count} created, ${data.updated_count} updated`,
                         )
-                        getVendorsMeShopifyProducts.refetch()
+                        getVendorsShopifyProducts.refetch()
                       },
                     },
                   )
