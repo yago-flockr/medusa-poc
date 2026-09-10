@@ -24,6 +24,7 @@ describe("buildVendorProductDetail", () => {
         },
         null,
       ],
+      categories: [{ id: "pcat_1", name: "Outlet", handle: "outlet" }, null],
     })
 
     expect(result.images).toEqual(["https://example.com/a.png"])
@@ -36,6 +37,9 @@ describe("buildVendorProductDetail", () => {
         price: 1000,
         optionValues: { Size: "M" },
       },
+    ])
+    expect(result.categories).toEqual([
+      { id: "pcat_1", name: "Outlet", handle: "outlet" },
     ])
   })
 

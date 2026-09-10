@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button"
 import { cartesian } from "@/lib/cartesian"
 import { cn } from "@/lib/utils"
 import type { PostVendorsProductsInput } from "@dtc/api-contracts/vendor/products"
+import type { VendorProductCategory } from "@dtc/api-contracts/vendor/product-categories"
 import { uniq } from "lodash"
 import { useMemo, useState, type FormEvent } from "react"
 import z from "zod"
+import { ComboboxChipsField } from "./fields/combobox-chips-field"
 import { FieldArray } from "./fields/field-array"
 import { ImagesField } from "./fields/images-field"
 import {
@@ -44,6 +46,7 @@ export const productFormSchema = z
       .array(productFormVariantSchema)
       .min(1, "At least one variant is required")
       .max(MAX_VARIANTS),
+    category_ids: z.array(z.string()).optional(),
   })
   .refine(
     (data) => {
@@ -59,6 +62,7 @@ export type ProductFormSchema = z.infer<typeof productFormSchema>
 type ProductFormOption = z.infer<typeof productFormOptionSchema>
 
 type ProductFormProps = CommonFormProps<ProductFormSchema> & {
+  categories: VendorProductCategory[]
   onUploadImages: (files: File[]) => Promise<string[]>
   isUploadingImages?: boolean
 }
@@ -74,6 +78,7 @@ export function productFormToInput(
     images: values.images.map((url) => ({ url })),
     options: values.options,
     variants: values.variants,
+    category_ids: values.category_ids,
   }
 }
 
@@ -186,6 +191,7 @@ function VariantsSection({
 
 export function ProductForm({
   defaultValues,
+  categories,
   isLoading,
   onUploadImages,
   isUploadingImages,
@@ -200,6 +206,9 @@ export function ProductForm({
   )
   const [handle, setHandle] = useState(defaultValues?.handle ?? "")
   const [images, setImages] = useState<string[]>(defaultValues?.images ?? [])
+  const [categoryIds, setCategoryIds] = useState<string[]>(
+    defaultValues?.category_ids ?? [],
+  )
 
   const [options, setOptions] = useState<ProductFormOption[]>([])
   const [variantFields, setVariantFields] = useState<
@@ -276,6 +285,7 @@ export function ProductForm({
       images,
       options: options.length > 0 ? options : undefined,
       variants,
+      category_ids: categoryIds,
     })
 
     if (!result.success) {
@@ -325,6 +335,17 @@ export function ProductForm({
         onChange={setImages}
         onUploadImages={onUploadImages}
         isUploadingImages={isUploadingImages}
+      />
+
+      <ComboboxChipsField
+        id="product-categories"
+        label="Categories"
+        options={categories.map((category) => ({
+          value: category.id,
+          label: category.name,
+        }))}
+        value={categoryIds}
+        onValueChange={setCategoryIds}
       />
 
       <OptionsSection

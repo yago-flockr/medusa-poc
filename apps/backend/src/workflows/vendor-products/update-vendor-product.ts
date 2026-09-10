@@ -14,6 +14,7 @@ import { resolveVendorUserStep } from "../vendors/shared/steps/resolve-vendor-us
 import { resolveOwnedVendorProductStep } from "./steps/resolve-owned-vendor-product"
 import { assertEditableVendorProductStep } from "./steps/assert-editable-vendor-product"
 import { assertVariantsBelongToProductStep } from "./steps/assert-variants-belong-to-product"
+import { assertCategoriesExistStep } from "./steps/assert-categories-exist"
 import { assertPublishableVendorProductStep } from "./steps/assert-publishable-vendor-product"
 import { resolveStorePrerequisitesStep } from "../vendors/shared/steps/resolve-store-prerequisites"
 import { resolveVariantInventoryItemsStep } from "./steps/resolve-variant-inventory-items"
@@ -36,7 +37,8 @@ export const updateVendorProductWorkflow = createWorkflow(
     })
 
     const productFields = transform({ input }, (data) => {
-      const { actorId, productId, variants, ...fields } = data.input
+      const { actorId, productId, variants, category_ids, ...fields } =
+        data.input
       return fields
     })
 
@@ -52,6 +54,12 @@ export const updateVendorProductWorkflow = createWorkflow(
       productId: input.productId,
       variantIds,
     })
+
+    const categoryIds = transform(
+      { input },
+      (data) => data.input.category_ids ?? [],
+    )
+    assertCategoriesExistStep({ categoryIds })
 
     const hasVariants = transform({ input }, (data) =>
       Boolean(data.input.variants?.length),
@@ -132,8 +140,10 @@ export const updateVendorProductWorkflow = createWorkflow(
     })
 
     const hasProductFieldUpdates = transform(
-      { productFields },
-      (data) => Object.keys(data.productFields).length > 0,
+      { productFields, input },
+      (data) =>
+        Object.keys(data.productFields).length > 0 ||
+        data.input.category_ids !== undefined,
     )
 
     when(
@@ -144,7 +154,17 @@ export const updateVendorProductWorkflow = createWorkflow(
       const updateProductsInput = transform(
         { input, productFields },
         (data) => ({
-          products: [{ id: data.input.productId, ...data.productFields }],
+          products: [
+            {
+              id: data.input.productId,
+              ...data.productFields,
+              ...(data.input.category_ids !== undefined
+                ? {
+                    categories: data.input.category_ids.map((id) => ({ id })),
+                  }
+                : {}),
+            },
+          ],
         }),
       )
 

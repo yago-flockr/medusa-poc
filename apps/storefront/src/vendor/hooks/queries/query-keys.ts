@@ -25,4 +25,7 @@ export const queryKeys = {
   regions: {
     getVendorsRegions: ["getVendorsRegions"] as const,
   },
+  productCategories: {
+    getVendorsProductCategories: ["getVendorsProductCategories"] as const,
+  },
 }

@@ -9,9 +9,11 @@ import type {
   VendorProductStatus,
 } from "@dtc/api-contracts/vendor/products"
 import { vendorProductStatusSchema } from "@dtc/api-contracts/vendor/products"
+import type { VendorProductCategory } from "@dtc/api-contracts/vendor/product-categories"
 import { keyBy, mapValues } from "lodash"
 import { useState, type FormEvent } from "react"
 import z from "zod"
+import { ComboboxChipsField } from "./fields/combobox-chips-field"
 import { ImagesField } from "./fields/images-field"
 import {
   ProductVariantFieldsCard,
@@ -43,12 +45,14 @@ export const productEditSchema = z.object({
   images: z.array(z.string()).max(MAX_IMAGES, "Up to 5 images").optional(),
   status: vendorProductStatusSchema,
   variants: z.array(productEditVariantSchema).optional(),
+  category_ids: z.array(z.string()).optional(),
 })
 
 export type ProductEditSchema = z.infer<typeof productEditSchema>
 
 type ProductEditFormProps = CommonFormProps<ProductEditSchema> & {
   product: VendorProductDetail
+  categories: VendorProductCategory[]
   onUploadImages: (files: File[]) => Promise<string[]>
   isUploadingImages?: boolean
 }
@@ -62,6 +66,7 @@ export function productEditFormToInput(
       handle: values.handle || undefined,
       status: values.status,
       variants: values.variants,
+      category_ids: values.category_ids,
     }
   }
 
@@ -73,6 +78,7 @@ export function productEditFormToInput(
     images: values.images?.map((url) => ({ url })),
     status: values.status,
     variants: values.variants,
+    category_ids: values.category_ids,
   }
 }
 
@@ -137,6 +143,7 @@ function VariantsSection({
 
 export function ProductEditForm({
   product,
+  categories,
   isLoading,
   onUploadImages,
   isUploadingImages,
@@ -152,6 +159,9 @@ export function ProductEditForm({
   const [handle, setHandle] = useState(product.handle ?? "")
   const [images, setImages] = useState<string[]>(product.images)
   const [status, setStatus] = useState(product.status)
+  const [categoryIds, setCategoryIds] = useState<string[]>(
+    product.categories.map((category) => category.id),
+  )
 
   const [variantFields, setVariantFields] = useState<
     Record<string, ProductVariantFieldsValue>
@@ -195,6 +205,7 @@ export function ProductEditForm({
       images,
       status,
       variants,
+      category_ids: categoryIds,
     })
 
     if (!result.success) {
@@ -260,6 +271,17 @@ export function ProductEditForm({
         label="Handle"
         value={handle}
         onChange={(event) => setHandle(event.target.value)}
+      />
+
+      <ComboboxChipsField
+        id="product-edit-categories"
+        label="Categories"
+        options={categories.map((category) => ({
+          value: category.id,
+          label: category.name,
+        }))}
+        value={categoryIds}
+        onValueChange={setCategoryIds}
       />
 
       <VariantsSection

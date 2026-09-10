@@ -14,6 +14,7 @@ import {
 import { resolveStorePrerequisitesStep } from "../vendors/shared/steps/resolve-store-prerequisites"
 import { assertStoreHasCurrenciesStep } from "./steps/assert-store-has-currencies"
 import { assertVariantsMatchOptionsStep } from "./steps/assert-variants-match-options"
+import { assertCategoriesExistStep } from "./steps/assert-categories-exist"
 import {
   resolveProductVariants,
   type VendorProductOption,
@@ -31,6 +32,7 @@ export type CreateVendorProductWorkflowInput = {
   images?: { url: string }[]
   options?: VendorProductOption[]
   variants: VendorVariantInput[]
+  category_ids?: string[]
 }
 
 export const createVendorProductWorkflow = createWorkflow(
@@ -49,6 +51,12 @@ export const createVendorProductWorkflow = createWorkflow(
       options: input.options,
       variants: input.variants,
     })
+
+    const categoryIds = transform(
+      { input },
+      (data) => data.input.category_ids ?? [],
+    )
+    assertCategoriesExistStep({ categoryIds })
 
     const resolvedVariants = transform(
       { input, resolveStorePrerequisites },
@@ -81,6 +89,7 @@ export const createVendorProductWorkflow = createWorkflow(
         resolveStorePrerequisites,
         resolveVendorShippingProfile,
         resolveVendorUser,
+        categoryIds,
       },
       (data) => ({
         products: [
@@ -96,6 +105,7 @@ export const createVendorProductWorkflow = createWorkflow(
             sales_channels: data.resolveStorePrerequisites.salesChannelId
               ? [{ id: data.resolveStorePrerequisites.salesChannelId }]
               : [],
+            categories: data.categoryIds.map((id) => ({ id })),
             options: data.resolvedOptions.options,
             variants: data.resolvedVariants.productVariants.map((variant) => ({
               ...variant,

@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { paginationMetaSchema, paginationQuerySchema } from "@dtc/api-contracts/common/pagination"
+import { vendorProductCategorySchema } from "@dtc/api-contracts/vendor/product-categories"
 
 export const vendorProductStatusSchema = z.enum([
   "draft",
@@ -107,6 +108,15 @@ export type PostVendorsProductsVariantsInput = z.infer<
   typeof postVendorsProductsVariantsInputSchema
 >
 
+export const vendorProductCategoryIdsInputSchema = z
+  .array(z.string())
+  .max(10)
+  .optional()
+
+export type VendorProductCategoryIdsInput = z.infer<
+  typeof vendorProductCategoryIdsInputSchema
+>
+
 export const postVendorsProductsInputSchema = z
   .object({
     title: z.string().trim().min(1, "Title is required"),
@@ -116,6 +126,7 @@ export const postVendorsProductsInputSchema = z
     images: postVendorsProductsImagesInputSchema,
     options: postVendorsProductsOptionsInputSchema,
     variants: postVendorsProductsVariantsInputSchema,
+    category_ids: vendorProductCategoryIdsInputSchema,
   })
   .strict()
 
@@ -152,6 +163,7 @@ export const postVendorsProductsByIdInputSchema = z
     images: postVendorsProductsImagesInputSchema,
     status: vendorProductStatusSchema.optional(),
     variants: z.array(postVendorsProductsByIdVariantInputSchema).optional(),
+    category_ids: vendorProductCategoryIdsInputSchema,
   })
   .strict()
   .refine((data) => Object.keys(data).length > 0, {
@@ -195,6 +207,7 @@ export const vendorProductDetailSchema = z.object({
   images: z.array(z.string()),
   options: z.array(vendorProductOptionDetailSchema),
   variants: z.array(vendorProductVariantDetailSchema),
+  categories: z.array(vendorProductCategorySchema),
 })
 
 export type VendorProductDetail = z.infer<typeof vendorProductDetailSchema>

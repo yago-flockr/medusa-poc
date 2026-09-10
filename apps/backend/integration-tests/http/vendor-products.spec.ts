@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it, jest } from "@jest/globals"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { Modules } from "@medusajs/framework/utils"
 import { createVendorWorkflow } from "../../src/workflows/vendors/create-vendor"
 import { createVendorUserWorkflow } from "../../src/workflows/vendor-users/create-vendor-user"
 
@@ -10,9 +11,24 @@ medusaIntegrationTestRunner({
     describe("/vendors/products", () => {
       let ownerToken: string
       let otherToken: string
+      let outletCategoryId: string
+      let internalCategoryId: string
 
       beforeAll(async () => {
         const container = getContainer()
+
+        const productModule = container.resolve(Modules.PRODUCT)
+        const outletCategory = await productModule.createProductCategories({
+          name: "Outlet",
+          is_active: true,
+        })
+        outletCategoryId = outletCategory.id
+        const internalCategory = await productModule.createProductCategories({
+          name: "Staff Only",
+          is_active: true,
+          is_internal: true,
+        })
+        internalCategoryId = internalCategory.id
 
         const { result: owner } = await createVendorWorkflow(container).run({
           input: { name: "Products Owner Vendor" },
@@ -136,6 +152,80 @@ medusaIntegrationTestRunner({
           "OWNER-ATTACK-SKU",
         )
         expect(ownerDetailAfter.data.product.variants[0].price).toBe(1000)
+      })
+
+      it("lists only active, non-internal categories for a vendor to pick from", async () => {
+        const ownerHeaders = {
+          headers: { Authorization: `Bearer ${ownerToken}` },
+        }
+
+        const list = await api.get("/vendors/product-categories", ownerHeaders)
+        const ids = list.data.product_categories.map(
+          (category: { id: string }) => category.id,
+        )
+        expect(ids).toContain(outletCategoryId)
+        expect(ids).not.toContain(internalCategoryId)
+      })
+
+      it("assigns a product to multiple categories on create, and can change them on update", async () => {
+        const ownerHeaders = {
+          headers: { Authorization: `Bearer ${ownerToken}` },
+        }
+
+        const created = await api.post(
+          "/vendors/products",
+          {
+            title: "Categorized Product",
+            variants: [{ optionValues: {}, price: 1200, sku: "CAT-SKU" }],
+            category_ids: [outletCategoryId],
+          },
+          ownerHeaders,
+        )
+        const productId = created.data.product.id
+
+        const detail = await api.get(
+          `/vendors/products/${productId}`,
+          ownerHeaders,
+        )
+        expect(detail.data.product.categories).toEqual([
+          { id: outletCategoryId, name: "Outlet", handle: expect.any(String) },
+        ])
+
+        await api.post(
+          `/vendors/products/${productId}`,
+          { category_ids: [] },
+          ownerHeaders,
+        )
+
+        const afterClear = await api.get(
+          `/vendors/products/${productId}`,
+          ownerHeaders,
+        )
+        expect(afterClear.data.product.categories).toEqual([])
+      })
+
+      it("rejects an update referencing a category that doesn't exist", async () => {
+        const ownerHeaders = {
+          headers: { Authorization: `Bearer ${ownerToken}` },
+        }
+
+        const created = await api.post(
+          "/vendors/products",
+          {
+            title: "Bad Category Product",
+            variants: [{ optionValues: {}, price: 900, sku: "BAD-CAT-SKU" }],
+          },
+          ownerHeaders,
+        )
+        const productId = created.data.product.id
+
+        await expect(
+          api.post(
+            `/vendors/products/${productId}`,
+            { category_ids: ["pcat_does_not_exist"] },
+            ownerHeaders,
+          ),
+        ).rejects.toMatchObject({ response: { status: 404 } })
       })
 
       it("rejects cross-vendor get/update/delete on a product", async () => {

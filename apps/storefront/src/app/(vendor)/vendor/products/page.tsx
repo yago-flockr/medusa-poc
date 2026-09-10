@@ -31,6 +31,7 @@ import {
 } from "@/vendor/hooks/mutations/products"
 import { usePostVendorsUploads } from "@/vendor/hooks/mutations/uploads"
 import { useGetVendorsProductsByIdInventory } from "@/vendor/hooks/queries/product-inventory"
+import { useGetVendorsProductCategories } from "@/vendor/hooks/queries/product-categories"
 import {
   useGetVendorsProducts,
   useGetVendorsProductsById,
@@ -44,6 +45,7 @@ type ProductFormValues = { state: "CREATING" } | { state: "UPDATING"; id: string
 
 export default function VendorProductsPage() {
   const getVendorsProducts = useGetVendorsProducts()
+  const getVendorsProductCategories = useGetVendorsProductCategories()
   const [inventoryProductId, setInventoryProductId] = useState<string | null>(
     null,
   )
@@ -192,6 +194,7 @@ export default function VendorProductsPage() {
         }}
       >
         <ProductForm
+          categories={getVendorsProductCategories.data?.product_categories ?? []}
           isLoading={postVendorsProducts.isPending}
           isUploadingImages={postVendorsUploads.isPending}
           onUploadImages={async (files) => {
@@ -223,6 +226,7 @@ export default function VendorProductsPage() {
             {editingProduct && (
               <ProductEditForm
                 product={editingProduct}
+                categories={getVendorsProductCategories.data?.product_categories ?? []}
                 isLoading={postVendorsProductsById.isPending}
                 isUploadingImages={postVendorsUploads.isPending}
                 onUploadImages={async (files) => {
@@ -244,6 +248,7 @@ export default function VendorProductsPage() {
                       onSuccess: () => {
                         toast.success("Product updated")
                         getVendorsProducts.refetch()
+                        getVendorsProductsById.refetch()
                         setFormValues(undefined)
                       },
                     },

@@ -31,6 +31,7 @@ import {
   postVendorsProductsResponseSchema,
 } from "@dtc/api-contracts/vendor/products"
 import { getVendorsRegionsResponseSchema } from "@dtc/api-contracts/vendor/regions"
+import { getVendorsProductCategoriesResponseSchema } from "@dtc/api-contracts/vendor/product-categories"
 import {
   deleteVendorsStockLocationsByIdResponseSchema,
   getVendorsStockLocationsInputSchema,
@@ -166,6 +167,13 @@ export const vendorContract = c.router({
     path: "/vendors/regions",
     responses: {
       200: getVendorsRegionsResponseSchema,
+    },
+  },
+  getVendorsProductCategories: {
+    method: "GET",
+    path: "/vendors/product-categories",
+    responses: {
+      200: getVendorsProductCategoriesResponseSchema,
     },
   },
   getVendorsStockLocations: {
