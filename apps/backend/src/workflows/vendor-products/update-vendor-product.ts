@@ -13,8 +13,9 @@ import type { PostVendorsProductsByIdInput } from "@dtc/api-contracts/vendor/pro
 import { resolveVendorUserStep } from "../vendors/shared/steps/resolve-vendor-user"
 import { resolveOwnedVendorProductStep } from "./steps/resolve-owned-vendor-product"
 import { assertEditableVendorProductStep } from "./steps/assert-editable-vendor-product"
+import { assertVariantsBelongToProductStep } from "./steps/assert-variants-belong-to-product"
 import { assertPublishableVendorProductStep } from "./steps/assert-publishable-vendor-product"
-import { resolveStorePrerequisitesStep } from "./steps/resolve-store-prerequisites"
+import { resolveStorePrerequisitesStep } from "../vendors/shared/steps/resolve-store-prerequisites"
 import { resolveVariantInventoryItemsStep } from "./steps/resolve-variant-inventory-items"
 import { getVendorProductDetailStep } from "./steps/get-vendor-product-detail"
 import { buildVendorProductDetail } from "./mappers/build-vendor-product-detail"
@@ -42,6 +43,14 @@ export const updateVendorProductWorkflow = createWorkflow(
     assertEditableVendorProductStep({
       externalId: resolveOwnedVendorProduct.externalId,
       fields: productFields,
+    })
+
+    const variantIds = transform({ input }, (data) =>
+      (data.input.variants ?? []).map((variant) => variant.id),
+    )
+    assertVariantsBelongToProductStep({
+      productId: input.productId,
+      variantIds,
     })
 
     const hasVariants = transform({ input }, (data) =>

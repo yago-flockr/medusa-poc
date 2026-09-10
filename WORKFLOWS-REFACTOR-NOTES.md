@@ -291,3 +291,48 @@ checkout flow exercised through the actual storefront in a browser.
 
 Nothing structural is left on this refactor's original scope. Future work on
 this codebase is normal feature work, not "finish the migration."
+
+## Post-migration stress test — 4 real bugs found and fixed
+
+A follow-up "massive stress test" pass (4 parallel live sweeps against a real
+server/DB, covering every domain above) found and fixed 4 real bugs the
+typecheck-and-unit-test pass above didn't catch:
+
+- **IDOR in `update-vendor-product`**: a vendor could smuggle another
+  vendor's real variant id into an update on their own product and silently
+  overwrite its price/SKU — the route checked product ownership but never
+  checked that each submitted `variants[].id` actually belonged to that
+  product. Fixed with `assert-variants-belong-to-product.ts`. First real
+  integration test added for this domain (`vendor-products.spec.ts`),
+  reproducing the exact attack as a permanent regression check.
+- **Dispatch crash on split-stock consignments**: `resolve-vendor-shipping-option.ts`
+  only checked the vendor's *first* stock location's shipping options, and
+  `dispatch-vendor-consignment.ts` passed a single hardcoded `location_id`
+  into Medusa's fulfillment workflow — broke as soon as a vendor's order
+  spanned 2 of their own locations (the same split-stock shape fixed earlier
+  in `vendor-shipping-options`). Fixed by matching against the union of the
+  vendor's locations and dropping the `location_id` override entirely —
+  Medusa's own fulfillment step already resolves each item from its true
+  reservation location.
+- **Orphaned shipping options resurfacing**: `buildVendorShippingOptions`'s
+  vendor-less filter (`!option.vendor`) treated a shipping profile whose
+  vendor had since been deleted the same as a genuine store-level option,
+  making a dead vendor's orphaned option selectable again. Fixed by
+  filtering on `!option.shipping_profile_id` instead.
+- **Hardcoded `gbp` breaking checkout for any other store currency**:
+  `build-free-shipping-option-input.ts` priced every vendor's free-shipping
+  option using the compile-time `STORE_SUPPORTED_CURRENCIES` constant from
+  `lib/markets.ts` instead of the store's actual live-configured currencies
+  — inconsistent with the rest of the codebase, which always fetches this
+  via `resolveStorePrerequisites`. Any store not running exactly `gbp` got a
+  shipping option with no matching price, breaking every checkout with
+  `Shipping options ... do not have a price`. Fixed by promoting
+  `resolve-store-prerequisites` to `vendors/shared/steps/` (now used by 3
+  domains) and passing `storeCurrencies` through instead.
+
+All 4 confirmed independently (not just trusting the finder): full
+`tsc --noEmit`, full unit suite (27 suites / 102 tests), and full
+integration suite (4 suites / 18 tests, 2 known-skipped) green after every
+fix. Nothing found in `brands`, admin `vendors`, `vendor-users`, `vendor-me`,
+`vendor-regions`, `vendor-stock-locations`, or the Shopify integration —
+those came back clean from equally adversarial testing.

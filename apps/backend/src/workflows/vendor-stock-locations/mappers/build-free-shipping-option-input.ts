@@ -1,13 +1,13 @@
-import { STORE_SUPPORTED_CURRENCIES } from "../../../lib/markets"
-
 export type BuildFreeShippingOptionInputParams = {
   serviceZoneId: string
   shippingProfileId: string
+  storeCurrencies: string[]
 }
 
 export function buildFreeShippingOptionInput({
   serviceZoneId,
   shippingProfileId,
+  storeCurrencies,
 }: BuildFreeShippingOptionInputParams) {
   return [
     {
@@ -21,8 +21,8 @@ export function buildFreeShippingOptionInput({
         description: "The vendor arranges and pays for delivery themselves.",
         code: "free",
       },
-      prices: STORE_SUPPORTED_CURRENCIES.map((currency) => ({
-        currency_code: currency.currency_code,
+      prices: storeCurrencies.map((currencyCode) => ({
+        currency_code: currencyCode,
         amount: 0,
       })),
       rules: [

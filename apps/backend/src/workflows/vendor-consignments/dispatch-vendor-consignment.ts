@@ -49,10 +49,12 @@ export const dispatchVendorConsignmentWorkflow = createWorkflow(
       vendorId: resolveVendorUser.vendorId,
     })
 
+    // No location_id: a vendor's items can be reserved across its own
+    // locations (split-stock cart), and Medusa resolves each item's
+    // inventory deduction from its own reservation's location regardless.
     const createOrderFulfillment = createOrderFulfillmentWorkflow.runAsStep({
       input: {
         order_id: resolveOwnedConsignment.orderId,
-        location_id: resolveVendorShippingOption.locationId,
         shipping_option_id: resolveVendorShippingOption.shippingOptionId,
         items: resolveConsignmentItems,
       },

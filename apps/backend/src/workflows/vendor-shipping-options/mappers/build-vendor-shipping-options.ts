@@ -21,7 +21,13 @@ type GroupableOption = {
 // that look identical to the customer (same name/price/type) are grouped,
 // and coverage is checked across the union of their locations, not one.
 function groupKey(vendorId: string, option: GroupableOption): string {
-  return [vendorId, option.name, option.amount, option.price_type, option.type?.code].join("::")
+  return [
+    vendorId,
+    option.name,
+    option.amount,
+    option.price_type,
+    option.type?.code,
+  ].join("::")
 }
 
 function isInsufficientAcrossLocations(
@@ -62,7 +68,9 @@ export function buildVendorShippingOptions<TOption extends GroupableOption>(
       : null,
   }))
 
-  const vendorless = withVendor.filter((option) => !option.vendor)
+  // A profile that fails to resolve to a vendor means the vendor was
+  // deleted — that's an orphaned option, not a genuine store-level one.
+  const vendorless = withVendor.filter((option) => !option.shipping_profile_id)
 
   const groups = new Map<string, typeof withVendor>()
   for (const option of withVendor) {

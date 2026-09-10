@@ -1,6 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import { resolveStorePrerequisites } from "../../../lib/resolve-store-prerequisites"
+import { resolveStorePrerequisites } from "../../../../lib/resolve-store-prerequisites"
 
 export const resolveStorePrerequisitesStep = createStep(
   "resolve-store-prerequisites",

@@ -11,7 +11,7 @@ import {
   remapOptionTitles,
   resolveSharedProductOptionsStep,
 } from "../shared/steps/resolve-shared-product-options"
-import { resolveStorePrerequisitesStep } from "./steps/resolve-store-prerequisites"
+import { resolveStorePrerequisitesStep } from "../vendors/shared/steps/resolve-store-prerequisites"
 import { assertStoreHasCurrenciesStep } from "./steps/assert-store-has-currencies"
 import { assertVariantsMatchOptionsStep } from "./steps/assert-variants-match-options"
 import {

@@ -48,10 +48,7 @@ function itemNeeding(
 describe("buildVendorShippingOptions", () => {
   it("collapses identical options across a vendor's locations into one", () => {
     const result = buildVendorShippingOptions(
-      [
-        optionAt("so_1", "sp_1", "loc_a"),
-        optionAt("so_2", "sp_1", "loc_b"),
-      ],
+      [optionAt("so_1", "sp_1", "loc_a"), optionAt("so_2", "sp_1", "loc_b")],
       { sp_1: { id: "vendor_1", name: "Acme" } },
       { vendor_1: [itemNeeding(1, { loc_a: 5 })] },
     )
@@ -63,10 +60,7 @@ describe("buildVendorShippingOptions", () => {
     // Regression: product A only stocked at location A, product B only at
     // location B, same vendor — both are fulfillable via separate parcels.
     const result = buildVendorShippingOptions(
-      [
-        optionAt("so_1", "sp_1", "loc_a"),
-        optionAt("so_2", "sp_1", "loc_b"),
-      ],
+      [optionAt("so_1", "sp_1", "loc_a"), optionAt("so_2", "sp_1", "loc_b")],
       { sp_1: { id: "vendor_1", name: "Acme" } },
       {
         vendor_1: [
@@ -106,6 +100,18 @@ describe("buildVendorShippingOptions", () => {
     const result = buildVendorShippingOptions(
       [optionAt("so_1", "sp_1", "loc_a")],
       { sp_1: { id: "vendor_1", name: "Acme" } },
+      {},
+    )
+
+    expect(result).toEqual([])
+  })
+
+  it("drops an orphaned option whose vendor no longer exists", () => {
+    // Regression: a deleted vendor's shipping_profile can survive as an
+    // orphan — that must not be treated as a genuine store-level option.
+    const result = buildVendorShippingOptions(
+      [optionAt("so_1", "sp_deleted", "loc_a")],
+      {},
       {},
     )
 

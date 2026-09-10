@@ -13,13 +13,14 @@ import {
 } from "@medusajs/medusa/core-flows"
 import { first } from "../shared/lib/first"
 import { resolveVendorUserStep } from "../vendors/shared/steps/resolve-vendor-user"
+import { resolveVendorShippingProfileStep } from "../vendors/shared/steps/resolve-vendor-shipping-profile"
+import { resolveStorePrerequisitesStep } from "../vendors/shared/steps/resolve-store-prerequisites"
 import { buildFreeShippingOptionInput } from "./mappers/build-free-shipping-option-input"
 import { buildFulfillmentLinkDefs } from "./mappers/build-fulfillment-link-defs"
 import { buildStockLocation } from "./mappers/build-stock-location"
 import { buildVendorLinkDefs } from "./mappers/build-vendor-link-defs"
 import { createFreeShippingFulfillmentSetStep } from "./steps/create-free-shipping-fulfillment-set"
 import { resolveSharedSalesChannelStep } from "./steps/resolve-shared-sales-channel"
-import { resolveVendorShippingProfileStep } from "../vendors/shared/steps/resolve-vendor-shipping-profile"
 
 export type CreateVendorStockLocationWorkflowInput = {
   actorId: string
@@ -67,6 +68,7 @@ export const createVendorStockLocationWorkflow = createWorkflow(
     const resolveVendorShippingProfile = resolveVendorShippingProfileStep({
       vendorId: resolveVendorUser.vendorId,
     })
+    const resolveStorePrerequisites = resolveStorePrerequisitesStep()
 
     const createFreeShippingFulfillmentSet =
       createFreeShippingFulfillmentSetStep({
@@ -90,12 +92,17 @@ export const createVendorStockLocationWorkflow = createWorkflow(
     })
 
     const shippingOptionsInput = transform(
-      { createFreeShippingFulfillmentSet, resolveVendorShippingProfile },
+      {
+        createFreeShippingFulfillmentSet,
+        resolveVendorShippingProfile,
+        resolveStorePrerequisites,
+      },
       (data) =>
         buildFreeShippingOptionInput({
           serviceZoneId: data.createFreeShippingFulfillmentSet.serviceZoneId,
           shippingProfileId:
             data.resolveVendorShippingProfile.shippingProfileId,
+          storeCurrencies: data.resolveStorePrerequisites.storeCurrencies,
         }),
     )
 

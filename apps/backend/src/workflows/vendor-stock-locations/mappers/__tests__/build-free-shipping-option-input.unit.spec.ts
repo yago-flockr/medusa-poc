@@ -6,6 +6,7 @@ describe("buildFreeShippingOptionInput", () => {
     const [option] = buildFreeShippingOptionInput({
       serviceZoneId: "zone_1",
       shippingProfileId: "profile_1",
+      storeCurrencies: ["usd", "eur"],
     })
 
     expect(option.name).toBe("Free Shipping")
@@ -13,14 +14,18 @@ describe("buildFreeShippingOptionInput", () => {
     expect(option.provider_id).toBe("manual_manual")
     expect(option.service_zone_id).toBe("zone_1")
     expect(option.shipping_profile_id).toBe("profile_1")
-    expect(option.prices.length).toBeGreaterThan(0)
     expect(option.prices.every((price) => price.amount === 0)).toBe(true)
+    expect(option.prices.map((price) => price.currency_code)).toEqual([
+      "usd",
+      "eur",
+    ])
   })
 
   it("scopes the option to enabled-in-store, non-return shipments", () => {
     const [option] = buildFreeShippingOptionInput({
       serviceZoneId: "zone_1",
       shippingProfileId: "profile_1",
+      storeCurrencies: ["usd", "eur"],
     })
 
     expect(option.rules).toEqual([

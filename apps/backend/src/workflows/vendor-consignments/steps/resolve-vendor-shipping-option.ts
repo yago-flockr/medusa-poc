@@ -11,20 +11,23 @@ const orderShippingMethodsSchema = z.object({
     .nullable(),
 })
 
-const vendorLocationSchema = z.object({
-  id: z.string(),
-  fulfillment_sets: z
-    .array(
-      z.object({
-        service_zones: z.array(
-          z.object({
-            shipping_options: z.array(z.object({ id: z.string() })).nullable(),
-          }),
-        ),
-      }),
-    )
-    .nullable(),
-})
+const vendorLocationsSchema = z.array(
+  z.object({
+    fulfillment_sets: z
+      .array(
+        z.object({
+          service_zones: z.array(
+            z.object({
+              shipping_options: z
+                .array(z.object({ id: z.string() }))
+                .nullable(),
+            }),
+          ),
+        }),
+      )
+      .nullable(),
+  }),
+)
 
 export type ResolveVendorShippingOptionStepInput = {
   orderId: string
@@ -48,25 +51,28 @@ export const resolveVendorShippingOptionStep = createStep(
     })
     const order = orderShippingMethodsSchema.parse(rawOrder)
 
-    const {
-      data: [rawLocation],
-    } = await query.graph({
+    const { data: rawLocations } = await query.graph({
       entity: "stock_location",
-      fields: ["id", "fulfillment_sets.service_zones.shipping_options.id"],
+      fields: ["fulfillment_sets.service_zones.shipping_options.id"],
       filters: { vendor: { id: vendorId } },
     })
 
-    if (!rawLocation) {
+    if (!rawLocations.length) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
         "This vendor has no stock location to dispatch from.",
       )
     }
 
-    const location = vendorLocationSchema.parse(rawLocation)
+    const locations = vendorLocationsSchema.parse(rawLocations)
 
+    // A vendor's items can be split across its own locations (see
+    // buildVendorShippingOptions) — match against every location's options,
+    // not just one, or dispatch fails whenever the order's option isn't the
+    // first location returned.
     const vendorShippingOptionIds = new Set(
-      (location.fulfillment_sets ?? [])
+      locations
+        .flatMap((location) => location.fulfillment_sets ?? [])
         .flatMap((set) => set.service_zones)
         .flatMap((zone) => zone.shipping_options ?? [])
         .map((option) => option.id),
@@ -86,6 +92,6 @@ export const resolveVendorShippingOptionStep = createStep(
       )
     }
 
-    return new StepResponse({ locationId: location.id, shippingOptionId })
+    return new StepResponse({ shippingOptionId })
   },
 )
