@@ -17,9 +17,9 @@ export default async function Footer() {
           <div>
             <LocalizedClientLink
               href="/"
-              className="text-lg font-semibold uppercase text-muted-foreground hover:text-foreground"
+              className="font-heading text-xl text-muted-foreground hover:text-foreground"
             >
-              Store
+              Vitine
             </LocalizedClientLink>
           </div>
           <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3 md:gap-x-16">
@@ -111,7 +111,7 @@ export default async function Footer() {
         </div>
         <div className="mb-16 flex w-full text-muted-foreground">
           <span className="text-sm">
-            © {new Date().getFullYear()} Store. All rights reserved.
+            © {new Date().getFullYear()} Vitine. All rights reserved.
           </span>
         </div>
       </div>

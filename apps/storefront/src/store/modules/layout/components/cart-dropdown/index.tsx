@@ -1,11 +1,13 @@
 "use client"
 
 import { convertToLocale } from "@/store/lib/util/money"
+import { cn } from "@/lib/utils"
 import DeleteButton from "@/store/modules/common/components/delete-button"
 import LineItemOptions from "@/store/modules/common/components/line-item-options"
 import LineItemPrice from "@/store/modules/common/components/line-item-price"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { Button } from "@/components/ui/button"
+import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
 import {
   Popover,
   PopoverContent,
@@ -49,7 +51,7 @@ const CartDropdown = ({
         openOnHover
         closeDelay={200}
         nativeButton={false}
-        className="hover:text-foreground"
+        className={cn(navigationMenuTriggerStyle())}
         render={
           <LocalizedClientLink
             href="/cart"

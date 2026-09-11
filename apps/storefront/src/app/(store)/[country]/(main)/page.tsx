@@ -2,9 +2,8 @@ import { Metadata } from "next"
 
 import { listCategories } from "@/store/lib/data/categories"
 import { listCollections } from "@/store/lib/data/collections"
-import { getRegion } from "@/store/lib/data/regions"
 import FeaturedCategories from "@/store/modules/home/components/featured-categories"
-import FeaturedProducts from "@/store/modules/home/components/featured-products"
+import FeaturedCollections from "@/store/modules/home/components/featured-collections"
 import Hero from "@/store/modules/home/components/hero"
 
 export const metadata: Metadata = {
@@ -12,33 +11,21 @@ export const metadata: Metadata = {
   description: "Shop the collection.",
 }
 
-export default async function Home(props: {
-  params: Promise<{ country: string }>
-}) {
-  const params = await props.params
-
-  const { country } = params
-
-  const region = await getRegion(country)
-
+export default async function Home() {
   const { collections } = await listCollections({
     fields: "id, handle, title",
   })
   const categories = await listCategories({ fields: "id, handle, name" })
 
-  if (!collections || !region) {
+  if (!collections) {
     return null
   }
 
   return (
     <>
       <Hero />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
-          <FeaturedCategories categories={categories} region={region} />
-          <FeaturedProducts collections={collections} region={region} />
-        </ul>
-      </div>
+      <FeaturedCategories categories={categories} />
+      <FeaturedCollections collections={collections} />
     </>
   )
 }
