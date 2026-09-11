@@ -1,6 +1,6 @@
+import { cn } from "@/lib/utils"
 import { listCategories } from "@/store/lib/data/categories"
 import { listCollections } from "@/store/lib/data/collections"
-import { cn } from "@/lib/utils"
 
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 
@@ -19,15 +19,13 @@ export default async function Footer() {
               href="/"
               className="font-heading text-xl text-muted-foreground hover:text-foreground"
             >
-              Vitine
+              Vitrine
             </LocalizedClientLink>
           </div>
           <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3 md:gap-x-16">
             {productCategories && productCategories?.length > 0 && (
               <div className="flex flex-col gap-y-2">
-                <span className="font-medium text-foreground">
-                  Categories
-                </span>
+                <span className="font-medium text-foreground">Categories</span>
                 <ul
                   className="grid grid-cols-1 gap-2"
                   data-testid="footer-categories"
@@ -83,9 +81,7 @@ export default async function Footer() {
             )}
             {collections && collections.length > 0 && (
               <div className="flex flex-col gap-y-2">
-                <span className="font-medium text-foreground">
-                  Collections
-                </span>
+                <span className="font-medium text-foreground">Collections</span>
                 <ul
                   className={cn(
                     "grid grid-cols-1 gap-2 text-muted-foreground",
@@ -111,7 +107,7 @@ export default async function Footer() {
         </div>
         <div className="mb-16 flex w-full text-muted-foreground">
           <span className="text-sm">
-            © {new Date().getFullYear()} Vitine. All rights reserved.
+            © {new Date().getFullYear()} Vitrine. All rights reserved.
           </span>
         </div>
       </div>

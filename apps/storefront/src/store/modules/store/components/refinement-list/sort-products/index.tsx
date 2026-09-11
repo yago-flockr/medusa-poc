@@ -1,6 +1,12 @@
 "use client"
 
-import FilterRadioGroup from "@/store/modules/common/components/filter-radio-group"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export type SortOptions = "price_asc" | "price_desc" | "created_at"
 
@@ -30,18 +36,22 @@ const SortProducts = ({
   sortBy,
   setQueryParams,
 }: SortProductsProps) => {
-  const handleChange = (value: string) => {
-    setQueryParams("sortBy", value as SortOptions)
-  }
-
   return (
-    <FilterRadioGroup
-      title="Sort by"
-      items={sortOptions}
+    <Select
       value={sortBy}
-      handleChange={handleChange}
-      data-testid={dataTestId}
-    />
+      onValueChange={(value) => setQueryParams("sortBy", value as string)}
+    >
+      <SelectTrigger data-testid={dataTestId} className="w-48">
+        <SelectValue placeholder="Sort by" />
+      </SelectTrigger>
+      <SelectContent>
+        {sortOptions.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 

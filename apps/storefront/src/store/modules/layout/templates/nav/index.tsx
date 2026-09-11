@@ -52,7 +52,7 @@ export default async function Nav() {
               className="font-heading text-xl hover:text-foreground"
               data-testid="nav-store-link"
             >
-              Vitine
+              Vitrine
             </LocalizedClientLink>
           </div>
 

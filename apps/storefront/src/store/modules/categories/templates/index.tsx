@@ -44,11 +44,7 @@ export default function CategoryTemplate({
       className="container flex flex-col py-6 sm:flex-row sm:items-start"
       data-testid="category-container"
     >
-      <RefinementList
-        sortBy={sort}
-        data-testid="sort-by-container"
-        hideOptionsPicker
-      />
+      <RefinementList sortBy={sort} data-testid="sort-by-container" />
       <div className="w-full">
         <div className="mb-8 flex flex-row gap-4 text-2xl font-semibold">
           {parents &&

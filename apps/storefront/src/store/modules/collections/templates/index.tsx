@@ -25,7 +25,7 @@ export default function CollectionTemplate({
 
   return (
     <div className="container flex flex-col py-6 sm:flex-row sm:items-start">
-      <RefinementList sortBy={sort} hideOptionsPicker />
+      <RefinementList sortBy={sort} />
       <div className="w-full">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold">{collection.title}</h1>
