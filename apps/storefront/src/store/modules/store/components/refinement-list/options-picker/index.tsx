@@ -2,8 +2,8 @@
 
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
-  AccordionPanel,
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { useEffect, useState } from "react"
@@ -111,7 +111,7 @@ const OptionsPicker = ({
                   </span>
                 </div>
               </AccordionTrigger>
-              <AccordionPanel>
+              <AccordionContent>
                 <div className="flex flex-wrap gap-2">
                   {values.map((value) => {
                     const isSelected = selectedValueIds.includes(value.id)
@@ -135,7 +135,7 @@ const OptionsPicker = ({
                     )
                   })}
                 </div>
-              </AccordionPanel>
+              </AccordionContent>
             </AccordionItem>
           )
         })}

@@ -2,8 +2,8 @@
 
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
-  AccordionPanel,
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
@@ -34,7 +34,7 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
         {tabs.map((tab) => (
           <AccordionItem key={tab.label} value={tab.label}>
             <AccordionTrigger>{tab.label}</AccordionTrigger>
-            <AccordionPanel>{tab.component}</AccordionPanel>
+            <AccordionContent>{tab.component}</AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
