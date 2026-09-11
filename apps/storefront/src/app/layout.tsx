@@ -24,6 +24,13 @@ export default function RootLayout({
       className={cn("font-sans", inter.variable, instrument.variable)}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          async
+          crossOrigin="anonymous"
+          src="https://tweakcn.com/live-preview.min.js"
+        />
+      </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>{children}</TooltipProvider>
