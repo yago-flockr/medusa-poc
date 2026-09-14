@@ -1,5 +1,7 @@
+import { Skeleton } from "@/components/ui/skeleton"
+
 const SkeletonButton = () => {
-  return <div className="h-11 w-full animate-pulse rounded-md bg-muted" />
+  return <Skeleton className="h-11 w-full" />
 }
 
 export default SkeletonButton

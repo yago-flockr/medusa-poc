@@ -5,6 +5,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import repeat from "@/store/lib/util/repeat"
 import SkeletonCartItem from "@/store/modules/skeletons/components/skeleton-cart-item"
@@ -19,33 +20,33 @@ const SkeletonCartPage = () => {
           <div className="flex flex-col gap-y-6 bg-background p-6">
             <div className="flex items-start justify-between bg-background">
               <div className="flex flex-col gap-y-2">
-                <div className="h-8 w-60 animate-pulse bg-muted" />
-                <div className="h-6 w-48 animate-pulse bg-muted" />
+                <Skeleton className="h-8 w-60" />
+                <Skeleton className="h-6 w-48" />
               </div>
               <div>
-                <div className="h-8 w-14 animate-pulse bg-muted" />
+                <Skeleton className="h-8 w-14" />
               </div>
             </div>
             <div>
               <div className="flex items-center pb-3">
-                <div className="h-12 w-20 animate-pulse bg-muted" />
+                <Skeleton className="h-12 w-20" />
               </div>
               <Table>
                 <TableHeader className="border-t-0">
                   <TableRow>
                     <TableHead className="pl-0!">
-                      <div className="h-6 w-10 animate-pulse bg-muted" />
+                      <Skeleton className="h-6 w-10" />
                     </TableHead>
                     <TableHead></TableHead>
                     <TableHead>
-                      <div className="h-6 w-16 animate-pulse bg-muted" />
+                      <Skeleton className="h-6 w-16" />
                     </TableHead>
                     <TableHead>
-                      <div className="h-6 w-12 animate-pulse bg-muted" />
+                      <Skeleton className="h-6 w-12" />
                     </TableHead>
                     <TableHead className="pr-0!">
                       <div className="flex justify-end">
-                        <div className="h-6 w-12 animate-pulse bg-muted" />
+                        <Skeleton className="h-6 w-12" />
                       </div>
                     </TableHead>
                   </TableRow>
