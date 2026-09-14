@@ -5,6 +5,7 @@ import {
   getCollectionByHandle,
   listCollections,
 } from "@/store/lib/data/collections"
+import { listProductOptions } from "@/store/lib/data/product-options"
 import { listRegions } from "@/store/lib/data/regions"
 import { parseOptionValueIds } from "@/store/lib/util/product-option-filters"
 import CollectionTemplate from "@/store/modules/collections/templates"
@@ -87,6 +88,8 @@ export default async function CollectionPage(props: Props) {
     notFound()
   }
 
+  const options = await listProductOptions()
+
   return (
     <CollectionTemplate
       collection={collection}
@@ -94,6 +97,7 @@ export default async function CollectionPage(props: Props) {
       sortBy={sortBy}
       country={params.country}
       optionValueIds={optionValueIds}
+      options={options}
     />
   )
 }

@@ -1,5 +1,8 @@
+import {
+  NativeSelect as NativeSelectPrimitive,
+  NativeSelectOption,
+} from "@/components/ui/native-select"
 import { cn } from "@/lib/utils"
-import { RiExpandUpDownLine } from "@remixicon/react"
 import {
   SelectHTMLAttributes,
   forwardRef,
@@ -13,7 +16,7 @@ export type NativeSelectProps = {
   placeholder?: string
   errors?: Record<string, unknown>
   touched?: Record<string, unknown>
-} & SelectHTMLAttributes<HTMLSelectElement>
+} & Omit<SelectHTMLAttributes<HTMLSelectElement>, "size">
 
 const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
   (
@@ -37,34 +40,21 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
     }, [innerRef.current?.value])
 
     return (
-      <div>
-        <div
-          onFocus={() => innerRef.current?.focus()}
-          onBlur={() => innerRef.current?.blur()}
-          className={cn(
-            "relative flex items-center rounded-md border border-input bg-background text-sm hover:bg-muted/50",
-            className,
-            {
-              "text-muted-foreground": isPlaceholder,
-            },
-          )}
-        >
-          <select
-            ref={innerRef}
-            defaultValue={defaultValue}
-            {...props}
-            className="flex-1 appearance-none border-none bg-transparent px-4 py-2.5 outline-none transition-colors duration-150"
-          >
-            <option disabled value="">
-              {placeholder}
-            </option>
-            {children}
-          </select>
-          <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
-            <RiExpandUpDownLine size={16} />
-          </span>
-        </div>
-      </div>
+      <NativeSelectPrimitive
+        ref={innerRef}
+        defaultValue={defaultValue}
+        className={cn(
+          "w-full",
+          isPlaceholder && "text-muted-foreground",
+          className,
+        )}
+        {...props}
+      >
+        <NativeSelectOption disabled value="">
+          {placeholder}
+        </NativeSelectOption>
+        {children}
+      </NativeSelectPrimitive>
     )
   },
 )

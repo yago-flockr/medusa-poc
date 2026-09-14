@@ -3,6 +3,8 @@ import { Suspense } from "react"
 import { OptionValueIds } from "@/store/lib/util/product-option-filters"
 import SkeletonProductGrid from "@/store/modules/skeletons/templates/skeleton-product-grid"
 import CatalogFilterBar from "@/store/modules/store/components/catalog-filter-bar"
+import CatalogHero from "@/store/modules/store/components/catalog-hero"
+import { ProductListingLayout } from "@/store/modules/store/components/product-listing-layout"
 import { SortOptions } from "@/store/modules/store/components/refinement-list/sort-products"
 import { HttpTypes } from "@medusajs/types"
 
@@ -27,12 +29,10 @@ const StoreTemplate = ({
   const sort = sortBy || "created_at"
 
   return (
-    <div className="container py-6" data-testid="category-container">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold" data-testid="store-page-title">
-          All products
-        </h1>
-      </div>
+    <ProductListingLayout.Root data-testid="category-container">
+      <ProductListingLayout.Hero>
+        <CatalogHero title="All products" titleTestId="store-page-title" />
+      </ProductListingLayout.Hero>
       <CatalogFilterBar categories={categories} options={options} sortBy={sort} />
       <Suspense fallback={<SkeletonProductGrid />}>
         <PaginatedProducts
@@ -42,7 +42,7 @@ const StoreTemplate = ({
           optionValueIds={optionValueIds}
         />
       </Suspense>
-    </div>
+    </ProductListingLayout.Root>
   )
 }
 

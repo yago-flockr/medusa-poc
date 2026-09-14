@@ -1,11 +1,10 @@
-import { HttpTypes } from "@medusajs/types"
-
+import { StoreProductCategoryWithStorefrontContent } from "@/store/lib/data/categories"
 import ThumbnailCard from "@/store/modules/common/components/thumbnail-card"
 
 export default function FeaturedCategories({
   categories,
 }: {
-  categories: HttpTypes.StoreProductCategory[]
+  categories: StoreProductCategoryWithStorefrontContent[]
 }) {
   if (!categories.length) {
     return null
@@ -19,7 +18,8 @@ export default function FeaturedCategories({
           <li key={category.id}>
             <ThumbnailCard
               href={`/categories/${category.handle}`}
-              title={category.name}
+              title={category.storefront_content?.name ?? category.name}
+              image={category.storefront_content?.hero_image_url}
             />
           </li>
         ))}

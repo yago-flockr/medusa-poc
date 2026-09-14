@@ -8,17 +8,19 @@ import {
   AttachmentTitle,
   AttachmentTrigger,
 } from "@/components/ui/attachment"
+import { cn } from "@/lib/utils"
 import { RiAddLine, RiCloseLine, RiImageLine } from "@remixicon/react"
 import { without } from "lodash"
-import { useRef, useState } from "react"
+import { ComponentProps, useRef, useState } from "react"
 
-const MAX_IMAGES = 5
+const DEFAULT_MAX_IMAGES = 5
 
-type ImagesFieldProps = {
+type ImagesFieldProps = Omit<ComponentProps<"div">, "onChange"> & {
   images: string[]
   onChange: (images: string[]) => void
   onUploadImages: (files: File[]) => Promise<string[]>
   isUploadingImages?: boolean
+  maxImages?: number
 }
 
 export function ImagesField({
@@ -26,6 +28,9 @@ export function ImagesField({
   onChange,
   onUploadImages,
   isUploadingImages,
+  maxImages = DEFAULT_MAX_IMAGES,
+  className,
+  ...props
 }: ImagesFieldProps) {
   const [pendingUploads, setPendingUploads] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -33,7 +38,7 @@ export function ImagesField({
   async function handleImagesSelected(files: FileList | null) {
     if (!files?.length) return
 
-    const remaining = MAX_IMAGES - images.length
+    const remaining = maxImages - images.length
     const picked = Array.from(files).slice(0, remaining)
 
     setPendingUploads(picked.length)
@@ -46,7 +51,7 @@ export function ImagesField({
   }
 
   return (
-    <div className="flex min-w-0 flex-col gap-2">
+    <div className={cn("flex min-w-0 flex-col gap-2", className)} {...props}>
       <p className="text-sm font-medium">Images</p>
       <AttachmentGroup>
         {images.map((url, index) => (
@@ -86,7 +91,7 @@ export function ImagesField({
           </Attachment>
         ))}
 
-        {images.length < MAX_IMAGES && (
+        {images.length < maxImages && (
           <Attachment orientation="vertical" size="sm" state="idle">
             <AttachmentTrigger
               aria-label="Add image"

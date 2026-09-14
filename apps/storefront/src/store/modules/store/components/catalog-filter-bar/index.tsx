@@ -1,6 +1,8 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { RiFilterLine } from "@remixicon/react"
+import { ComponentProps } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -20,8 +22,8 @@ import SortProducts, {
 } from "@/store/modules/store/components/refinement-list/sort-products"
 import { HttpTypes } from "@medusajs/types"
 
-type CatalogFilterBarProps = {
-  categories: HttpTypes.StoreProductCategory[]
+type CatalogFilterBarProps = ComponentProps<"div"> & {
+  categories?: HttpTypes.StoreProductCategory[]
   options: HttpTypes.StoreProductOption[]
   sortBy: SortOptions
 }
@@ -30,13 +32,25 @@ const CatalogFilterBar = ({
   categories,
   options,
   sortBy,
+  className,
+  ...props
 }: CatalogFilterBarProps) => {
   const { setQueryParams, selectedOptionValueIds, setOptionValueIds } =
     useProductListQueryParams()
 
   return (
-    <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b pb-6">
-      <CategoryPills categories={categories} />
+    <div
+      className={cn(
+        "mb-8 flex flex-wrap items-center justify-between gap-4 border-b pb-6",
+        className,
+      )}
+      {...props}
+    >
+      {categories ? (
+        <CategoryPills categories={categories} />
+      ) : (
+        <div />
+      )}
       <div className="flex items-center gap-2">
         <Drawer swipeDirection="left">
           <DrawerTrigger

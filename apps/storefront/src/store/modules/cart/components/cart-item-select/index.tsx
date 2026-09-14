@@ -1,7 +1,10 @@
 "use client"
 
+import {
+  NativeSelect as NativeSelectPrimitive,
+  NativeSelectOption,
+} from "@/components/ui/native-select"
 import { cn } from "@/lib/utils"
-import { RiArrowDownSLine } from "@remixicon/react"
 import {
   SelectHTMLAttributes,
   forwardRef,
@@ -36,31 +39,20 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
     }, [innerRef.current?.value])
 
     return (
-      <div
-        onFocus={() => innerRef.current?.focus()}
-        onBlur={() => innerRef.current?.blur()}
+      <NativeSelectPrimitive
+        ref={innerRef}
         className={cn(
-          "group relative flex items-center rounded-md border bg-background text-sm text-foreground",
+          "h-16 w-16",
+          isPlaceholder && "text-muted-foreground",
           className,
-          {
-            "text-muted-foreground": isPlaceholder,
-          },
         )}
+        {...props}
       >
-        <select
-          ref={innerRef}
-          {...props}
-          className="h-16 w-16 items-center justify-center appearance-none border-none bg-transparent px-4 outline-none transition-colors duration-150"
-        >
-          <option disabled value="">
-            {placeholder}
-          </option>
-          {children}
-        </select>
-        <span className="pointer-events-none absolute flex w-8 justify-end group-hover:animate-pulse">
-          <RiArrowDownSLine size={16} />
-        </span>
-      </div>
+        <NativeSelectOption disabled value="">
+          {placeholder}
+        </NativeSelectOption>
+        {children}
+      </NativeSelectPrimitive>
     )
   },
 )

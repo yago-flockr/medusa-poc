@@ -12,9 +12,9 @@ const Hero = () => {
             Anyone can buy here. Almost no one gets to sell.
           </h1>
           <p className="mt-4 text-sm text-background/80 sm:text-base">
-            Every house in the catalog is reviewed before a single product
-            goes live. One basket can cross houses, one payment, one standard
-            held against all of them.
+            Every house in the catalog is reviewed before a single product goes
+            live. One basket can cross houses, one payment, one standard held
+            against all of them.
           </p>
           <div className="mt-6 flex gap-3">
             <LocalizedClientLink href="/store">

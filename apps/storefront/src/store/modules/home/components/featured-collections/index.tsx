@@ -1,11 +1,10 @@
-import { HttpTypes } from "@medusajs/types"
-
+import { StoreCollectionWithStorefrontContent } from "@/store/lib/data/collections"
 import ThumbnailCard from "@/store/modules/common/components/thumbnail-card"
 
 export default function FeaturedCollections({
   collections,
 }: {
-  collections: HttpTypes.StoreCollection[]
+  collections: StoreCollectionWithStorefrontContent[]
 }) {
   if (!collections.length) {
     return null
@@ -19,7 +18,8 @@ export default function FeaturedCollections({
           <li key={collection.id}>
             <ThumbnailCard
               href={`/collections/${collection.handle}`}
-              title={collection.title}
+              title={collection.storefront_content?.name ?? collection.title}
+              image={collection.storefront_content?.hero_image_url}
               className="aspect-4/5"
             />
           </li>

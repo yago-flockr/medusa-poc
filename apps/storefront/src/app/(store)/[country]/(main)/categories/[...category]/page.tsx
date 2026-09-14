@@ -5,6 +5,7 @@ import {
   getCategoryByHandle,
   listCategories,
 } from "@/store/lib/data/categories"
+import { listProductOptions } from "@/store/lib/data/product-options"
 import { listRegions } from "@/store/lib/data/regions"
 import { parseOptionValueIds } from "@/store/lib/util/product-option-filters"
 import CategoryTemplate from "@/store/modules/categories/templates"
@@ -83,6 +84,8 @@ export default async function CategoryPage(props: Props) {
     notFound()
   }
 
+  const options = await listProductOptions()
+
   return (
     <CategoryTemplate
       category={productCategory}
@@ -90,6 +93,7 @@ export default async function CategoryPage(props: Props) {
       page={page}
       country={params.country}
       optionValueIds={optionValueIds}
+      options={options}
     />
   )
 }

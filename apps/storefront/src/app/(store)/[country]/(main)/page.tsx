@@ -13,9 +13,11 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const { collections } = await listCollections({
-    fields: "id, handle, title",
+    fields: "+storefront_content.*",
   })
-  const categories = await listCategories({ fields: "id, handle, name" })
+  const categories = await listCategories({
+    fields: "+storefront_content.*",
+  })
 
   if (!collections) {
     return null
@@ -24,8 +26,8 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <FeaturedCategories categories={categories} />
       <FeaturedCollections collections={collections} />
+      <FeaturedCategories categories={categories} />
     </>
   )
 }

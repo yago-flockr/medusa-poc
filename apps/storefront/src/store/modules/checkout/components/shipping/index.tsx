@@ -6,10 +6,11 @@ import { convertToLocale } from "@/store/lib/util/money"
 import ErrorMessage from "@/store/modules/checkout/components/error-message"
 import Divider from "@/store/modules/common/components/divider"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
 import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 import { RadioGroup } from "@/components/ui/radio-group"
-import { RiCheckboxCircleFill, RiLoader4Line } from "@remixicon/react"
+import { RiCheckboxCircleFill } from "@remixicon/react"
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
@@ -268,7 +269,7 @@ const Shipping: React.FC<ShippingProps> = ({
               currency_code: cart?.currency_code,
             })
           ) : isLoadingPrices ? (
-            <RiLoader4Line className="animate-spin" />
+            <Spinner />
           ) : (
             "-"
           )}

@@ -1,14 +1,85 @@
 import { notFound } from "next/navigation"
-import { Suspense } from "react"
+import { Fragment, Suspense } from "react"
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Badge } from "@/components/ui/badge"
+import { StoreProductCategoryWithStorefrontContent } from "@/store/lib/data/categories"
 import { OptionValueIds } from "@/store/lib/util/product-option-filters"
-import InteractiveLink from "@/store/modules/common/components/interactive-link"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import SkeletonProductGrid from "@/store/modules/skeletons/templates/skeleton-product-grid"
-import RefinementList from "@/store/modules/store/components/refinement-list"
+import CatalogFilterBar from "@/store/modules/store/components/catalog-filter-bar"
+import CatalogHero from "@/store/modules/store/components/catalog-hero"
+import { ProductListingLayout } from "@/store/modules/store/components/product-listing-layout"
 import { SortOptions } from "@/store/modules/store/components/refinement-list/sort-products"
 import PaginatedProducts from "@/store/modules/store/templates/paginated-products"
 import { HttpTypes } from "@medusajs/types"
+
+const collectCategoryIds = (
+  category: HttpTypes.StoreProductCategory,
+): string[] => [
+  category.id,
+  ...(category.category_children?.flatMap(collectCategoryIds) ?? []),
+]
+
+function CategoryBreadcrumb({
+  parents,
+}: {
+  parents: HttpTypes.StoreProductCategory[]
+}) {
+  return (
+    <Breadcrumb className="mb-4">
+      <BreadcrumbList>
+        {parents.map((parent) => (
+          <Fragment key={parent.id}>
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                render={
+                  <LocalizedClientLink
+                    href={`/categories/${parent.handle}`}
+                    data-testid="sort-by-link"
+                  >
+                    {parent.name}
+                  </LocalizedClientLink>
+                }
+              />
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+          </Fragment>
+        ))}
+      </BreadcrumbList>
+    </Breadcrumb>
+  )
+}
+
+function SubcategoryList({
+  categories,
+}: {
+  categories: HttpTypes.StoreProductCategory[]
+}) {
+  return (
+    <div className="flex flex-wrap gap-2 pb-4">
+      {categories.map((subcategory) => (
+        <Badge
+          key={subcategory.id}
+          variant="outline"
+          render={
+            <LocalizedClientLink
+              href={`/categories/${subcategory.handle}`}
+            />
+          }
+        >
+          {subcategory.name}
+        </Badge>
+      ))}
+    </div>
+  )
+}
 
 export default function CategoryTemplate({
   category,
@@ -16,12 +87,14 @@ export default function CategoryTemplate({
   page,
   country,
   optionValueIds,
+  options,
 }: {
-  category: HttpTypes.StoreProductCategory
+  category: StoreProductCategoryWithStorefrontContent
   sortBy?: SortOptions
   page?: string
   country: string
   optionValueIds?: OptionValueIds
+  options: HttpTypes.StoreProductOption[]
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
@@ -39,63 +112,40 @@ export default function CategoryTemplate({
 
   getParents(category)
 
+  const categoryIds = collectCategoryIds(category)
+
   return (
-    <div
-      className="container flex flex-col py-6 sm:flex-row sm:items-start"
-      data-testid="category-container"
-    >
-      <RefinementList sortBy={sort} data-testid="sort-by-container" />
-      <div className="w-full">
-        <div className="mb-8 flex flex-row gap-4 text-2xl font-semibold">
-          {parents &&
-            parents.map((parent) => (
-              <span key={parent.id} className="text-muted-foreground">
-                <LocalizedClientLink
-                  className="mr-4 hover:text-foreground"
-                  href={`/categories/${parent.handle}`}
-                  data-testid="sort-by-link"
-                >
-                  {parent.name}
-                </LocalizedClientLink>
-                /
-              </span>
-            ))}
-          <h1 data-testid="category-page-title">{category.name}</h1>
-        </div>
-        {category.description && (
-          <div className="mb-8">
-            <p>{category.description}</p>
-          </div>
-        )}
-        {category.category_children && (
-          <div className="mb-8">
-            <ul className="grid grid-cols-1 gap-2">
-              {category.category_children?.map((c) => (
-                <li key={c.id}>
-                  <InteractiveLink href={`/categories/${c.handle}`}>
-                    {c.name}
-                  </InteractiveLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        <Suspense
-          fallback={
-            <SkeletonProductGrid
-              numberOfProducts={category.products?.length ?? 8}
-            />
+    <ProductListingLayout.Root data-testid="category-container">
+      {parents.length > 0 && <CategoryBreadcrumb parents={parents} />}
+      <ProductListingLayout.Hero>
+        <CatalogHero
+          title={category.storefront_content?.name ?? category.name}
+          description={
+            category.storefront_content?.description ?? category.description
           }
-        >
-          <PaginatedProducts
-            sortBy={sort}
-            page={pageNumber}
-            categoryId={category.id}
-            country={country}
-            optionValueIds={optionValueIds}
+          imageUrl={category.storefront_content?.hero_image_url}
+          titleTestId="category-page-title"
+        />
+      </ProductListingLayout.Hero>
+      <CatalogFilterBar options={options} sortBy={sort} />
+      {category.category_children && category.category_children.length > 0 && (
+        <SubcategoryList categories={category.category_children} />
+      )}
+      <Suspense
+        fallback={
+          <SkeletonProductGrid
+            numberOfProducts={category.products?.length ?? 8}
           />
-        </Suspense>
-      </div>
-    </div>
+        }
+      >
+        <PaginatedProducts
+          sortBy={sort}
+          page={pageNumber}
+          categoryId={categoryIds}
+          country={country}
+          optionValueIds={optionValueIds}
+        />
+      </Suspense>
+    </ProductListingLayout.Root>
   )
 }

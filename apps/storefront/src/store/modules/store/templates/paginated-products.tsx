@@ -27,13 +27,13 @@ export default async function PaginatedProducts({
   sortBy?: SortOptions
   page: number
   collectionId?: string
-  categoryId?: string
+  categoryId?: string | string[]
   productsIds?: string[]
   country: string
   optionValueIds?: OptionValueIds
 }) {
   const queryParams: PaginatedProductsParams = {
-    limit: 12,
+    limit: PRODUCT_LIMIT,
   }
 
   if (collectionId) {
@@ -41,7 +41,9 @@ export default async function PaginatedProducts({
   }
 
   if (categoryId) {
-    queryParams["category_id"] = [categoryId]
+    queryParams["category_id"] = Array.isArray(categoryId)
+      ? categoryId
+      : [categoryId]
   }
 
   if (productsIds) {
