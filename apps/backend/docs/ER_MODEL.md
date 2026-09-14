@@ -7,7 +7,7 @@
 
 - **Store:** PostgreSQL
 - **ORM / layer:** Medusa module data models and migrations
-- **Custom entities in this package:** `Brand` (product taxonomy; study seed for later vendor-shaped work), `Vendor` / `VendorUser` (marketplace actor type — study plan Block C1), `Consignment` (a vendor's scoped slice of one real order — replaces a child-order-per-vendor design, see "Order splitting" below)
+- **Custom entities in this package:** `Brand` (product taxonomy; study seed for later vendor-shaped work), `Vendor` / `VendorUser` (marketplace actor type — study plan Block C1), `Consignment` (a vendor's scoped slice of one real order — replaces a child-order-per-vendor design, see "Order splitting" below), `StorefrontContent` (optional public-presentation override — name/description/hero image — shared by vendor, product category, and product collection; see below)
 
 Commerce tables (products, carts, orders, customers, regions, etc.) are owned by Medusa core modules installed via `medusa-config.ts`. This document tracks **chassis-owned** custom models only.
 
@@ -57,7 +57,17 @@ erDiagram
     timestamptz deleted_at
   }
 
-  %% Medusa Product / Order / OrderLineItem (core) — linked, not owned here
+  StorefrontContent {
+    text id PK
+    text name
+    text description
+    text hero_image_url
+    timestamptz created_at
+    timestamptz updated_at
+    timestamptz deleted_at
+  }
+
+  %% Medusa Product / Order / OrderLineItem / ProductCategory / ProductCollection (core) — linked, not owned here
   Product {
     text id PK
   }
@@ -70,15 +80,26 @@ erDiagram
     text id PK
   }
 
+  ProductCategory {
+    text id PK
+  }
+
+  ProductCollection {
+    text id PK
+  }
+
   Brand ||--o{ Product : "link product-brand (Product isList)"
   Vendor ||--o{ Product : "link product-vendor (Product isList)"
   Vendor ||--o{ VendorUser : "users"
   Vendor ||--o{ Consignment : "consignments"
   Order ||--o{ Consignment : "link consignment-order (Consignment isList)"
   Consignment ||--o{ OrderLineItem : "link order-line-item-consignment (OrderLineItem isList)"
+  Vendor ||--o| StorefrontContent : "link vendor-storefront-content (1:1)"
+  ProductCategory ||--o| StorefrontContent : "link product-category-storefront-content (1:1)"
+  ProductCollection ||--o| StorefrontContent : "link product-collection-storefront-content (1:1)"
 ```
 
-Link definitions: `src/links/product-brand.ts` — Product (list) ↔ Brand. `src/links/product-vendor.ts` — Product (list) ↔ Vendor. `src/links/consignment-order.ts` — Consignment (list) ↔ Order: one real order per checkout, one `Consignment` per vendor scoping that order's own items — no child order, see `docs/spikes/multi-vendor-order.md` for why. `src/links/order-line-item-consignment.ts` — OrderLineItem (list) ↔ Consignment: which of the order's own line items belong to that vendor. No FK into Medusa tables; Medusa owns the link table.
+Link definitions: `src/links/product-brand.ts` — Product (list) ↔ Brand. `src/links/product-vendor.ts` — Product (list) ↔ Vendor. `src/links/consignment-order.ts` — Consignment (list) ↔ Order: one real order per checkout, one `Consignment` per vendor scoping that order's own items — no child order, see `docs/spikes/multi-vendor-order.md` for why. `src/links/order-line-item-consignment.ts` — OrderLineItem (list) ↔ Consignment: which of the order's own line items belong to that vendor. `src/links/vendor-storefront-content.ts`, `src/links/product-category-storefront-content.ts`, `src/links/product-collection-storefront-content.ts` — each a 1:1 link (no `isList` on either side, same shape as `vendor-shipping-profile.ts`) from one `StorefrontContent` row to exactly one vendor, category, or collection. No FK into Medusa tables; Medusa owns the link table.
 
 ## Entities
 
@@ -138,6 +159,22 @@ Link definitions: `src/links/product-brand.ts` — Product (list) ↔ Brand. `sr
 **Where uploaded files actually end up, and why no code change is needed for that to differ per environment:** `medusa-config.ts` has no `modules: [{resolve: "@medusajs/medusa/file", ...}]` entry at all, so Medusa runs its default — the Local File Module Provider, local-disk only, `apps/backend/static/` — exactly why it's dev-only and gitignored. `multer` (`uploads/middlewares.ts`) is a separate concern from this and never touches it: it only parses the incoming multipart body into an in-memory `Buffer` (`memoryStorage()` — nothing written to disk, gone once the request completes), handing that buffer to the route. The route then calls `uploadFilesWorkflow`, which resolves whichever File Module provider is currently configured — neither the middleware nor the route hardcodes a destination. On Medusa Cloud specifically, this requires zero changes: Cloud auto-provisions a dedicated S3 bucket per environment and auto-configures the S3 File Module Provider — the docs explicitly say to *remove* any manual S3 config from `medusa-config.ts` before deploying there, since Cloud already injects it. The switch from local disk to real object storage is a deploy-environment fact, not something this codebase has to build.
 
 **Order splitting (settled):** one real order per checkout, no child orders — `src/workflows/create-consignments/` groups a completed cart's line items by vendor and creates one `Consignment` per vendor, linked to that order and its own items via `consignment-order`/`order-line-item-consignment`; `POST /store/carts/:id/complete-vendor` replaces the store's own complete-cart call (unchanged route, new workflow), `GET /vendors/orders` resolves consignments filtered by `vendor_id` directly. This replaced an earlier child-order-per-vendor implementation (the official Medusa marketplace recipe) after real bugs surfaced once it was used for real: `createOrderWorkflow` never creates inventory reservations for a child order's items, never gets the parent's promo codes forwarded, and has no `payment_collection` of its own (`cancelOrderWorkflow` against a child order silently no-ops instead of refunding). All three traced back to one cause — a child order looks like a full order without owning its own payment — and `docs/plan.md` fixes this project's payment as centralized ("one basket, one payment"), so that shape can never be fixed piecemeal. See `docs/spikes/multi-vendor-order.md` for the full evidence trail. A vendor's own `fulfillment_status` is derived from that consignment's own items (never read off the order's combined status) — computed, not stored, exactly as the friction the spike predicted.
+
+### StorefrontContent
+
+`src/modules/storefront-content` (`STOREFRONT_CONTENT_MODULE`). A single small module, shared by three unrelated core-ish entities rather than three near-identical modules: an optional public-presentation override for a vendor, a product category, or a product collection — a `name` display override, a `description`, and a `hero_image_url`. Each of the three link files (see above) is its own independent 1:1 relationship to the same `StorefrontContent` linkable — the same pattern `Vendor` itself already uses to participate in four separate links (`product-vendor`, `consignment-order`, `vendor-shipping-profile`, `vendor-stock-location`) from one linkable entity.
+
+| Field                                       | Type    | Notes                                                                 |
+| -------------------------------------------- | ------- | ---------------------------------------------------------------------- |
+| `id`                                         | text PK | Medusa id                                                              |
+| `name`                                       | text    | Nullable; a **display override**, distinct from `Vendor.name`/`ProductCategory.name`/`ProductCollection.title` — never the identity/handle field |
+| `description`                                | text    | Nullable; for `Vendor` and `ProductCollection` (neither has a native description); `ProductCategory` already has its own native `description` and should keep using that instead of this field |
+| `hero_image_url`                             | text    | Nullable; a plain URL string, same convention as `product.thumbnail` — the actual upload goes through the File Module (vendor's own `POST /vendors/uploads`, or an Admin-side equivalent), this field just stores the resulting URL |
+| `created_at` / `updated_at` / `deleted_at`   | timestamptz | Soft-delete, standard Medusa columns                                |
+
+**Why a linked module instead of native fields:** `ProductCategory` and `ProductCollection` are core Medusa models — this codebase never edits a core module's own model file (`agents/backend.md` "Update a standalone or linked model's fields" only applies to modules we own). `Vendor` *is* ours, but `Vendor.name`/`Vendor.handle` are the staff-only identity fields a vendor may never edit themselves (`PATCH /vendors/me` only ever touches `VendorUser`, never `Vendor` — see above); a vendor-editable "display name" therefore has to live somewhere that isn't `Vendor` itself, which is exactly what this module is for.
+
+**Editing surfaces:** a vendor edits their own row via the vendor panel (`PATCH /vendors/me`, extended to accept the storefront-content fields alongside the existing `VendorUser` ones); staff edit a category's or collection's row via an Admin widget on that core entity's existing detail page (`product_category.details.after` / `product_collection.details.after`) — neither gets a brand-new Admin route, since the underlying resource already has one.
 
 Planned later (`docs/features/`): consignments, commission / payout ledger, vendor onboarding/approval. Money and rates use `bigNumber`; ledger entries are append-only.
 

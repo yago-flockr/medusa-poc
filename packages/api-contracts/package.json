@@ -5,6 +5,7 @@
   "exports": {
     "./common/pagination": "./src/common/pagination.ts",
     "./common/normalize-shopify-domain": "./src/common/normalize-shopify-domain.ts",
+    "./common/storefront-content": "./src/common/storefront-content.ts",
     "./vendor/me": "./src/vendor/me.ts",
     "./vendor/auth": "./src/vendor/auth.ts",
     "./vendor/vendor": "./src/vendor/vendor.ts",
@@ -23,7 +24,9 @@
     "./admin/brands": "./src/admin/brands.ts",
     "./admin/vendor-users": "./src/admin/vendor-users.ts",
     "./admin/vendors": "./src/admin/vendors.ts",
-    "./admin/vendor-shopify": "./src/admin/vendor-shopify.ts"
+    "./admin/vendor-shopify": "./src/admin/vendor-shopify.ts",
+    "./admin/product-category-storefront-content": "./src/admin/product-category-storefront-content.ts",
+    "./admin/collection-storefront-content": "./src/admin/collection-storefront-content.ts"
   },
   "dependencies": {
     "@medusajs/types": "2.18.0",

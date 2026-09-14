@@ -12,15 +12,18 @@ export const Divider = forwardRef<HTMLDivElement, DividerProps>(
   ) {
     return (
       <div
-        className={clx("flex items-center justify-center", className)}
+        className={clx(
+          "flex items-center justify-center text-center",
+          className,
+        )}
         ref={ref}
         {...props}
       >
         <div
           className={clx(
-            "border-ui-border",
-            orientation === "horizontal" && "w-full border-t",
-            orientation === "vertical" && "h-full border-r",
+            "border-ui-border flex-1",
+            orientation === "horizontal" && "border-t",
+            orientation === "vertical" && "border-r",
           )}
         />
         {children && (
@@ -30,9 +33,9 @@ export const Divider = forwardRef<HTMLDivElement, DividerProps>(
         )}
         <div
           className={clx(
-            "border-ui-border",
-            orientation === "horizontal" && "w-full border-t",
-            orientation === "vertical" && "h-full border-r",
+            "border-ui-border flex-1",
+            orientation === "horizontal" && "border-t",
+            orientation === "vertical" && "border-r",
           )}
         />
       </div>

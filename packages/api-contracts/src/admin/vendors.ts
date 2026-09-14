@@ -3,6 +3,10 @@ import type { FindParams } from "@medusajs/types"
 import { paginationMetaSchema } from "@dtc/api-contracts/common/pagination"
 import { normalizeShopifyStoreDomain } from "@dtc/api-contracts/common/normalize-shopify-domain"
 import {
+  storefrontContentSchema,
+  updateStorefrontContentSchema,
+} from "@dtc/api-contracts/common/storefront-content"
+import {
   vendorIntegrationConnectionProviderSchema,
   vendorIntegrationConnectionSchema,
   type VendorIntegrationConnection,
@@ -31,6 +35,7 @@ export const vendorSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   deleted_at: z.string().nullable(),
+  storefront_content: storefrontContentSchema.nullable(),
   users: z.array(vendorUserSchema).optional(),
   integration_connections: z
     .array(vendorIntegrationConnectionSchema)
@@ -138,6 +143,7 @@ export const updateVendorSchema = z
       .optional(),
     is_active: z.boolean().optional(),
     integration_connection: updateVendorIntegrationConnectionSchema.optional(),
+    storefront_content: updateStorefrontContentSchema.optional(),
   })
   .strict()
   .refine(
@@ -145,10 +151,11 @@ export const updateVendorSchema = z
       data.name !== undefined ||
       data.handle !== undefined ||
       data.is_active !== undefined ||
-      data.integration_connection !== undefined,
+      data.integration_connection !== undefined ||
+      data.storefront_content !== undefined,
     {
       message:
-        "At least one of name, handle, is_active, or integration_connection is required",
+        "At least one of name, handle, is_active, integration_connection, or storefront_content is required",
     },
   )
 

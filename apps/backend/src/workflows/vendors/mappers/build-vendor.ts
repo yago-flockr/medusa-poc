@@ -15,13 +15,22 @@ type RawVendor = {
         connected_at: string | Date | null
       } | null)[]
     | null
+  storefront_content?: {
+    name: string | null
+    description: string | null
+    hero_image_url: string | null
+  } | null
 } & Record<string, unknown>
 
 export function buildVendor<T extends RawVendor>(
   vendor: T,
 ): Omit<
   T,
-  "integration_connections" | "created_at" | "updated_at" | "deleted_at"
+  | "integration_connections"
+  | "created_at"
+  | "updated_at"
+  | "deleted_at"
+  | "storefront_content"
 > & {
   created_at: string
   updated_at: string
@@ -32,12 +41,18 @@ export function buildVendor<T extends RawVendor>(
     client_id: string | null
     connected: boolean
   }[]
+  storefront_content: {
+    name: string | null
+    description: string | null
+    hero_image_url: string | null
+  } | null
 } {
   const {
     integration_connections: connections,
     created_at,
     updated_at,
     deleted_at,
+    storefront_content: storefrontContent,
     ...rest
   } = vendor
 
@@ -57,5 +72,6 @@ export function buildVendor<T extends RawVendor>(
         client_id: connection.client_id,
         connected: connection.connected_at !== null,
       })),
+    storefront_content: storefrontContent ?? null,
   }
 }

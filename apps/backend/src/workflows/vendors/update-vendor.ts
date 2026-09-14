@@ -12,12 +12,19 @@ import {
   upsertVendorIntegrationConnectionStep,
   type UpsertVendorIntegrationConnectionStepInput,
 } from "../shared/steps/upsert-vendor-integration-connection"
+import { upsertStorefrontContentStep } from "../shared/steps/upsert-storefront-content"
+import { VENDOR_MODULE } from "../../modules/vendor"
 
 export type UpdateVendorWorkflowInput = UpdateVendorStepInput & {
   integration_connection?: Omit<
     UpsertVendorIntegrationConnectionStepInput,
     "vendor_id"
   >
+  storefront_content?: {
+    name?: string
+    description?: string
+    hero_image_url?: string
+  }
 }
 
 export const updateVendorWorkflow = createWorkflow(
@@ -43,10 +50,29 @@ export const updateVendorWorkflow = createWorkflow(
       return upsertVendorIntegrationConnectionStep(connectionInput)
     })
 
-    const result = transform({ vendor, integrationConnection }, (data) => ({
-      vendor: data.vendor,
-      integration_connection: data.integrationConnection ?? null,
-    }))
+    const storefrontContent = when(
+      "has-storefront-content-update",
+      { input },
+      (data) => Boolean(data.input.storefront_content),
+    ).then(() => {
+      const storefrontContentInput = transform({ input }, (data) => ({
+        linkModuleKey: VENDOR_MODULE,
+        linkIdField: "vendor_id",
+        queryEntity: "vendor",
+        entityId: data.input.id,
+        ...data.input.storefront_content!,
+      }))
+      return upsertStorefrontContentStep(storefrontContentInput)
+    })
+
+    const result = transform(
+      { vendor, integrationConnection, storefrontContent },
+      (data) => ({
+        vendor: data.vendor,
+        integration_connection: data.integrationConnection ?? null,
+        storefront_content: data.storefrontContent ?? null,
+      }),
+    )
 
     return new WorkflowResponse(result)
   },

@@ -3,7 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { Divider } from "../../components/divider"
 import { TextField } from "../fields/text-field"
+import { TextareaField } from "../fields/textarea-field"
 import type { CommonFormProps } from "../form-type"
 
 export const UPDATE_VENDOR_FORM_ID = "update-vendor-form"
@@ -11,6 +13,11 @@ export const UPDATE_VENDOR_FORM_ID = "update-vendor-form"
 const updateVendorFormSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   handle: z.string().trim().min(1, "Handle is required"),
+  storefront_content: z.object({
+    name: z.string().trim().optional(),
+    description: z.string().trim().optional(),
+    hero_image_url: z.string().trim().optional(),
+  }),
 })
 
 export type UpdateVendorFormValues = z.infer<typeof updateVendorFormSchema>
@@ -20,6 +27,11 @@ function defaultValuesFromVendor(vendor?: Vendor): UpdateVendorFormValues {
   return {
     name: vendor?.name ?? "",
     handle: vendor?.handle ?? "",
+    storefront_content: {
+      name: vendor?.storefront_content?.name ?? "",
+      description: vendor?.storefront_content?.description ?? "",
+      hero_image_url: vendor?.storefront_content?.hero_image_url ?? "",
+    },
   }
 }
 
@@ -71,6 +83,31 @@ export const UpdateVendorForm = ({
         error={errors.handle?.message}
         disabled={isDisabled || isLoading}
         {...register("handle")}
+      />
+      <Divider>Storefront Content</Divider>
+      <TextField
+        id="update-vendor-storefront-name"
+        label="Name"
+        optional
+        error={errors.storefront_content?.name?.message}
+        disabled={isDisabled || isLoading}
+        {...register("storefront_content.name")}
+      />
+      <TextareaField
+        id="update-vendor-storefront-description"
+        label="Description"
+        optional
+        error={errors.storefront_content?.description?.message}
+        disabled={isDisabled || isLoading}
+        {...register("storefront_content.description")}
+      />
+      <TextField
+        id="update-vendor-storefront-hero-image-url"
+        label="Image URL"
+        optional
+        error={errors.storefront_content?.hero_image_url?.message}
+        disabled={isDisabled || isLoading}
+        {...register("storefront_content.hero_image_url")}
       />
     </form>
   )
