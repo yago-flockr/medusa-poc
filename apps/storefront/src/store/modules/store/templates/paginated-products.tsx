@@ -32,6 +32,15 @@ export default async function PaginatedProducts({
   country: string
   optionValueIds?: OptionValueIds
 }) {
+  if (productsIds?.length === 0) {
+    return (
+      <ul
+        className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 md:grid-cols-4"
+        data-testid="products-list"
+      />
+    )
+  }
+
   const queryParams: PaginatedProductsParams = {
     limit: PRODUCT_LIMIT,
   }

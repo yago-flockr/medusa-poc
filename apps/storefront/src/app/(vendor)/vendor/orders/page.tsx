@@ -7,6 +7,13 @@ import { TextTooltip } from "@/components/display/text-tooltip"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import {
   Item,
   ItemActions,
   ItemContent,
@@ -31,7 +38,7 @@ import type {
   GetVendorsOrdersByIdResponse,
   VendorOrder,
 } from "@dtc/api-contracts/vendor/orders"
-import { RiPencilLine } from "@remixicon/react"
+import { RiFileList3Line, RiPencilLine } from "@remixicon/react"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -87,7 +94,17 @@ export default function VendorOrdersPage() {
       >
         <DataState.Loading />
         <DataState.Empty>
-          <p className="text-sm text-muted-foreground">No orders yet.</p>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <RiFileList3Line />
+              </EmptyMedia>
+              <EmptyTitle>No orders yet</EmptyTitle>
+              <EmptyDescription>
+                Orders from customers will appear here.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </DataState.Empty>
         <DataState.Content>
           <ItemGroup>

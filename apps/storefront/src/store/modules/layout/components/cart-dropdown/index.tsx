@@ -7,6 +7,13 @@ import LineItemOptions from "@/store/modules/common/components/line-item-options
 import LineItemPrice from "@/store/modules/common/components/line-item-price"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { Button } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+} from "@/components/ui/empty"
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
 import {
   Popover,
@@ -15,6 +22,7 @@ import {
 } from "@/components/ui/popover"
 import Thumbnail from "@/store/modules/products/components/thumbnail"
 import { HttpTypes } from "@medusajs/types"
+import { RiShoppingBagLine } from "@remixicon/react"
 import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
@@ -158,15 +166,21 @@ const CartDropdown = ({
             </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-y-4 py-16">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-sm text-background">
-              <span>0</span>
-            </div>
-            <span>Your shopping bag is empty.</span>
-            <LocalizedClientLink href="/store">
-              <Button onClick={() => setOpen(false)}>Explore products</Button>
-            </LocalizedClientLink>
-          </div>
+          <Empty className="border-none p-6">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <RiShoppingBagLine />
+              </EmptyMedia>
+              <EmptyDescription>Your shopping bag is empty.</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <LocalizedClientLink href="/store">
+                <Button onClick={() => setOpen(false)}>
+                  Explore products
+                </Button>
+              </LocalizedClientLink>
+            </EmptyContent>
+          </Empty>
         )}
       </PopoverContent>
     </Popover>
