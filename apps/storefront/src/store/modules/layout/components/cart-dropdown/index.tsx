@@ -1,11 +1,5 @@
 "use client"
 
-import { convertToLocale } from "@/store/lib/util/money"
-import { cn } from "@/lib/utils"
-import DeleteButton from "@/store/modules/common/components/delete-button"
-import LineItemOptions from "@/store/modules/common/components/line-item-options"
-import LineItemPrice from "@/store/modules/common/components/line-item-price"
-import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -20,9 +14,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import { convertToLocale } from "@/store/lib/util/money"
+import DeleteButton from "@/store/modules/common/components/delete-button"
+import LineItemOptions from "@/store/modules/common/components/line-item-options"
+import LineItemPrice from "@/store/modules/common/components/line-item-price"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import Thumbnail from "@/store/modules/products/components/thumbnail"
 import { HttpTypes } from "@medusajs/types"
-import { RiShoppingBagLine } from "@remixicon/react"
+import { RiShoppingBagLine, RiShoppingCartLine } from "@remixicon/react"
 import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
@@ -64,7 +64,11 @@ const CartDropdown = ({
           <LocalizedClientLink
             href="/cart"
             data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
+            className="flex items-center gap-1.5"
+          >
+            <RiShoppingCartLine size={20} />
+            {totalItems > 0 && <span>{totalItems}</span>}
+          </LocalizedClientLink>
         }
       />
       <PopoverContent
@@ -175,9 +179,7 @@ const CartDropdown = ({
             </EmptyHeader>
             <EmptyContent>
               <LocalizedClientLink href="/store">
-                <Button onClick={() => setOpen(false)}>
-                  Explore products
-                </Button>
+                <Button onClick={() => setOpen(false)}>Explore products</Button>
               </LocalizedClientLink>
             </EmptyContent>
           </Empty>

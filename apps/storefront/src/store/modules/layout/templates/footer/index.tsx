@@ -51,8 +51,8 @@ export default async function Footer() {
   return (
     <footer className="w-full border-t">
       <div className="container py-16">
-        <div className="grid gap-8 grid-cols-4">
-          <div className="col-span-2 mb-8 lg:mb-0">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <div className="col-span-2">
             <LocalizedClientLink
               href="/"
               className="font-heading text-xl text-muted-foreground hover:text-foreground"

@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/collapsible"
 import { StoreVendor } from "@/store/lib/data/vendors"
 import ThumbnailCard from "@/store/modules/common/components/thumbnail-card"
-import { RiArrowDownSLine, RiCollapseVerticalLine } from "@remixicon/react"
+import { RiCollapseVerticalLine } from "@remixicon/react"
 
 const VISIBLE_VENDOR_COUNT = 4
 
@@ -40,7 +40,7 @@ export default function FeaturedVendors({
         <Collapsible className="mt-4">
           <CollapsibleTrigger
             render={
-              <Button variant="ghost" className="w-full">
+              <Button variant="ghost" className="w-full text-muted-foreground">
                 <RiCollapseVerticalLine />
               </Button>
             }
