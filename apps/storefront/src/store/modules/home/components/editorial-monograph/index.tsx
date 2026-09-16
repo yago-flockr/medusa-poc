@@ -1,3 +1,7 @@
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
+
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
@@ -11,9 +15,12 @@ const STATS = [
   { value: "100%", label: "Natural fibres" },
 ]
 
-export default function EditorialMonograph() {
+export default function EditorialMonograph({
+  className,
+  ...props
+}: ComponentProps<"section">) {
   return (
-    <section className="bg-muted">
+    <section className={cn("bg-muted", className)} {...props}>
       <div className="container">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="relative aspect-4/3 w-full overflow-hidden">

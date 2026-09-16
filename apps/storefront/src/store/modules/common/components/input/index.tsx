@@ -1,3 +1,5 @@
+"use client"
+
 import { Input as InputPrimitive } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import React, { useState } from "react"

@@ -23,7 +23,7 @@ const OptionsPicker = ({
   }
 
   return (
-    <Accordion className="border-none">
+    <Accordion variant="plain">
       {options.map((option) => {
         const values =
           option.values

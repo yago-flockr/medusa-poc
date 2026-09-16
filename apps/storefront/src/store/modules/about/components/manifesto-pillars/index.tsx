@@ -1,3 +1,7 @@
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
+
 import { Eyebrow } from "@/components/ui/eyebrow"
 
 const PILLARS = [
@@ -21,9 +25,18 @@ const PILLARS = [
   },
 ]
 
-export default function ManifestoPillars() {
+export default function ManifestoPillars({
+  className,
+  ...props
+}: ComponentProps<"section">) {
   return (
-    <section className="grid grid-cols-1 gap-10 border-t pt-12 sm:grid-cols-3 sm:gap-8">
+    <section
+      className={cn(
+        "grid grid-cols-1 gap-10 border-t pt-12 sm:grid-cols-3 sm:gap-8",
+        className,
+      )}
+      {...props}
+    >
       {PILLARS.map((pillar, index) => (
         <div key={pillar.label} className="flex flex-col gap-4">
           <Eyebrow variant="accent">

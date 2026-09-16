@@ -1,3 +1,6 @@
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Eyebrow } from "@/components/ui/eyebrow"
@@ -9,15 +12,18 @@ const VISIBLE_VENDOR_COUNT = 4
 
 export default function FeaturedVendors({
   vendors,
-}: {
-  vendors: StoreVendor[]
-}) {
+  className,
+  ...props
+}: ComponentProps<"section"> & { vendors: StoreVendor[] }) {
   if (!vendors.length) {
     return null
   }
 
   return (
-    <section className="container flex flex-col gap-10">
+    <section
+      className={cn("container flex flex-col gap-10", className)}
+      {...props}
+    >
       <div className="flex flex-col gap-4 border-b pb-8">
         <Eyebrow variant="accent">Archival registry</Eyebrow>
         <h2 className="font-heading text-3xl sm:text-4xl">
@@ -29,10 +35,9 @@ export default function FeaturedVendors({
           <li key={vendor.id}>
             <Card className="h-full">
               <CardContent className="flex h-full flex-col gap-4">
-                <span className="font-heading text-xl text-muted-foreground">
+                <span className="font-heading text-xl text-ring">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <Separator />
                 <h3 className="font-heading text-xl">
                   {vendor.storefront_content?.name ?? vendor.name}
                 </h3>

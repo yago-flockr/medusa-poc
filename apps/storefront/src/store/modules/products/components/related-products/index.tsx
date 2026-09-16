@@ -1,3 +1,6 @@
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { StoreProductWithVendor, listProducts } from "@/store/lib/data/products"
@@ -9,7 +12,7 @@ import Product from "../product-preview"
 
 const RELATED_PRODUCT_COUNT = 4
 
-type RelatedProductsProps = {
+type RelatedProductsProps = ComponentProps<"section"> & {
   product: StoreProductWithVendor
   country: string
 }
@@ -17,6 +20,8 @@ type RelatedProductsProps = {
 export default async function RelatedProducts({
   product,
   country,
+  className,
+  ...props
 }: RelatedProductsProps) {
   if (!product.vendor) {
     return null
@@ -43,7 +48,7 @@ export default async function RelatedProducts({
   }
 
   return (
-    <section className="flex flex-col gap-10">
+    <section className={cn("flex flex-col gap-10", className)} {...props}>
       <div className="flex flex-wrap items-end justify-between gap-6 border-b pb-8">
         <div className="flex flex-col gap-3">
           <Eyebrow variant="accent">More from this maison</Eyebrow>

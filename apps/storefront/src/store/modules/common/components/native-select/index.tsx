@@ -1,3 +1,5 @@
+"use client"
+
 import {
   NativeSelect as NativeSelectPrimitive,
   NativeSelectOption,

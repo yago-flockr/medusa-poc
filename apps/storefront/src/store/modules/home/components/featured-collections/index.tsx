@@ -1,3 +1,6 @@
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { StoreCollectionWithStorefrontContent } from "@/store/lib/data/collections"
@@ -11,7 +14,9 @@ const SHELF_PRODUCT_COUNT = 4
 export default async function FeaturedCollections({
   collections,
   countryCode,
-}: {
+  className,
+  ...props
+}: ComponentProps<"section"> & {
   collections: StoreCollectionWithStorefrontContent[]
   countryCode: string
 }) {
@@ -34,7 +39,10 @@ export default async function FeaturedCollections({
   }
 
   return (
-    <section className="container flex flex-col gap-10">
+    <section
+      className={cn("container flex flex-col gap-10", className)}
+      {...props}
+    >
       <div className="flex flex-wrap items-end justify-between gap-6 border-b pb-8">
         <div className="flex max-w-2xl flex-col gap-4">
           <Eyebrow variant="accent">Curated shelf</Eyebrow>

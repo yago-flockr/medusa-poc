@@ -1,3 +1,6 @@
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -9,9 +12,15 @@ import { RiArrowDownLine, RiArrowRightLine } from "@remixicon/react"
 
 const CITIES = ["Paris", "Lyon", "Kyoto", "Florence"]
 
-const Hero = () => {
+const Hero = ({ className, ...props }: ComponentProps<"div">) => {
   return (
-    <div className="dark relative flex min-h-[85vh] w-full items-end overflow-hidden bg-background">
+    <div
+      className={cn(
+        "dark relative flex min-h-[85vh] w-full items-end overflow-hidden bg-background",
+        className,
+      )}
+      {...props}
+    >
       <Image
         src="/editorial/hero-banner.png"
         alt=""

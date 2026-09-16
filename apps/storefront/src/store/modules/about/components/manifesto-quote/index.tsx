@@ -1,3 +1,7 @@
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
+
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
@@ -5,9 +9,18 @@ import { Eyebrow } from "@/components/ui/eyebrow"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { RiArrowRightLine } from "@remixicon/react"
 
-export default function ManifestoQuote() {
+export default function ManifestoQuote({
+  className,
+  ...props
+}: ComponentProps<"section">) {
   return (
-    <section className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[2fr_3fr] lg:gap-20">
+    <section
+      className={cn(
+        "grid grid-cols-1 items-center gap-12 lg:grid-cols-[2fr_3fr] lg:gap-20",
+        className,
+      )}
+      {...props}
+    >
       <figure className="flex flex-col gap-3">
         <div className="relative aspect-3/4 w-full overflow-hidden bg-card">
           <Image

@@ -1,5 +1,9 @@
 "use client"
 
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
+
 import {
   Carousel,
   CarouselContent,
@@ -13,7 +17,9 @@ import ThumbnailCard from "@/store/modules/common/components/thumbnail-card"
 
 export default function FeaturedCategories({
   categories,
-}: {
+  className,
+  ...props
+}: ComponentProps<"section"> & {
   categories: StoreProductCategoryWithStorefrontContent[]
 }) {
   if (!categories.length) {
@@ -21,7 +27,7 @@ export default function FeaturedCategories({
   }
 
   return (
-    <section className="container">
+    <section className={cn("container", className)} {...props}>
       <Carousel opts={{ align: "start" }} className="flex flex-col gap-8">
         <div className="flex items-end justify-between gap-6 border-b pb-8">
           <div className="flex flex-col gap-4">

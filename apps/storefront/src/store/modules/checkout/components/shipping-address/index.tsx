@@ -1,3 +1,5 @@
+"use client"
+
 import Checkbox from "@/store/modules/common/components/checkbox"
 import Input from "@/store/modules/common/components/input"
 import { HttpTypes } from "@medusajs/types"

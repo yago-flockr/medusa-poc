@@ -40,7 +40,7 @@ export default function CartList({
             ))}
         </ul>
       ) : (
-        <Empty className="border-none">
+        <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <RiShoppingBagLine />

@@ -1,3 +1,7 @@
+import { ComponentProps } from "react"
+
+import { cn } from "@/lib/utils"
+
 import {
   InputGroup,
   InputGroupAddon,
@@ -6,9 +10,12 @@ import {
 } from "@/components/ui/input-group"
 import { Eyebrow } from "@/components/ui/eyebrow"
 
-export default function PrivateSalon() {
+export default function PrivateSalon({
+  className,
+  ...props
+}: ComponentProps<"section">) {
   return (
-    <section className="dark bg-background">
+    <section className={cn("dark bg-background", className)} {...props}>
       <div className="container">
         <div className="flex flex-wrap items-end justify-between gap-10">
           <div className="max-w-xl flex flex-col gap-4">

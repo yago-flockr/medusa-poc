@@ -117,6 +117,11 @@ export default async function Nav() {
     label: vendor.name,
   }))
 
+  const cartItemsCount = cart?.items?.reduce(
+    (acc, item) => acc + item.quantity,
+    0,
+  )
+
   return (
     <div className="sticky top-0 inset-x-0 z-50">
       <header className="relative h-20 border-b bg-background/95 backdrop-blur-md">
@@ -199,7 +204,7 @@ export default async function Nav() {
           <div className="flex flex-1 basis-0 items-center justify-end">
             <Button
               variant="ghost"
-              size="icon-sm"
+              size="icon-lg"
               className="hidden md:inline-flex"
               nativeButton={false}
               render={
@@ -220,8 +225,9 @@ export default async function Nav() {
                 render={
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon-lg"
                     nativeButton={false}
+                    className="relative"
                     render={
                       <LocalizedClientLink
                         href="/cart"
@@ -231,14 +237,11 @@ export default async function Nav() {
                     }
                   >
                     <RiShoppingBag4Line />
-                    <span>
-                      (
-                      {cart?.items?.reduce(
-                        (acc, item) => acc + item.quantity,
-                        0,
-                      ) ?? 0}
-                      )
-                    </span>
+                    {cartItemsCount ? (
+                      <span className="absolute size-4 flex items-center justify-center text-center rounded-full bg-ring text-white text-[10px] -right-1 -top-1 font-semibold">
+                        {cartItemsCount > 9 ? "+" : cartItemsCount}
+                      </span>
+                    ) : null}
                   </Button>
                 }
               />
