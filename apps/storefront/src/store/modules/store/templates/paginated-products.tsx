@@ -2,10 +2,11 @@ import { listProductsWithSort } from "@/store/lib/data/products"
 import { getRegion } from "@/store/lib/data/regions"
 import { OptionValueIds } from "@/store/lib/util/product-option-filters"
 import ProductPreview from "@/store/modules/products/components/product-preview"
+import { Eyebrow } from "@/components/ui/eyebrow"
 import { Pagination } from "@/store/modules/store/components/pagination"
 import { SortOptions } from "@/store/modules/store/components/refinement-list/sort-products"
 
-const PRODUCT_LIMIT = 12
+const PRODUCT_LIMIT = 9
 
 type PaginatedProductsParams = {
   limit: number
@@ -35,7 +36,7 @@ export default async function PaginatedProducts({
   if (productsIds?.length === 0) {
     return (
       <ul
-        className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 md:grid-cols-4"
+        className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
         data-testid="products-list"
       />
     )
@@ -84,7 +85,7 @@ export default async function PaginatedProducts({
   return (
     <>
       <ul
-        className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 md:grid-cols-4"
+        className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
         data-testid="products-list"
       >
         {products.map((p) => {
@@ -95,13 +96,19 @@ export default async function PaginatedProducts({
           )
         })}
       </ul>
-      {totalPages > 1 && (
-        <Pagination
-          data-testid="product-pagination"
-          page={page}
-          totalPages={totalPages}
-        />
-      )}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-t pt-8">
+        <Eyebrow>
+          Showing {(page - 1) * PRODUCT_LIMIT + 1}&ndash;
+          {Math.min(page * PRODUCT_LIMIT, count)} of {count}
+        </Eyebrow>
+        {totalPages > 1 && (
+          <Pagination
+            data-testid="product-pagination"
+            page={page}
+            totalPages={totalPages}
+          />
+        )}
+      </div>
     </>
   )
 }

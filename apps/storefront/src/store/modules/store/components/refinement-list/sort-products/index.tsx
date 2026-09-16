@@ -38,6 +38,7 @@ const SortProducts = ({
 }: SortProductsProps) => {
   return (
     <Select
+      items={sortOptions}
       value={sortBy}
       onValueChange={(value) => setQueryParams("sortBy", value as string)}
     >

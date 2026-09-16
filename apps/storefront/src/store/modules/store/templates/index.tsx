@@ -30,10 +30,17 @@ const StoreTemplate = ({
 
   return (
     <ProductListingLayout.Root data-testid="category-container">
-      <ProductListingLayout.Hero>
-        <CatalogHero title="All products" titleTestId="store-page-title" />
-      </ProductListingLayout.Hero>
-      <CatalogFilterBar categories={categories} options={options} sortBy={sort} />
+      <CatalogHero
+        eyebrow="Collection folio"
+        title="The Archive"
+        description="Every piece in the catalog, reviewed before it was listed."
+        titleTestId="store-page-title"
+      />
+      <CatalogFilterBar
+        categories={categories}
+        options={options}
+        sortBy={sort}
+      />
       <Suspense fallback={<SkeletonProductGrid />}>
         <PaginatedProducts
           sortBy={sort}

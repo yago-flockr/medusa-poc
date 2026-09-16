@@ -30,20 +30,16 @@ export default function CollectionTemplate({
 
   return (
     <ProductListingLayout.Root>
-      <ProductListingLayout.Hero>
-        <CatalogHero
-          title={collection.storefront_content?.name ?? collection.title}
-          description={collection.storefront_content?.description}
-          imageUrl={collection.storefront_content?.hero_image_url}
-          titleTestId="collection-page-title"
-        />
-      </ProductListingLayout.Hero>
+      <CatalogHero
+        title={collection.storefront_content?.name ?? collection.title}
+        description={collection.storefront_content?.description}
+        imageUrl={collection.storefront_content?.hero_image_url}
+        titleTestId="collection-page-title"
+      />
       <CatalogFilterBar options={options} sortBy={sort} />
       <Suspense
         fallback={
-          <SkeletonProductGrid
-            numberOfProducts={collection.products?.length}
-          />
+          <SkeletonProductGrid numberOfProducts={collection.products?.length} />
         }
       >
         <PaginatedProducts

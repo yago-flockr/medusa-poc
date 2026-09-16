@@ -13,7 +13,9 @@ Four Stitch screens in this folder, mapped onto `apps/storefront`.
 
 - **Phase 0 (foundation) — done.** Playfair Display swapped in, `--font-heading` repointed at `--font-serif` (it aliased `--font-sans`, which is why nothing rendered serif), light and dark themes retinted, `--radius: 0rem`.
 - **Phase 1 (shell) — structurally done**, with three design details unmet, all traceable to Open question 1/2: nav links render sentence-case rather than uppercase micro-type, and the footer newsletter is a filled `InputGroup` box rather than an underline-only field. Search icon, footer legal links and the city list are deliberately omitted (no routes behind them).
-- **Phase 2 (home) — in progress.** Step 2.1 (hero) done.
+- **Phase 2 (home) — done.** Hero, product card, curated shelf, editorial monograph, maisons registry, private salon band.
+- **Phase 3 (catalog) — done.** Editorial header, filter bar (existing sheet kept), 3-up grid at 9/page with a results line.
+- **Next: Phase 4 (PDP).**
 
 Dev servers are Claude's to run and keep alive (backend `:9000`, storefront `:8000`); Yago does not run a second pair.
 
@@ -184,7 +186,7 @@ Column headings are ochre eyebrows. The newsletter field is `input-group.tsx` �
 
 ---
 
-## Phase 2 — Home (`curated_editorial_home`) — in progress
+## Phase 2 — Home (`curated_editorial_home`) ✅ done
 
 Most bespoke of the four: five sections, three with no equivalent today. Built first because it is the page that sets the brand, and because the product card it needs is reused by every later phase.
 
@@ -214,7 +216,7 @@ New dark band above the footer (same `dark`-subtree technique as Step 2.1): ochr
 
 ---
 
-## Phase 3 — Catalog (`purified_editorial_catalog`)
+## Phase 3 — Catalog (`purified_editorial_catalog`) ✅ done
 
 The product card already exists by now (Step 2.2) — this phase is the page around it.
 
@@ -222,7 +224,7 @@ The product card already exists by now (Step 2.2) — this phase is the page aro
 `modules/store/components/catalog-hero`. The design drops the image hero entirely: eyebrow "COLLECTION FOLIO", large serif title, one line of description, and a right-aligned piece count. Existing `CatalogHero` takes `imageUrl` and renders a dark gradient block — for `/store` it should render the flat editorial variant.
 Category and collection pages reuse this component **and do have hero images** in `storefront_content`. Decide whether the image hero stays for those two routes or the flat header applies everywhere. **See Open questions.**
 
-### Step 3.2 — Filter bar
+### Step 3.2 — Filter bar ✅ (drawer kept — see Decisions)
 `modules/store/components/catalog-filter-bar`. Target is a single hairline row: left-aligned dropdown triggers (`MAISON: ALL`, `SIZE`, `PALETTE`, `PRICE`), right-aligned `SORT: FEATURED`. Today it is category pills + a "Filters" drawer button + sort.
 Keep the existing `drawer.tsx` for mobile; on desktop surface the option pickers as inline dropdown triggers using `select.tsx` (or `dropdown-menu.tsx` for the multi-select facets). Both already exist — nothing new here.
 The "MAISON" filter needs vendor faceting the API doesn't expose yet — ship the row with the filters that do exist and leave maison out rather than faking it.
@@ -231,9 +233,8 @@ The sort trigger currently renders the raw column name `created_at` — give it 
 ### Step 3.3 — Grid and pagination
 `modules/store/templates/paginated-products.tsx` + `components/pagination`. 3 columns desktop / 2 tablet / 1 mobile, wide gutters. Pagination becomes "SHOWING 1–9 OF 24" on the left and numbered pages + "NEXT →" on the right, built with `components/ui/pagination.tsx` (`PaginationContent` / `PaginationLink` / `PaginationNext`) — the current `modules/store/components/pagination` should compose it rather than re-implement it. The design shows **9 per page**; `PRODUCT_LIMIT` is 12 — match the grid to a multiple of 3.
 
-### Step 3.4 — Bespoke-inquiry band
-A hairline-separated band above the footer: serif "Private Appointments & Bespoke Inquiries", one line of copy, and an underlined "INQUIRE WITH SALON" `Button variant="link"`. Static copy, catalog template only.
-**Verify:** whole `/store` route against `screen.png`.
+### Step 3.4 — Bespoke-inquiry band — **dropped**
+Built, then removed at Yago's request to simplify the page. The design shows it; we don't ship it.
 
 ---
 
@@ -303,12 +304,17 @@ Gap 1 is the one worth doing properly — it is a genuine modelling gap, it unbl
 6. **Brand name** — the app says "Vitrine" in nav, footer and copy; the designs say "Atelier Édition". Real name, or keep Vitrine? The design's two-tone logo (second word italic ochre) needs a two-word name.
 7. **Mini-cart auto-open** — the popover used to open for 5s when the item count changed. That needed client state, so it was dropped when the popover moved inline into the server-rendered nav. Restore it (costs one small client component) or leave it out?
 
-## Decisions taken during Phases 0–1
+## Decisions taken during Phases 0–3
 
 - **Nav labels stay functional** (Categories / Collections / Store / Vendors) rather than the design's vocabulary (Curations / Maisons / Editorial) — renaming Vendors → Maisons is a product decision, not a restyle. Blocked on the brand question.
 - **Search icon and footer legal links omitted** — no search route, no privacy/terms pages. Not shipping dead links to match a screenshot.
 - **Footer gained a Vendors column** alongside Categories and Collections.
 - **The tweakcn live-preview script** in `app/layout.tsx` is still loaded; remove it now the palette is committed.
+- **Vendor is exposed on store products** via `apps/backend/src/api/store/products/middlewares.ts`, which appends `vendor.{id,name,handle}` to `req.queryConfig.fields`. It must *not* re-run `validateAndTransformQuery` — custom middlewares append, so that runs after Medusa's pricing middleware and re-injects `region_id` as a product filter (500s). This unblocked the card's maison eyebrow; the PDP maison line and "More from this maison" can now use it too.
+- **The catalog keeps its existing Filters sheet**, not the design's inline dropdown row: the sheet scales to any number of product options, the dropdown row broke at seven and pushed sort onto a second line. Restyling a pattern is in scope; replacing the interaction is a product decision.
+- **The catalog header has no piece count.** The design shows "24 PIECES"; the count only exists inside the products Suspense boundary, so the same information lands in the "SHOWING 1–9 OF 26" results line instead of firing a second query.
+- **`Eyebrow` and `Thumbnail` are now `components/ui` components** with `cva` variants, and `Button` gained an `xl` size. New variants are the right way to add a pattern; per-call-site `className` is not.
+- **`Divider` and `ProductListingLayout.Hero` were deleted** — both were pass-through wrappers adding nothing (`Divider` even dropped every prop but `className`). Use `Separator` and container `gap`.
 
 ## Known duplication, not yet addressed
 

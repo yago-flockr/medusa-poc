@@ -69,9 +69,7 @@ function SubcategoryList({
           key={subcategory.id}
           variant="outline"
           render={
-            <LocalizedClientLink
-              href={`/categories/${subcategory.handle}`}
-            />
+            <LocalizedClientLink href={`/categories/${subcategory.handle}`} />
           }
         >
           {subcategory.name}
@@ -117,16 +115,14 @@ export default function CategoryTemplate({
   return (
     <ProductListingLayout.Root data-testid="category-container">
       {parents.length > 0 && <CategoryBreadcrumb parents={parents} />}
-      <ProductListingLayout.Hero>
-        <CatalogHero
-          title={category.storefront_content?.name ?? category.name}
-          description={
-            category.storefront_content?.description ?? category.description
-          }
-          imageUrl={category.storefront_content?.hero_image_url}
-          titleTestId="category-page-title"
-        />
-      </ProductListingLayout.Hero>
+      <CatalogHero
+        title={category.storefront_content?.name ?? category.name}
+        description={
+          category.storefront_content?.description ?? category.description
+        }
+        imageUrl={category.storefront_content?.hero_image_url}
+        titleTestId="category-page-title"
+      />
       <CatalogFilterBar options={options} sortBy={sort} />
       {category.category_children && category.category_children.length > 0 && (
         <SubcategoryList categories={category.category_children} />

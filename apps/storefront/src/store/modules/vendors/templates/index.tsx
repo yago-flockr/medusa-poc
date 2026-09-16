@@ -31,14 +31,12 @@ export default function VendorTemplate({
 
   return (
     <ProductListingLayout.Root>
-      <ProductListingLayout.Hero>
-        <CatalogHero
-          title={vendor.storefront_content?.name ?? vendor.name}
-          description={vendor.storefront_content?.description}
-          imageUrl={vendor.storefront_content?.hero_image_url}
-          titleTestId="vendor-page-title"
-        />
-      </ProductListingLayout.Hero>
+      <CatalogHero
+        title={vendor.storefront_content?.name ?? vendor.name}
+        description={vendor.storefront_content?.description}
+        imageUrl={vendor.storefront_content?.hero_image_url}
+        titleTestId="vendor-page-title"
+      />
       <CatalogFilterBar options={options} sortBy={sort} />
       <Suspense
         fallback={

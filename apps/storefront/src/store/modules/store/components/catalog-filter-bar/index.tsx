@@ -41,16 +41,12 @@ const CatalogFilterBar = ({
   return (
     <div
       className={cn(
-        "mb-8 flex flex-wrap items-center justify-between gap-4 border-b pb-6",
+        "flex flex-wrap items-center justify-between gap-4 border-b pb-6",
         className,
       )}
       {...props}
     >
-      {categories ? (
-        <CategoryPills categories={categories} />
-      ) : (
-        <div />
-      )}
+      {categories ? <CategoryPills categories={categories} /> : <div />}
       <div className="flex items-center gap-2">
         <Drawer swipeDirection="left">
           <DrawerTrigger
