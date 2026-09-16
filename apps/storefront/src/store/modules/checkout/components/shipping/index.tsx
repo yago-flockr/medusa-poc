@@ -4,7 +4,6 @@ import { calculatePriceForShippingOption } from "@/store/lib/data/fulfillment"
 import type { VendorShippingOption } from "@/store/lib/data/fulfillment"
 import { convertToLocale } from "@/store/lib/util/money"
 import ErrorMessage from "@/store/modules/checkout/components/error-message"
-import Divider from "@/store/modules/common/components/divider"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
@@ -14,6 +13,7 @@ import { RiCheckboxCircleFill } from "@remixicon/react"
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
+import { Separator } from "@/components/ui/separator"
 
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
@@ -523,7 +523,7 @@ const Shipping: React.FC<ShippingProps> = ({
           </div>
         </div>
       )}
-      <Divider className="mt-8" />
+      <Separator className="mt-8" />
     </div>
   )
 }

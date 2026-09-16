@@ -1,7 +1,7 @@
 import { isStripeLike, paymentInfoMap } from "@/store/lib/constants"
 import { convertToLocale } from "@/store/lib/util/money"
-import Divider from "@/store/modules/common/components/divider"
 import { HttpTypes } from "@medusajs/types"
+import { Separator } from "@/components/ui/separator"
 
 type PaymentDetailsProps = {
   order: HttpTypes.StoreOrder
@@ -47,7 +47,7 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
         )}
       </div>
 
-      <Divider className="mt-8" />
+      <Separator className="mt-8" />
     </div>
   )
 }

@@ -5,7 +5,6 @@ import ErrorMessage from "@/store/modules/checkout/components/error-message"
 import PaymentContainer, {
   StripeCardContainer,
 } from "@/store/modules/checkout/components/payment-container"
-import Divider from "@/store/modules/common/components/divider"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { RadioGroup } from "@/components/ui/radio-group"
@@ -13,6 +12,7 @@ import { RiBankCardLine, RiCheckboxCircleFill } from "@remixicon/react"
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import { Separator } from "@/components/ui/separator"
 
 const Payment = ({
   cart,
@@ -255,7 +255,7 @@ const Payment = ({
           ) : null}
         </div>
       </div>
-      <Divider className="mt-8" />
+      <Separator className="mt-8" />
     </div>
   )
 }

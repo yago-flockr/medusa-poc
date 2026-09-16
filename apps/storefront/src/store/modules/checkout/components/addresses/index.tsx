@@ -2,7 +2,6 @@
 import { setAddresses } from "@/store/lib/data/cart"
 import useToggleState from "@/store/lib/hooks/use-toggle-state"
 import compareAddresses from "@/store/lib/util/compare-addresses"
-import Divider from "@/store/modules/common/components/divider"
 import { Spinner } from "@/components/ui/spinner"
 import { RiCheckboxCircleFill } from "@remixicon/react"
 import { HttpTypes } from "@medusajs/types"
@@ -12,6 +11,7 @@ import BillingAddress from "../billing_address"
 import ErrorMessage from "../error-message"
 import ShippingAddress from "../shipping-address"
 import { SubmitButton } from "../submit-button"
+import { Separator } from "@/components/ui/separator"
 
 const Addresses = ({
   cart,
@@ -165,7 +165,7 @@ const Addresses = ({
           </div>
         </div>
       )}
-      <Divider className="mt-8" />
+      <Separator className="mt-8" />
     </div>
   )
 }

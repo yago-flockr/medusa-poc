@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button"
 
 import DiscountCode from "@/store/modules/checkout/components/discount-code"
 import CartTotals from "@/store/modules/common/components/cart-totals"
-import Divider from "@/store/modules/common/components/divider"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
+import { Separator } from "@/components/ui/separator"
 
 type SummaryProps = {
   cart: HttpTypes.StoreCart
@@ -29,7 +29,7 @@ const Summary = ({ cart }: SummaryProps) => {
     <div className="flex flex-col gap-y-4">
       <h2 className="text-[2rem] leading-[2.75rem] font-semibold">Summary</h2>
       <DiscountCode cart={cart} />
-      <Divider />
+      <Separator />
       <CartTotals totals={cart} />
       <LocalizedClientLink
         href={"/checkout?step=" + step}

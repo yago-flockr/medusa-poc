@@ -2,7 +2,6 @@
 
 import { addToCart } from "@/store/lib/data/cart"
 import { useIntersection } from "@/store/lib/hooks/use-in-view"
-import Divider from "@/store/modules/common/components/divider"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import OptionSelect from "@/store/modules/products/components/product-actions/option-select"
@@ -17,6 +16,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
+import { Separator } from "@/components/ui/separator"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -186,7 +186,7 @@ export default function ProductActions({
                   />
                 </div>
               ))}
-              <Divider />
+              <Separator />
             </div>
           )}
         </div>

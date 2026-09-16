@@ -3,7 +3,7 @@ import { Metadata } from "next"
 import { listOrders } from "@/store/lib/data/orders"
 import OrderOverview from "@/store/modules/account/components/order-overview"
 import TransferRequestForm from "@/store/modules/account/components/transfer-request-form"
-import Divider from "@/store/modules/common/components/divider"
+import { Separator } from "@/components/ui/separator"
 import { notFound } from "next/navigation"
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ export default async function Orders() {
       </div>
       <div>
         <OrderOverview orders={orders} />
-        <Divider className="mb-8 mt-8" />
+        <Separator className="mb-8 mt-8" />
         <TransferRequestForm />
       </div>
     </div>
