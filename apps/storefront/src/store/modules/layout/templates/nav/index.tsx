@@ -182,6 +182,14 @@ export default async function Nav() {
                   Store
                 </NavigationMenuLink>
               </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={navigationMenuTriggerStyle()}
+                  render={<LocalizedClientLink href="/about" />}
+                >
+                  About
+                </NavigationMenuLink>
+              </NavigationMenuItem>
               <NavDropdown label="Categories" items={categoryItems} />
               <NavDropdown label="Collections" items={collectionItems} />
               <NavDropdown label="Vendors" items={vendorItems} />

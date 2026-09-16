@@ -15,7 +15,10 @@ Four Stitch screens in this folder, mapped onto `apps/storefront`.
 - **Phase 1 (shell) — structurally done**, with three design details unmet, all traceable to Open question 1/2: nav links render sentence-case rather than uppercase micro-type, and the footer newsletter is a filled `InputGroup` box rather than an underline-only field. Search icon, footer legal links and the city list are deliberately omitted (no routes behind them).
 - **Phase 2 (home) — done.** Hero, product card, curated shelf, editorial monograph, maisons registry, private salon band.
 - **Phase 3 (catalog) — done.** Editorial header, filter bar (existing sheet kept), 3-up grid at 9/page with a results line.
-- **Next: Phase 4 (PDP).**
+- **Phase 4 (PDP) — done.** Breadcrumb, two-column layout, selectable gallery, maison eyebrow, hairline accordions, "More from this maison" scoped to the vendor.
+- **Phase 5 (about) — done.** New `/about` route + nav link, built from the three static sections.
+
+**All five phases are implemented.** What remains is the punch list below, not new phases.
 
 Dev servers are Claude's to run and keep alive (backend `:9000`, storefront `:8000`); Yago does not run a second pair.
 
@@ -238,7 +241,7 @@ Built, then removed at Yago's request to simplify the page. The design shows it;
 
 ---
 
-## Phase 4 — PDP (`essential_editorial_pdp`)
+## Phase 4 — PDP (`essential_editorial_pdp`) ✅ done
 
 ### Step 4.1 — Two-column layout
 `modules/products/templates/index.tsx`. Today it is a three-column split (info | gallery | actions) with two sticky rails. The design is **two columns**: gallery left (~60%), one continuous info+actions rail right (~40%), sticky. Restructure the template first, before touching what's inside it.
@@ -265,7 +268,7 @@ The maison line and the swatch colour values both need data — see Data gaps.
 
 ---
 
-## Phase 5 — About / manifesto (`minimalist_about_us_manifesto`)
+## Phase 5 — About / manifesto (`minimalist_about_us_manifesto`) ✅ done
 
 New route at `(main)/about/page.tsx` (+ a nav link). No data, no interactivity — static, and the simplest of the four.
 
