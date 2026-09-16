@@ -3,7 +3,7 @@ import { useMemo } from "react"
 
 import { convertToLocale } from "@/store/lib/util/money"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import Thumbnail from "@/store/modules/products/components/thumbnail"
+import { Thumbnail } from "@/components/ui/thumbnail"
 import { HttpTypes } from "@medusajs/types"
 
 type OrderCardProps = {
@@ -50,7 +50,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
               className="flex flex-col gap-y-2"
               data-testid="order-item"
             >
-              <Thumbnail thumbnail={i.thumbnail} images={[]} size="full" />
+              <Thumbnail src={i.thumbnail} alt={i.title} />
               <div className="flex items-center text-sm text-foreground">
                 <span className="font-semibold" data-testid="item-title">
                   {i.title}

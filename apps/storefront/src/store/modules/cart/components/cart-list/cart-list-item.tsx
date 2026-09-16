@@ -5,7 +5,7 @@ import DeleteButton from "@/store/modules/common/components/delete-button"
 import LineItemOptions from "@/store/modules/common/components/line-item-options"
 import LineItemPrice from "@/store/modules/common/components/line-item-price"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import Thumbnail from "@/store/modules/products/components/thumbnail"
+import { Thumbnail } from "@/components/ui/thumbnail"
 import { HttpTypes } from "@medusajs/types"
 
 export default function CartListItem({
@@ -28,9 +28,9 @@ export default function CartListItem({
         className="w-24 shrink-0"
       >
         <Thumbnail
-          thumbnail={item.thumbnail}
-          images={item.variant?.product?.images}
-          size="square"
+          src={item.thumbnail ?? item.variant?.product?.images?.[0]?.url}
+          alt={item.title}
+          ratio="square"
         />
       </LocalizedClientLink>
       <div className="flex flex-1 flex-col justify-between gap-2">

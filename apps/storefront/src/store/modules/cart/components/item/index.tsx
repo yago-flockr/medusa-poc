@@ -11,7 +11,7 @@ import LocalizedClientLink from "@/store/modules/common/components/localized-cli
 import { TableCell, TableRow } from "@/components/ui/table"
 import { Spinner } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
-import Thumbnail from "@/store/modules/products/components/thumbnail"
+import { Thumbnail } from "@/components/ui/thumbnail"
 import { HttpTypes } from "@medusajs/types"
 import { useState } from "react"
 
@@ -55,9 +55,9 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           })}
         >
           <Thumbnail
-            thumbnail={item.thumbnail}
-            images={item.variant?.product?.images}
-            size="square"
+            src={item.thumbnail ?? item.variant?.product?.images?.[0]?.url}
+            alt={item.title}
+            ratio="square"
           />
         </LocalizedClientLink>
       </TableCell>

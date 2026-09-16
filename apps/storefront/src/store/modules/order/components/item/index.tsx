@@ -4,7 +4,7 @@ import { HttpTypes } from "@medusajs/types"
 import LineItemOptions from "@/store/modules/common/components/line-item-options"
 import LineItemPrice from "@/store/modules/common/components/line-item-price"
 import LineItemUnitPrice from "@/store/modules/common/components/line-item-unit-price"
-import Thumbnail from "@/store/modules/products/components/thumbnail"
+import { Thumbnail } from "@/components/ui/thumbnail"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem | HttpTypes.StoreOrderLineItem
@@ -16,7 +16,7 @@ const Item = ({ item, currencyCode }: ItemProps) => {
     <TableRow className="w-full" data-testid="product-row">
       <TableCell className="w-24 p-4 !pl-0">
         <div className="flex w-16">
-          <Thumbnail thumbnail={item.thumbnail} size="square" />
+          <Thumbnail src={item.thumbnail} alt={item.title} ratio="square" />
         </div>
       </TableCell>
 
