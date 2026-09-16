@@ -1,7 +1,9 @@
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { getBaseURL } from "@/lib/env"
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "next-themes"
+import { Metadata } from "next"
 import { Inter, Playfair_Display } from "next/font/google"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -12,6 +14,10 @@ const playfair = Playfair_Display({
   style: ["normal", "italic"],
   variable: "--font-serif",
 })
+
+export const metadata: Metadata = {
+  metadataBase: new URL(getBaseURL()),
+}
 
 export default function RootLayout({
   children,

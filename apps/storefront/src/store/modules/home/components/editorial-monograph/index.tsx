@@ -4,10 +4,7 @@ import { cn } from "@/lib/utils"
 
 import Image from "next/image"
 
-import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
-import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import { RiArrowRightLine } from "@remixicon/react"
 
 const STATS = [
   { value: "14.8 µm", label: "Fibre fineness" },

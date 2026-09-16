@@ -2,7 +2,7 @@ import { Metadata } from "next"
 
 import { listCartOptions, retrieveCart } from "@/store/lib/data/cart"
 import { retrieveCustomer } from "@/store/lib/data/customer"
-import { getBaseURL } from "@/store/lib/util/env"
+import { getBaseURL } from "@/lib/env"
 import AnnouncementBar from "@/store/modules/layout/components/announcement-bar"
 import CartMismatchBanner from "@/store/modules/layout/components/cart-mismatch-banner"
 import Footer from "@/store/modules/layout/templates/footer"

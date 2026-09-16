@@ -1,4 +1,4 @@
-import { getBaseURL } from "@/store/lib/util/env"
+import { getBaseURL } from "@/lib/env"
 import "@/styles/globals.css"
 import { Metadata } from "next"
 

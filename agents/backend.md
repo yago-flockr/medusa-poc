@@ -787,3 +787,37 @@ From `apps/backend`:
 - Admin UI that imports `@medusajs/js-sdk`, `react-hook-form`, `@hookform/resolvers`, or `@medusajs/icons` needs them as **direct** backend dependencies (same `@medusajs/*` version as the rest). They are not reliably pulled in by `@medusajs/admin-sdk` alone for Vite resolution.
 - Multi-vendor planning notes: `docs/spikes/multi-vendor-order.md` (do not productize on the demo path yet).
 - **Every custom Zod HTTP contract — admin and vendor alike — lives in `packages/api-contracts`, always, not just the ones a second app currently calls.** Originally scoped narrower ("only a resource `apps/storefront` actually calls belongs here; Admin-only stays in a local `contract.ts`, since Admin shares this TS program anyway") — corrected once that boundary-based rule caused a real inconsistency in practice (the vendor-products contract split half in `@dtc/api-contracts`, half in a local file, for no reason a reader could infer) and Yago pushed further: centralizing unconditionally means a schema never has to be *moved* later just because a route gains a new frontend consumer. One domain per `src/<domain>/` subfolder — `vendor/` (composed into a `vendorContract` ts-rest router, since `apps/storefront`'s vendor panel is a real ts-rest client) and `admin/` (plain resource files only, `brands.ts`/`vendor-users.ts`/`vendors.ts` — no router, since the Admin dashboard calls `sdk.client.fetch()` directly, not a ts-rest client; don't add one speculatively). The one hard constraint this rule doesn't relax: **the package must never ship Medusa *runtime* code** into `apps/storefront`'s bundle (a plain Next.js app that also depends on it) — narrower than "no Medusa imports at all." A **type-only** import (`import type {...}`) is always safe: TypeScript fully erases it at compile time, so nothing reaches a bundler no matter how large the source package is — confirmed hands-on by running `apps/storefront`'s production build after adding `@medusajs/types` as a real dependency and checking the route's First Load JS didn't move. So every schema uses plain `zod` (never `@medusajs/framework/zod`, which is a value import), and `FindParams`/`PaginatedResponse<T>`/`DeleteResponse<T>` are `import type`'d straight from `@medusajs/types` rather than hand-declared — an earlier pass in this same session hand-wrote plain-TS equivalents of those three types to "play it safe," which was itself a mistake (duplicating a type Medusa already exports, the exact anti-pattern the top of `packages/api-contracts/README.md` warns against, just applied to Medusa's own types instead of ours) and was reverted once verified safe. The one thing that's genuinely forbidden is a **value** import of anything Medusa that executes at runtime. Separately, and unrelated to the framework constraint: **there is no shared field-validation helper anywhere in this package** (no `requiredTrimmedString(message)`, no `optionalTrimmedText`) — every field's validation is written out in full at its own definition, even when the same rule repeats across a create/update pair or across resources. Corrected mid-session after Yago called out exactly this pattern ("i don't like things like this optionalTrimmedText... just use a explicit schema, always, everything always explicit and easy to change") — a helper hides *how* a field validates behind a name, and a later change to the helper silently changes every field reusing it. This targets validation *pattern* sugar specifically, not real domain-named schemas (`vendorProductStatusSchema`, `brandSchema`, an image/variant shape) — those stay named and shared, same reasoning as "always centralize" itself. Full explanation: `packages/api-contracts/README.md`, "No shared field-validation helpers." What still stays backend-local, and always will: a resource with no real Zod request/response contract at all — just a `HttpTypes.AdminProduct &` extension for TS convenience (`api/admin/products/types.ts` — deliberately not named `contract.ts`, since there is no contract here to name it after) — per the package's own "Not for: core Medusa resources → use `HttpTypes`" rule; and the actual Medusa-framework-coupled runtime query builder (`createFindParams()`/`createSelectParams()` in each resource's `validators.ts`), which only ever consumes the shared filters schema, never needs to be shared itself. A Module Link between two Medusa data models is a different concern entirely and never needs a contract entry (see "Patterns to follow when extending" below). Full pattern and how to add a new resource or domain: `packages/api-contracts/README.md`.
+
+## Production start — run it from `.medusa/server`, not from `apps/backend`
+
+`medusa build` outputs a standalone app to `apps/backend/.medusa/server`,
+including the admin dashboard at `.medusa/server/public/admin/index.html`.
+Running `medusa start` from `apps/backend` makes it look for
+`apps/backend/public/admin/index.html`, which does not exist, and it dies with:
+
+```
+Could not find index.html in the admin build directory.
+Make sure to run 'medusa build' before starting the server.
+```
+
+That is [the documented cause](https://docs.medusajs.com/resources/troubleshooting/medusa-admin/build-error)
+— "you ran the `start` command outside the `.medusa/server` directory". The
+`start` script is therefore `cd .medusa/server && medusa start`, and the
+hosting provider's start command should be
+`cd .medusa/server && <install> && medusa start` (add `predeploy` first if
+migrations need to run).
+
+**Secrets must come from system environment variables in production.**
+`.medusa/server` deliberately contains no `.env`, so `JWT_SECRET` and
+`COOKIE_SECRET` have to be supplied by the platform or `medusa start` throws
+`[config] ⚠️ http.jwtSecret not found.` and exits. To run a production build
+locally, copy them in first (`cp ../../.env .medusa/server/.env.production`,
+per the [build guide](https://docs.medusajs.com/learn/build)) — never commit
+that file.
+
+**`pnpm -r build` builds the workspaces in parallel.** Both the Medusa build
+and the Next build are memory-hungry; together they were OOM-killed on an 8 GB
+machine, and the storefront's static generation hit its 60-second per-page
+limit while the backend build competed for CPU. Build sequentially in CI
+(`pnpm -r --workspace-concurrency=1 build`, or two separate steps) rather than
+relying on the default.
