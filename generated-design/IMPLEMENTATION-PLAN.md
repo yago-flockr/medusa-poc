@@ -12,8 +12,8 @@ Four Stitch screens in this folder, mapped onto `apps/storefront`.
 ## Status
 
 - **Phase 0 (foundation) — done.** Playfair Display swapped in, `--font-heading` repointed at `--font-serif` (it aliased `--font-sans`, which is why nothing rendered serif), light and dark themes retinted, `--radius: 0rem`.
-- **Phase 1 (shell) — done.** Announcement bar, nav rebuilt, footer rebuilt.
-- **Next: Phase 2 (catalog).** Settle the two open type questions below first — every screen leans on that label style.
+- **Phase 1 (shell) — structurally done**, with three design details unmet, all traceable to Open question 1/2: nav links render sentence-case rather than uppercase micro-type, and the footer newsletter is a filled `InputGroup` box rather than an underline-only field. Search icon, footer legal links and the city list are deliberately omitted (no routes behind them).
+- **Phase 2 (home) — in progress.** Step 2.1 (hero) done.
 
 Dev servers are Claude's to run and keep alive (backend `:9000`, storefront `:8000`); Yago does not run a second pair.
 
@@ -139,7 +139,9 @@ The ochre accent (eyebrow labels, the italic half of the logo, dark-section CTAs
 
 ## Order of work, and why
 
-Tokens first (one file, changes all four screens at once), then the shell (nav/footer appear on every screen), then catalog → PDP → home, because the product card built for the catalog is reused by the PDP's "More from this maison" row and the home shelf. The about page is last: it is a brand-new route with no existing code and no dependency on the rest.
+Tokens first (one file, changes all four screens at once), then the shell (nav/footer appear on every screen), then **home → catalog → PDP → about**.
+
+Home leads because it sets the brand and is the page most worth looking at early. The **product card** is the one cross-phase dependency — the home shelf, the catalog grid and the PDP related row all render it — so it is built as Step 2.2, inside the home phase, before its first consumer, and the later phases just use it. About is last: a brand-new route with no existing code and no dependency on anything else.
 
 ---
 
@@ -182,79 +184,83 @@ Column headings are ochre eyebrows. The newsletter field is `input-group.tsx` �
 
 ---
 
-## Phase 2 — Catalog (`purified_editorial_catalog`)
+## Phase 2 — Home (`curated_editorial_home`) — in progress
 
-### Step 2.1 — Product card
-`modules/products/components/product-preview/index.tsx` + `thumbnail.tsx`. This is the most reused piece in the whole design — get it right before anything consumes it.
+Most bespoke of the four: five sections, three with no equivalent today. Built first because it is the page that sets the brand, and because the product card it needs is reused by every later phase.
+
+### Step 2.1 — Hero ✅ done
+`modules/home/components/hero`. Full-bleed editorial image (`/editorial/hero-banner.png`) with a scrim, ochre eyebrow, large serif headline, two CTAs.
+
+**How inverted sections are done, and the pattern for every dark band after this:** put `dark` on the section's root. `colors.css` already defines `.dark { --background: … }`, so the whole subtree resolves to the dark palette and `Button` needs no props at all to come out light-on-dark. No `className` overrides, no new variants — the inversion is pure token resolution. The second CTA is `variant="secondary"` (a filled dark button), not `outline`, which washes out over a photo.
+
+### Step 2.2 — Product card
+`modules/products/components/product-preview/index.tsx` + `thumbnail.tsx`. **The most reused piece in the whole design** — the home shelf, the catalog grid and the PDP related row all render it, so it is built here, before its first consumer.
 Target, top to bottom: tall portrait image (no radius, subtle zoom on hover), ochre uppercase **maison/vendor eyebrow**, serif product title, price with strikethrough original when on sale.
 `PreviewPrice` already handles the sale strikethrough. The vendor eyebrow does **not** have data yet — see Data gaps.
-**Verify:** catalog grid, home shelf and PDP related row all pick up the new card.
 
-### Step 2.2 — Catalog header
+### Step 2.3 — Curated shelf
+`modules/home/components/featured-collections`. Header is a curator `avatar.tsx` (`/editorial/curator-portrait.png`) + name, a serif collection title, a pull-quote, and a "VIEW ALL n EDITS →" link; below it a four-up row of Step 2.2 product cards. Today it renders `ThumbnailCard` collection tiles — the curator attribution is new.
+
+### Step 2.4 — Editorial monograph
+New section: image left (`/editorial/monograph-detail.png`), text right — eyebrow, serif heading, two paragraphs, a three-up stat row (`14.8 µm` / `480 gsm` / `100%`) and an underlined "read more" link. Entirely new; no data model backs the stats.
+
+### Step 2.5 — Maisons registry
+`modules/home/components/featured-vendors`. Four numbered `card.tsx` cards (`01`–`04`) with city label, serif vendor name, ochre eyebrow, a short description and a "COLLECTION 2026 →" link. `Vendor` + its `storefront_content` (name, description) covers most of this; **city and the numbered ordering have no field**.
+
+### Step 2.6 — Private salon band
+New dark band above the footer (same `dark`-subtree technique as Step 2.1): ochre eyebrow, serif heading, copy, and an email capture (`input-group.tsx` + `Button`, same pair as the footer) with a "REQUEST SALON ENTRY" action, over a large ghosted watermark word. Static copy; the form posts nowhere for now — say so rather than wiring a fake success.
+
+`FeaturedCategories` has no home in this design — confirm whether it is dropped or moves elsewhere.
+
+---
+
+## Phase 3 — Catalog (`purified_editorial_catalog`)
+
+The product card already exists by now (Step 2.2) — this phase is the page around it.
+
+### Step 3.1 — Catalog header
 `modules/store/components/catalog-hero`. The design drops the image hero entirely: eyebrow "COLLECTION FOLIO", large serif title, one line of description, and a right-aligned piece count. Existing `CatalogHero` takes `imageUrl` and renders a dark gradient block — for `/store` it should render the flat editorial variant.
 Category and collection pages reuse this component **and do have hero images** in `storefront_content`. Decide whether the image hero stays for those two routes or the flat header applies everywhere. **See Open questions.**
 
-### Step 2.3 — Filter bar
+### Step 3.2 — Filter bar
 `modules/store/components/catalog-filter-bar`. Target is a single hairline row: left-aligned dropdown triggers (`MAISON: ALL`, `SIZE`, `PALETTE`, `PRICE`), right-aligned `SORT: FEATURED`. Today it is category pills + a "Filters" drawer button + sort.
 Keep the existing `drawer.tsx` for mobile; on desktop surface the option pickers as inline dropdown triggers using `select.tsx` (or `dropdown-menu.tsx` for the multi-select facets). Both already exist — nothing new here.
 The "MAISON" filter needs vendor faceting the API doesn't expose yet — ship the row with the filters that do exist and leave maison out rather than faking it.
+The sort trigger currently renders the raw column name `created_at` — give it a human label while here.
 
-### Step 2.4 — Grid and pagination
-`modules/store/templates/paginated-products.tsx` + `components/pagination`. 3 columns desktop / 2 tablet / 1 mobile, wide gutters. Pagination becomes "SHOWING 1–9 OF 24" on the left and numbered pages + "NEXT →" on the right, built with `components/ui/pagination.tsx` (`PaginationContent` / `PaginationLink` / `PaginationNext`) — the current `modules/store/components/pagination` should compose it rather than re-implement it. Note the design shows **9 per page**; `PRODUCT_LIMIT` is 12 — match the grid to a multiple of 3.
+### Step 3.3 — Grid and pagination
+`modules/store/templates/paginated-products.tsx` + `components/pagination`. 3 columns desktop / 2 tablet / 1 mobile, wide gutters. Pagination becomes "SHOWING 1–9 OF 24" on the left and numbered pages + "NEXT →" on the right, built with `components/ui/pagination.tsx` (`PaginationContent` / `PaginationLink` / `PaginationNext`) — the current `modules/store/components/pagination` should compose it rather than re-implement it. The design shows **9 per page**; `PRODUCT_LIMIT` is 12 — match the grid to a multiple of 3.
 
-### Step 2.5 — Bespoke-inquiry band
+### Step 3.4 — Bespoke-inquiry band
 A hairline-separated band above the footer: serif "Private Appointments & Bespoke Inquiries", one line of copy, and an underlined "INQUIRE WITH SALON" `Button variant="link"`. Static copy, catalog template only.
 **Verify:** whole `/store` route against `screen.png`.
 
 ---
 
-## Phase 3 — PDP (`essential_editorial_pdp`)
+## Phase 4 — PDP (`essential_editorial_pdp`)
 
-### Step 3.1 — Two-column layout
+### Step 4.1 — Two-column layout
 `modules/products/templates/index.tsx`. Today it is a three-column split (info | gallery | actions) with two sticky rails. The design is **two columns**: gallery left (~60%), one continuous info+actions rail right (~40%), sticky. Restructure the template first, before touching what's inside it.
 **Verify:** columns and sticky behaviour correct with the current unstyled contents.
 
-### Step 3.2 — Breadcrumb
+### Step 4.2 — Breadcrumb
 `STORE / OUTERWEAR / PRODUCT` above the columns, uppercase micro-type, using `components/ui/breadcrumb.tsx`. Derive the trail from the product's category — no new data needed.
 
-### Step 3.3 — Gallery
+### Step 4.3 — Gallery
 `modules/products/components/image-gallery`. Target: one large square-cornered primary image with a row of four thumbnails beneath, the active one ringed. Currently a stacked scroll of all images. Client component, thumbnail click swaps the primary. Plain markup if the four thumbnails always fit; `carousel.tsx` if they need to scroll — don't hand-roll scrolling.
 
-### Step 3.4 — Info rail
+### Step 4.4 — Info rail
 `modules/products/templates/product-info` + `components/product-actions`.
 Order: ochre maison eyebrow → serif title → price + stock `Badge` → description → colour swatches → size chips with a "Size Guide" link → quantity stepper + full-width `ADD TO BAG — $X` → "Sold and shipped by {maison}".
 Components, all existing: size chips and colour swatches are both `toggle-group.tsx` in single-select mode (round vs rectangular is a `className`, not a second component); the quantity stepper is `number-field.tsx`; "Size Guide" is `Button variant="link"`; add-to-bag is `Button` full-width.
 Option selection today is a generic button list; the design distinguishes **colour (round swatch) from size (rectangular chip)**. That needs a rule for which option renders as which — safest is matching on the option title, falling back to chips.
 The maison line and the swatch colour values both need data — see Data gaps.
 
-### Step 3.5 — Accordions
+### Step 4.5 — Accordions
 `modules/products/components/product-tabs` already uses the shadcn `Accordion` with the right two sections ("Product Information" / "Shipping & Returns"). Restyle to hairline rows with a `+` affordance and rename to "Details & Care" / "Shipping & Returns". Smallest step in this phase.
 
-### Step 3.6 — "More from {maison}"
+### Step 4.6 — "More from {maison}"
 `modules/products/components/related-products`. The design scopes this row to the **same vendor**, with a "VIEW MAISON ARCHIVE →" link. Related products are currently scoped by collection/tags. Blocked on the same vendor data — until then, restyle the row in place and keep the existing scoping.
-
----
-
-## Phase 4 — Home (`curated_editorial_home`)
-
-Most bespoke of the four: five sections, three of which have no equivalent today.
-
-### Step 4.1 — Hero
-`modules/home/components/hero`. Full-bleed dark image, ochre eyebrow, large serif headline mixing roman and italic, two CTAs (solid light + outlined), a "scroll to browse" affordance bottom-left and a city list bottom-right. Today it is a flat gradient block. Needs a hero image source — see Open questions.
-
-### Step 4.2 — Curated shelf
-`modules/home/components/featured-collections`. Header is a curator `avatar.tsx` + name, a serif collection title, a pull-quote, and a "VIEW ALL n EDITS →" link; below it a four-up row of the Step 2.1 product cards. Closest existing component, but the curator attribution is new.
-
-### Step 4.3 — Editorial monograph
-New section: image left, text right — eyebrow, serif heading, two paragraphs, a three-up stat row (`14.8 µm` / `480 gsm` / `100%`) and an underlined "read more" link. Entirely new; no data model backs the stats.
-
-### Step 4.4 — Maisons registry
-`modules/home/components/featured-vendors`. Four numbered `card.tsx` cards (`01`–`04`) with city label, serif vendor name, ochre eyebrow, a short description and a "COLLECTION 2026 →" link. `Vendor` + its `storefront_content` (name, description) covers most of this; **city and the numbered ordering have no field**.
-
-### Step 4.5 — Private salon band
-New dark band above the footer: ochre eyebrow, serif heading, copy, and an email capture (`input-group.tsx` + `Button`, same pair as the footer) with an ochre "REQUEST SALON ENTRY" action, over a large ghosted watermark word. Static copy; the form can post nowhere for now, but say so rather than wiring a fake success.
-
-`FeaturedCategories` has no home in this design — confirm whether it is dropped or moves elsewhere.
 
 ---
 
@@ -263,13 +269,13 @@ New dark band above the footer: ochre eyebrow, serif heading, copy, and an email
 New route at `(main)/about/page.tsx` (+ a nav link). No data, no interactivity — static, and the simplest of the four.
 
 ### Step 5.1 — Header + hero image
-Centred ochre eyebrow, large serif title, a centred lede paragraph, then a wide landscape image with small captions flush left and right beneath it.
+Centred ochre eyebrow, large serif title, a centred lede paragraph, then a wide landscape image (`/editorial/atelier-studio.png`) with small captions flush left and right beneath it.
 
 ### Step 5.2 — Three-pillar row
 `01 / PROVENANCE`, `02 / RESTRAINT`, `03 / PERMANENCE` — numbered ochre eyebrow, serif heading, short paragraph, hairline rule above.
 
 ### Step 5.3 — Quote block
-Portrait image left with a caption, large serif italic pull-quote right, a paragraph, then an "INQUIRE WITH SALON CONCIERGE →" link and a city list.
+Portrait image left (`/editorial/artisan-portrait.png`) with a caption, large serif italic pull-quote right, a paragraph, then an "INQUIRE WITH SALON CONCIERGE →" link and a city list.
 
 ---
 
@@ -289,7 +295,7 @@ Gap 1 is the one worth doing properly — it is a genuine modelling gap, it unbl
 
 ## Open questions
 
-1. **Nav link case** — the design wants uppercase micro-type; the nav currently renders sentence-case at default size, because styling `NavigationMenuTrigger` via `className` is exactly what Rule 1 forbids. If uppercase nav is a brand decision, the honest fix is the theme layer, not a per-call-site class.
+1. **Nav link case, and the footer newsletter field** — the design wants uppercase micro-type nav and an underline-only email input; both currently render with the component defaults, because restyling `NavigationMenuTrigger`/`InputGroup` via `className` is exactly what Rule 1 forbids. If these are brand decisions, the honest fix is the token/theme layer, not per-call-site classes. This is the same question as 2.
 2. **The eyebrow type scale** — the design's label style is 10px / 0.24em tracking; the nearest scale tokens are `text-xs` / `tracking-widest` (12px / 0.1em), which reads heavier and less airy. Either accept the scale, or add **one** type-scale token in the token layer that every eyebrow uses. Settle before Phase 2 — every screen uses this style.
 3. **Category/collection heroes** (Step 2.2) — those routes have real `hero_image_url` data. Keep the image hero there and use the flat header only on `/store`, or go flat everywhere?
 4. **Home editorial copy** (Gap 3) — static for the POC, or model it?

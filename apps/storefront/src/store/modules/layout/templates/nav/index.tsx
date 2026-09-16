@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { Eyebrow } from "@/components/ui/eyebrow"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -75,9 +76,7 @@ function MobileNavSection({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-xs uppercase tracking-widest text-ring">
-        {label}
-      </span>
+      <Eyebrow variant="accent">{label}</Eyebrow>
       <ul className="flex flex-col gap-2 text-muted-foreground">
         {items.map((item) => (
           <li key={item.id}>

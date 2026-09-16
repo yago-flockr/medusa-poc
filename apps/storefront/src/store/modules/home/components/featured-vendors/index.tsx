@@ -1,12 +1,9 @@
-import { Button } from "@/components/ui/button"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+import { Card, CardContent } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { Eyebrow } from "@/components/ui/eyebrow"
 import { StoreVendor } from "@/store/lib/data/vendors"
-import ThumbnailCard from "@/store/modules/common/components/thumbnail-card"
-import { RiCollapseVerticalLine } from "@remixicon/react"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
+import { RiArrowRightLine } from "@remixicon/react"
 
 const VISIBLE_VENDOR_COUNT = 4
 
@@ -19,47 +16,47 @@ export default function FeaturedVendors({
     return null
   }
 
-  const visibleVendors = vendors.slice(0, VISIBLE_VENDOR_COUNT)
-  const remainingVendors = vendors.slice(VISIBLE_VENDOR_COUNT)
-
   return (
-    <div className="container py-12 sm:py-24">
-      <p className="mb-6 font-heading text-2xl">Shop by vendor</p>
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {visibleVendors.map((vendor) => (
+    <section className="container flex flex-col gap-10">
+      <div className="flex flex-col gap-4 border-b pb-8">
+        <Eyebrow variant="accent">Archival registry</Eyebrow>
+        <h2 className="font-heading text-3xl sm:text-4xl">
+          The guarded maisons
+        </h2>
+      </div>
+      <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {vendors.slice(0, VISIBLE_VENDOR_COUNT).map((vendor, index) => (
           <li key={vendor.id}>
-            <ThumbnailCard
-              href={`/vendors/${vendor.handle}`}
-              title={vendor.storefront_content?.name ?? vendor.name}
-              image={vendor.storefront_content?.hero_image_url}
-            />
+            <Card className="h-full">
+              <CardContent className="flex h-full flex-col gap-4">
+                <span className="font-heading text-xl text-muted-foreground">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <Separator />
+                <h3 className="font-heading text-xl">
+                  {vendor.storefront_content?.name ?? vendor.name}
+                </h3>
+                {vendor.storefront_content?.description && (
+                  <p className="text-sm text-muted-foreground">
+                    {vendor.storefront_content.description}
+                  </p>
+                )}
+                <Separator className="mt-auto" />
+                <Eyebrow
+                  variant="foreground"
+                  render={
+                    <LocalizedClientLink href={`/vendors/${vendor.handle}`} />
+                  }
+                  className="inline-flex items-center gap-2 hover:text-ring"
+                >
+                  View collection
+                  <RiArrowRightLine className="size-3" />
+                </Eyebrow>
+              </CardContent>
+            </Card>
           </li>
         ))}
       </ul>
-      {remainingVendors.length > 0 && (
-        <Collapsible className="mt-4">
-          <CollapsibleTrigger
-            render={
-              <Button variant="ghost" className="w-full text-muted-foreground">
-                <RiCollapseVerticalLine />
-              </Button>
-            }
-          />
-          <CollapsibleContent>
-            <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {remainingVendors.map((vendor) => (
-                <li key={vendor.id}>
-                  <ThumbnailCard
-                    href={`/vendors/${vendor.handle}`}
-                    title={vendor.storefront_content?.name ?? vendor.name}
-                    image={vendor.storefront_content?.hero_image_url}
-                  />
-                </li>
-              ))}
-            </ul>
-          </CollapsibleContent>
-        </Collapsible>
-      )}
-    </div>
+    </section>
   )
 }

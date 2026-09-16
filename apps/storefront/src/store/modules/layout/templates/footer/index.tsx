@@ -1,3 +1,4 @@
+import { Eyebrow } from "@/components/ui/eyebrow"
 import { cn } from "@/lib/utils"
 import { ComponentProps } from "react"
 
@@ -37,9 +38,7 @@ function FooterSection({
 }: ComponentProps<"ul"> & { title: string }) {
   return (
     <div className="flex flex-col gap-y-4">
-      <span className="text-xs uppercase tracking-widest text-ring">
-        {title}
-      </span>
+      <Eyebrow variant="accent">{title}</Eyebrow>
       <ul
         className={cn(
           "grid grid-cols-1 gap-3 text-sm text-muted-foreground",
@@ -62,23 +61,21 @@ export default async function Footer() {
 
   return (
     <footer className="w-full border-t">
-      <div className="container">
+      <div className="container flex flex-col gap-20">
         <div className="grid grid-cols-2 gap-12 sm:grid-cols-5">
-          <div className="col-span-2">
+          <div className="col-span-2 flex flex-col gap-6">
             <LocalizedClientLink
               href="/"
               className="font-heading text-xl uppercase tracking-widest text-foreground"
             >
               Vitrine
             </LocalizedClientLink>
-            <p className="mt-6 text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               A marketplace where every product is reviewed before it&apos;s
               listed.
             </p>
-            <div className="mt-10 flex flex-col gap-y-4">
-              <span className="text-xs uppercase tracking-widest text-ring">
-                Correspondence
-              </span>
+            <div className="flex flex-col gap-4 pt-4">
+              <Eyebrow variant="accent">Correspondence</Eyebrow>
               <InputGroup>
                 <InputGroupInput
                   type="email"
@@ -133,8 +130,10 @@ export default async function Footer() {
           )}
         </div>
 
-        <div className="mt-20 border-t pt-8 text-xs uppercase tracking-widest text-muted-foreground">
-          © {new Date().getFullYear()} Vitrine. All rights reserved.
+        <div className="border-t pt-8">
+          <Eyebrow>
+            © {new Date().getFullYear()} Vitrine. All rights reserved.
+          </Eyebrow>
         </div>
       </div>
     </footer>

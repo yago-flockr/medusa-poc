@@ -6,14 +6,21 @@ import { listVendors } from "@/store/lib/data/vendors"
 import FeaturedCategories from "@/store/modules/home/components/featured-categories"
 import FeaturedCollections from "@/store/modules/home/components/featured-collections"
 import FeaturedVendors from "@/store/modules/home/components/featured-vendors"
+import EditorialMonograph from "@/store/modules/home/components/editorial-monograph"
 import Hero from "@/store/modules/home/components/hero"
+import PrivateSalon from "@/store/modules/home/components/private-salon"
 
 export const metadata: Metadata = {
   title: "Store",
   description: "Shop the collection.",
 }
 
-export default async function Home() {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ country: string }>
+}) {
+  const { country } = await params
   const { collections } = await listCollections({
     fields: "+storefront_content.*",
   })
@@ -29,9 +36,11 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <FeaturedCollections collections={collections} />
+      <FeaturedCollections collections={collections} countryCode={country} />
+      <EditorialMonograph />
       <FeaturedVendors vendors={vendors} />
       <FeaturedCategories categories={categories} />
+      <PrivateSalon />
     </>
   )
 }

@@ -5,6 +5,7 @@ import { OptionValueIds } from "@/store/lib/util/product-option-filters"
 import { sortProducts } from "@/store/lib/util/sort-products"
 import { SortOptions } from "@/store/modules/store/components/refinement-list/sort-products"
 import { HttpTypes } from "@medusajs/types"
+import { ProductVendor } from "@/store/lib/types/product-vendor"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { getRegion, retrieveRegion } from "./regions"
 
@@ -12,6 +13,10 @@ type ProductListQueryParams = (HttpTypes.FindParams &
   HttpTypes.StoreProductListParams) & {
   options?: string[]
   option_value_id?: string | string[]
+}
+
+export type StoreProductWithVendor = HttpTypes.StoreProduct & {
+  vendor?: ProductVendor | null
 }
 
 export const listProducts = async ({
@@ -79,7 +84,7 @@ export const listProducts = async ({
           offset,
           region_id: region?.id,
           fields:
-            "*variants.calculated_price,+variants.inventory_quantity,*variants.images,*variants.options,+metadata,+tags,",
+            "*variants.calculated_price,+variants.inventory_quantity,*variants.images,*variants.options,+metadata,+tags,+vendor.id,+vendor.name,+vendor.handle",
           ...queryParams,
         },
         headers,

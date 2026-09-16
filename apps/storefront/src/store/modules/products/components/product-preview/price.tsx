@@ -8,6 +8,14 @@ export default async function PreviewPrice({ price }: { price: VariantPrice }) {
 
   return (
     <>
+      <span
+        className={cn("text-foreground", {
+          "text-destructive": price.price_type === "sale",
+        })}
+        data-testid="price"
+      >
+        {price.calculated_price}
+      </span>
       {price.price_type === "sale" && (
         <span
           className="text-muted-foreground line-through"
@@ -16,14 +24,6 @@ export default async function PreviewPrice({ price }: { price: VariantPrice }) {
           {price.original_price}
         </span>
       )}
-      <span
-        className={cn("text-muted-foreground", {
-          "text-primary": price.price_type === "sale",
-        })}
-        data-testid="price"
-      >
-        {price.calculated_price}
-      </span>
     </>
   )
 }
