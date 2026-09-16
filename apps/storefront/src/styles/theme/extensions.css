@@ -1,0 +1,10 @@
+/* Not part of shadcn/tweakcn's token contract — re-add after pasting a theme. */
+:root {
+  --success: oklch(0.4299 0.0459 149.04);
+  --warning: oklch(0.5937 0.1032 68.9);
+}
+
+.dark {
+  --success: oklch(0.62 0.07 149.04);
+  --warning: oklch(0.72 0.1 68.9);
+}

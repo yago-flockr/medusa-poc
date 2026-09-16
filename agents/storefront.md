@@ -105,3 +105,44 @@ From `apps/storefront`:
 - **`clearToken()` is the one and only logout path, and it always does both things — clears the token and calls `vendorQueryClient.clear()`.** There is no separate "just clear the token" vs "log out fully" function; every caller (the nav's "Log out" button, and the automatic one below) gets full logout by construction, so a future caller can't accidentally do a partial one. Never add a second way to drop the token that skips the cache clear.
 - **A `401` from either `src/vendor/lib/client.ts`'s `request()` or `src/vendor/lib/contract-client.ts`'s `vendorClient` triggers the same logout automatically**, via one shared `assertOkResponse(res, data, path)` in `client.ts` that both fetch wrappers call before throwing `VendorApiError` — this is the one place a non-ok response is inspected, so no individual hook needs its own 401 handling (don't add any). `VendorAuthGate` already re-renders to the login form reactively off `token` becoming `null`, so `clearToken()` alone is sufficient — no manual redirect needed from the assertion itself.
 - **Real bug found and fixed during a from-zero prod-bootstrap rehearsal: `getCacheOptions` (`src/store/lib/data/cookies.ts`) used to return `{}` — no tags, no revalidate — for any anonymous visitor (no `_medusa_cache_id` cookie yet), and every `lib/data/*.ts` file except `products.ts` builds its `next` fetch options from this helper alone.** With `cache: "force-cache"`, that meant the very first `/store/regions` (or `/store/collections`, `/store/categories`, etc.) fetch made by a brand-new visitor got cached with **no expiry at all** — if that first fetch happened before the region/resource actually existed (e.g. the storefront dev server was already running when the DB was bootstrapped from empty, or Next's own country-detection middleware fired on an idle health-check request before `POST /admin/regions` ran), the store silently showed zero products forever, with no console error, until the server process was restarted. `products.ts` had already independently worked around this exact problem with its own explicit `revalidate: 60` ("belt-and-suspenders" per its own comment) — the fix generalizes that same fallback into `getCacheOptions` itself so every caller gets it for free: the helper now always returns `{ revalidate: 60 }` (merged with `tags` when a cache-id cookie exists) instead of `{}`. Confirmed fixed two ways: (1) after a server restart, a fresh anonymous visit resolves the region/products correctly; (2) without a restart, an already-poisoned cache entry self-heals within the 60s window instead of staying broken forever. If you ever see a resource silently render empty for a first-time visitor right after seeding/bootstrapping data, suspect this exact class of bug before anything else — check whether the affected `lib/data/*.ts` file's fetch has a bounded `revalidate`, not just a cache tag.
+
+## Design tokens — the theme is a drop-in tweakcn/shadcn contract
+
+`src/styles/theme/colors.css` holds **exactly** the token set shadcn and
+[tweakcn](https://tweakcn.com) emit, so a theme generated there can be pasted
+over the file wholesale. Do not add project-specific tokens to it.
+
+- **`colors.css` = paste-over target.** Canonical set only: the
+  `background`/`foreground` pair convention (a bare token is the *surface*,
+  its `-foreground` is the text/icon colour on that surface), `card`,
+  `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive` (+
+  `-foreground`), `border`, `input`, `ring`, `chart-1..5`, `sidebar*`,
+  `radius`, `spacing`, `letter-spacing`, `shadow-2xs..2xl`.
+- **`extensions.css` = ours.** `--success` and `--warning` are *not* in the
+  shadcn/tweakcn contract but `badge.tsx` and `alert.tsx` consume them, so
+  they live here and survive a paste. Anything else non-standard goes here too.
+- **Fonts stay out of the pasted block.** `--font-sans`/`--font-serif` come
+  from `next/font` in `app/layout.tsx` (self-hosted, no layout shift). A
+  tweakcn export includes `--font-sans: Inter, sans-serif` etc. — **delete
+  those lines when pasting**, or they override the optimised font variables.
+- **`configs.css` must map every token** into `@theme inline`
+  (`--color-*: var(--*)` for colours; `--shadow-*`, `--spacing`,
+  `--tracking-normal` for the scales). An unmapped token is inert — the
+  variable exists but no utility reads it.
+
+**Token meanings that are easy to get wrong, and were:**
+
+- **`primary` is the brand colour**, not a second `foreground`. They were
+  set to the same value here once, which left the brand accent homeless and
+  pushed it into `--ring`. `ring` is the *focus-ring* colour; a theme may tie
+  it to primary or not (tweakcn's own "claude" theme uses an unrelated blue).
+- **`accent` is a hover/selected *surface*** (used by `select`,
+  `dropdown-menu`, `combobox`, `sidebar`), not a brand accent colour.
+  `accent-foreground` is the text on that surface.
+- **`secondary` is the low-emphasis filled action**, not a neutral surface.
+- There is **no brand-accent slot** beyond `primary`. If a design needs a
+  second accent, that is a conversation — not a new token slipped into
+  `colors.css`, which would be lost on the next paste.
+
+Check contrast when setting `primary`: it is used both as a button surface
+(with `primary-foreground` on it) and as link/price text on `background`.

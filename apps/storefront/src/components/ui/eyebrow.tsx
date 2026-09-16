@@ -8,9 +8,9 @@ const eyebrowVariants = cva("text-xs uppercase tracking-widest", {
   variants: {
     variant: {
       default: "text-muted-foreground",
-      accent: "text-ring",
+      accent: "text-primary",
       foreground: "text-foreground",
-      inverted: "text-primary-foreground",
+      background: "text-background",
     },
   },
   defaultVariants: {

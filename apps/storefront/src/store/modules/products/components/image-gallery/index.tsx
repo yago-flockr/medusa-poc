@@ -32,7 +32,7 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
                 onClick={() => setActiveId(image.id)}
                 className={cn(
                   "block w-full cursor-pointer ring-1 ring-transparent transition-all",
-                  image.id === activeImage.id && "ring-foreground",
+                  image.id === activeImage.id && "ring-primary",
                 )}
               >
                 <Thumbnail src={image.url} alt="" ratio="square" />

@@ -8,9 +8,9 @@ export default function AnnouncementBar({
 }: ComponentProps<"aside">) {
   return (
     <Eyebrow
-      variant="inverted"
+      variant="background"
       render={<aside />}
-      className={cn("block w-full bg-primary p-3 text-center", className)}
+      className={cn("block w-full bg-foreground p-3 text-center", className)}
       {...props}
     >
       Complimentary white-glove courier on all bespoke curation orders.

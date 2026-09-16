@@ -70,7 +70,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
         className={cn(
           "flex h-full min-h-[220px] w-full flex-col justify-between rounded-lg border p-5 transition-colors",
           {
-            "border-foreground": isActive,
+            "border-primary": isActive,
           },
         )}
         data-testid="address-container"

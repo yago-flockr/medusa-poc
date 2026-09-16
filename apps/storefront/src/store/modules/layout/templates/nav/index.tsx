@@ -238,7 +238,7 @@ export default async function Nav() {
                   >
                     <RiShoppingBag4Line />
                     {cartItemsCount ? (
-                      <span className="absolute size-4 flex items-center justify-center text-center rounded-full bg-ring text-white text-[10px] -right-1 -top-1 font-semibold">
+                      <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-center text-[10px] font-semibold text-primary-foreground">
                         {cartItemsCount > 9 ? "+" : cartItemsCount}
                       </span>
                     ) : null}

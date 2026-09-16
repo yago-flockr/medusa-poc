@@ -6,6 +6,7 @@
 @import "./tailwind/utilities.css";
 
 @import "./theme/colors.css";
+@import "./theme/extensions.css";
 
 @layer base {
   * {

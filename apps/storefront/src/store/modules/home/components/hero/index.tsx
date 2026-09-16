@@ -31,7 +31,7 @@ const Hero = ({ className, ...props }: ComponentProps<"div">) => {
       <div className="absolute inset-0 bg-linear-to-t from-background via-background/80 to-background/40" />
       <div className="container relative flex w-full flex-col gap-6">
         <Eyebrow variant="accent" className="flex items-center gap-3">
-          <span className="h-px w-8 bg-ring" />
+          <span className="h-px w-8 bg-primary" />
           The Vernissage Edition
         </Eyebrow>
         <h1 className="max-w-3xl font-heading text-4xl leading-tight text-foreground sm:text-6xl">

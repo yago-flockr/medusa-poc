@@ -35,7 +35,7 @@ export default function FeaturedVendors({
           <li key={vendor.id}>
             <Card className="h-full">
               <CardContent className="flex h-full flex-col gap-4">
-                <span className="font-heading text-xl text-ring">
+                <span className="font-heading text-xl text-primary">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <h3 className="font-heading text-xl">
@@ -52,7 +52,7 @@ export default function FeaturedVendors({
                   render={
                     <LocalizedClientLink href={`/vendors/${vendor.handle}`} />
                   }
-                  className="inline-flex items-center gap-2 hover:text-ring"
+                  className="inline-flex items-center gap-2 hover:text-primary"
                 >
                   View collection
                   <RiArrowRightLine className="size-3" />
