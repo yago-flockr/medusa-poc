@@ -1,5 +1,3 @@
-import { Suspense } from "react"
-
 import { Button } from "@/components/ui/button"
 import {
   NavigationMenu,
@@ -8,7 +6,13 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {
   Sheet,
   SheetContent,
@@ -16,12 +20,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { retrieveCart } from "@/store/lib/data/cart"
 import { listCategories } from "@/store/lib/data/categories"
 import { listCollections } from "@/store/lib/data/collections"
 import { listVendors } from "@/store/lib/data/vendors"
+import CartList from "@/store/modules/cart/components/cart-list"
+import CartSummary from "@/store/modules/cart/components/cart-summary"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import CartDropdownServer from "@/store/modules/layout/components/cart-dropdown/server"
-import { RiMenuLine, RiShoppingCartLine } from "@remixicon/react"
+import { RiMenuLine, RiShoppingBag4Line, RiUserLine } from "@remixicon/react"
 
 type NavDropdownItem = {
   id: string
@@ -69,7 +75,9 @@ function MobileNavSection({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-medium text-foreground">{label}</span>
+      <span className="text-xs uppercase tracking-widest text-ring">
+        {label}
+      </span>
       <ul className="flex flex-col gap-2 text-muted-foreground">
         {items.map((item) => (
           <li key={item.id}>
@@ -87,11 +95,12 @@ function MobileNavSection({
 }
 
 export default async function Nav() {
-  const categories = await listCategories({ fields: "id, handle, name" })
-  const { collections } = await listCollections({
-    fields: "id, handle, title",
-  })
-  const { vendors } = await listVendors()
+  const [categories, { collections }, { vendors }, cart] = await Promise.all([
+    listCategories({ fields: "id, handle, name" }),
+    listCollections({ fields: "id, handle, title" }),
+    listVendors(),
+    retrieveCart(),
+  ])
 
   const categoryItems = categories.map((category) => ({
     id: category.id,
@@ -111,17 +120,9 @@ export default async function Nav() {
 
   return (
     <div className="sticky top-0 inset-x-0 z-50">
-      <header className="relative h-16 border-b bg-background">
-        <nav className="container flex h-full items-center justify-between py-0 text-sm text-muted-foreground">
-          <div className="flex h-full flex-1 basis-0 items-center gap-4">
-            <NavigationMenu className="hidden h-full md:flex" delay={100}>
-              <NavigationMenuList>
-                <NavDropdown label="Categories" items={categoryItems} />
-                <NavDropdown label="Collections" items={collectionItems} />
-                <NavDropdown label="Vendors" items={vendorItems} />
-              </NavigationMenuList>
-            </NavigationMenu>
-
+      <header className="relative h-20 border-b bg-background/95 backdrop-blur-md">
+        <nav className="container flex h-full items-center justify-between py-0">
+          <div className="flex flex-1 basis-0 items-center gap-3">
             <Sheet>
               <SheetTrigger
                 render={
@@ -142,10 +143,16 @@ export default async function Nav() {
                 <div className="flex flex-col gap-6 overflow-y-auto p-6 pt-0">
                   <LocalizedClientLink
                     href="/account"
-                    className="font-medium text-foreground hover:text-foreground"
+                    className="text-foreground"
                     data-testid="nav-account-link-mobile"
                   >
-                    Account
+                    Profile
+                  </LocalizedClientLink>
+                  <LocalizedClientLink
+                    href="/store"
+                    className="text-foreground"
+                  >
+                    Store
                   </LocalizedClientLink>
                   <MobileNavSection label="Categories" items={categoryItems} />
                   <MobileNavSection
@@ -156,43 +163,96 @@ export default async function Nav() {
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
 
-          <div className="flex h-full items-center">
             <LocalizedClientLink
               href="/"
-              className="font-heading text-xl hover:text-foreground"
+              className="font-heading text-xl uppercase tracking-widest text-foreground"
               data-testid="nav-store-link"
             >
               Vitrine
             </LocalizedClientLink>
           </div>
 
-          <div className="flex h-full flex-1 basis-0 items-center justify-end gap-x-6">
-            <div className="hidden h-full items-center md:flex">
-              <LocalizedClientLink
-                className="inline-flex h-9 w-max items-center justify-center rounded-2xl px-2.5 py-1.5 text-sm font-medium transition-all hover:bg-muted"
-                href="/account"
-                data-testid="nav-account-link"
-              >
-                Account
-              </LocalizedClientLink>
-            </div>
-            <div className="flex items-center h-full">
-              <Suspense
-                fallback={
-                  <LocalizedClientLink
-                    className="inline-flex h-9 w-max items-center justify-center rounded-2xl px-2.5 py-1.5 text-sm font-medium transition-all hover:bg-muted"
-                    href="/cart"
-                    data-testid="nav-cart-link"
+          <NavigationMenu className="hidden md:flex" delay={100}>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={navigationMenuTriggerStyle()}
+                  render={<LocalizedClientLink href="/store" />}
+                >
+                  Store
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavDropdown label="Categories" items={categoryItems} />
+              <NavDropdown label="Collections" items={collectionItems} />
+              <NavDropdown label="Vendors" items={vendorItems} />
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          <div className="flex flex-1 basis-0 items-center justify-end">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="hidden md:inline-flex"
+              render={
+                <LocalizedClientLink
+                  href="/account"
+                  aria-label="Account"
+                  data-testid="nav-account-link"
+                />
+              }
+            >
+              <RiUserLine />
+            </Button>
+            <Popover>
+              <PopoverTrigger
+                openOnHover
+                closeDelay={200}
+                nativeButton={false}
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    render={
+                      <LocalizedClientLink
+                        href="/cart"
+                        aria-label="Cart"
+                        data-testid="nav-cart-link"
+                      />
+                    }
                   >
-                    <RiShoppingCartLine />
-                  </LocalizedClientLink>
+                    <RiShoppingBag4Line />
+                    <span>
+                      (
+                      {cart?.items?.reduce(
+                        (acc, item) => acc + item.quantity,
+                        0,
+                      ) ?? 0}
+                      )
+                    </span>
+                  </Button>
                 }
+              />
+              <PopoverContent
+                align="end"
+                className="hidden w-105 sm:block"
+                data-testid="nav-cart-dropdown"
               >
-                <CartDropdownServer />
-              </Suspense>
-            </div>
+                <div className="flex flex-col gap-4 p-4">
+                  <CartList
+                    items={cart?.items ?? []}
+                    currencyCode={cart?.currency_code ?? ""}
+                    className="max-h-100 overflow-y-auto"
+                  />
+                  {cart?.items?.length ? (
+                    <CartSummary
+                      subtotal={cart.subtotal ?? 0}
+                      currencyCode={cart.currency_code}
+                    />
+                  ) : null}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </nav>
       </header>

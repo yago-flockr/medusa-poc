@@ -1,3 +1,5 @@
+"use client"
+
 import { deleteLineItem } from "@/store/lib/data/cart"
 import { cn } from "@/lib/utils"
 import { Spinner } from "@/components/ui/spinner"

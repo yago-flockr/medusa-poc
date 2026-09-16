@@ -2,13 +2,13 @@ import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "next-themes"
-import { Instrument_Serif, Inter } from "next/font/google"
+import { Inter, Playfair_Display } from "next/font/google"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
-const instrument = Instrument_Serif({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "600"],
   style: ["normal", "italic"],
   variable: "--font-serif",
 })
@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("font-sans", inter.variable, instrument.variable)}
+      className={cn("font-sans", inter.variable, playfair.variable)}
       suppressHydrationWarning
     >
       <head>

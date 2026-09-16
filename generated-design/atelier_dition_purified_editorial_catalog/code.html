@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "error-container": "#ffdad6",
+            "surface-dim": "#dbdad6",
+            "border": "#E4DFD5",
+            "tertiary-container": "#1e1b15",
+            "error": "#ba1a1a",
+            "surface-container-highest": "#e4e2de",
+            "primary-fixed": "#e9e1dd",
+            "inverse-on-surface": "#f2f0ed",
+            "accent": "#E6E1D6",
+            "on-background": "#1b1c1a",
+            "on-primary-fixed-variant": "#4a4643",
+            "primary": "#1A1715",
+            "popover-foreground": "#1A1715",
+            "on-tertiary-fixed-variant": "#4a463f",
+            "on-secondary-fixed": "#2b1700",
+            "muted-foreground": "#78726A",
+            "on-primary-container": "#888380",
+            "ochre-champagne": "#9E7B56",
+            "success": "#3E5742",
+            "secondary-foreground": "#2B2623",
+            "destructive": "#8A3C34",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed": "#1e1b15",
+            "on-surface": "#1b1c1a",
+            "outline": "#7e7570",
+            "accent-foreground": "#1A1715",
+            "secondary-fixed": "#ffdcbb",
+            "tertiary-fixed-dim": "#cdc5bc",
+            "warning": "#A67232",
+            "on-surface-variant": "#4d4540",
+            "inverse-primary": "#ccc5c1",
+            "ring": "#9E7B56",
+            "surface-tint": "#625d5b",
+            "primary-container": "#1e1b19",
+            "secondary": "#EFECE4",
+            "tertiary": "#000000",
+            "inverse-surface": "#30312e",
+            "secondary-fixed-dim": "#e8bf95",
+            "on-primary-fixed": "#1e1b19",
+            "surface-container-low": "#f5f3ef",
+            "popover": "#FBF9F5",
+            "surface-variant": "#e4e2de",
+            "on-error-container": "#93000a",
+            "parchment-deep": "#ECE7DD",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-secondary-fixed-variant": "#5d4121",
+            "secondary-container": "#fdd2a7",
+            "surface-container-high": "#eae8e4",
+            "on-tertiary": "#ffffff",
+            "surface-bright": "#fbf9f5",
+            "tertiary-fixed": "#e9e1d7",
+            "espresso-dark": "#12100E",
+            "primary-fixed-dim": "#ccc5c1",
+            "card": "#F5F2EB",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-container": "#785937",
+            "background": "#FBF9F5",
+            "on-tertiary-container": "#89837b",
+            "card-foreground": "#1A1715",
+            "surface-container": "#efeeea",
+            "destructive-foreground": "#FBF9F5",
+            "primary-foreground": "#FBF9F5",
+            "surface": "#fbf9f5",
+            "muted": "#EFECE4",
+            "foreground": "#1A1715",
+            "outline-variant": "#d0c4be",
+            "input": "#E4DFD5"
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            gutter: "2rem",
+            "space-2xl": "6rem",
+            "gutter-mobile": "1rem",
+            "margin-mobile": "1.5rem",
+            "space-xl": "3.5rem",
+            "space-lg": "2rem",
+            "space-sm": "0.5rem",
+            margin: "4rem",
+            "space-md": "1rem"
+          },
+          fontFamily: {
+            "display-hero-mobile": ["Playfair Display"],
+            price: ["Inter"],
+            "display-hero": ["Playfair Display"],
+            "headline-md": ["Playfair Display"],
+            "body-base": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg": ["Playfair Display"],
+            "headline-lg-mobile": ["Playfair Display"],
+            "title-editorial": ["Playfair Display"],
+            "label-caps": ["Inter"],
+            "headline-sm": ["Playfair Display"],
+            "label-mono": ["Inter"],
+            "body-sm": ["Inter"]
+          },
+          fontSize: {
+            "display-hero-mobile": ["40px", { lineHeight: "48px", letterSpacing: "-0.01em", fontWeight: "400" }],
+            price: ["14px", { lineHeight: "20px", letterSpacing: "0.02em", fontWeight: "400" }],
+            "display-hero": ["64px", { lineHeight: "72px", letterSpacing: "-0.02em", fontWeight: "400" }],
+            "headline-md": ["28px", { lineHeight: "36px", letterSpacing: "0em", fontWeight: "400" }],
+            "body-base": ["15px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "300" }],
+            "body-lg": ["17px", { lineHeight: "28px", letterSpacing: "-0.005em", fontWeight: "300" }],
+            "headline-lg": ["38px", { lineHeight: "46px", letterSpacing: "-0.015em", fontWeight: "400" }],
+            "headline-lg-mobile": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "400" }],
+            "title-editorial": ["16px", { lineHeight: "24px", letterSpacing: "0.01em", fontWeight: "400" }],
+            "label-caps": ["11px", { lineHeight: "14px", letterSpacing: "0.14em", fontWeight: "500" }],
+            "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "0em", fontWeight: "400" }],
+            "label-mono": ["11px", { lineHeight: "16px", letterSpacing: "0.06em", fontWeight: "400" }],
+            "body-sm": ["13px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "400" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-background font-body-base text-on-surface antialiased selection:bg-accent selection:text-accent-foreground min-h-screen flex flex-col justify-between">
+<!-- Minimal Header -->
+<header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-md border-b border-border/60">
+<div class="h-20 max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between">
+<div class="flex items-center">
+<a class="flex items-center gap-2 group focus:outline-none" data-path="curations" href="#">
+<img alt="Atelier Édition logo" class="h-6 md:h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WxbS_AdpfRwVntaieNOyJ8h2UDGLjKvArJRpOYidv0c_K-UjSc6RK7e0Keih5TbDbwGM1qE0S5FBYuA1LATJy2k_sMFX3i7O0PtHVJHxA4RdcC_eq7F2nI6m3iu5ZQWVo-odJ_nivaiZDcckvNGKMmH-FcrB710bWYbsGaBh0J66uWt6DbNnhrkUhRSgr3OES8BfxRf7uUbnxpGQmyqBzTkfNiidxxFN3tvvGNQ3wgcvvyLvhYYX2HnHc"/>
+</a>
+</div>
+<nav class="hidden lg:flex items-center space-x-10">
+<a class="font-label-caps text-label-caps uppercase text-muted-foreground hover:text-primary transition-colors tracking-widest" data-path="curations" href="#">Curations</a>
+<a class="font-label-caps text-label-caps uppercase text-muted-foreground hover:text-primary transition-colors tracking-widest" data-path="collections" href="#">Collections</a>
+<a aria-current="page" class="font-label-caps text-label-caps uppercase text-primary font-medium tracking-widest border-b border-primary pb-0.5" data-path="store" href="#">Store</a>
+<a class="font-label-caps text-label-caps uppercase text-muted-foreground hover:text-primary transition-colors tracking-widest" data-path="maisons" href="#">Maisons</a>
+<a class="font-label-caps text-label-caps uppercase text-muted-foreground hover:text-primary transition-colors tracking-widest" data-path="editorial" href="#">Editorial</a>
+</nav>
+<div class="flex items-center space-x-6 text-on-surface-variant">
+<button aria-label="Search" class="hover:text-primary transition-colors focus:outline-none">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</button>
+<a class="flex items-center rounded-full ring-1 ring-border hover:ring-outline transition-all focus:outline-none" data-path="account" href="#">
+<img alt="Profile" class="w-7 h-7 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1Xe6szkKF-B6qaLl69hZPlm_IZ62iKnlwtoZXZQFgAHhGjt30bRr38ISVagfLhFJYvUzPbklTffSXFw0DRnll8gIcVPbIep8bs-1dRZxFrrsTomTgYt4tGSMru3V3tzphbQX4rsOrWvczBWxna7CY-l5C2YaEsE9-HhcEJpqEqyCRDtGbNH1KMMFfrr-yUChqtwYLey4TpxKFfch7WvoA515sTXK0Et54_W3o1xwI4ADzHFOXWko6BRu04"/>
+</a>
+<a class="font-label-mono text-label-mono text-on-surface-variant hover:text-primary transition-colors tracking-widest" data-path="bag" href="#">
+          BAG (2)
+        </a>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="w-full pt-28 md:pt-32 pb-24 flex-1">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<!-- Calm Editorial Title & Subtle Details -->
+<section class="pt-8 pb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/70 pb-8">
+<div>
+<span class="font-label-mono text-label-mono uppercase text-muted-foreground tracking-[0.2em] block mb-2">Collection Folio</span>
+<h1 class="font-display-hero text-3xl md:text-5xl text-primary font-normal tracking-tight">
+              The Archive
+            </h1>
+<p class="font-body-base text-muted-foreground mt-3 max-w-xl text-[14px]">
+              Sculpted silhouettes, natural pigments, and registered weaves curated across our certified ateliers.
+            </p>
+</div>
+<div class="font-label-mono text-label-mono uppercase text-muted-foreground tracking-widest text-right shrink-0">
+            24 Pieces
+          </div>
+</div>
+<!-- Clean, Understated Minimal Filter Row -->
+<div class="py-5 flex flex-wrap items-center justify-between gap-4 border-b border-border/60">
+<div class="flex flex-wrap items-center gap-6 md:gap-8">
+<!-- Maison Filter -->
+<div class="relative group">
+<button class="font-label-caps text-label-caps uppercase tracking-widest text-primary flex items-center gap-1.5 hover:text-muted-foreground transition-colors">
+<span>Maison: All</span>
+<span class="material-symbols-outlined text-[15px]">expand_more</span>
+</button>
+<div class="hidden group-hover:block absolute top-full left-0 w-48 bg-surface shadow-lg z-30 p-2 rounded-sm mt-2 border border-border">
+<a class="block px-3 py-2 text-xs font-label-caps uppercase hover:bg-surface-variant text-primary" href="#">All Maisons</a>
+<a class="block px-3 py-2 text-xs font-label-caps uppercase hover:bg-surface-variant text-muted-foreground hover:text-primary" href="#">Maison Vaneau</a>
+<a class="block px-3 py-2 text-xs font-label-caps uppercase hover:bg-surface-variant text-muted-foreground hover:text-primary" href="#">Studio Noire</a>
+<a class="block px-3 py-2 text-xs font-label-caps uppercase hover:bg-surface-variant text-muted-foreground hover:text-primary" href="#">Atelier Kō</a>
+<a class="block px-3 py-2 text-xs font-label-caps uppercase hover:bg-surface-variant text-muted-foreground hover:text-primary" href="#">Paloma Leatherworks</a>
+</div>
+</div>
+<!-- Size Filter -->
+<div class="relative group">
+<button class="font-label-caps text-label-caps uppercase tracking-widest text-primary flex items-center gap-1.5 hover:text-muted-foreground transition-colors">
+<span>Size</span>
+<span class="material-symbols-outlined text-[15px]">expand_more</span>
+</button>
+<div class="hidden group-hover:block absolute top-full left-0 w-36 bg-surface shadow-lg z-30 p-2 rounded-sm mt-2 border border-border">
+<div class="grid grid-cols-2 gap-1">
+<button class="p-1.5 text-center font-label-mono text-label-mono hover:bg-surface-variant">36</button>
+<button class="p-1.5 text-center font-label-mono text-label-mono hover:bg-surface-variant">38</button>
+<button class="p-1.5 text-center font-label-mono text-label-mono hover:bg-surface-variant">40</button>
+<button class="p-1.5 text-center font-label-mono text-label-mono hover:bg-surface-variant">42</button>
+</div>
+</div>
+</div>
+<!-- Color Palette Filter -->
+<div class="relative group">
+<button class="font-label-caps text-label-caps uppercase tracking-widest text-primary flex items-center gap-1.5 hover:text-muted-foreground transition-colors">
+<span>Palette</span>
+<span class="material-symbols-outlined text-[15px]">expand_more</span>
+</button>
+<div class="hidden group-hover:block absolute top-full left-0 w-44 bg-surface shadow-lg z-30 p-2 rounded-sm mt-2 border border-border">
+<a class="block px-3 py-1.5 text-xs font-label-caps uppercase hover:bg-surface-variant text-muted-foreground hover:text-primary" href="#">Camel</a>
+<a class="block px-3 py-1.5 text-xs font-label-caps uppercase hover:bg-surface-variant text-muted-foreground hover:text-primary" href="#">Obsidian</a>
+<a class="block px-3 py-1.5 text-xs font-label-caps uppercase hover:bg-surface-variant text-muted-foreground hover:text-primary" href="#">Raw Umber</a>
+<a class="block px-3 py-1.5 text-xs font-label-caps uppercase hover:bg-surface-variant text-muted-foreground hover:text-primary" href="#">Alabaster</a>
+</div>
+</div>
+<!-- Price Filter -->
+<div class="relative group">
+<button class="font-label-caps text-label-caps uppercase tracking-widest text-primary flex items-center gap-1.5 hover:text-muted-foreground transition-colors">
+<span>Price</span>
+<span class="material-symbols-outlined text-[15px]">expand_more</span>
+</button>
+<div class="hidden group-hover:block absolute top-full left-0 w-40 bg-surface shadow-lg z-30 p-2 rounded-sm mt-2 border border-border font-label-mono text-label-mono">
+<a class="block px-3 py-1.5 hover:bg-surface-variant" href="#">Under $1,000</a>
+<a class="block px-3 py-1.5 hover:bg-surface-variant" href="#">$1,000 – $2,000</a>
+<a class="block px-3 py-1.5 hover:bg-surface-variant" href="#">$2,000+</a>
+</div>
+</div>
+</div>
+<!-- Sort -->
+<div class="flex items-center">
+<select aria-label="Sort by" class="border-0 bg-transparent font-label-caps text-label-caps uppercase tracking-widest text-primary focus:ring-0 cursor-pointer pr-6 py-0">
+<option>Sort: Featured</option>
+<option>Newest Releases</option>
+<option>Price: Low to High</option>
+<option>Price: High to Low</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Clean, Consistent Product Grid -->
+<section class="mb-20">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 md:gap-x-10 lg:gap-x-12 gap-y-16">
+<!-- Product 1 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="Colbert Sculpté Cashmere Overcoat" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1X_jYT9b_B1e_eFReX5uMlOKnMeaHFLHonCoWhIkcL4BirdlT6Sv4_icTZL03RglECAr93pzpgjvril6_5l7IloPArdgxn9jast8A8kdIdz9voZSAHDWEXx1FGF3Toc-cBj4vRDAbbTxW4B0GkSSJcupP4QboudFhs47z_MOSFisrRs3b7Idaktr6myY83GBQa1pJWUfZjbD8vXmdfnbkpvxf7SQEMUaY5YjZ1MBEkOBpTSxSfL24LmLw"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Maison Vaneau</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">Colbert Sculpté Cashmere Overcoat</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$2,850</span>
+<span class="text-muted-foreground line-through">$3,400</span>
+</div>
+</div>
+</article>
+<!-- Product 2 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="L'Écharpe Cashmere Trench" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-M4zs3npYvizV9qs2tKg_LWEKfDR0BIaaemsQBkU_A-GK-DrGDzQEq-ujIHwzcJQ71DeqK3WOVmxr_dzNTqiYyIixPVrgYgaN1DQYoQ8WP__EMyKexLHeRvQQ1pD38-UqDqhq0Aoytoc3EqsbqN9MthLXkUEDlec5SYCjOAwK3eSnrWjsMqWdIJ43hjos7A10Dx1ZnLccAhFGrnFD9IBD1E_ksokS0kY2O9zFgtgRKnrY0A07gukL"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Maison Vaneau</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">L’Écharpe Cashmere Trench</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$1,850</span>
+</div>
+</div>
+</article>
+<!-- Product 3 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="Kyoto Raw Habotai Kimono Jacket" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU6LI34w4xw_LVQda1woml9Jwgy98bCVa3cdiUmtwSQCyuEus6zC2YCVEQttUZjI7CAb83FUahwgracL5LcqmcTpmu4hRruZjd3ViqV0aJqa9eCRgl0QqwvJnXwSx7cFhr0KR4EnIaQZcvIidNo3PxU0HQla_w6RpheUmZ_tWwoLh5ubq1Zzb7g1MXKvpscm1BDcPeB8Mun-IPTA_IKhxQ-Y54ezH1CVO1LS7-xRCT-g0H7XpDmWAC"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Atelier Kō</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">Kyoto Raw Habotai Kimono Jacket</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$1,680</span>
+</div>
+</div>
+</article>
+<!-- Product 4 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="Sculpted Collarless Silk Blazer" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr3GD5IMqNwnSe-aj-s8-ibsQFaKLHPb1adRIQCS9KjYuvz8K9MB6ZWqH_6IePOjBRpTnnWpvQgk57hCXnA14Jr7RaX-7sBwLz3Puwasm77lms5qXCpUFNsAuPAsjkvkkjxrBv-6y7zs0FhsuHHW8GtRqSvborL49Rg4djmEByNxGM_HwxQIKsMN8sVO3OdmC0GObx08tVqlFwik922PCp45fP3UbzAMo5ByWWEhLgHDJMBqbpe1JI"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Studio Noire</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">Sculpted Collarless Silk Blazer</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$1,280</span>
+<span class="text-muted-foreground line-through">$1,600</span>
+</div>
+</div>
+</article>
+<!-- Product 5 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="Double-Pleat Belgian Flax Trouser" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEyi5Xeb2ccKFaEhwUzVVcy1u0cMS-SfOjjcze_x9pEFzBnFlXtVv4K2BHAQGrMVqJ0zJZxT6pLwaigbEXlRPiSZSXa2d2LtyNvYNpuMzJJNVcxzDtEoHDcYrnj4d6UwuFJ7NJDP9CJomYEg4-71U1vf1BPG5di29xWf-fFhH9V2et33OTuK-ZiWrwe9KTeYRTJ7guTMSeBEgTjri2y_kkV0VBaoKSQIktE_HabIIjbRvTlSrhsrMo"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Studio Noire</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">Double-Pleat Belgian Flax Trouser</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$720</span>
+</div>
+</div>
+</article>
+<!-- Product 6 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="Archival Saddle Vacchetta Courier Bag" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_cHtloPgPZUMMHh0100WAsunl60b3B-abxOc-CMjjczBXBaG8KXvkHFfWr8AlPLZuMWHDKtT5vXXLJ2au_Mk8wUiEpI7aKOv9lh0eAY84_OZLd4lRh93AX02Gs8PG6XUGOjihEDXYG5c4AnkXF87uh9dIXiSPY3HUqRNOdXZH_DEeoyhE1FSmSvb_Z679uvHNuZQxN2OpEz1usBqTMBHwQ4olRTWDt2iCpbbf37ffw2fbeKxIEwdx"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Paloma Leatherworks</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">Archival Saddle Vacchetta Courier Bag</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$1,890</span>
+</div>
+</div>
+</article>
+<!-- Product 7 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="Botanical Wash Bias Cut Silk Slip" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5mGap7k4xQg4tlaGNThuiuw2B2VmGsMvIuiWuU7va7My9ZdtCETCq55aukGKe7dekdNyYSgw6d_5NwrTvA0Vac8k_eEMtB68kfZdb9cR1a5DBov7sM2uYw4VEVNdpsCB21KmJPYiRO6tp7bqi0nH_DDP0liTvTtZyLKjD1Ipa4GjQSj6CTLAufOsxpc4No5EtyaFMh22vLZigT1ekf4HIH0uDa-5sG7Tq-Nu5VK-plgsA3XgR0pry"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Atelier Kō</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">Botanical Wash Bias Cut Silk Slip</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$1,120</span>
+<span class="text-muted-foreground line-through">$1,350</span>
+</div>
+</div>
+</article>
+<!-- Product 8 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="High-Gauge Pure Cashmere Rollneck" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGc14bFIDRa0kNBUCS8K-sX96245v0HRQHsqMRE3myEix4AExTFQhdtTFKhlqgXoZX_zM7qFFomcu0HEQtlFrP8mReiF5m3llH3rssQ98LKeJRuSAxC6iTsjsI-83loAolTccnus73P3OAuL_fRVHvd7JTOdEu-XGAh4Tljbk-R0BcM0h93B0yT5fm137szb9TyvRt-w4V-DyzPlsV4vpG7o9J_darKR7xRKlPz1W05Byb80glWm8K"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Studio Noire</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">High-Gauge Pure Cashmere Rollneck</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$940</span>
+</div>
+</div>
+</article>
+<!-- Product 9 -->
+<article class="group flex flex-col">
+<a class="relative block w-full aspect-[3/4] bg-card overflow-hidden rounded-sm mb-4" href="#">
+<img alt="Minimalist Nappa Envelope Bag" class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB57fFs6x1LTBJ3G0HlEsA562zTD7upBM50ofDpQdMAjMphAXLqxXC67S76rrE5n9hbIKcdFw2_g8PrQ7g4Ap0m61_DErEljgFVdo3S3pjYqukXvjtcv-xDCMrQIBIMRzEYrFerWcytmwDcj-wBCP2O15pLBc77xRH6R3hCsty9IVLtg7rX-Z7wLm-pXK7nPrMqx3tOzkEZziHQuXKJ2aLkfVbY47bMYubLmWHgDafOlJfxIxpXfxw3"/>
+</a>
+<div class="space-y-1">
+<p class="font-label-caps text-label-caps uppercase text-muted-foreground tracking-widest">Paloma Leatherworks</p>
+<h2 class="font-title-editorial text-title-editorial text-primary group-hover:text-muted-foreground transition-colors font-normal">
+<a href="#">Minimalist Nappa Envelope Bag</a>
+</h2>
+<div class="flex items-center gap-2 pt-0.5 font-price text-price">
+<span class="text-primary">$940</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Minimal, Airy Pagination -->
+<section class="border-t border-border/70 pt-10 pb-16 flex items-center justify-between">
+<p class="font-label-mono text-label-mono uppercase text-muted-foreground tracking-widest">
+          Showing 1–9 of 24
+        </p>
+<nav aria-label="Pagination" class="flex items-center space-x-6">
+<span class="font-label-mono text-label-mono text-primary font-medium border-b border-primary pb-0.5">1</span>
+<a class="font-label-mono text-label-mono text-muted-foreground hover:text-primary transition-colors" href="#">2</a>
+<a class="font-label-mono text-label-mono text-muted-foreground hover:text-primary transition-colors" href="#">3</a>
+<a class="font-label-caps text-label-caps uppercase tracking-wider text-primary hover:text-muted-foreground transition-colors pl-2" href="#">Next →</a>
+</nav>
+</section>
+<!-- Understated Concierge Note -->
+<section class="border-t border-border/70 py-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-normal">Private Appointments &amp; Bespoke Inquiries</h3>
+<p class="font-body-sm text-muted-foreground mt-1">Our concierge facilitates private salon viewings and made-to-measure fittings in Paris, Milan, and New York.</p>
+</div>
+<a class="font-label-caps text-label-caps uppercase tracking-[0.2em] text-primary border-b border-primary pb-1 hover:text-muted-foreground hover:border-muted-foreground transition-colors shrink-0" href="mailto:salon@atelier-edition.com">
+          Inquire with Salon
+        </a>
+</section>
+</div>
+</main>
+<!-- Quiet Luxury Minimal Footer -->
+<footer class="w-full border-t border-border/70 bg-surface/50">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 py-12">
+<div class="flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center space-x-8 text-muted-foreground font-label-mono text-label-mono tracking-wider">
+<span>© 2025 Atelier Édition</span>
+<a class="hover:text-primary transition-colors" href="#">Terms</a>
+<a class="hover:text-primary transition-colors" href="#">Confidentiality</a>
+<a class="hover:text-primary transition-colors" href="#">Provenance</a>
+</div>
+<div class="flex items-center space-x-6 font-label-caps text-label-caps tracking-widest uppercase text-muted-foreground">
+<span>Paris</span>
+<span>·</span>
+<span>Kyoto</span>
+<span>·</span>
+<span>Milan</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

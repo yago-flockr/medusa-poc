@@ -1,4 +1,4 @@
-import ItemsPreviewTemplate from "@/store/modules/cart/templates/preview"
+import CartList from "@/store/modules/cart/components/cart-list"
 import DiscountCode from "@/store/modules/checkout/components/discount-code"
 import CartTotals from "@/store/modules/common/components/cart-totals"
 import Divider from "@/store/modules/common/components/divider"
@@ -14,7 +14,7 @@ const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {
         </h2>
         <Divider className="my-6" />
         <CartTotals totals={cart} />
-        <ItemsPreviewTemplate cart={cart} />
+        <CartList items={cart.items ?? []} currencyCode={cart.currency_code} />
         <div className="my-6">
           <DiscountCode cart={cart} />
         </div>

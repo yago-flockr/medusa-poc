@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About — Atelier Édition</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-container": "#1e1b19",
+            "espresso-dark": "#12100E",
+            "tertiary-fixed": "#e9e1d7",
+            "on-primary-fixed-variant": "#4a4643",
+            "outline": "#7e7570",
+            "tertiary-container": "#1e1b15",
+            "error": "#ba1a1a",
+            "secondary-fixed": "#ffdcbb",
+            "primary": "#1A1715",
+            "surface-dim": "#dbdad6",
+            "background": "#FBF9F5",
+            "on-error": "#ffffff",
+            "success": "#3E5742",
+            "on-secondary-container": "#785937",
+            "inverse-surface": "#30312e",
+            "foreground": "#1A1715",
+            "tertiary-fixed-dim": "#cdc5bc",
+            "on-background": "#1b1c1a",
+            "on-primary-fixed": "#1e1b19",
+            "surface-bright": "#fbf9f5",
+            "surface-container-low": "#f5f3ef",
+            "muted": "#EFECE4",
+            "muted-foreground": "#78726A",
+            "surface": "#fbf9f5",
+            "warning": "#A67232",
+            "outline-variant": "#d0c4be",
+            "destructive": "#8A3C34",
+            "border": "#E4DFD5",
+            "input": "#E4DFD5",
+            "inverse-on-surface": "#f2f0ed",
+            "on-surface": "#1b1c1a",
+            "parchment-deep": "#ECE7DD",
+            "card-foreground": "#1A1715",
+            "on-tertiary-fixed": "#1e1b15",
+            "on-secondary-fixed-variant": "#5d4121",
+            "ring": "#9E7B56",
+            "ochre-champagne": "#9E7B56",
+            "surface-tint": "#625d5b",
+            "tertiary": "#000000",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "accent": "#E6E1D6",
+            "primary-fixed": "#e9e1dd",
+            "popover": "#FBF9F5",
+            "on-surface-variant": "#4d4540",
+            "primary-fixed-dim": "#ccc5c1",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#2b1700",
+            "secondary-foreground": "#2B2623",
+            "surface-container-highest": "#e4e2de",
+            "inverse-primary": "#ccc5c1",
+            "secondary-container": "#fdd2a7",
+            "surface-variant": "#e4e2de",
+            "on-primary-container": "#888380",
+            "on-primary": "#ffffff",
+            "secondary-fixed-dim": "#e8bf95",
+            "surface-container-high": "#eae8e4",
+            "destructive-foreground": "#FBF9F5",
+            "on-tertiary-fixed-variant": "#4a463f",
+            "primary-foreground": "#FBF9F5",
+            "accent-foreground": "#1A1715",
+            "on-tertiary": "#ffffff",
+            "surface-container": "#efeeea",
+            "on-tertiary-container": "#89837b",
+            "on-secondary": "#ffffff",
+            "card": "#F5F2EB",
+            "secondary": "#EFECE4",
+            "popover-foreground": "#1A1715"
+          },
+          fontFamily: {
+            "price": ["Inter"],
+            "display-hero": ["Playfair Display"],
+            "display-hero-mobile": ["Playfair Display"],
+            "body-sm": ["Inter"],
+            "label-mono": ["Inter"],
+            "title-editorial": ["Playfair Display"],
+            "body-base": ["Inter"],
+            "headline-md": ["Playfair Display"],
+            "label-caps": ["Inter"],
+            "headline-lg-mobile": ["Playfair Display"],
+            "body-lg": ["Inter"],
+            "headline-sm": ["Playfair Display"],
+            "headline-lg": ["Playfair Display"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background font-body-base text-on-surface antialiased min-h-screen selection:bg-accent selection:text-accent-foreground">
+<!-- TOP BANNER & HEADER -->
+<header class="fixed top-0 inset-x-0 z-50 bg-[#FBF9F5]/90 backdrop-blur-md border-b border-border/40">
+<!-- Announcement Bar -->
+<div class="w-full bg-surface-container-low/70 py-2.5 px-6 text-center border-b border-border/30">
+<p class="font-label-caps text-[10.5px] uppercase tracking-[0.24em] text-muted-foreground">
+        COMPLIMENTARY WHITE-GLOVE DELIVERY ON ALL CURATION ORDERS
+      </p>
+</div>
+<!-- Main Navigation Bar -->
+<div class="h-20 max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+<!-- Brand Logo -->
+<div class="flex-shrink-0">
+<a class="block group" href="#">
+<span class="font-headline-sm text-[21px] tracking-[0.18em] uppercase text-primary font-normal">
+            ATELIER ÉDITION
+          </span>
+</a>
+</div>
+<!-- Navigation Links with proper breathing room -->
+<nav class="hidden lg:flex items-center space-x-10 text-[11px] font-label-caps tracking-[0.2em] uppercase">
+<a class="text-muted-foreground hover:text-primary transition-colors py-1" href="#">Curations</a>
+<a class="text-muted-foreground hover:text-primary transition-colors py-1" href="#">Collections</a>
+<a class="text-muted-foreground hover:text-primary transition-colors py-1" href="#">Store</a>
+<a class="text-primary border-b border-primary py-1" href="#">Maisons</a>
+<a class="text-muted-foreground hover:text-primary transition-colors py-1" href="#">Editorial</a>
+</nav>
+<!-- Right Actions -->
+<div class="flex items-center space-x-5 text-on-surface-variant">
+<button aria-label="Search" class="p-1 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</button>
+<button aria-label="Account" class="p-1 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</button>
+<button aria-label="Shopping Bag" class="flex items-center gap-1.5 p-1 hover:text-primary transition-colors group" type="button">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+<span class="font-label-mono text-[11px] text-muted-foreground group-hover:text-primary transition-colors">(2)</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN CONTENT: RADICALLY DECLUTTERED & SERENE -->
+<main class="w-full pt-[115px] bg-[#FBF9F5]">
+<!-- HERO SECTION: Generous vertical breathing room & quiet authority -->
+<section class="max-w-4xl mx-auto px-6 sm:px-8 pt-24 pb-20 md:pt-32 md:pb-28 text-center">
+<span class="font-label-caps text-[11px] uppercase tracking-[0.3em] text-ochre-champagne block mb-6">
+        PROVENANCE &amp; PHILOSOPHY
+      </span>
+<h1 class="font-display-hero text-4xl sm:text-5xl md:text-6xl text-primary font-normal tracking-[-0.02em] leading-[1.12] mb-8">
+        Unhurried Craft.
+      </h1>
+<p class="font-body-lg text-lg md:text-[19px] text-primary/75 font-light leading-relaxed max-w-2xl mx-auto">
+        Founded on the conviction that garments should transcend seasonal obsolescence, Atelier Édition convenes the world’s most exacting independent tailoring houses, heritage mills, and singular artisans into one curated sanctuary.
+      </p>
+</section>
+<!-- ICONIC PHOTOGRAPHIC SPREAD: Wide, calm, cinematic -->
+<section class="max-w-6xl mx-auto px-6 sm:px-8 mb-28 md:mb-36">
+<div class="relative w-full overflow-hidden bg-card">
+<div class="aspect-[16/9] md:aspect-[21/9] w-full">
+<img alt="High-fashion atelier studio interior: warm architectural travertine and limestone surfaces, natural daylight streaming through tall arched windows" class="w-full h-full object-cover object-center grayscale-[10%] contrast-[101%]" src="https://lh3.googleusercontent.com/aida/AEtjO1Xoz0qb2-5jvmgvb6mU8JUsrj44IV5QifW9roliHD6m4KaIGMceK8IgnYJ-72QJWBXUCs2m62kVuf6XArDUwdSjiI5pw03t2ccDTr0lz_SycgRu8ho-GRmmM1z9TUr0W5rDC8aRjRribSEak8c4gv7UU97mJOSMi_ob2cuNX-H76UpnfoetxKO19kCk7V5tmh1pTQOS_09iqUNMdEnzeDZ1fkP4A8z_LFS7r0mMd0ckmZ8okBS1kGH0uH8"/>
+</div>
+</div>
+<div class="pt-4 flex items-center justify-between text-muted-foreground font-label-mono text-[11px] tracking-[0.18em] uppercase">
+<span>18 Rue de Richelieu, Paris</span>
+<span>Textile Archive &amp; Cutting Room</span>
+</div>
+</section>
+<!-- THE THREE PRINCIPLES: Quiet, spacious, and unhurried -->
+<section class="max-w-5xl mx-auto px-6 sm:px-8 mb-28 md:mb-36">
+<div class="border-t border-border/70 pt-16 md:pt-20">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-14">
+<!-- Principle 1 -->
+<div class="flex flex-col space-y-3">
+<span class="font-label-mono text-[11px] text-ochre-champagne tracking-[0.2em] uppercase">
+              01 / Provenance
+            </span>
+<h3 class="font-headline-sm text-xl text-primary font-normal">
+              Sartorial Roots
+            </h3>
+<p class="font-body-base text-[14.5px] text-on-surface-variant font-light leading-relaxed pt-1">
+              Sourced exclusively from generational mills across Biella, Lyon, and Kyoto with certified natural fibers.
+            </p>
+</div>
+<!-- Principle 2 -->
+<div class="flex flex-col space-y-3">
+<span class="font-label-mono text-[11px] text-ochre-champagne tracking-[0.2em] uppercase">
+              02 / Restraint
+            </span>
+<h3 class="font-headline-sm text-xl text-primary font-normal">
+              Architectural Line
+            </h3>
+<p class="font-body-base text-[14.5px] text-on-surface-variant font-light leading-relaxed pt-1">
+              Pure silhouettes engineered with sculptural precision, conceived far beyond seasonal obsolescence.
+            </p>
+</div>
+<!-- Principle 3 -->
+<div class="flex flex-col space-y-3">
+<span class="font-label-mono text-[11px] text-ochre-champagne tracking-[0.2em] uppercase">
+              03 / Permanence
+            </span>
+<h3 class="font-headline-sm text-xl text-primary font-normal">
+              Numbered Editions
+            </h3>
+<p class="font-body-base text-[14.5px] text-on-surface-variant font-light leading-relaxed pt-1">
+              Handcrafted limited curations designed to mature with wear and endure across generations.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- ASYMMETRICAL PORTRAIT & SALON SECTION -->
+<section class="max-w-5xl mx-auto px-6 sm:px-8 pb-32 md:pb-40">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-center">
+<!-- Portrait Column -->
+<div class="md:col-span-5">
+<div class="aspect-[3/4] w-full overflow-hidden bg-card shadow-sm">
+<img alt="Editorial portrait of an artisan tailor in a quiet luxury Parisian atelier" class="w-full h-full object-cover grayscale-[8%]" src="https://lh3.googleusercontent.com/aida/AEtjO1WIZLdWfWtw0MWJCnGcFPnbFPb3-Y3AaYdJ5DI9iZoyWT5F31R1VENPh2m0gwxD6RfuP9LkerS4jXIca5CeEAfAuFjpjGzIyji7R7gwi9rF66dVbchk2Jus7EzSPPohwGMJO-XE1sp1p4exPNCVhavXD7p4fLdS-LPbn7gR0s6tDVrRAlYEJktrwKnQ7FHrG3RtNs4r9cV8eL5WzWT7y-RVugZwHtFIzuhQ23Q1_2lqZDC55ChKtN3MAg"/>
+</div>
+<p class="font-label-mono text-[11px] text-muted-foreground tracking-wider mt-3">
+            Gabriel Vaneau, Master Draper
+          </p>
+</div>
+<!-- Pull Quote & Salon Notes -->
+<div class="md:col-span-7 flex flex-col justify-center md:pl-6">
+<blockquote class="font-headline-md text-2xl sm:text-3xl text-primary font-normal italic leading-snug mb-8">
+            “True luxury is neither loud nor hurried. It is the quiet authority of flawless line and untouched natural fiber.”
+          </blockquote>
+<div class="space-y-4 text-on-surface-variant font-light text-[14.5px] leading-relaxed border-t border-border/70 pt-8">
+<p>
+              Private salon viewings, bespoke fittings, and archival inquiries are welcomed by appointment at our rooms in Paris, London, and New York.
+            </p>
+<div class="pt-4 flex flex-col sm:flex-row sm:items-center gap-6">
+<a class="inline-flex items-center gap-2 text-[11px] font-label-caps uppercase tracking-[0.22em] text-primary hover:text-ochre-champagne transition-colors" href="mailto:salon@atelier-edition.com">
+<span>Inquire with Salon Concierge</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+<span class="text-muted-foreground font-label-mono text-[11px] tracking-wider hidden sm:inline">
+                PARIS • LONDON • NEW YORK
+              </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- STANDARDIZED GLOBAL FOOTER -->
+<footer class="w-full bg-card border-t border-border/60 pt-20 pb-12">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+<!-- Brand Gazette Column -->
+<div class="md:col-span-5 pr-0 lg:pr-12">
+<span class="font-headline-sm text-lg tracking-[0.14em] uppercase text-primary block mb-4 font-normal">
+            ATELIER ÉDITION
+          </span>
+<p class="font-body-base text-sm text-muted-foreground max-w-sm font-light leading-relaxed mb-8">
+            A curated sanctuary of haute couture tailoring, rare botanical dyes, and numbered archival garments conceived for discerning collectors.
+          </p>
+<div>
+<h4 class="font-label-caps text-[11px] uppercase text-primary tracking-[0.2em] mb-3">
+              JOIN THE ÉDITION GAZETTE
+            </h4>
+<form class="flex items-end gap-4 max-w-sm" onsubmit="event.preventDefault();">
+<div class="flex-1">
+<label class="sr-only" for="gazette-email">Correspondence Email</label>
+<input class="w-full bg-transparent border-0 border-b border-border py-1 px-0 font-body-sm text-sm text-on-surface placeholder:text-muted-foreground focus:outline-none focus:border-ring focus:ring-0 transition-colors" id="gazette-email" placeholder="Correspondence Email" type="email"/>
+</div>
+<button class="font-label-caps text-[11px] uppercase tracking-[0.2em] text-primary pb-1 hover:text-ochre-champagne transition-colors" type="button">
+                SUBSCRIBE
+              </button>
+</form>
+</div>
+</div>
+<!-- Curations Links -->
+<div class="md:col-span-2 md:col-start-7">
+<h3 class="font-label-caps text-[11px] uppercase tracking-[0.2em] text-primary mb-4">
+            CURATIONS
+          </h3>
+<ul class="space-y-3 font-body-sm text-sm">
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">Sartorial Suites</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">Atelier Silk &amp; Cashmere</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">Monochrome Objects</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">Archival Reissues</a></li>
+</ul>
+</div>
+<!-- Maisons Links -->
+<div class="md:col-span-2">
+<h3 class="font-label-caps text-[11px] uppercase tracking-[0.2em] text-primary mb-4">
+            MAISONS
+          </h3>
+<ul class="space-y-3 font-body-sm text-sm">
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">The Atelier Manifesto</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">Master Artisans</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">The Gazette</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">Bespoke Appointments</a></li>
+</ul>
+</div>
+<!-- Concierge Links -->
+<div class="md:col-span-2">
+<h3 class="font-label-caps text-[11px] uppercase tracking-[0.2em] text-primary mb-4">
+            CONCIERGE
+          </h3>
+<ul class="space-y-3 font-body-sm text-sm">
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">White-Glove Courier Logistics</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">Bespoke Tailoring Inquiries</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors" href="#">Care of Rare Textiles</a></li>
+<li><a class="text-muted-foreground hover:text-primary transition-colors font-label-mono text-xs" href="mailto:salon@atelier-edition.com">salon@atelier-edition.com</a></li>
+</ul>
+</div>
+</div>
+<!-- Bottom bar -->
+<div class="pt-8 border-t border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-label-mono text-[11px] text-muted-foreground">
+<p>© 2025 Atelier Édition S.A. All rights reserved.</p>
+<div class="flex items-center space-x-6">
+<a class="hover:text-primary transition-colors uppercase tracking-wider" href="#">PRIVACY POLICY</a>
+<a class="hover:text-primary transition-colors uppercase tracking-wider" href="#">TERMS OF CURATION</a>
+<a class="hover:text-primary transition-colors uppercase tracking-wider" href="#">PROVENANCE</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
