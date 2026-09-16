@@ -48,7 +48,10 @@ export default function CartList({
             <EmptyDescription>Your shopping bag is empty.</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button render={<LocalizedClientLink href="/store" />}>
+            <Button
+              nativeButton={false}
+              render={<LocalizedClientLink href="/store" />}
+            >
               Explore products
             </Button>
           </EmptyContent>

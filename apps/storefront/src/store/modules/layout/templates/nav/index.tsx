@@ -193,6 +193,7 @@ export default async function Nav() {
               variant="ghost"
               size="icon-sm"
               className="hidden md:inline-flex"
+              nativeButton={false}
               render={
                 <LocalizedClientLink
                   href="/account"
@@ -212,6 +213,7 @@ export default async function Nav() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    nativeButton={false}
                     render={
                       <LocalizedClientLink
                         href="/cart"

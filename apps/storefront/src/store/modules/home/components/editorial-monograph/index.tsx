@@ -49,14 +49,6 @@ export default function EditorialMonograph() {
                 </div>
               ))}
             </dl>
-            <Button
-              variant="link"
-              className="w-fit px-0"
-              render={<LocalizedClientLink href="/store" />}
-            >
-              Read the complete fibre dissertation
-              <RiArrowRightLine data-icon="inline-end" />
-            </Button>
           </div>
         </div>
       </div>

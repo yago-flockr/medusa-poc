@@ -33,6 +33,7 @@ export default function CartSummary({
       <Button
         className="w-full"
         data-testid="go-to-cart-button"
+        nativeButton={false}
         render={<LocalizedClientLink href="/cart" />}
       >
         Go to cart

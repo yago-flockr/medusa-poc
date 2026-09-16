@@ -49,6 +49,7 @@ export default async function FeaturedCollections({
         </div>
         <Button
           variant="link"
+          nativeButton={false}
           render={
             <LocalizedClientLink href={`/collections/${collection.handle}`} />
           }

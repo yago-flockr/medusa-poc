@@ -34,13 +34,18 @@ const Hero = () => {
           against all of them.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Button size="xl" render={<LocalizedClientLink href="/store" />}>
+          <Button
+            size="xl"
+            nativeButton={false}
+            render={<LocalizedClientLink href="/store" />}
+          >
             Shop the catalog
             <RiArrowRightLine data-icon="inline-end" />
           </Button>
           <Button
             size="xl"
             variant="secondary"
+            nativeButton={false}
             render={<Link href="/vendor" />}
           >
             Apply to sell
