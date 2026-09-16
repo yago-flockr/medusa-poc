@@ -1,15 +1,29 @@
+import { cva, type VariantProps } from "class-variance-authority"
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 import { RiArrowDownSLine, RiArrowUpSLine } from "@remixicon/react"
 import { cn } from "cn"
 
-function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
+const accordionVariants = cva("flex w-full flex-col overflow-hidden", {
+  variants: {
+    variant: {
+      default: "rounded-2xl border",
+      plain: "border-t",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+})
+
+function Accordion({
+  className,
+  variant,
+  ...props
+}: AccordionPrimitive.Root.Props & VariantProps<typeof accordionVariants>) {
   return (
     <AccordionPrimitive.Root
       data-slot="accordion"
-      className={cn(
-        "flex w-full flex-col overflow-hidden rounded-2xl border",
-        className,
-      )}
+      className={cn(accordionVariants({ variant }), className)}
       {...props}
     />
   )
@@ -77,4 +91,4 @@ function AccordionContent({
   )
 }
 
-export { Accordion, AccordionContent, AccordionItem, AccordionTrigger }
+export { accordionVariants, Accordion, AccordionContent, AccordionItem, AccordionTrigger }

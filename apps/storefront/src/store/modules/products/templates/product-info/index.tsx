@@ -1,36 +1,38 @@
+import { Eyebrow } from "@/components/ui/eyebrow"
+import { StoreProductWithVendor } from "@/store/lib/data/products"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import { HttpTypes } from "@medusajs/types"
 
 type ProductInfoProps = {
-  product: HttpTypes.StoreProduct
+  product: StoreProductWithVendor
 }
 
 const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
-    <div id="product-info">
-      <div className="mx-auto flex flex-col gap-y-4 lg:max-w-[500px]">
-        {product.collection && (
-          <LocalizedClientLink
-            href={`/collections/${product.collection.handle}`}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            {product.collection.title}
-          </LocalizedClientLink>
-        )}
-        <h2
-          className="text-3xl leading-10 text-foreground"
-          data-testid="product-title"
+    <div id="product-info" className="flex flex-col gap-4">
+      {product.vendor && (
+        <Eyebrow
+          variant="accent"
+          render={
+            <LocalizedClientLink href={`/vendors/${product.vendor.handle}`} />
+          }
         >
-          {product.title}
-        </h2>
-
+          {product.vendor.name}
+        </Eyebrow>
+      )}
+      <h1
+        className="font-heading text-3xl leading-tight sm:text-4xl"
+        data-testid="product-title"
+      >
+        {product.title}
+      </h1>
+      {product.description && (
         <p
-          className="whitespace-pre-line text-muted-foreground"
+          className="whitespace-pre-line text-sm text-muted-foreground"
           data-testid="product-description"
         >
           {product.description}
         </p>
-      </div>
+      )}
     </div>
   )
 }

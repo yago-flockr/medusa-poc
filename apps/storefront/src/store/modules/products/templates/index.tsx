@@ -1,18 +1,28 @@
 import React, { Suspense } from "react"
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import ImageGallery from "@/store/modules/products/components/image-gallery"
 import ProductActions from "@/store/modules/products/components/product-actions"
 import ProductTabs from "@/store/modules/products/components/product-tabs"
 import RelatedProducts from "@/store/modules/products/components/related-products"
 import ProductInfo from "@/store/modules/products/templates/product-info"
 import SkeletonRelatedProducts from "@/store/modules/skeletons/templates/skeleton-related-products"
+import { StoreProductWithVendor } from "@/store/lib/data/products"
 import { HttpTypes } from "@medusajs/types"
 import { notFound } from "next/navigation"
 
 import ProductActionsWrapper from "./product-actions-wrapper"
 
 type ProductTemplateProps = {
-  product: HttpTypes.StoreProduct
+  product: StoreProductWithVendor
   region: HttpTypes.StoreRegion
   country: string
   images: HttpTypes.StoreProductImage[]
@@ -28,20 +38,47 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return notFound()
   }
 
+  const category = product.categories?.[0]
+
   return (
-    <>
+    <div className="container flex flex-col gap-16">
+      <Breadcrumb>
+        <BreadcrumbList className="text-xs uppercase tracking-widest">
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<LocalizedClientLink href="/store" />}>
+              Store
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          {category && (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink
+                  render={
+                    <LocalizedClientLink
+                      href={`/categories/${category.handle}`}
+                    />
+                  }
+                >
+                  {category.name}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </>
+          )}
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{product.title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <div
-        className="container relative flex flex-col py-6 sm:flex-row sm:items-start"
+        className="grid grid-cols-1 gap-12 lg:grid-cols-[3fr_2fr] lg:gap-20"
         data-testid="product-container"
       >
-        <div className="flex w-full flex-col gap-y-6 py-8 sm:sticky sm:top-48 sm:max-w-[300px] sm:py-0">
+        <ImageGallery images={images} />
+        <div className="flex flex-col gap-8 lg:sticky lg:top-28 lg:self-start">
           <ProductInfo product={product} />
-          <ProductTabs product={product} />
-        </div>
-        <div className="relative block w-full">
-          <ImageGallery images={images} />
-        </div>
-        <div className="flex w-full flex-col gap-y-12 py-8 sm:sticky sm:top-48 sm:max-w-[300px] sm:py-0">
           <Suspense
             fallback={
               <ProductActions
@@ -53,17 +90,16 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           >
             <ProductActionsWrapper id={product.id} region={region} />
           </Suspense>
+          <ProductTabs product={product} />
         </div>
       </div>
-      <div
-        className="container my-16 sm:my-32"
-        data-testid="related-products-container"
-      >
+
+      <div data-testid="related-products-container">
         <Suspense fallback={<SkeletonRelatedProducts />}>
           <RelatedProducts product={product} country={country} />
         </Suspense>
       </div>
-    </>
+    </div>
   )
 }
 

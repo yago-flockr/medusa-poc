@@ -1,38 +1,46 @@
+"use client"
+
+import { Thumbnail } from "@/components/ui/thumbnail"
+import { cn } from "@/lib/utils"
 import { HttpTypes } from "@medusajs/types"
-import Image from "next/image"
+import { useState } from "react"
 
 type ImageGalleryProps = {
   images: HttpTypes.StoreProductImage[]
 }
 
 const ImageGallery = ({ images }: ImageGalleryProps) => {
+  const [activeId, setActiveId] = useState(images[0]?.id)
+
+  if (!images.length) {
+    return <Thumbnail />
+  }
+
+  const activeImage = images.find((image) => image.id === activeId) ?? images[0]
+
   return (
-    <div className="relative flex items-start">
-      <div className="flex flex-1 gap-4 sm:mx-16">
-        {images.map((image, index) => {
-          return (
-            <div
-              key={image.id}
-              className="relative h-96 w-full overflow-hidden rounded-lg bg-muted"
-              id={image.id}
-            >
-              {!!image.url && (
-                <Image
-                  src={image.url}
-                  priority={index <= 2 ? true : false}
-                  className="absolute inset-0"
-                  alt={`Product image ${index + 1}`}
-                  fill
-                  sizes="(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"
-                  style={{
-                    objectFit: "cover",
-                  }}
-                />
-              )}
-            </div>
-          )
-        })}
-      </div>
+    <div className="flex flex-col gap-4">
+      <Thumbnail src={activeImage.url} alt="" />
+      {images.length > 1 && (
+        <ul className="grid grid-cols-4 gap-4">
+          {images.map((image) => (
+            <li key={image.id}>
+              <button
+                type="button"
+                aria-label="Show image"
+                aria-current={image.id === activeId}
+                onClick={() => setActiveId(image.id)}
+                className={cn(
+                  "block w-full cursor-pointer ring-1 ring-transparent transition-all",
+                  image.id === activeImage.id && "ring-foreground",
+                )}
+              >
+                <Thumbnail src={image.url} alt="" ratio="square" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }
