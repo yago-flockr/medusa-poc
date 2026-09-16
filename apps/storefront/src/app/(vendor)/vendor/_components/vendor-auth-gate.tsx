@@ -8,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { VendorNav } from "@/vendor/components/nav"
 import { LoginForm } from "@/vendor/forms/login-form"
+
+import { VendorShell } from "./vendor-shell"
 import { usePostAuthVendorEmailpass } from "@/vendor/hooks/mutations/auth"
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useEffect, useState } from "react"
@@ -56,10 +57,5 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
     )
   }
 
-  return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <VendorNav />
-      <div className="flex flex-col gap-6">{children}</div>
-    </div>
-  )
+  return <VendorShell>{children}</VendorShell>
 }
