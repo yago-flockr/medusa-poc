@@ -27,16 +27,6 @@ export default function PrivateSalon({
               Access 1:1 bespoke sartorial styling, priority allocation for
               numbered editions, and private fitting appointments.
             </p>
-            <InputGroup>
-              <InputGroupInput
-                type="email"
-                placeholder="salon.inquiry@client.com"
-                aria-label="Email address"
-              />
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton>Request entry</InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
           </div>
         </div>
       </div>

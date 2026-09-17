@@ -24,12 +24,18 @@ import {
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 
-const NAV_ITEMS = [
+const STORE_ITEMS = [
   { href: "/vendor", label: "Dashboard", icon: RiDashboardLine },
   { href: "/vendor/orders", label: "Orders", icon: RiShoppingBag3Line },
   { href: "/vendor/products", label: "Products", icon: RiStore2Line },
   { href: "/vendor/locations", label: "Locations", icon: RiMapPinLine },
+]
+
+const CONNECTION_ITEMS = [
   { href: "/vendor/shopify", label: "Shopify", icon: RiBuilding2Line },
+]
+
+const ACCOUNT_ITEMS = [
   { href: "/vendor/profile", label: "Profile", icon: RiUserLine },
 ]
 
@@ -42,10 +48,29 @@ export function VendorSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Manage</SidebarGroupLabel>
+          <SidebarGroupLabel>Store</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAV_ITEMS.map((item) => (
+              {STORE_ITEMS.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    isActive={pathname === item.href}
+                    tooltip={item.label}
+                    render={<Link href={item.href} />}
+                  >
+                    <item.icon />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Connections</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {CONNECTION_ITEMS.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
                     isActive={pathname === item.href}
@@ -61,22 +86,39 @@ export function VendorSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip="Sign out"
-              onClick={() => {
-                clearToken()
-                router.replace("/vendor")
-              }}
-            >
-              <RiLogoutCircleLine />
-              <span>Sign out</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+      <SidebarContent className="justify-end">
+        <SidebarGroup>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {ACCOUNT_ITEMS.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    isActive={pathname === item.href}
+                    tooltip={item.label}
+                    render={<Link href={item.href} />}
+                  >
+                    <item.icon />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Sign out"
+                  onClick={() => {
+                    clearToken()
+                    router.replace("/vendor")
+                  }}
+                >
+                  <RiLogoutCircleLine />
+                  <span>Sign Out</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
     </Sidebar>
   )
 }

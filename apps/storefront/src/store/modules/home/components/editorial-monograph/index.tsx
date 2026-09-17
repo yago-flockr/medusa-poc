@@ -20,7 +20,7 @@ export default function EditorialMonograph({
     <section className={cn("bg-muted", className)} {...props}>
       <div className="container">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-          <div className="relative aspect-4/3 w-full overflow-hidden">
+          <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl">
             <Image
               src="/editorial/monograph-detail.png"
               alt=""

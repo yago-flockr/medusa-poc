@@ -22,7 +22,7 @@ export default function ManifestoQuote({
       {...props}
     >
       <figure className="flex flex-col gap-3">
-        <div className="relative aspect-3/4 w-full overflow-hidden bg-card">
+        <div className="relative aspect-3/4 w-full overflow-hidden rounded-2xl bg-card">
           <Image
             src="/editorial/artisan-portrait.png"
             alt=""

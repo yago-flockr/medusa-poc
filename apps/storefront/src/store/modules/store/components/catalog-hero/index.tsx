@@ -26,7 +26,7 @@ const CatalogHero = ({
     return (
       <div
         className={cn(
-          "dark relative flex h-64 w-full items-end overflow-hidden bg-background sm:h-80",
+          "dark relative flex h-64 w-full items-end overflow-hidden rounded-2xl bg-background sm:h-80",
           className,
         )}
         {...props}

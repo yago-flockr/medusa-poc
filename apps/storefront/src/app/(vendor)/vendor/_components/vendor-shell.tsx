@@ -4,7 +4,11 @@ import { TextTooltip } from "@/components/display/text-tooltip"
 import { ThemeToggle } from "@/components/display/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 import { RiRefreshLine } from "@remixicon/react"
 import { useQueryClient } from "@tanstack/react-query"
 
@@ -19,7 +23,6 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger />
-          <Separator orientation="vertical" className="h-4" />
           <div className="flex flex-1 items-center justify-end gap-2">
             <ThemeToggle />
             <TextTooltip content="Refresh everything">

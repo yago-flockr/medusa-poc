@@ -24,7 +24,7 @@ export default function ManifestoHeader({
         </p>
       </div>
       <figure className="flex flex-col gap-3">
-        <div className="relative aspect-21/9 w-full overflow-hidden bg-card">
+        <div className="relative aspect-21/9 w-full overflow-hidden rounded-2xl bg-card">
           <Image
             src="/editorial/atelier-studio.png"
             alt=""
