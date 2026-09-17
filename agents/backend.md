@@ -23,7 +23,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
 - Store: PostgreSQL
 - Layer: Medusa module data models and migrations
-- Custom modules with owned models: **Brand** (`src/modules/brand`) — product taxonomy via `product-brand` link; see `docs/ER_MODEL.md`. Not the white-label client brand in `docs/plan.md`. **Vendor** (`src/modules/vendor`) — `Vendor` + `VendorUser`, the marketplace seller and its authenticated staff (custom actor type `vendor`), via `product-vendor` link; see `docs/ER_MODEL.md`.
+- Custom modules with owned models: **Brand** (`src/modules/brand`) — product taxonomy via `product-brand` link; see `docs/ER_MODEL.md`. Not the white-label client brand in `docs/plan.md`. **Vendor** (`src/modules/vendor`) — `Vendor` + `VendorUser`, the marketplace seller and its authenticated staff (custom actor type `vendor`), via `product-vendor` link; see `docs/ER_MODEL.md`. **Affiliate** (`src/modules/affiliate`) — `Affiliate` + `Referral`, the person who refers sales and the immutable per-order attribution; `affiliate-product` and `referral-order` links.
 - Planned extensions (see `docs/features/`): consignments, commission and payout ledger, vendor onboarding/approval
 
 ## Core technologies
@@ -743,6 +743,43 @@ starts.
 - The order container question is **settled**: one order plus consignment
   records, not child orders — see `docs/spikes/multi-vendor-order.md` and
   the order-splitting bullet above.
+
+### Affiliate referrals — how a code reaches an order
+
+Brief: `docs/features/affiliate-referrals.md`. Decisions: `docs/plan.md`.
+An affiliate is a **person**, not a `Vendor`/`VendorUser`-style pair, and their
+`handle` **is** the referral code — there is no per-product or per-share code.
+
+The chain, in order:
+
+1. `?ref=<handle>` on the storefront → cookie (storefront side).
+2. Storefront sends `additional_data.referral_code` on `POST /store/carts` and
+   `POST /store/carts/:id` — declared in `api/affiliates/additional-data.ts`,
+   wired through `api/store/carts/middlewares.ts` (Zod, so a non-string 400s).
+3. `createCartWorkflow.hooks.cartCreated` / `updateCartWorkflow.hooks.cartUpdated`
+   (`workflows/hooks/created-cart.ts`, `updated-cart.ts`) merge the code into
+   `cart.metadata`. Both hooks are needed: add-to-cart runs neither, so a code
+   arriving after the cart exists only lands via the update route.
+4. `createConsignmentsWorkflow` reads it back with `readCartReferralCode`
+   (Zod-parsed, never an `as` cast), and `createReferralStep` resolves the
+   handle to an **active** affiliate, creates the `Referral`, and links it to
+   the order in the same `createRemoteLinkStep` as the consignments.
+
+Rules the code enforces, verified by real checkouts:
+
+- **Attribution never fails an order.** Unknown code, inactive affiliate, or no
+  code at all → the order completes with no referral. The code is *not*
+  validated at cart time, so `cart.metadata.referral_code` is untrusted until
+  step 4 resolves it.
+- **`Referral` copies `code` and `commission_rate` as plain values.** Changing an
+  affiliate's rate afterwards does not move an existing order's figures.
+- **Last code wins**; an update carrying no code leaves the existing one alone,
+  and the write merges into `cart.metadata` rather than replacing it.
+- **No stored sales counters.** What an affiliate sold is derived from
+  `Referral → order → line items`, so refunds and cancellations are reflected
+  automatically.
+- One referral per order is a workflow guard, not a DB constraint — the link
+  table's PK is `(referral_id, order_id)` and permits more than one.
 
 ## Conventions and standards
 

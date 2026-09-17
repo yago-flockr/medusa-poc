@@ -9,6 +9,7 @@ module.exports = defineConfig({
   modules: [
     { resolve: "./src/modules/brand" },
     { resolve: "./src/modules/vendor" },
+    { resolve: "./src/modules/affiliate" },
     { resolve: "./src/modules/storefront-content" },
     {
       resolve: "@medusajs/medusa/event-bus-redis",

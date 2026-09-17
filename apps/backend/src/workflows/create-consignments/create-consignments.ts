@@ -17,6 +17,8 @@ import consignmentOrderLink from "../../links/consignment-order"
 import { assertItemsFulfillableStep } from "./steps/assert-items-fulfillable"
 import { createConsignmentsStep } from "./steps/create-consignments"
 import { groupVendorItemsStep } from "./steps/group-vendor-items"
+import { readCartReferralCode } from "../shared/lib/cart-referral-metadata"
+import { createReferralStep } from "./steps/create-referral"
 import { resolveConsignmentsStep } from "./steps/resolve-consignments"
 
 export type CreateConsignmentsWorkflowInput = {
@@ -30,7 +32,7 @@ export const createConsignmentsWorkflow = createWorkflow(
   function (input: CreateConsignmentsWorkflowInput) {
     const { data: carts } = useQueryGraphStep({
       entity: "cart",
-      fields: ["id", "items.*"],
+      fields: ["id", "items.*", "metadata"],
       filters: { id: input.cart_id },
       options: { throwIfKeyNotFound: true },
     })
@@ -40,6 +42,10 @@ export const createConsignmentsWorkflow = createWorkflow(
         (item): item is NonNullable<typeof item> => item != null,
       ),
     ) as unknown as CartLineItemDTO[]
+
+    const referralCode = transform({ carts }, (data) =>
+      readCartReferralCode(data.carts[0].metadata),
+    )
 
     assertItemsFulfillableStep({ items: cartItems })
 
@@ -92,7 +98,17 @@ export const createConsignmentsWorkflow = createWorkflow(
         vendorsItems,
       })
 
-      createRemoteLinkStep(linkDefs)
+      const { linkDefs: referralLinkDefs } = createReferralStep({
+        orderId,
+        referralCode,
+      })
+
+      const allLinkDefs = transform(
+        { linkDefs, referralLinkDefs },
+        (data) => [...data.linkDefs, ...data.referralLinkDefs],
+      )
+
+      createRemoteLinkStep(allLinkDefs)
     })
 
     // Runs regardless of whether the block above just created the

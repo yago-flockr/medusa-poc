@@ -619,8 +619,11 @@ in short form, with what's genuinely still open flagged as such:
   team is continuing the project on its own initiative, no longer bound to
   blindly follow Sensus's specific answers (`docs/sensus/`) as fixed
   requirements — they can revisit any of them now. The core idea is
-  unchanged in shape: a multi-vendor marketplace, but open to **any**
-  seller type (vendors, influencers, etc.), each earning a commission.
+  unchanged in shape: a multi-vendor marketplace, open to sellers
+  (vendors) and to people who refer sales without selling anything
+  themselves (affiliates), each earning a commission. The earlier reading
+  of this — that an influencer was another *seller* type — is superseded
+  by the affiliate decision below.
   Whether the project continues at all past the current work is still
   genuinely open — do not assume either way. Existing Sensus-derived
   decisions above (payout timing, centralized payment, vendor onboarding
@@ -640,3 +643,44 @@ in short form, with what's genuinely still open flagged as such:
   workflows/routes refactor and next planned UI work first; revisit Mercur
   only as its own deliberate spike later, never as a silent scope-creep
   decision mid-feature.
+- **Affiliates are a separate actor from vendors, and a person rather than a
+  company.** Brief: `docs/features/affiliate-referrals.md`. An affiliate
+  promotes a vendor's products and earns on sales they refer; they never own
+  a product, hold stock or ship. The decisions settled up front, because
+  each is expensive to change once orders exist:
+  - **One entity, not the `Vendor`/`VendorUser` pair.** That split exists
+    because products, stock locations, shipping profiles, consignments and
+    the Shopify connection all attach to the *company* while staff come and
+    go. Nothing attaches to an affiliate org — codes and referrals belong to
+    the person — so an owning company would be a join to a row that says
+    nothing. Adding one later is additive and safe precisely because a
+    referral points at the person who earned it, which stays true under an
+    agency.
+  - **The affiliate's handle is the code.** One code per affiliate, working
+    site-wide, rather than a generated code per product or per share:
+    influencers say their code out loud, and a per-share code cannot be
+    spoken. Per-campaign breakdowns, when wanted, are an extra value carried
+    on the address, not extra codes.
+  - **The referral is an immutable record created when the order is placed**,
+    linked to the order the same way a consignment is. It copies the code
+    and the rate as plain values rather than reading them through the
+    affiliate, so an order still explains itself after the affiliate changes
+    their rate, changes their code, or leaves. Same rule as the commission split in
+    `docs/features/commission-and-payouts.md`. Which product the customer was
+    sent to is deliberately left out of the first version — it is additive
+    and nothing in the chain depends on it.
+  - **The code travels on the cart, not on the final checkout request.** It
+    is captured from the address, kept in the browser, and attached to the
+    cart as soon as the cart exists — because the customer who arrives
+    through a link on their phone often buys days later on a laptop, and a
+    code read only at the moment of purchase is lost by then.
+  - **No stored sales counters anywhere.** Everything an affiliate is shown
+    is derived from the orders their referrals point at. A counter
+    incremented at checkout is wrong the first time anything is refunded and
+    can never be recomputed — the same reason `Consignment` holds status and
+    not totals.
+  - **Attribution never fails an order.** An unknown, expired or deactivated
+    code is ignored and the order completes uncredited.
+  - **What an affiliate promotes is a plain relation to the product**, kept
+    because it is the list they work from and report against — not because
+    sales are counted on it.
