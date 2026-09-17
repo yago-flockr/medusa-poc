@@ -2,12 +2,6 @@ import { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group"
 import { Eyebrow } from "@/components/ui/eyebrow"
 
 export default function PrivateSalon({
