@@ -23,6 +23,7 @@ import {
 } from "@remixicon/react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { ComponentProps } from "react"
 
 const STORE_ITEMS = [
   { href: "/vendor", label: "Dashboard", icon: RiDashboardLine },
@@ -39,13 +40,13 @@ const ACCOUNT_ITEMS = [
   { href: "/vendor/profile", label: "Profile", icon: RiUserLine },
 ]
 
-export function VendorSidebar() {
+export function VendorSidebar(props: ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const router = useRouter()
   const clearToken = useVendorAuthStore((state) => state.clearToken)
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Store</SidebarGroupLabel>
