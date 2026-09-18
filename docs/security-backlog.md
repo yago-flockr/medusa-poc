@@ -223,3 +223,26 @@ each was found while building or adversarially testing the marketplace spine
   adjacent to it: anything built on refunds/payouts before that's decided
   inherits whatever gaps the eventual answer closes. Don't build payment-
   moving logic against the current shape yet.
+
+## Affiliate referrals
+
+- **RESOLVED: `additional_data.affiliate_handle` on `POST /store/carts` and
+  `POST /store/carts/:id` accepted an unbounded string.** The value originates
+  in a public `?ref=` URL parameter that anyone can craft, is written into
+  `cart.metadata` by the cart hooks, and required no authentication beyond a
+  publishable key. Verified by creating a cart with a 50,000-character handle
+  and reading it back out of `cart.metadata` at full length — so any visitor
+  could inflate arbitrary cart rows, repeatedly. Fixed by bounding the handle
+  at `AFFILIATE_HANDLE_MAX_LENGTH` (64) in
+  `@dtc/api-contracts/common/cart-affiliate`, which is the single schema both
+  the store-cart validator and the admin create/update validators use, so the
+  bound applies everywhere the handle enters the system.
+- **Still open (accepted for now): the handle on a cart is unvalidated until
+  checkout.** `cart.metadata.affiliate_handle` is whatever the visitor sent —
+  it is only resolved against a real, active affiliate when the order is
+  placed, and an unknown handle is silently ignored rather than rejected.
+  That is deliberate, so a dead or mistyped code can never block a sale, but
+  it means cart metadata must be treated as untrusted input by anything that
+  reads it, and a visitor can store a well-formed handle belonging to an
+  affiliate they have nothing to do with. Attribution is only ever decided
+  from the resolved affiliate at order placement, never from cart metadata.

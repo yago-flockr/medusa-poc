@@ -3,6 +3,10 @@ import {
   affiliateListFiltersSchema,
   createAffiliateSchema,
 } from "@dtc/api-contracts/admin/affiliates"
+import {
+  AFFILIATE_HANDLE_MAX_LENGTH,
+  cartAffiliateAdditionalDataSchema,
+} from "@dtc/api-contracts/common/cart-affiliate"
 
 describe("createAffiliateSchema", () => {
   it("trims and lowercases the email", () => {
@@ -70,5 +74,33 @@ describe("affiliateListFiltersSchema is_active", () => {
     expect(() =>
       affiliateListFiltersSchema.parse({ is_active: "maybe" }),
     ).toThrow()
+  })
+})
+
+describe("affiliate handle length is bounded everywhere it enters the system", () => {
+  const tooLong = "a".repeat(AFFILIATE_HANDLE_MAX_LENGTH + 1)
+  const longest = "a".repeat(AFFILIATE_HANDLE_MAX_LENGTH)
+
+  it("rejects an oversized handle from the public ?ref= cart payload", () => {
+    expect(
+      cartAffiliateAdditionalDataSchema.safeParse({
+        affiliate_handle: tooLong,
+      }).success,
+    ).toBe(false)
+    expect(
+      cartAffiliateAdditionalDataSchema.safeParse({
+        affiliate_handle: longest,
+      }).success,
+    ).toBe(true)
+  })
+
+  it("rejects an oversized handle on affiliate creation", () => {
+    const base = { name: "M", email: "m@e.com", commission_rate: 0.1 }
+    expect(() =>
+      createAffiliateSchema.parse({ ...base, handle: tooLong }),
+    ).toThrow()
+    expect(
+      createAffiliateSchema.parse({ ...base, handle: longest }).handle,
+    ).toBe(longest)
   })
 })

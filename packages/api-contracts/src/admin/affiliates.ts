@@ -1,6 +1,7 @@
 import { z } from "zod"
 import type { FindParams } from "@medusajs/types"
 import { booleanStringSchema } from "@dtc/api-contracts/common/boolean-string"
+import { AFFILIATE_HANDLE_MAX_LENGTH } from "@dtc/api-contracts/common/cart-affiliate"
 import { paginationMetaSchema } from "@dtc/api-contracts/common/pagination"
 
 export const affiliateSchema = z.object({
@@ -51,6 +52,7 @@ export const createAffiliateSchema = z
     email: z.string().trim().toLowerCase().pipe(z.email("Email is invalid")),
     handle: z
       .string()
+      .max(AFFILIATE_HANDLE_MAX_LENGTH)
       .transform((value) => {
         const trimmed = value.trim()
         return trimmed.length > 0 ? trimmed : undefined
@@ -71,7 +73,12 @@ export const updateAffiliateSchema = z
       .toLowerCase()
       .pipe(z.email("Email is invalid"))
       .optional(),
-    handle: z.string().trim().min(1, "Handle is required").optional(),
+    handle: z
+      .string()
+      .trim()
+      .min(1, "Handle is required")
+      .max(AFFILIATE_HANDLE_MAX_LENGTH)
+      .optional(),
     commission_rate: commissionRateSchema.optional(),
     is_active: z.boolean().optional(),
   })

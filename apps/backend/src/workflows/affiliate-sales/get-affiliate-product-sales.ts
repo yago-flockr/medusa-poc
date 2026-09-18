@@ -20,7 +20,9 @@ export const getAffiliateProductSalesWorkflow = createWorkflow(
     })
 
     const productSales = transform({ referrals }, (data) =>
-      buildAffiliateProductSales(data.referrals.map((referral) => referral.order)),
+      buildAffiliateProductSales(
+        data.referrals.map((referral) => referral.order),
+      ),
     )
 
     return new WorkflowResponse({ product_sales: productSales })

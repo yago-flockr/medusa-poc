@@ -22,15 +22,17 @@ describe("readCartAffiliateHandle", () => {
   })
 
   it("ignores unrelated metadata", () => {
-    expect(readCartAffiliateHandle({ gift_note: "hi", affiliate_handle: "joao" })).toBe(
-      "joao",
-    )
+    expect(
+      readCartAffiliateHandle({ gift_note: "hi", affiliate_handle: "joao" }),
+    ).toBe("joao")
   })
 })
 
 describe("cartAffiliateHandleMetadata", () => {
   it("returns only its own slice, leaving merging to the caller", () => {
-    expect(cartAffiliateHandleMetadata("maria")).toEqual({ affiliate_handle: "maria" })
+    expect(cartAffiliateHandleMetadata("maria")).toEqual({
+      affiliate_handle: "maria",
+    })
   })
 
   it("composes with other metadata by spreading", () => {
@@ -41,6 +43,8 @@ describe("cartAffiliateHandleMetadata", () => {
   })
 
   it("round-trips through the reader", () => {
-    expect(readCartAffiliateHandle(cartAffiliateHandleMetadata("maria"))).toBe("maria")
+    expect(readCartAffiliateHandle(cartAffiliateHandleMetadata("maria"))).toBe(
+      "maria",
+    )
   })
 })
