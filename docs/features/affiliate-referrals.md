@@ -12,9 +12,9 @@
 
 People with an audience — we call them **affiliates** — pick products from our
 vendors, share them, and earn a share of whatever their audience buys. Each
-affiliate has one code of their own. When an order arrives through that code, we
-record permanently that it came from them, so we can show them what they sold and
-pay them for it later.
+affiliate has one handle of their own, which they share as their code. When an
+order arrives through it, we record permanently that it came from them, so we
+can show them what they sold and pay them for it later.
 
 An affiliate never owns a product, holds stock or ships anything. They bring
 customers to products that belong to a vendor.
@@ -32,8 +32,8 @@ see what they sold will not keep selling.
 ## How it must work
 
 **Onboarding.** An affiliate is invited and approved by us — never self-serve, the
-same as vendors. Once approved they choose their own code, which has to be
-unique across all affiliates and readable enough to say out loud.
+same as vendors. Once approved they choose their own handle, which has to be
+unique across all affiliates and readable enough to say out loud as a code.
 
 **Choosing what to promote.** The affiliate browses the products vendors have live
 on the storefront and marks the ones they want to promote. That choice is kept: it
@@ -42,18 +42,18 @@ can stop promoting a product at any time, which changes nothing about sales alre
 made.
 
 **Sharing.** For any product they promote, the affiliate gets a shareable address
-carrying their code. They can also hand out the code by itself, for an audience
-that types it rather than clicks.
+carrying their handle. They can also hand it out by itself as a code, for an
+audience that types it rather than clicks.
 
 **The customer arrives.** A customer following that address, or arriving with that
-code, is remembered as having come from that affiliate. This is remembered for a
+handle, is remembered as having come from that affiliate. This is remembered for a
 set period, not only for that visit — people browse now and buy days later, often
 on a different device.
 
 **The customer buys.** At the moment the order is placed, we record as a permanent
-fact which affiliate it came from, which code was used, and what rate they were on
+fact which affiliate it came from, which handle was used, and what rate they were on
 at the time. That record never changes afterwards, even if the affiliate later
-changes their rate, changes their code, or leaves. Recording which product the
+changes their rate, changes their handle, or leaves. Recording which product the
 customer was originally sent to is wanted, but deliberately not in the first
 version.
 
@@ -68,13 +68,13 @@ vendors, and it is solved once for both.
 
 - **An affiliate is a person, not a company.** There are no teams, no seats and no
   agency above them.
-- **One code per affiliate**, chosen by them, unique, and usable anywhere on the
-  storefront — not one code per product.
+- **One handle per affiliate**, chosen by them, unique, and usable anywhere on the
+  storefront — not one handle per product.
 - **Attribution is recorded when the order is placed**, as a stored fact, with the
   rate that applied at that moment. It is never worked out again later.
 - **One affiliate per order.** If a customer arrives through two affiliates before
   buying, the most recent one wins.
-- **A code we do not recognise never blocks an order.** The customer buys, and no
+- **A handle we do not recognise never blocks an order.** The customer buys, and no
   affiliate is credited.
 - **Deactivating an affiliate stops new attributions** and changes nothing about
   orders already attributed to them.
@@ -89,14 +89,14 @@ vendors, and it is solved once for both.
 
 ## What each audience sees
 
-**Affiliate** — their own code, the products they promote, the orders they brought
+**Affiliate** — their own handle, the products they promote, the orders they brought
 and what they earned. They never see customer names or addresses, another
 affiliate's figures, what the vendor earned, or our margin.
 
 **Vendor** — their consignments as they always did. Whether a vendor is told that a
 sale came from an affiliate, or which one, is an open question below.
 
-**Our staff** — every affiliate, their codes, what each has brought in, and the
+**Our staff** — every affiliate, their handles, what each has brought in, and the
 origin of any individual order.
 
 **Customer** — nothing beyond whatever the affiliate chose to tell them. Following
@@ -105,7 +105,7 @@ unless we deliberately attach an offer to it.
 
 ## When it goes wrong
 
-- **The code no longer exists** by the time the customer buys — the order completes
+- **The handle no longer exists** by the time the customer buys — the order completes
   normally and nobody is credited.
 - **The affiliate was deactivated** while the customer had a basket — same: the
   order completes, no attribution.
@@ -116,10 +116,14 @@ unless we deliberately attach an offer to it.
 - **The order is refunded or partly cancelled.** The attribution stands — the order
   still came from that affiliate — but the figures the affiliate sees follow the
   order down.
-- **The affiliate changes their code.** Old orders still show the code that was
-  actually used, not the new one.
-- **Two people claim the same code.** Codes are unique and taken permanently; a
-  departed affiliate's code is never reissued.
+- **The affiliate changes their handle.** Old orders still show the handle that
+  was actually used, not the new one.
+- **Two people claim the same handle.** Handles are unique among active
+  affiliates. An affiliate who has referred even one order can no longer be
+  removed at all — only deactivated — so their handle stays taken and their
+  orders keep their attribution. A handle only becomes free again if the
+  affiliate is removed before referring anything, which is the mistyped-record
+  case rather than a departure.
 
 ## Open questions
 
@@ -129,7 +133,7 @@ unless we deliberately attach an offer to it.
   same record either way, but a completely different consequence for vendors, who
   did not choose the affiliate.
 - How long do we remember where a customer came from?
-- Does an affiliate's code also give the customer something — a discount, free
+- Does an affiliate's handle also give the customer something — a discount, free
   delivery — or is it invisible to the customer?
 - Do vendors get any say in who promotes their products, or see which affiliate
   drove a sale?
@@ -141,16 +145,25 @@ unless we deliberately attach an offer to it.
 Part of the bar set in `docs/plan.md`. Checked by hand: approve an affiliate, have
 them mark a product, follow their shared address as a customer, buy that product,
 and see that order appear as theirs. Then refund it and see their figures follow,
-with the attribution itself untouched. Then buy the same product with no code at
-all and see nobody credited.
+with the attribution itself untouched. Then buy the same product with no handle at
+at all and see nobody credited.
 
 ## Out of scope
 
 Paying affiliates — that is `docs/features/commission-and-payouts.md`, solved once
 for vendors and affiliates together. Also out: clicks, conversion rates and any
-analytics beyond what sold; discounts attached to a code; per-campaign or
+analytics beyond what sold; discounts attached to a handle; per-campaign or
 per-channel breakdowns; affiliates applying for themselves; vendors recruiting their
 own affiliates.
+
+**Deferred but expected, not rejected.** An affiliate is intended to become a way
+customers browse the catalogue, the same way a category, a collection or a vendor
+already is: a public page of the products that affiliate recommends, and the
+ability to narrow any listing to one affiliate's picks. That is a discovery
+feature rather than an attribution one, so it is not part of this brief — but it
+is why the list of products an affiliate promotes is recorded from the first
+version rather than being derived from what happened to sell. See
+`docs/features/search-and-discovery.md`.
 
 ## Related
 

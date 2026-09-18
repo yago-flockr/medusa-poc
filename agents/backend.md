@@ -744,36 +744,73 @@ starts.
   records, not child orders — see `docs/spikes/multi-vendor-order.md` and
   the order-splitting bullet above.
 
+### Affiliates — staff-managed, like vendors
+
+`/admin/affiliates` (list, create) and `/admin/affiliates/:id` (get, update,
+delete), mirroring `/admin/vendors` file-for-file: contract in
+`@dtc/api-contracts/admin/affiliates`, route → workflow → step → module service,
+`buildAffiliate` mapper for timestamps. Affiliates are invited and approved by
+staff, never self-serve, so this is the only way one is created.
+
+- **`handle` is derived from `name` via `toHandle`** when not supplied, same as
+  vendors. It is unique and doubles as the referral code.
+- **`commission_rate` is a fraction (0.1 = 10%)**, validated to 0..1 on the way
+  in so a caller cannot send `10` and mean 10%.
+- **Deleting an affiliate with referrals is refused** —
+  `assertAffiliateHasNoReferralsStep`, mirroring
+  `assertVendorHasNoConsignmentsStep`. Orders must keep their attribution, so
+  the answer for a departing affiliate is `is_active: false`, not deletion.
+  Delete is a **soft** delete (`softDeleteAffiliates`/`restoreAffiliates`, the
+  pair the compensation needs — `deleteAffiliates` is a hard delete and cannot
+  be restored). The unique index is `WHERE deleted_at IS NULL`, so a
+  soft-deleted handle can be taken again.
+- **`is_active` is not settable on create** (the create schema is `.strict()`);
+  it exists to stop future attributions, which is an update-time decision.
+- Boolean query filters go through `booleanStringSchema` in
+  `@dtc/api-contracts/common/boolean-string` — Medusa's own `booleanString()`
+  lives in the backend package, which the storefront-facing contracts package
+  cannot depend on.
+
 ### Affiliate referrals — how a code reaches an order
 
 Brief: `docs/features/affiliate-referrals.md`. Decisions: `docs/plan.md`.
-An affiliate is a **person**, not a `Vendor`/`VendorUser`-style pair, and their
-`handle` **is** the referral code — there is no per-product or per-share code.
+**Nomenclature — two nouns, one job each.** `Affiliate` is the person;
+`Referral` is the immutable record created at order placement. The test: if it
+exists *before* an order, it cannot be called a referral. The affiliate's public
+identifier is their **`handle`** (same word as `Vendor.handle`/`Product.handle`),
+and it travels as `affiliate_handle` everywhere — additional_data, cart metadata,
+the storefront cookie, and frozen onto `Referral.affiliate_handle`. The single
+exception is the public URL param, which stays `?ref=` because it is marketing
+copy rather than a data name. There is no per-product or per-share code.
 
 The chain, in order:
 
-1. `?ref=<handle>` on the storefront → cookie (storefront side).
-2. Storefront sends `additional_data.referral_code` on `POST /store/carts` and
-   `POST /store/carts/:id` — declared in `api/affiliates/additional-data.ts`,
-   wired through `api/store/carts/middlewares.ts` (Zod, so a non-string 400s).
+1. `?ref=<handle>` on the storefront → `_affiliate_handle` cookie (storefront side).
+2. Storefront sends `additional_data.affiliate_handle` on `POST /store/carts` and
+   `POST /store/carts/:id`. The schema is shared —
+   `@dtc/api-contracts/common/cart-affiliate` — because both apps must agree on
+   it; wired in via `api/store/carts/middlewares.ts` (Zod, so a non-string 400s).
+   Medusa's own `StoreCreateCart`/`StoreUpdateCart` types omit `additional_data`
+   entirely though the routes accept it, so the storefront's cart *update* call
+   goes through `sdk.client.fetch` rather than `sdk.store.cart.update`.
 3. `createCartWorkflow.hooks.cartCreated` / `updateCartWorkflow.hooks.cartUpdated`
-   (`workflows/hooks/created-cart.ts`, `updated-cart.ts`) merge the code into
-   `cart.metadata`. Both hooks are needed: add-to-cart runs neither, so a code
+   (`workflows/hooks/created-cart.ts`, `updated-cart.ts`) merge the handle into
+   `cart.metadata`. Both hooks are needed: add-to-cart runs neither, so a handle
    arriving after the cart exists only lands via the update route.
-4. `createConsignmentsWorkflow` reads it back with `readCartReferralCode`
+4. `createConsignmentsWorkflow` reads it back with `readCartAffiliateHandle`
    (Zod-parsed, never an `as` cast), and `createReferralStep` resolves the
    handle to an **active** affiliate, creates the `Referral`, and links it to
    the order in the same `createRemoteLinkStep` as the consignments.
 
 Rules the code enforces, verified by real checkouts:
 
-- **Attribution never fails an order.** Unknown code, inactive affiliate, or no
-  code at all → the order completes with no referral. The code is *not*
-  validated at cart time, so `cart.metadata.referral_code` is untrusted until
+- **Attribution never fails an order.** Unknown handle, inactive affiliate, or no
+  handle at all → the order completes with no referral. The handle is *not*
+  validated at cart time, so `cart.metadata.affiliate_handle` is untrusted until
   step 4 resolves it.
-- **`Referral` copies `code` and `commission_rate` as plain values.** Changing an
-  affiliate's rate afterwards does not move an existing order's figures.
-- **Last code wins**; an update carrying no code leaves the existing one alone,
+- **`Referral` copies `affiliate_handle` and `commission_rate` as plain values.**
+  Changing an affiliate's rate afterwards does not move an existing order's figures.
+- **Last handle wins**; an update carrying no handle leaves the existing one alone,
   and the write merges into `cart.metadata` rather than replacing it.
 - **No stored sales counters.** What an affiliate sold is derived from
   `Referral → order → line items`, so refunds and cancellations are reflected

@@ -79,6 +79,27 @@ for every new vendor contract + hook + form triplet.
 3. Keep brand tokens out of core cart/checkout logic when you introduce a config layer.
 4. **Mandatory:** never import backend models or `InferTypeOf` of models. Use JS SDK / `HttpTypes` for core commerce; for `/vendors/*` resources use `@dtc/api-contracts` (`packages/api-contracts/README.md`) via `src/vendor/lib/contract-client.ts` — never hand-copy a response type into a hook file again.
 
+## Affiliate referrals — capturing `?ref=`
+
+Backend side and the full chain: `agents/backend.md`, "Affiliate referrals".
+Brief: `docs/features/affiliate-referrals.md`.
+
+- `middleware.ts` reads `?ref=<handle>` off any storefront URL into the
+  `_affiliate_handle` cookie (30 days, `sameSite: lax`). `?ref=` is the one
+  deliberate survival of the word "ref" — it is marketing copy, not a data name. It must be set on **both**
+  branches — the pass-through and the country redirect — or a first-time visitor
+  landing on a bare URL loses the code on the redirect.
+- `store/lib/data/cookies.ts` exposes `getAffiliateHandle`; `getOrSetCart` sends it
+  as `additional_data.affiliate_handle` when creating a cart, and attaches it to an
+  **existing** cart when it differs from `cart.metadata.affiliate_handle` —
+  that second branch is what attributes a customer who already had a basket
+  before clicking the affiliate's link.
+- The payload shape comes from `@dtc/api-contracts/common/cart-affiliate`, shared
+  with the backend validator. Medusa's `StoreUpdateCart` type omits
+  `additional_data`, so that one call uses `sdk.client.fetch`.
+- 30 days is a placeholder — the real attribution window is an open question in
+  the brief.
+
 ## Environment variables
 
 `apps/storefront/.env.local` (gitignored), from `.env.template`:

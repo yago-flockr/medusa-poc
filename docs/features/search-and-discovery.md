@@ -65,6 +65,11 @@ or scrape.
 - **What a customer can filter by has to match how the catalogue is actually
   organized** — adding a way to filter is a catalogue decision as much as a
   technical one.
+- **Affiliates are expected to become a browse dimension**, alongside category,
+  collection and vendor: a page of one affiliate's recommended products, and a
+  way to narrow a listing to their picks. Not being built yet — recorded here so
+  the filter model is not designed in a way that makes it awkward later. See
+  `docs/features/affiliate-referrals.md`.
 - Unknown: which external search service, if any, powers this — a
   `docs/plan.md` "Not decided."
 
