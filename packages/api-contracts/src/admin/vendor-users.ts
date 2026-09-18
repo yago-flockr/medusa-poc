@@ -29,7 +29,9 @@ export const vendorUserListResponseSchema = paginationMetaSchema.extend({
   vendor_users: z.array(vendorUserSchema),
 })
 
-export type VendorUserListResponse = z.infer<typeof vendorUserListResponseSchema>
+export type VendorUserListResponse = z.infer<
+  typeof vendorUserListResponseSchema
+>
 
 export const vendorUserResponseSchema = z.object({
   vendor_user: vendorUserSchema,

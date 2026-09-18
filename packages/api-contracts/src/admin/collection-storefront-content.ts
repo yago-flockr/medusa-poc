@@ -11,10 +11,11 @@ export type PostAdminCollectionsByIdStorefrontContentInput = z.infer<
   typeof postAdminCollectionsByIdStorefrontContentInputSchema
 >
 
-export const postAdminCollectionsByIdStorefrontContentResponseSchema =
-  z.object({
+export const postAdminCollectionsByIdStorefrontContentResponseSchema = z.object(
+  {
     storefront_content: storefrontContentSchema,
-  })
+  },
+)
 
 export type PostAdminCollectionsByIdStorefrontContentResponse = z.infer<
   typeof postAdminCollectionsByIdStorefrontContentResponseSchema

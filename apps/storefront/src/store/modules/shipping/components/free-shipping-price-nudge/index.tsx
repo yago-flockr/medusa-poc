@@ -150,7 +150,10 @@ function FreeShippingInline({
             {price.target_reached ? (
               <div className="flex items-center gap-1.5">
                 {" "}
-                <RiCheckboxCircleFill className="inline-block text-green-500" size={16} />{" "}
+                <RiCheckboxCircleFill
+                  className="inline-block text-green-500"
+                  size={16}
+                />{" "}
                 Free Shipping unlocked!
               </div>
             ) : (
@@ -226,7 +229,10 @@ function FreeShippingPopup({
               <div>
                 {price.target_reached ? (
                   <div className="flex items-center gap-1.5">
-                    <RiCheckboxCircleFill className="inline-block text-green-500" size={16} />{" "}
+                    <RiCheckboxCircleFill
+                      className="inline-block text-green-500"
+                      size={16}
+                    />{" "}
                     Free Shipping unlocked!
                   </div>
                 ) : (

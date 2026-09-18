@@ -231,9 +231,8 @@ export function ProductEditForm({
           <AlertTitle>This product is external</AlertTitle>
           <AlertDescription>
             Its title, subtitle, description, and images are managed by the
-            external system and can&apos;t be edited here. Its handle,
-            status, and each variant&apos;s price and SKU are still yours to
-            change.
+            external system and can&apos;t be edited here. Its handle, status,
+            and each variant&apos;s price and SKU are still yours to change.
           </AlertDescription>
         </Alert>
       )}

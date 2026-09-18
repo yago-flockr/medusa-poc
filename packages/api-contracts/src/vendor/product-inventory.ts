@@ -14,7 +14,9 @@ export const vendorVariantInventorySchema = z.object({
   levels: z.array(vendorInventoryLevelSchema),
 })
 
-export type VendorVariantInventory = z.infer<typeof vendorVariantInventorySchema>
+export type VendorVariantInventory = z.infer<
+  typeof vendorVariantInventorySchema
+>
 
 export const getVendorsProductsByIdInventoryResponseSchema = z.object({
   variants: z.array(vendorVariantInventorySchema),

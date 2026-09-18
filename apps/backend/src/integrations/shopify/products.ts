@@ -102,7 +102,8 @@ const PRODUCTS_BY_ID_QUERY = `#graphql
   ${PRODUCT_FIELDS_FRAGMENT}
 `
 
-type ShopifyProductFieldsNode = ShopifyProductsPullQuery["products"]["edges"][number]["node"]
+type ShopifyProductFieldsNode =
+  ShopifyProductsPullQuery["products"]["edges"][number]["node"]
 
 // A non-Product id still resolves to a non-null node with the fragment's
 // fields simply absent, not null — `media` only appears when it matched.
@@ -157,7 +158,9 @@ export async function pullShopifyProducts(
     currency_code: data.shop.currencyCode,
     requested_query_cost: cost?.requestedQueryCost,
     has_next_page: data.products.pageInfo.hasNextPage,
-    products: data.products.edges.map((edge) => mapShopifyProductNode(edge.node)),
+    products: data.products.edges.map((edge) =>
+      mapShopifyProductNode(edge.node),
+    ),
   }
 }
 

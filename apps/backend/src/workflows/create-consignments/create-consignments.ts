@@ -103,10 +103,10 @@ export const createConsignmentsWorkflow = createWorkflow(
         affiliateHandle,
       })
 
-      const allLinkDefs = transform(
-        { linkDefs, referralLinkDefs },
-        (data) => [...data.linkDefs, ...data.referralLinkDefs],
-      )
+      const allLinkDefs = transform({ linkDefs, referralLinkDefs }, (data) => [
+        ...data.linkDefs,
+        ...data.referralLinkDefs,
+      ])
 
       createRemoteLinkStep(allLinkDefs)
     })

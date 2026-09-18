@@ -1,5 +1,8 @@
 import { z } from "zod"
-import { paginationMetaSchema, paginationQuerySchema } from "@dtc/api-contracts/common/pagination"
+import {
+  paginationMetaSchema,
+  paginationQuerySchema,
+} from "@dtc/api-contracts/common/pagination"
 
 export const vendorStockLocationAddressSchema = z.object({
   address_1: z.string(),
@@ -11,7 +14,9 @@ export const vendorStockLocationAddressSchema = z.object({
   phone: z.string().nullable(),
 })
 
-export type VendorStockLocationAddress = z.infer<typeof vendorStockLocationAddressSchema>
+export type VendorStockLocationAddress = z.infer<
+  typeof vendorStockLocationAddressSchema
+>
 
 export const vendorStockLocationSchema = z.object({
   id: z.string(),
@@ -27,9 +32,10 @@ export type GetVendorsStockLocationsInput = z.infer<
   typeof getVendorsStockLocationsInputSchema
 >
 
-export const getVendorsStockLocationsResponseSchema = paginationMetaSchema.extend({
-  stock_locations: z.array(vendorStockLocationSchema),
-})
+export const getVendorsStockLocationsResponseSchema =
+  paginationMetaSchema.extend({
+    stock_locations: z.array(vendorStockLocationSchema),
+  })
 
 export type GetVendorsStockLocationsResponse = z.infer<
   typeof getVendorsStockLocationsResponseSchema
@@ -42,7 +48,11 @@ export const postVendorsStockLocationsAddressInputSchema = z
     city: z.string().trim().min(1, "City is required"),
     province: z.string().trim().min(1, "Province is required"),
     postal_code: z.string().trim().min(1, "Postal code is required"),
-    country_code: z.string().trim().min(2).max(2, "Use a two-letter country code"),
+    country_code: z
+      .string()
+      .trim()
+      .min(2)
+      .max(2, "Use a two-letter country code"),
     phone: z.string().trim().optional(),
   })
   .strict()

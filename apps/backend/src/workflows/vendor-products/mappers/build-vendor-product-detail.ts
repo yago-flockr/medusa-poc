@@ -50,9 +50,7 @@ type RawVendorProductDetail = {
     | ({ title: string; values?: ({ value: string } | null)[] | null } | null)[]
     | null
   variants?: (RawVendorProductVariant | null)[] | null
-  categories?:
-    | ({ id: string; name: string; handle: string } | null)[]
-    | null
+  categories?: ({ id: string; name: string; handle: string } | null)[] | null
 }
 
 export function buildVendorProductDetail(

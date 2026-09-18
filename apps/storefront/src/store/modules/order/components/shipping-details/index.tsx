@@ -2,7 +2,6 @@ import { convertToLocale } from "@/store/lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { Separator } from "@/components/ui/separator"
 
-
 type ShippingDetailsProps = {
   order: HttpTypes.StoreOrder
 }
@@ -45,7 +44,10 @@ const ShippingDetails = ({ order }: ShippingDetailsProps) => {
           <span className="text-sm text-muted-foreground">{order.email}</span>
         </div>
 
-        <div className="flex w-1/3 flex-col" data-testid="shipping-method-summary">
+        <div
+          className="flex w-1/3 flex-col"
+          data-testid="shipping-method-summary"
+        >
           <span className="mb-1 font-medium">Method</span>
           <span className="text-sm text-muted-foreground">
             {(order.shipping_methods?.[0] as { name?: string })?.name} (

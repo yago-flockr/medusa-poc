@@ -32,7 +32,9 @@ function toExternalProduct(product: ShopifyProduct): ExternalProduct {
   }
 }
 
-export function toMedusaOptions(product: ShopifyProduct): ShopifyMappedOption[] {
+export function toMedusaOptions(
+  product: ShopifyProduct,
+): ShopifyMappedOption[] {
   return toMedusaOptionsFromExternal(toExternalProduct(product))
 }
 

@@ -20,7 +20,7 @@ export default function ThumbnailCard({
     <LocalizedClientLink
       className={cn(
         "group relative flex aspect-square w-full flex-col justify-end overflow-hidden rounded-2xl",
-        className
+        className,
       )}
       {...props}
     >

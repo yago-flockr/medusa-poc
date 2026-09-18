@@ -42,7 +42,9 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
           <span className="flex size-4 items-center justify-center rounded-full border border-input">
             <RadioPrimitive.Indicator className="size-2 rounded-full bg-primary" />
           </span>
-          <span>{paymentInfoMap[paymentProviderId]?.title || paymentProviderId}</span>
+          <span>
+            {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
+          </span>
           {isManual(paymentProviderId) && isDevelopment && (
             <PaymentTest className="hidden sm:block" />
           )}

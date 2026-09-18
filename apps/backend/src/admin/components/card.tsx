@@ -69,7 +69,10 @@ const CardFooter = ({ className, ...props }: CardFooterProps) => {
 type CardInfoRowProps = ComponentProps<"div">
 
 const CardInfoRow = ({ className, ...props }: CardInfoRowProps) => (
-  <CardContent className={clx("text-ui-fg-subtle grid-cols-2", className)} {...props} />
+  <CardContent
+    className={clx("text-ui-fg-subtle grid-cols-2", className)}
+    {...props}
+  />
 )
 
 type CardInfoLabelProps = ComponentProps<typeof Text>

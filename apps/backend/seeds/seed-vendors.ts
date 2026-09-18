@@ -156,7 +156,8 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Last-Season Fleece Half-Zip",
-        description: "A previous-season fleece, marked down, otherwise perfect.",
+        description:
+          "A previous-season fleece, marked down, otherwise perfect.",
         optionValues: ["S", "M", "L"],
         basePrice: 42,
         images: SWEATSHIRT_IMAGES,

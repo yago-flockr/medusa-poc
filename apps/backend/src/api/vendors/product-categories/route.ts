@@ -9,9 +9,9 @@ export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse,
 ) => {
-  const { result } = await listVendorProductCategoriesWorkflow(req.scope).run(
-    { input: { actorId: req.auth_context.actor_id } },
-  )
+  const { result } = await listVendorProductCategoriesWorkflow(req.scope).run({
+    input: { actorId: req.auth_context.actor_id },
+  })
 
   res.json(getVendorsProductCategoriesResponseSchema.parse(result))
 }

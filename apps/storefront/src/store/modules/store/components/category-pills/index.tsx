@@ -7,7 +7,10 @@ type CategoryPillsProps = {
   activeCategoryId?: string
 }
 
-const CategoryPills = ({ categories, activeCategoryId }: CategoryPillsProps) => {
+const CategoryPills = ({
+  categories,
+  activeCategoryId,
+}: CategoryPillsProps) => {
   return (
     <div className="flex flex-wrap gap-2">
       <Badge

@@ -46,7 +46,7 @@ export const getCacheTag = async (tag: string): Promise<string> => {
 const DEFAULT_REVALIDATE_SECONDS = 60
 
 export const getCacheOptions = async (
-  tag: string
+  tag: string,
 ): Promise<{ tags: string[]; revalidate: number } | { revalidate: number }> => {
   if (typeof window !== "undefined") {
     return { revalidate: DEFAULT_REVALIDATE_SECONDS }

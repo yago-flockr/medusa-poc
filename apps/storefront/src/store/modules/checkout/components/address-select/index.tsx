@@ -42,10 +42,7 @@ const AddressSelect = ({
       value={selectedAddress?.id}
       onValueChange={(value) => handleSelect(value as string)}
     >
-      <SelectTrigger
-        className="w-full"
-        data-testid="shipping-address-select"
-      >
+      <SelectTrigger className="w-full" data-testid="shipping-address-select">
         <SelectValue placeholder="Choose an address" />
       </SelectTrigger>
       <SelectContent data-testid="shipping-address-options">

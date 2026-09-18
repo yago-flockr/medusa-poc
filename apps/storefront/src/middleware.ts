@@ -160,7 +160,10 @@ export async function middleware(request: NextRequest) {
   const queryString = request.nextUrl.search || ""
   const redirectUrl = `${request.nextUrl.origin}/${country}${redirectPath}${queryString}`
 
-  return persistAffiliateHandle(request, NextResponse.redirect(redirectUrl, 307))
+  return persistAffiliateHandle(
+    request,
+    NextResponse.redirect(redirectUrl, 307),
+  )
 }
 
 export const config = {

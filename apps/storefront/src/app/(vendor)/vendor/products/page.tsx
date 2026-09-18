@@ -41,7 +41,9 @@ import { RiLinksLine, RiPencilLine, RiStackLine } from "@remixicon/react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-type ProductFormValues = { state: "CREATING" } | { state: "UPDATING"; id: string }
+type ProductFormValues =
+  | { state: "CREATING" }
+  | { state: "UPDATING"; id: string }
 
 export default function VendorProductsPage() {
   const getVendorsProducts = useGetVendorsProducts()
@@ -72,10 +74,7 @@ export default function VendorProductsPage() {
       title="Products"
       description="View your catalogue, publish products yourself, or remove them. Anything synced from Shopify keeps its details in sync from there — this page only controls whether it's visible to customers."
       action={
-        <Button
-          size="sm"
-          onClick={() => setFormValues({ state: "CREATING" })}
-        >
+        <Button size="sm" onClick={() => setFormValues({ state: "CREATING" })}>
           Create
         </Button>
       }
@@ -194,7 +193,9 @@ export default function VendorProductsPage() {
         }}
       >
         <ProductForm
-          categories={getVendorsProductCategories.data?.product_categories ?? []}
+          categories={
+            getVendorsProductCategories.data?.product_categories ?? []
+          }
           isLoading={postVendorsProducts.isPending}
           isUploadingImages={postVendorsUploads.isPending}
           onUploadImages={async (files) => {
@@ -226,7 +227,9 @@ export default function VendorProductsPage() {
             {editingProduct && (
               <ProductEditForm
                 product={editingProduct}
-                categories={getVendorsProductCategories.data?.product_categories ?? []}
+                categories={
+                  getVendorsProductCategories.data?.product_categories ?? []
+                }
                 isLoading={postVendorsProductsById.isPending}
                 isUploadingImages={postVendorsUploads.isPending}
                 onUploadImages={async (files) => {

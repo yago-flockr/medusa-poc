@@ -8,7 +8,9 @@ export const usePostVendorsOrdersByIdAccept = () =>
   useMutation({
     mutationKey: mutationKeys.orders.postVendorsOrdersByIdAccept,
     mutationFn: (id: string) =>
-      tc(vendorClient.postVendorsOrdersByIdAccept({ params: { id }, body: {} })),
+      tc(
+        vendorClient.postVendorsOrdersByIdAccept({ params: { id }, body: {} }),
+      ),
   })
 
 export const usePostVendorsOrdersByIdDispatch = () =>

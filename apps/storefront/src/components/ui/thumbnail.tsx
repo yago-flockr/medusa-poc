@@ -5,17 +5,20 @@ import { ComponentProps } from "react"
 import { cn } from "@/lib/utils"
 import { RiImageLine } from "@remixicon/react"
 
-const thumbnailVariants = cva("relative w-full overflow-hidden rounded-2xl bg-card", {
-  variants: {
-    ratio: {
-      portrait: "aspect-3/4",
-      square: "aspect-square",
+const thumbnailVariants = cva(
+  "relative w-full overflow-hidden rounded-2xl bg-card",
+  {
+    variants: {
+      ratio: {
+        portrait: "aspect-3/4",
+        square: "aspect-square",
+      },
+    },
+    defaultVariants: {
+      ratio: "portrait",
     },
   },
-  defaultVariants: {
-    ratio: "portrait",
-  },
-})
+)
 
 function Thumbnail({
   src,

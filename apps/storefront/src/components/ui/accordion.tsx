@@ -91,4 +91,10 @@ function AccordionContent({
   )
 }
 
-export { accordionVariants, Accordion, AccordionContent, AccordionItem, AccordionTrigger }
+export {
+  accordionVariants,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+}

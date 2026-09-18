@@ -6,7 +6,10 @@ export const SHOPIFY_OAUTH_SCOPES = "read_products,read_inventory"
 
 const LOCALHOST_HOSTNAMES = new Set(["localhost", "127.0.0.1"])
 
-export function buildShopifyOauthRedirectUri(protocol: string, host: string): string {
+export function buildShopifyOauthRedirectUri(
+  protocol: string,
+  host: string,
+): string {
   const hostname = host.split(":")[0]
 
   if (LOCALHOST_HOSTNAMES.has(hostname)) {
@@ -25,12 +28,14 @@ export function buildShopifyInstallLink(params: {
 }): string {
   const redirectUri = buildShopifyOauthRedirectUri(params.protocol, params.host)
 
-  return `https://${params.storeDomain}/admin/oauth/authorize?${new URLSearchParams({
-    client_id: params.clientId,
-    scope: SHOPIFY_OAUTH_SCOPES,
-    redirect_uri: redirectUri,
-    state: params.state,
-  }).toString()}`
+  return `https://${params.storeDomain}/admin/oauth/authorize?${new URLSearchParams(
+    {
+      client_id: params.clientId,
+      scope: SHOPIFY_OAUTH_SCOPES,
+      redirect_uri: redirectUri,
+      state: params.state,
+    },
+  ).toString()}`
 }
 
 export function parseRawQuery(rawQuery: string): Record<string, string> {
@@ -64,7 +69,10 @@ export function verifyShopifyCallbackHmac(
     .map((key) => `${key}=${rest[key]}`)
     .join("&")
 
-  const digest = crypto.createHmac("sha256", clientSecret).update(message).digest("hex")
+  const digest = crypto
+    .createHmac("sha256", clientSecret)
+    .update(message)
+    .digest("hex")
   const digestBuffer = Buffer.from(digest)
   const hmacBuffer = Buffer.from(hmac)
 
@@ -84,7 +92,11 @@ export async function exchangeShopifyCodeForToken(
   const res = await fetch(`https://${shop}/admin/oauth/access_token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code }),
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      code,
+    }),
   })
 
   if (!res.ok) {
@@ -97,7 +109,10 @@ export async function exchangeShopifyCodeForToken(
   return (await res.json()) as { access_token: string; scope: string }
 }
 
-export async function uninstallShopifyApp(shop: string, accessToken: string): Promise<void> {
+export async function uninstallShopifyApp(
+  shop: string,
+  accessToken: string,
+): Promise<void> {
   const { data } = await runShopifyQuery<{
     appUninstall: { userErrors: { field: string[] | null; message: string }[] }
   }>(

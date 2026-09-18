@@ -61,8 +61,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   return {
     title: `${title} | Store`,
-    description:
-      vendor.storefront_content?.description ?? `${title} products.`,
+    description: vendor.storefront_content?.description ?? `${title} products.`,
   }
 }
 

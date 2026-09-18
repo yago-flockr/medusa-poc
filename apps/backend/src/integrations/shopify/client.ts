@@ -21,14 +21,17 @@ export async function runShopifyQuery<TData>(
   const { storeDomain: domain, accessToken } = credentials
   const apiVersion = credentials.apiVersion ?? DEFAULT_API_VERSION
 
-  const res = await fetch(`https://${domain}/admin/api/${apiVersion}/graphql.json`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": accessToken,
+  const res = await fetch(
+    `https://${domain}/admin/api/${apiVersion}/graphql.json`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": accessToken,
+      },
+      body: JSON.stringify({ query, variables }),
     },
-    body: JSON.stringify({ query, variables }),
-  })
+  )
 
   const rawBody = await res.text()
 
@@ -65,7 +68,10 @@ export async function runShopifyQuery<TData>(
   }
 
   if (!payload.data) {
-    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "Shopify GraphQL response had no data")
+    throw new MedusaError(
+      MedusaError.Types.UNEXPECTED_STATE,
+      "Shopify GraphQL response had no data",
+    )
   }
 
   return { data: payload.data, cost: payload.extensions?.cost }

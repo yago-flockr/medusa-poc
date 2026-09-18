@@ -4,7 +4,7 @@ import { RefObject, useEffect, useState } from "react"
 
 export const useIntersection = (
   element: RefObject<HTMLDivElement | null>,
-  rootMargin: string
+  rootMargin: string,
 ) => {
   const [isVisible, setState] = useState(false)
 
@@ -19,7 +19,7 @@ export const useIntersection = (
       ([entry]) => {
         setState(entry.isIntersecting)
       },
-      { rootMargin }
+      { rootMargin },
     )
 
     observer.observe(el)

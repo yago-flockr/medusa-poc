@@ -112,9 +112,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                     <span className="flex w-4/5 items-baseline gap-x-1 pr-1">
                       <span className="truncate" data-testid="discount-code">
                         <Badge
-                          variant={
-                            promotion.is_automatic ? "success" : "muted"
-                          }
+                          variant={promotion.is_automatic ? "success" : "muted"}
                         >
                           {promotion.code}
                         </Badge>{" "}

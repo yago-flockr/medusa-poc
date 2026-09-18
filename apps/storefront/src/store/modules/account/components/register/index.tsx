@@ -24,8 +24,8 @@ const Register = ({ setCurrentView }: Props) => {
         Become a Store Member
       </h1>
       <p className="mb-4 text-center text-sm text-foreground">
-        Create your Store Member profile, and get access to an enhanced
-        shopping experience.
+        Create your Store Member profile, and get access to an enhanced shopping
+        experience.
       </p>
       {message?.state === "verification_required" && (
         <div

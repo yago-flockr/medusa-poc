@@ -39,7 +39,9 @@ createProductsWorkflow.hooks.productsCreated(
         container.resolve(BRAND_MODULE)
 
       await brandModuleService.retrieveBrand(data.brand_id)
-      links.push(...buildProductLinks(products, BRAND_MODULE, "brand_id", data.brand_id))
+      links.push(
+        ...buildProductLinks(products, BRAND_MODULE, "brand_id", data.brand_id),
+      )
     }
 
     if (data.vendor_id) {
@@ -47,7 +49,14 @@ createProductsWorkflow.hooks.productsCreated(
         container.resolve(VENDOR_MODULE)
 
       await vendorModuleService.retrieveVendor(data.vendor_id)
-      links.push(...buildProductLinks(products, VENDOR_MODULE, "vendor_id", data.vendor_id))
+      links.push(
+        ...buildProductLinks(
+          products,
+          VENDOR_MODULE,
+          "vendor_id",
+          data.vendor_id,
+        ),
+      )
     }
 
     await link.create(links)

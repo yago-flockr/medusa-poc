@@ -42,9 +42,7 @@ const TransferActions = ({ id, token }: { id: string; token: string }) => {
   return (
     <div className="flex flex-col gap-y-4">
       {status?.accept === "success" && (
-        <span className="text-success">
-          Order transferred successfully!
-        </span>
+        <span className="text-success">Order transferred successfully!</span>
       )}
       {status?.decline === "success" && (
         <span className="text-success">
@@ -74,9 +72,7 @@ const TransferActions = ({ id, token }: { id: string; token: string }) => {
           </Button>
         </div>
       )}
-      {errorMessage && (
-        <span className="text-destructive">{errorMessage}</span>
-      )}
+      {errorMessage && <span className="text-destructive">{errorMessage}</span>}
     </div>
   )
 }

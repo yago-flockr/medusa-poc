@@ -1,5 +1,8 @@
 import { z } from "zod"
-import { paginationMetaSchema, paginationQuerySchema } from "@dtc/api-contracts/common/pagination"
+import {
+  paginationMetaSchema,
+  paginationQuerySchema,
+} from "@dtc/api-contracts/common/pagination"
 
 // "placed" is the implicit starting state (no metadata set yet). Only
 // "accepted" and "dispatched" are reachable through the vendor panel today —

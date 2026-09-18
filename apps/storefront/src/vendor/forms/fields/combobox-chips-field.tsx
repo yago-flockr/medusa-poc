@@ -23,7 +23,12 @@ type ComboboxChipsFieldProps = {
   placeholder?: string
 } & Omit<
   ComponentProps<typeof Combobox<SelectFieldOption, true>>,
-  "multiple" | "items" | "value" | "onValueChange" | "isItemEqualToValue" | "children"
+  | "multiple"
+  | "items"
+  | "value"
+  | "onValueChange"
+  | "isItemEqualToValue"
+  | "children"
 >
 
 export function ComboboxChipsField({
@@ -48,7 +53,9 @@ export function ComboboxChipsField({
         multiple
         items={options}
         value={selected}
-        onValueChange={(next) => onValueChange(next.map((option) => option.value))}
+        onValueChange={(next) =>
+          onValueChange(next.map((option) => option.value))
+        }
         isItemEqualToValue={(a, b) => a.value === b.value}
         {...props}
       >

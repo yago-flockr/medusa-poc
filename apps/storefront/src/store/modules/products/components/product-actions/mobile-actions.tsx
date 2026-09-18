@@ -138,10 +138,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
         </div>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent
-          className="max-w-md"
-          data-testid="mobile-actions-modal"
-        >
+        <DialogContent className="max-w-md" data-testid="mobile-actions-modal">
           <DialogHeader>
             <DialogTitle>Select options</DialogTitle>
           </DialogHeader>

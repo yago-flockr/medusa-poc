@@ -11,12 +11,18 @@ export type CreateConsignmentsStepInput = {
 
 export const createConsignmentsStep = createStep(
   "create-consignments",
-  async ({ orderId, vendorsItems }: CreateConsignmentsStepInput, { container }) => {
+  async (
+    { orderId, vendorsItems }: CreateConsignmentsStepInput,
+    { container },
+  ) => {
     const vendorModuleService = container.resolve(VENDOR_MODULE)
     const vendorIds = Object.keys(vendorsItems)
 
     const createdConsignments = await vendorModuleService.createConsignments(
-      vendorIds.map((vendorId) => ({ vendor_id: vendorId, status: "placed" as const })),
+      vendorIds.map((vendorId) => ({
+        vendor_id: vendorId,
+        status: "placed" as const,
+      })),
     )
 
     const linkDefs: LinkDefinition[] = []
@@ -45,7 +51,11 @@ export const createConsignmentsStep = createStep(
         })),
         linkDefs,
       },
-      { consignmentIds: createdConsignments.map((consignment) => consignment.id) },
+      {
+        consignmentIds: createdConsignments.map(
+          (consignment) => consignment.id,
+        ),
+      },
     )
   },
   async (compensation, { container }) => {

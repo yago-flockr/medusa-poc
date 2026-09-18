@@ -7,4 +7,7 @@ import { defineLink } from "@medusajs/framework/utils"
 // multi-vendor cart hold one shipping method per vendor without one evicting
 // the other: Medusa's own addShippingMethodToCartWorkflow only replaces an
 // existing method when the incoming one shares the same shipping_profile_id.
-export default defineLink(VendorModule.linkable.vendor, FulfillmentModule.linkable.shippingProfile)
+export default defineLink(
+  VendorModule.linkable.vendor,
+  FulfillmentModule.linkable.shippingProfile,
+)

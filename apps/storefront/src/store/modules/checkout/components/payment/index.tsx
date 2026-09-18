@@ -116,7 +116,9 @@ const Payment = ({
         <h2
           className={cn(
             "flex flex-row items-baseline gap-x-2 text-2xl font-medium",
-            !isOpen && !paymentReady && "pointer-events-none opacity-50 select-none",
+            !isOpen &&
+              !paymentReady &&
+              "pointer-events-none opacity-50 select-none",
           )}
         >
           Payment

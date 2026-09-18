@@ -28,11 +28,15 @@ export default function VendorProfilePage() {
             <InfoList.Root>
               <InfoList.Row>
                 <InfoList.Label>Vendor name</InfoList.Label>
-                <InfoList.Text>{getVendorsMe.data?.vendor.name ?? ""}</InfoList.Text>
+                <InfoList.Text>
+                  {getVendorsMe.data?.vendor.name ?? ""}
+                </InfoList.Text>
               </InfoList.Row>
               <InfoList.Row>
                 <InfoList.Label>Handle</InfoList.Label>
-                <InfoList.Text>{getVendorsMe.data?.vendor.handle ?? ""}</InfoList.Text>
+                <InfoList.Text>
+                  {getVendorsMe.data?.vendor.handle ?? ""}
+                </InfoList.Text>
               </InfoList.Row>
             </InfoList.Root>
           </DataState.Content>

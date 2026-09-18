@@ -12,7 +12,9 @@ export default function VerifyAccountPage() {
   return (
     <div className="w-full flex justify-center px-8 py-12">
       <Suspense
-        fallback={<p className="text-sm text-foreground">Verifying your email...</p>}
+        fallback={
+          <p className="text-sm text-foreground">Verifying your email...</p>
+        }
       >
         <VerifyAccount />
       </Suspense>

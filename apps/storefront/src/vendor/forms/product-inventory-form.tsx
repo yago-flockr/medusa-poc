@@ -106,9 +106,11 @@ export function ProductInventoryForm({
             <Badge className="w-fit">{variant.variant_title}</Badge>
             {locations.map((location) => {
               const reserved =
-                variant.levels.find((level) => level.location_id === location.id)
-                  ?.reserved_quantity ?? 0
-              const stocked = quantities[cellKey(variant.variant_id, location.id)] ?? 0
+                variant.levels.find(
+                  (level) => level.location_id === location.id,
+                )?.reserved_quantity ?? 0
+              const stocked =
+                quantities[cellKey(variant.variant_id, location.id)] ?? 0
 
               return (
                 <div key={location.id} className="flex flex-col gap-1">

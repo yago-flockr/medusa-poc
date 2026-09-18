@@ -73,7 +73,9 @@ export function Pagination({
             href={hrefForPage(previousPage)}
             onClick={goToPage(previousPage)}
             aria-disabled={page === 1}
-            className={page === 1 ? "pointer-events-none opacity-50" : undefined}
+            className={
+              page === 1 ? "pointer-events-none opacity-50" : undefined
+            }
           />
         </PaginationItem>
         {getPageNumbers(page, totalPages).map((pageNumber, index) =>
