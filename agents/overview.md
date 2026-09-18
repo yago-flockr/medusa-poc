@@ -193,7 +193,14 @@ Repo-wide gates, all three workspaces: `pnpm lint`, `pnpm typecheck`,
 stays invisible until an app that imports it is built.
 
 Prettier is the formatter (`pnpm format` / `pnpm format:check`) and is separate
-from `pnpm lint`, so a green lint says nothing about formatting. Tool-generated
+from `pnpm lint`, so a green lint says nothing about formatting. A Husky `pre-commit`
+hook is two lines: `npx lint-staged` (one root `.lintstagedrc.json`, running
+`prettier --write` on staged files) then `pnpm lint`. Formatting is auto-fixed
+and restaged; a lint error aborts the commit. `pnpm lint` runs over the whole
+repo rather than staged files because that reuses each workspace's existing lint
+script — running `eslint` from the root would apply the root config to every
+app's files — and it costs about 6s. This exists so neither problem is first
+discovered at build time. Tool-generated
 output — Shopify codegen and every `migrations/` folder — is in
 `.prettierignore` on purpose: formatting it only makes the next codegen or
 `medusa db:generate` run dirty it again.

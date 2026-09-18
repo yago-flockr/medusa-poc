@@ -119,6 +119,15 @@ From `apps/storefront`:
 
 ## Gotchas and notes
 
+- **ESLint is flat config (`eslint.config.mjs`), not `.eslintrc.json`.** Migrated
+  off `next lint`, which Next 15 deprecates and Next 16 removes; `pnpm lint` is
+  now plain `eslint .`. It uses `FlatCompat` because `eslint-config-next` still
+  ships only an eslintrc-style config. This lints **more** than `next lint` did
+  — that only covered Next's default dirs, so root-level CommonJS files like
+  `next.config.js` were never checked and now need their own
+  `@typescript-eslint/no-require-imports: off` override. The vendor/store
+  import-isolation rules carried over and are verified to still error.
+
 - **Killing the dev server by command name does not work.** Next renames its
   process to `next-server (vX.Y.Z)` once running, so `pkill -f "next dev"`
   matches the wrapper and leaves the real listener holding port 8000. Find it

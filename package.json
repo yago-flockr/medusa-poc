@@ -7,6 +7,7 @@
   },
   "scripts": {
     "setup": "bash scripts/setup.sh",
+    "prepare": "husky",
     "db:reset": "bash scripts/reset-db.sh",
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
@@ -23,6 +24,8 @@
     "@medusajs/eslint-plugin": "2.18.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
     "prettier": "^3.2.5",
     "turbo": "^2.0.14"
   }
