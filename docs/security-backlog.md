@@ -29,11 +29,11 @@ each was found while building or adversarially testing the marketplace spine
   from Admin (`/admin/vendors`, `/admin/vendor-users`), with a
   server-generated random password (never staff- or vendor-typed) returned
   once for staff to share manually. Still open: a real invite model (email
-  + token, vendor chooses their own password), mirroring Medusa's own
-  `createInvitesWorkflow`/`acceptInviteWorkflow` pattern for the User
-  module — this replaces "staff shares a generated password manually," which
-  is accepted as v1 UX debt, not a security gap, since the password itself
-  is never weak or staff-chosen.
+  - token, vendor chooses their own password), mirroring Medusa's own
+    `createInvitesWorkflow`/`acceptInviteWorkflow` pattern for the User
+    module — this replaces "staff shares a generated password manually," which
+    is accepted as v1 UX debt, not a security gap, since the password itself
+    is never weak or staff-chosen.
 - **The vendor JWT lives in browser `localStorage`, not an `httpOnly`
   cookie.** A deliberate tradeoff (`docs/plan.md` Decisions) for portability
   to a future standalone deploy, but the real cost: any JS running on the
@@ -102,7 +102,7 @@ each was found while building or adversarially testing the marketplace spine
   fails) is unverified in practice.** It's a genuine, non-fabricated attempt
   at real compensation (the codebase's own rule: every side-effecting step
   needs one) using a real, documented Shopify mutation — but exercising it
-  needs a failure injected *between* a successful token exchange and the
+  needs a failure injected _between_ a successful token exchange and the
   following DB write, which hasn't been tested live. If it's ever needed for
   real, confirm it actually revokes access rather than silently failing.
 

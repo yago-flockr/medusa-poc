@@ -13,14 +13,14 @@ see the sibling doc `docs/vendor-contract-hook-pattern.md`.
 
 ## The chain, at a glance
 
-| # | Layer | File (login example) | Exports |
-|---|-------|------------------------|---------|
-| 1 | Hook (built already) | `apps/storefront/src/vendor/hooks/mutations/auth.ts` | `usePostAuthVendorEmailpass` |
-| 2 | Form's own schema | `apps/storefront/src/vendor/forms/login-form.tsx` | `loginVendorSchema`, `LoginVendorSchema` |
-| 3 | Form ⇄ contract parsers | same file | `loginVendorFormToInput`, `loginVendorInputToForm` |
-| 4 | Form component + props | same file | `LoginForm`, `LoginFormProps` |
+| #   | Layer                   | File (login example)                                 | Exports                                            |
+| --- | ----------------------- | ---------------------------------------------------- | -------------------------------------------------- |
+| 1   | Hook (built already)    | `apps/storefront/src/vendor/hooks/mutations/auth.ts` | `usePostAuthVendorEmailpass`                       |
+| 2   | Form's own schema       | `apps/storefront/src/vendor/forms/login-form.tsx`    | `loginVendorSchema`, `LoginVendorSchema`           |
+| 3   | Form ⇄ contract parsers | same file                                            | `loginVendorFormToInput`, `loginVendorInputToForm` |
+| 4   | Form component + props  | same file                                            | `LoginForm`, `LoginFormProps`                      |
 
-**The form's own name does *not* match the hook's mechanical name, on
+**The form's own name does _not_ match the hook's mechanical name, on
 purpose.** `usePostAuthVendorEmailpass` is named after the wire route; `LoginForm`/
 `loginVendorSchema` are named after what a human calls this thing in the UI.
 The hook layer is mechanically derived (`docs/vendor-contract-hook-pattern.md`);
@@ -37,12 +37,12 @@ Non-negotiable for every new vendor hook + form pair, not just login:
    two were built out of step.
 2. **Every form has its own human-readable schema + type, independent of
    both the contract's name and the hook's mechanical name.**
-   `loginVendorSchema` / `LoginVendorSchema` validates what the *form* needs
+   `loginVendorSchema` / `LoginVendorSchema` validates what the _form_ needs
    (client-side UX rules), and is allowed to diverge in shape from
    `PostAuthVendorEmailpassInput` — it just happens to match here because
    login has no form-only fields (a confirm-password field, a checkbox,
    derived/display values) to strip before submit. Pick the form's name from
-   what the form *is* (a login form, a create-product form), never from the
+   what the form _is_ (a login form, a create-product form), never from the
    route it happens to submit to.
 3. **Every form has parsers translating its schema to/from the contract's
    input schema**: `loginVendorFormToInput` (form → contract, used before
@@ -56,7 +56,7 @@ Non-negotiable for every new vendor hook + form pair, not just login:
    (`apps/storefront/src/vendor/forms/form-type.ts`).
 5. **A form is just a form.** It renders fields, validates via
    `zodResolver(formSchema)`, and calls `onSubmit?.(values)` with the
-   *form's own* validated shape — nothing else. It never imports a hook,
+   _form's own_ validated shape — nothing else. It never imports a hook,
    never calls `useMutation`/`useQuery`, and never inspects a mutation's
    `isPending`/`error`. All of that lives in whatever page or component
    renders the form (see `agents/storefront.md`, "A form is just a form —

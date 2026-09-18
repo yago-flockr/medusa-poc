@@ -11,7 +11,7 @@ routes and vendor routes alike — lives here, whether or not a second app
 currently calls that route. This used to be scoped narrower ("only if
 `apps/storefront` actually calls it; an Admin-only schema stays in a local
 `contract.ts` next to the route"), which sounds reasonable but doesn't hold
-up: it means a schema has to be *moved* the moment a route gains a second
+up: it means a schema has to be _moved_ the moment a route gains a second
 consumer, and in practice that boundary call is easy to get wrong or forget
 — a real inconsistency this repo hit once already. Centralizing
 unconditionally means that never happens again; the cost is one import hop
@@ -46,8 +46,8 @@ schema that uses it — `z.string().trim().min(1, "Name is required")`,
 right there — never factored into a named helper like
 `requiredTrimmedString(message)` or `optionalTrimmedText`, even when the
 exact same rule repeats across a create schema and its sibling update
-schema, or across two unrelated resources. A helper like that hides *how*
-a field is validated behind a name that says nothing about *what* the
+schema, or across two unrelated resources. A helper like that hides _how_
+a field is validated behind a name that says nothing about _what_ the
 field is, so reading `name: name.optional()` tells you nothing until you
 go find where `name` was defined — and a change to that helper silently
 changes every field that happens to reuse it, including ones you didn't
@@ -62,7 +62,7 @@ to a schema that names a real thing in the domain. `vendorProductStatusSchema`,
 `vendorSchema` — these stay named and reused, because "a product's status"
 or "a brand" is one real concept that must have exactly one definition, the
 same reasoning as "always centralize" above. The test: does the name
-describe a *thing* (a status, an image, a brand) or a *pattern* (an
+describe a _thing_ (a status, an image, a brand) or a _pattern_ (an
 optional trimmed string, a positive number)? Things get named and reused;
 patterns get written out every time.
 
@@ -129,7 +129,10 @@ directly:
 import { brandListFiltersSchema } from "@dtc/api-contracts/admin/brands"
 
 // apps/backend/src/admin/hooks/queries/brands.ts (Admin dashboard)
-import type { BrandListQuery, BrandListResponse } from "@dtc/api-contracts/admin/brands"
+import type {
+  BrandListQuery,
+  BrandListResponse,
+} from "@dtc/api-contracts/admin/brands"
 ```
 
 ## Adding a resource to an existing domain
@@ -142,7 +145,9 @@ Say you're adding `GET /vendors/foo` (a `vendor/` route, called from
    ```ts
    import { z } from "zod"
    export const getVendorsFooResponseSchema = z.object({ bar: z.string() })
-   export type GetVendorsFooResponse = z.infer<typeof getVendorsFooResponseSchema>
+   export type GetVendorsFooResponse = z.infer<
+     typeof getVendorsFooResponseSchema
+   >
    ```
 2. **`src/vendor/contract.ts`** — register it under that same name:
    ```ts
@@ -162,7 +167,7 @@ shape (resource files only, no `contract.ts`) if it doesn't.
 
 ## Multipart/file-upload routes
 
-A route's request/response *shape* still belongs here even if it's a file
+A route's request/response _shape_ still belongs here even if it's a file
 upload (e.g. `vendor/uploads.ts` for `POST /vendors/uploads`) — only the
 ts-rest **router** entry is skipped: this version of `@ts-rest/core` has no
 multipart body support, so a multipart route is never registered in

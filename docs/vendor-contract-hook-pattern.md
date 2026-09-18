@@ -30,26 +30,26 @@ exact same word, every time.
 
 ## The full table (every current vendor operation)
 
-| Method + path | Router key / key / hook name |
-|---|---|
-| `GET /vendors/me` | `getVendorsMe` |
-| `PATCH /vendors/me` | `patchVendorsMe` |
-| `PATCH /vendors/shopify/connection` | `patchVendorsShopifyConnection` |
-| `GET /vendors/shopify/connection/install-link` | `getVendorsShopifyConnectionInstallLink` |
-| `GET /vendors/shopify/products` | `getVendorsShopifyProducts` |
-| `POST /vendors/shopify/products/import` | `postVendorsShopifyProductsImport` |
-| `GET /vendors/orders` | `getVendorsOrders` |
-| `GET /vendors/products` | `getVendorsProducts` |
-| `POST /vendors/products` | `postVendorsProducts` |
-| `GET /vendors/products/:id` | `getVendorsProductsById` |
-| `POST /vendors/products/:id` | `postVendorsProductsById` |
-| `DELETE /vendors/products/:id` | `deleteVendorsProductsById` |
-| `GET /vendors/stock-locations` | `getVendorsStockLocations` |
-| `POST /vendors/stock-locations` | `postVendorsStockLocations` |
-| `GET /vendors/products/:id/inventory` | `getVendorsProductsByIdInventory` |
-| `POST /vendors/products/:id/inventory` | `postVendorsProductsByIdInventory` |
-| `POST /vendors/uploads` (multipart, not ts-rest-served) | `postVendorsUploads` |
-| `POST /auth/vendor/emailpass` (core Medusa route, no `route.ts` in this repo) | `postAuthVendorEmailpass` |
+| Method + path                                                                 | Router key / key / hook name             |
+| ----------------------------------------------------------------------------- | ---------------------------------------- |
+| `GET /vendors/me`                                                             | `getVendorsMe`                           |
+| `PATCH /vendors/me`                                                           | `patchVendorsMe`                         |
+| `PATCH /vendors/shopify/connection`                                           | `patchVendorsShopifyConnection`          |
+| `GET /vendors/shopify/connection/install-link`                                | `getVendorsShopifyConnectionInstallLink` |
+| `GET /vendors/shopify/products`                                               | `getVendorsShopifyProducts`              |
+| `POST /vendors/shopify/products/import`                                       | `postVendorsShopifyProductsImport`       |
+| `GET /vendors/orders`                                                         | `getVendorsOrders`                       |
+| `GET /vendors/products`                                                       | `getVendorsProducts`                     |
+| `POST /vendors/products`                                                      | `postVendorsProducts`                    |
+| `GET /vendors/products/:id`                                                   | `getVendorsProductsById`                 |
+| `POST /vendors/products/:id`                                                  | `postVendorsProductsById`                |
+| `DELETE /vendors/products/:id`                                                | `deleteVendorsProductsById`              |
+| `GET /vendors/stock-locations`                                                | `getVendorsStockLocations`               |
+| `POST /vendors/stock-locations`                                               | `postVendorsStockLocations`              |
+| `GET /vendors/products/:id/inventory`                                         | `getVendorsProductsByIdInventory`        |
+| `POST /vendors/products/:id/inventory`                                        | `postVendorsProductsByIdInventory`       |
+| `POST /vendors/uploads` (multipart, not ts-rest-served)                       | `postVendorsUploads`                     |
+| `POST /auth/vendor/emailpass` (core Medusa route, no `route.ts` in this repo) | `postAuthVendorEmailpass`                |
 
 Login proves the rule has no exceptions: it isn't backed by a file in
 `apps/backend/src/api/**` at all (it's Medusa's own built-in auth route), but
@@ -59,13 +59,13 @@ for "the one route with no `route.ts` file."
 
 ## Worked example: login, end to end
 
-| # | Layer | File | Exports |
-|---|-------|------|---------|
-| 1 | API contract — request | `packages/api-contracts/src/vendor/auth.ts` | `postAuthVendorEmailpassInputSchema`, `PostAuthVendorEmailpassInput` |
-| 2 | API contract — response | same file | `postAuthVendorEmailpassResponseSchema`, `PostAuthVendorEmailpassResponse` |
-| 3 | Mutation key | `apps/storefront/src/vendor/hooks/mutations/mutation-keys.ts` | `mutationKeys.auth.postAuthVendorEmailpass` → `["postAuthVendorEmailpass"]` |
-| 4 | Hook | `apps/storefront/src/vendor/hooks/mutations/auth.ts` | `usePostAuthVendorEmailpass` |
-| 5 | Call site local var | `.../vendor/_components/vendor-auth-gate.tsx` | `const postAuthVendorEmailpass = usePostAuthVendorEmailpass()` |
+| #   | Layer                   | File                                                          | Exports                                                                     |
+| --- | ----------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 1   | API contract — request  | `packages/api-contracts/src/vendor/auth.ts`                   | `postAuthVendorEmailpassInputSchema`, `PostAuthVendorEmailpassInput`        |
+| 2   | API contract — response | same file                                                     | `postAuthVendorEmailpassResponseSchema`, `PostAuthVendorEmailpassResponse`  |
+| 3   | Mutation key            | `apps/storefront/src/vendor/hooks/mutations/mutation-keys.ts` | `mutationKeys.auth.postAuthVendorEmailpass` → `["postAuthVendorEmailpass"]` |
+| 4   | Hook                    | `apps/storefront/src/vendor/hooks/mutations/auth.ts`          | `usePostAuthVendorEmailpass`                                                |
+| 5   | Call site local var     | `.../vendor/_components/vendor-auth-gate.tsx`                 | `const postAuthVendorEmailpass = usePostAuthVendorEmailpass()`              |
 
 The word `postAuthVendorEmailpass` runs through every layer, including the
 call site's own local variable name (per the existing "hook result const
@@ -84,15 +84,15 @@ every other one without opening a file.
    the server the same as a body, just via the URL. `getVendorsProductsInputSchema`
    /`GetVendorsProductsInput` covers the `?limit=&offset=` query params for
    `GET /vendors/products`, named after the same route stem as any other Input.
-4. **A nested schema used only inside a bigger *request* schema is named
+4. **A nested schema used only inside a bigger _request_ schema is named
    after that request's route, not given its own semantic name** —
    `postVendorsProductsOptionInputSchema`, `postVendorsProductsImageInputSchema`,
    `postVendorsProductsVariantInputSchema`, `postVendorsProductsByIdVariantInputSchema`
-   (nested inside the *update* route's body, hence `ById`),
+   (nested inside the _update_ route's body, hence `ById`),
    `postVendorsStockLocationsAddressInputSchema`. These are still pieces of
    one specific route's payload — verbose and mechanical, same as the top
    level.
-5. **A schema reused across two or more *different* routes' responses stays
+5. **A schema reused across two or more _different_ routes' responses stays
    domain-named, not mechanical** — `vendorProductSchema`, `vendorOrderSchema`,
    `vendorUserSchema`, `vendorStockLocationSchema`, and the `*DetailSchema`
    family in `products.ts`. This isn't an exception granted for convenience:
@@ -113,7 +113,7 @@ every other one without opening a file.
    exporting.
 8. **The mutation/query key is the exact same word as the router key.**
    `postVendorsProducts` in `contract.ts` → `mutationKeys.products.postVendorsProducts`
-   → `["postVendorsProducts"]`. The registry's top-level *group* name (`products`,
+   → `["postVendorsProducts"]`. The registry's top-level _group_ name (`products`,
    `shopify`, `auth`) is a separate, stable organizational label matching the
    hook **file** it belongs to — it does not change when a route's mechanical
    name changes.
@@ -137,28 +137,28 @@ structured. Verified across every file in
 
 `mutation-keys.ts` and `query-keys.ts` are the **only** two files in their
 respective folders allowed to write a key literal (`["someKey"] as const`).
-Every other file only *imports* `mutationKeys`/`queryKeys` and reads a key
+Every other file only _imports_ `mutationKeys`/`queryKeys` and reads a key
 off it. No hook ever writes `mutationKey: ["postVendorsProducts"]` directly
 inline.
 
 The registry is grouped by domain, and each top-level group name matches one
 hook **file** (not the mechanical route name):
 
-| Registry group | Hook file |
-|---|---|
-| `mutationKeys.auth` | `mutations/auth.ts` |
-| `mutationKeys.profile` | `mutations/profile.ts` |
-| `mutationKeys.shopify` | `mutations/shopify.ts` |
-| `mutationKeys.products` | `mutations/products.ts` |
-| `mutationKeys.uploads` | `mutations/uploads.ts` |
-| `mutationKeys.stockLocations` | `mutations/stock-locations.ts` |
+| Registry group                  | Hook file                        |
+| ------------------------------- | -------------------------------- |
+| `mutationKeys.auth`             | `mutations/auth.ts`              |
+| `mutationKeys.profile`          | `mutations/profile.ts`           |
+| `mutationKeys.shopify`          | `mutations/shopify.ts`           |
+| `mutationKeys.products`         | `mutations/products.ts`          |
+| `mutationKeys.uploads`          | `mutations/uploads.ts`           |
+| `mutationKeys.stockLocations`   | `mutations/stock-locations.ts`   |
 | `mutationKeys.productInventory` | `mutations/product-inventory.ts` |
-| `queryKeys.vendor` | `queries/vendor.ts` |
-| `queryKeys.orders` | `queries/orders.ts` |
-| `queryKeys.shopifyProducts` | `queries/shopify-products.ts` |
-| `queryKeys.products` | `queries/products.ts` |
-| `queryKeys.stockLocations` | `queries/stock-locations.ts` |
-| `queryKeys.productInventory` | `queries/product-inventory.ts` |
+| `queryKeys.vendor`              | `queries/vendor.ts`              |
+| `queryKeys.orders`              | `queries/orders.ts`              |
+| `queryKeys.shopifyProducts`     | `queries/shopify-products.ts`    |
+| `queryKeys.products`            | `queries/products.ts`            |
+| `queryKeys.stockLocations`      | `queries/stock-locations.ts`     |
+| `queryKeys.productInventory`    | `queries/product-inventory.ts`   |
 
 **Why centralize instead of colocating the key next to its hook:** one file
 makes every mutation/query key in the whole vendor panel visible in a single

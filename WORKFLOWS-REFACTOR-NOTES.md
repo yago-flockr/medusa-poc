@@ -100,7 +100,7 @@ freely.
     has no registered name to derive from, so its result keeps a normal
     descriptive domain name (`stockLocation`, `response`, `vendorLinkDefs`).
   - Named exports only, no `export default` (that existed only to make a
-    *folder* importable as one path; one-file-per-thing doesn't need it).
+    _folder_ importable as one path; one-file-per-thing doesn't need it).
 - **New-pattern code never calls old-pattern code.** A new-pattern workflow
   only imports other new-pattern workflows/steps, or real Medusa core-flows.
   A dependency in a genuinely different, not-yet-migrated domain gets a
@@ -164,6 +164,7 @@ became their second consumer. The old `api/vendors/resolve-vendor-user.ts`
 helper (kept alive specifically for this domain) is now fully deleted.
 
 **Two real things caught only by testing, not typechecking:**
+
 - A **nested `when().then()`** inside `update-vendor-product.ts` (the
   variant-sku-sync block nested inside the update-variants block) compiled
   fine but crashed the whole app at workflow-registration time
@@ -306,7 +307,7 @@ typecheck-and-unit-test pass above didn't catch:
   integration test added for this domain (`vendor-products.spec.ts`),
   reproducing the exact attack as a permanent regression check.
 - **Dispatch crash on split-stock consignments**: `resolve-vendor-shipping-option.ts`
-  only checked the vendor's *first* stock location's shipping options, and
+  only checked the vendor's _first_ stock location's shipping options, and
   `dispatch-vendor-consignment.ts` passed a single hardcoded `location_id`
   into Medusa's fulfillment workflow — broke as soon as a vendor's order
   spanned 2 of their own locations (the same split-stock shape fixed earlier

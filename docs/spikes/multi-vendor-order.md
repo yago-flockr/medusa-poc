@@ -214,13 +214,13 @@ that surfaced more of the same shape of bug on audit — promo codes never
 forwarded into child orders (silently wrong totals shown to vendors),
 `cancelOrderWorkflow` against a child order finding no `payment_collection`
 to refund and silently no-oping, and Admin now able to try fulfilling the
-*parent's* now-unreserved items directly. Every one of these traces back to
+_parent's_ now-unreserved items directly. Every one of these traces back to
 the same root cause: a child order is shaped like a full Medusa order
 (payment, promotions, cancel/refund, admin visibility) without actually
 having its own payment behind it, because `docs/plan.md` already fixes this
 project's payment as centralized — **"One basket, one payment, however many
 vendors."** Real marketplaces (Amazon, Shopee, Mercado Libre, AliExpress) do
-give each vendor its own order, but only because they *also* give each
+give each vendor its own order, but only because they _also_ give each
 vendor its own split payment (their own ledger/payment-rail infrastructure).
 Copying the order-shape half without the payment-shape half is what kept
 breaking here.
@@ -263,7 +263,7 @@ coinciding the moment a vendor gets a second one.
   (`group-vendor-items.ts`) and explicitly leaves per-part shipping cost as a
   `// TODO format order data` in `prepareOrderData` — Medusa doesn't prescribe
   an answer, officially or otherwise.
-- Medusa core's cart/checkout ties a shipping option to *one* stock location's
+- Medusa core's cart/checkout ties a shipping option to _one_ stock location's
   fulfillment set; there's no native concept of routing different cart items
   to different locations at checkout time.
 - A real, currently open Medusa core bug,
@@ -281,7 +281,7 @@ coinciding the moment a vendor gets a second one.
 Mercur (the Medusa-based open-source marketplace framework) splits by
 **seller** (`item.offer.seller_id`), same axis as our existing vendor split —
 its docs never treat location as a distinct concept, and don't document
-whether a seller can even have more than one. What *is* useful: each seller
+whether a seller can even have more than one. What _is_ useful: each seller
 owns its own `shipping_profile_id` and its own shipping options, and the
 storefront shipping-options API returns them grouped by seller, each with its
 own cost (e.g. seller A "Standard Shipping" 900, seller B "Express" 1500) —
@@ -319,21 +319,21 @@ physical shipment, sum into one payment, never blend into a single average.**
 
 ### How location still matters, vendor-booked couriers or not
 
-Vendors booking their own couriers answers *who* arranges shipping — it
-doesn't answer this spike's actual question, which is *what splits a
-consignment into more than one physical parcel*. A vendor's own courier still
+Vendors booking their own couriers answers _who_ arranges shipping — it
+doesn't answer this spike's actual question, which is _what splits a
+consignment into more than one physical parcel_. A vendor's own courier still
 ships from wherever that vendor's stock physically sits, so a vendor with two
 locations still produces two parcels (and, per Sensus Q11, two shipping
 charges to sum) for one consignment, exactly as before. Location remains the
-right axis for *parcel* splitting; vendor remains the right axis for
-*consignment* (business/payment/visibility) splitting — the correction above
+right axis for _parcel_ splitting; vendor remains the right axis for
+_consignment_ (business/payment/visibility) splitting — the correction above
 changes who books the courier, not that these are two separate axes.
 
 ### How this fits the existing model, not replaces it
 
 `docs/features/multi-vendor-marketplace.md` already anticipates a consignment
-splitting further: *"Where dispatch dates differ inside a single consignment,
-it may split again — and still does not become a second order."* Location is
+splitting further: _"Where dispatch dates differ inside a single consignment,
+it may split again — and still does not become a second order."_ Location is
 the same mechanism, just a second trigger for that same "split again," not a
 new concept: a vendor's consignment stays one consignment (one business/
 payment/visibility boundary), but can still produce more than one parcel —
@@ -350,7 +350,7 @@ and more than one shipping cost — if its items sit at more than one location.
 - **Narrower than first thought:** since `docs/sensus/question-answers.md` Q11
   says the customer-facing charge should stay a simple platform-level blended/
   free-threshold rate (not a real sum of each vendor's actual carrier cost — see
-  the feature brief's "Open questions"), a vendor does *not* need Mercur's
+  the feature brief's "Open questions"), a vendor does _not_ need Mercur's
   per-seller `shipping_profile_id`/rate-configuration UI for what the customer
   pays. What a vendor likely does need, much smaller in scope: a way to mark
   their consignment (or its parcels, once split by location) shipped with a

@@ -36,7 +36,6 @@ Small catalogue, high curation, continual rotation. Houses join and leave; produ
 
 MARKETS — UK · EU · US
 
-
 Multi-currency and duty-inclusive presentation where achievable. Launch may be UK-first; the data model may not be.
 
 ## TIMING — 1 DECEMBER BUILD TARGET, 5 DECEMBER PUBLIC LAUNCH
@@ -63,37 +62,36 @@ This is an initial inventory, not a final route map, but it is the working contr
 
 ## SURFACE ONE — CUSTOMER STOREFRONT
 
-| TEMPLATE INST. NOTES Home landing 1 Modular, composed by editors from CMS blocks Editorial landing — The Journal 1 CMS-driven; articles ordered by date |
-| --- |
-| Individual editorial page 1 Derived from the CMS on a fixed entry format. Items mentioned in an article |
-| must be addable to basket from the page itself |
+| TEMPLATE INST. NOTES Home landing 1 Modular, composed by editors from CMS blocks Editorial landing — The Journal 1 CMS-driven; articles ordered by date                                                                                                                                                                                      |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Individual editorial page 1 Derived from the CMS on a fixed entry format. Items mentioned in an article                                                                                                                                                                                                                                      |
+| must be addable to basket from the page itself                                                                                                                                                                                                                                                                                               |
 | Shop 1 Carries the occasion, mood and region cuts of the curation taxonomy Product listing 1 Faceted listing serving each taxonomy cut via query state Search and search results 2 Global typeahead entry point; results share facet behaviour with the taxonomy listing, plus zero-result and did-you-mean states Individual product page 1 |
 
-
-| TEMPLATE | INST. NOTES |
-| --- | --- |
-|   | House identity embedded as a short About the House block (name and |
-|   | brief description, optional expand); origin and duty information. No separate |
-|   | house profile page |
-| House listing page | 1 Directory of houses as a discovery surface. With individual profiles TO CONFIRM |
-|   | removed, confirm whether the directory links to a filtered product view per |
-|   | house rather than a profile page |
-| Pop-ups — events index and event | 2 CMS-derived; upcoming and past, with the capability to reserve a place at |
-| detail | the event |
-| About | 1 — |
-| How Curation Works | 1 Public curation manifesto |
-| Join as a House | 1 Public form feeding the operator intake pipeline |
-| Contact | 1 Form |
-| Basket | 1 Grouped by house |
-| Checkout | 1 Highest-stakes surface in the build |
-| Account dashboard | 1 — |
-| Order history | 1 — |
-| Order detail | 1 Per-consignment tracking, mixed statuses |
-| Wishlist | 1 Heart affordance sitewide; persistence policy to define |
-| Auth: login · register · password | 3 A separate identity domain from house users, see 7.10. Passwordless |
-| reset | remains an open question |
-| Service and legal content page | 1 One template serving terms, cookies and equivalent service content |
-| Error state pages | 1 404 and empty states recur throughout and are in scope |
+| TEMPLATE                          | INST. NOTES                                                                       |
+| --------------------------------- | --------------------------------------------------------------------------------- |
+|                                   | House identity embedded as a short About the House block (name and                |
+|                                   | brief description, optional expand); origin and duty information. No separate     |
+|                                   | house profile page                                                                |
+| House listing page                | 1 Directory of houses as a discovery surface. With individual profiles TO CONFIRM |
+|                                   | removed, confirm whether the directory links to a filtered product view per       |
+|                                   | house rather than a profile page                                                  |
+| Pop-ups — events index and event  | 2 CMS-derived; upcoming and past, with the capability to reserve a place at       |
+| detail                            | the event                                                                         |
+| About                             | 1 —                                                                               |
+| How Curation Works                | 1 Public curation manifesto                                                       |
+| Join as a House                   | 1 Public form feeding the operator intake pipeline                                |
+| Contact                           | 1 Form                                                                            |
+| Basket                            | 1 Grouped by house                                                                |
+| Checkout                          | 1 Highest-stakes surface in the build                                             |
+| Account dashboard                 | 1 —                                                                               |
+| Order history                     | 1 —                                                                               |
+| Order detail                      | 1 Per-consignment tracking, mixed statuses                                        |
+| Wishlist                          | 1 Heart affordance sitewide; persistence policy to define                         |
+| Auth: login · register · password | 3 A separate identity domain from house users, see 7.10. Passwordless             |
+| reset                             | remains an open question                                                          |
+| Service and legal content page    | 1 One template serving terms, cookies and equivalent service content              |
+| Error state pages                 | 1 404 and empty states recur throughout and are in scope                          |
 
 FAQ, returns, privacy, and shipping and duties policies are downloadable documents linked from the footer rather than page templates, and are excluded from the count above. The service and legal content template absorbs any of those four that later needs to be a page rather than a document.
 
@@ -103,15 +101,14 @@ TEMPLATE
 
 INST. NOTES
 
-| Auth: login · password reset 2 Separate identity domain from customers Dashboard 1 KPIs and orders needing action |
-| --- |
-| Product list 1 — |
+| Auth: login · password reset 2 Separate identity domain from customers Dashboard 1 KPIs and orders needing action                                                                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product list 1 —                                                                                                                                                                                                                                                       |
 | Product editor / upload 1 Image standards enforced at the point of upload. Supports catalogue ingestion by connector (see 7.4) so houses on Shopify can import rather than re-key Orders list 1 — Order detail and fulfilment 1 Centrally generated label printed here |
 
-
 | TEMPLATE INST. NOTES Payouts and statements 1 Commission-adjusted earnings Onboarding 1 Onboarding steps for approved houses; captures the house's public-facing fields (name, short description) used in the product-page About block SURFACE THREE — ADMIN PORTAL TEMPLATE INST. NOTES Overview 1 GMV, orders, items needing attention Central order management 1 Across all houses Central returns management 1 Reasons and rate by house Curation controls 1 Cap per house, approval queue, rotation Application pipeline 1 Plugged into a central email address |
-| --- |
-| Houses directory + house detail 2 — Commission ledger and payout run 1 Commission to be centrally sent by Sensus CMS composition 1 Editorial, homepage modules, newsletter draft |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Houses directory + house detail 2 — Commission ledger and payout run 1 Commission to be centrally sent by Sensus CMS composition 1 Editorial, homepage modules, newsletter draft                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ## 05 Frontend scope
 
@@ -134,7 +131,6 @@ Requirements below apply to the customer storefront unless stated.
 ## IN YOUR RESPONSE
 
 Walk us through a basket spanning five houses, from listing to a partially dispatched order with one consignment returned.
-
 
 ## 5.2 Content and CMS integration
 
@@ -177,7 +173,6 @@ Describe canonical handling for a product reachable through occasion, category, 
 ## 5.6 Accessibility and responsiveness
 
 WCAG 2.2 AA across all three surfaces — focus management in drawers and modals, announced basket updates, accessible form errors, reduced-motion support. Responsive behaviour is expected across the full breakpoint range; the browser, device and minimum-viewport matrix is to be confirmed before issue TO CONFIRM . Responsibility is split: the design agency owns contrast, target sizes, focus visibility and motion, and the build agency owns semantics, focus management, announcements and keyboard paths.
-
 
 ## 5.7 Capture and notifications
 
@@ -225,13 +220,12 @@ Set out how you would structure the engagement so that the design dependency doe
 
 The intent is buy, not build. A proven commerce platform should own commerce, a proven marketplace layer should own multi-vendor mechanics, and custom code should exist only where nothing off-the-shelf fits the curation model.
 
-
 Any bespoke component should be justified against an off-the-shelf alternative. This trades flexibility for delivery speed; if that trade-off is wrong for any part of the scope, say so at tender stage rather than at handover.
 
 ## 7.2 Fixed constraints
 
-|   | CONSTRAINT STATUS Shopify Plus as the commerce core Fixed — driven by the timeline Duty-paid (DDP) pricing shown at checkout for UK, EU and US Fixed |
-| --- | --- |
+|     | CONSTRAINT STATUS Shopify Plus as the commerce core Fixed — driven by the timeline Duty-paid (DDP) pricing shown at checkout for UK, EU and US Fixed |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 Everything else is open: the multi-vendor layer, content management, payouts, tax calculation, lifecycle messaging, reviews and search. Where earlier discovery identified candidate services, those are illustrative and should not be read as requirements.
 
@@ -261,21 +255,20 @@ State which of these your chosen layer provides natively, which require configur
 
 A consolidated order resolves into one consignment per house, and each consignment moves through its own lifecycle independently. The states below are the minimum the platform must express. Add to them if your approach requires it; do not collapse them.
 
-| CONSIGNMENT STATE | MOVED BY | WHAT THE CUSTOMER SEES |
-| --- | --- | --- |
-| Placed | Platform, on payment One order confirmation listing every consignment with its |   |
-|   |   | expected dispatch window |
-| Accepted | House | Nothing; the dispatch window is confirmed rather than |
-|   |   | changed |
-| Unfulfillable | House | Notification that one consignment cannot be supplied, that |
-|   |   | line refunded, the rest of the order unaffected |
-| In production | House | Made-to-order lead time shown against that consignment |
-|   |   | only |
-| Dispatched | House | Dispatch notice and tracking for that consignment alone |
-
+| CONSIGNMENT STATE | MOVED BY                                                                       | WHAT THE CUSTOMER SEES                                     |
+| ----------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Placed            | Platform, on payment One order confirmation listing every consignment with its |                                                            |
+|                   |                                                                                | expected dispatch window                                   |
+| Accepted          | House                                                                          | Nothing; the dispatch window is confirmed rather than      |
+|                   |                                                                                | changed                                                    |
+| Unfulfillable     | House                                                                          | Notification that one consignment cannot be supplied, that |
+|                   |                                                                                | line refunded, the rest of the order unaffected            |
+| In production     | House                                                                          | Made-to-order lead time shown against that consignment     |
+|                   |                                                                                | only                                                       |
+| Dispatched        | House                                                                          | Dispatch notice and tracking for that consignment alone    |
 
 | CONSIGNMENT STATE MOVED BY WHAT THE CUSTOMER SEES Delivered Carrier feed Delivery confirmation per consignment Cancelled Customer or operator, Cancellation confirmation and a partial refund against the pre-dispatch original order Return requested Customer Return instructions and the window applying to that house Return received House, on inspection Confirmation the return is being processed Refunded Platform Refund confirmation, partial against the original order |
-| --- |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 Three rules govern the table. A consignment's state never changes another consignment's state. Order-level status shown to the customer is derived from consignment states rather than stored alongside them. And a consignment may itself split where dispatch dates differ within it, without becoming a second order.
 
@@ -308,7 +301,6 @@ Confirm you will validate this before building any customer-facing interface, an
 ## 7.10 Identity and access
 
 Three audiences with materially different requirements. Customers need account creation, order history and addresses, with session handling that works across a headless storefront and a platform-hosted checkout without the customer noticing a seam. House users are invited rather than self-registered. Because these accounts see customer
-
 
 names and delivery addresses, multi-factor authentication is expected. Internal staff need role-based access. Data isolation between houses is a hard requirement: a house must never be able to reach another house's orders, customers or performance data.
 
@@ -347,7 +339,6 @@ How often do baskets span several houses, and what does that do to order value, 
 ## OPERATIONS
 
 Are houses dispatching within agreed service levels? Where are we losing orders to stock inaccuracy, cancellation or oversell? What is being returned, by whom, and why?
-
 
 ## ACQUISITION
 
@@ -392,7 +383,6 @@ We are as interested in the cost of year two as the cost of the build. Please es
 Stated plainly, because a tender written as though everything is settled produces bids that quietly assume different things. Three remain, each tagged where it appears. Whether the 5 December public date is a hard commercial requirement or a date we are asking you to assess, which changes phasing, team size and what gets cut (we build to an internal 1 December target regardless). The shipping charge policy, which shapes basket and checkout work directly. And the browser and device support matrix, stated now to prevent scope creep later.
 
 ## 11 Contacts
-
 
 AndMelo · Design liaison · hello@andmelo.com
 

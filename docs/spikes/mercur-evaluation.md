@@ -21,15 +21,15 @@ Commerce Modules list (Auth, Cart, Order, Payment, Product, Pricing,
 Promotion, Region, Sales Channel, Stock Location, Store, Tax, User, ...) has
 **no** Vendor/Seller/Marketplace module. Medusa's own [marketplace
 recipe](https://docs.medusajs.com/resources/recipes/marketplace/examples/vendors)
-says explicitly: *"you can create a marketplace module that implements
+says explicitly: _"you can create a marketplace module that implements
 custom data models, such as vendors... Medusa supports creating custom actor
-types."* That is exactly our shape (`src/modules/vendor`, `authenticate("vendor", ...)`).
+types."_ That is exactly our shape (`src/modules/vendor`, `authenticate("vendor", ...)`).
 Not a workaround — Medusa's own documented, recommended pattern.
 
 ## Finding 2 — Mercur is real, and Medusa's own team promotes it
 
 [medusajs.com/marketplace](https://medusajs.com/marketplace) and a Medusa
-blog post ("Get started with Mercur 2.0 on Cloud") point to Mercur as *the*
+blog post ("Get started with Mercur 2.0 on Cloud") point to Mercur as _the_
 marketplace platform built on Medusa. MIT-licensed, actively maintained
 (2.3.0 released 2026), built by a dedicated team — not a hobby project.
 
@@ -63,7 +63,7 @@ no-op'ing on a payment-less child order).
 The likely reason it works for Mercur: sellers "connect payment accounts"
 and payouts are tracked per seller — real per-seller payment splitting
 (Stripe Connect-shaped), which is exactly the missing piece that made child
-orders break for us. Mercur's shape only holds together *because* it made a
+orders break for us. Mercur's shape only holds together _because_ it made a
 different bet than we did: **per-seller payment from day one**, vs. our
 **centralized payment, scheduled payout** (a Sensus requirement — see
 `docs/plan.md`, "Money that can always be explained" / payout timing).
@@ -83,7 +83,7 @@ consequential:
   `bun create mercur-app@latest` — scaffolding a **new** project.
 - A plugin-style config exists (`{ resolve: '@mercurjs/b2c-core', options: {} }`
   in `medusa-config.ts`, Medusa's normal plugin mechanism), which suggests
-  it *might* be addable to an existing app.
+  it _might_ be addable to an existing app.
 - Nothing documents what happens when that plugin meets an app that already
   has its own custom Vendor module and real data — our exact situation.
 

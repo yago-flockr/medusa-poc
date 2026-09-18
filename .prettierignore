@@ -7,3 +7,7 @@ build
 dist
 coverage
 pnpm-lock.yaml
+
+# Tool-generated — reformatting these only makes the next codegen/migration run dirty them again
+**/generated/
+**/migrations/

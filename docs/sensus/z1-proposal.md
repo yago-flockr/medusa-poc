@@ -6,7 +6,6 @@ Date: 10 August 2026
 
 ## A curated multi-house commerce platform built with Medusa Status: Initial discussion draft
 
-
 ## 1. Executive summary
 
 Sensus Collective is a curated marketplace in which customers can purchase products from several independent houses through one basket, one checkout, and one payment.
@@ -32,7 +31,6 @@ The engagement would be ideally divided into two commercial phases:
 Sensus could contract Phase 0 independently and will not be required to commit to Phase 1 until the findings, scope, schedule, and commercial proposal have been reviewed.
 
 The current expected duration is approximately six months, including Phase 0.
-
 
 ## 2. Our understanding of the opportunity
 
@@ -65,7 +63,6 @@ This creates several important requirements:
 - \- Editorial curation connected to live product information.
 
 The principal challenge is therefore not the visual storefront. It is the operating and financial model behind the marketplace. The proposed approach places that model at the center of discovery and technical validation.
-
 
 ## 3. Recommended platform approach
 
@@ -105,13 +102,11 @@ Those capabilities would require a separate marketplace and order-management lay
 
 Medusa also requires custom work, but it allows the critical marketplace rules to remain within an architecture controlled by Sensus.
 
-
 ## 3.3 No migration or Shopify integration is assumed
 
 The base scope assumes a new platform and a new catalog. Houses will create products through the portal or use controlled spreadsheet templates for their initial upload.
 
 If a house needs to synchronize catalog or stock with Shopify or another external system, that connector can be assessed separately. Continuous multi-channel synchronization is not included in the current estimate.
-
 
 ## 4. Proposed solution
 
@@ -183,7 +178,6 @@ Sensus will have central tools for:
 
 - \- Supplier payment approval and reconciliation.
 
-
 - \- Operational and commercial reporting.
 
 - \- User permissions and audit history.
@@ -197,7 +191,6 @@ The customer will see one order. Internally, the platform will create one consig
 Each consignment can progress independently. One house may dispatch immediately while another has a production lead time. One item may be unavailable or returned without canceling or refunding the entire order.
 
 The overall order status will be calculated from the status of its consignments. This model will form the center of the Phase 0 proof of concept.
-
 
 ## 5. Key operating areas
 
@@ -243,7 +236,6 @@ The main options are:
 
 - \- Offering free shipping above a threshold.
 
-
 The Request for Proposal also requires customer pricing to include applicable taxes and import duties for the United Kingdom, European Union, and United States. This is commonly described as Delivered Duty Paid pricing.
 
 We recommend using a specialist provider to calculate taxes and import duties. Sensus will need legal and customs advice to confirm the importer of record, supported products, shipping routes, and responsibilities.
@@ -265,7 +257,6 @@ The customer should be able to request a return against an individual item. The 
 Sensus should remain in control of the customer relationship, even when a house performs part of the physical return process.
 
 The return destination, inspection responsibility, refund timing, and recovery of funds from a house must be agreed during Phase 0.
-
 
 ## 6. High-level architecture
 
@@ -307,29 +298,27 @@ The proposed foundation includes:
 
 - \- Separate production and non-production environments.
 
-
 For planning purposes, the current audience scenarios are:
 
-| Scenario | Monthly active users | Estimated Amazon Web |
-| --- | --- | --- |
-|   |   | Services cost per month |
-| Controlled pilot | 1,000 | $600–$1,100 |
-| Planning baseline | 25,000 | $1,040–$2,270 |
-| Growth | 100,000 | $1,565–$3,530 |
+| Scenario          | Monthly active users | Estimated Amazon Web    |
+| ----------------- | -------------------- | ----------------------- |
+|                   |                      | Services cost per month |
+| Controlled pilot  | 1,000                | $600–$1,100             |
+| Planning baseline | 25,000               | $1,040–$2,270           |
+| Growth            | 100,000              | $1,565–$3,530           |
 
 We recommend using \$1,500 per month as the initial planning figure for 25,000 monthly active users.
 
 These figures exclude payment fees, shipping labels, carriers, tax and duty services, content management, search, email, analytics, and other external software.
 
-
 ## 7. Commercial structure
 
 ## 7.1 Phase 0 — Discovery and technical validation
 
-| Commercial model | Fixed price |
-| --- | --- |
-| Included effort | Up to 200 hours |
-| Expected duration | 4 weeks |
+| Commercial model  | Fixed price     |
+| ----------------- | --------------- |
+| Included effort   | Up to 200 hours |
+| Expected duration | 4 weeks         |
 
 Phase 0 will establish whether the most important business and technical assumptions are valid before Sensus commits to the complete implementation.
 
@@ -383,7 +372,6 @@ The proof of concept is technical validation, not production-ready software.
 
 - \- Updated architecture and data model.
 
-
 - \- Working proof of concept and demonstration.
 
 - \- Technical findings and risk report.
@@ -398,11 +386,11 @@ The proof of concept is technical validation, not production-ready software.
 
 Phase 1 covers the production storefront, house portal, Sensus administration, marketplace operations, payments, fulfillment, returns, content, search, infrastructure, testing, launch, and stabilization.
 
-|   | Current estimate |
-| --- | --- |
-| Development effort | 1,000 hours |
-| Current confidence | ±20 percent |
-| Indicative hours range | 800–1,200 |
+|                        | Current estimate |
+| ---------------------- | ---------------- |
+| Development effort     | 1,000 hours      |
+| Current confidence     | ±20 percent      |
+| Indicative hours range | 800–1,200        |
 
 The estimate is intentionally presented as a range. Phase 0 will replace assumptions with confirmed operating rules, provider requirements, delivery priorities, and evidence from the proof of concept.
 
@@ -415,7 +403,6 @@ At the end of Phase 0, Sensus can:
 - \- Request alternative delivery options.
 
 - \- Stop without making a further commitment.
-
 
 ## 8. Indicative delivery approach
 
@@ -458,7 +445,6 @@ Four weeks covering the work described above.
 - \- Launch rehearsal, production release, and stabilization.
 
 Some Phase 1 activities can run in parallel once the core interfaces and operating rules are stable. The final sequencing will be proposed at the end of Phase 0.
-
 
 ## 9. Main assumptions and exclusions
 
@@ -504,36 +490,34 @@ Some Phase 1 activities can run in parallel once the core interfaces and operati
 
 External transaction and software fees are also excluded from the development estimate.
 
-
 ## 10. Principal risks
 
-| Risk | Proposed response |
-| --- | --- |
-| The operating model is not fully defined | Resolve the main rules and responsibilities |
-|   | during fixed-price Phase 0 |
-| Multi-house order logic is more complex | Validate the critical transaction through the |
-| than expected | proof of concept |
-| Houses share stock with other sales | Confirm the authoritative source and |
-| channels | estimate synchronization separately |
-| Product customs information is incomplete Require validated information before |   |
-|   | publication |
-| Shipping subsidies affect margin | Model customer charges and house |
-|   | allocation during discovery |
-| Refunds occur after supplier payment | Use delayed release, reserves, and |
-|   | financial-ledger adjustments |
-| Payment or shipping providers do not | Validate pilot countries and legal entities |
-| support every country | early |
-| Distributed returns create inconsistent | Agree routing, inspection, responsibility, |
-| service | and timing before implementation |
-| External providers fail temporarily | Use safe retries, monitoring, reconciliation, |
-|   | and manual recovery tools |
-| One house gains access to another house’s | Enforce server-side isolation and include |
-| data | dedicated security tests |
-| Designs, content, or decisions arrive late | Agree dependencies and delivery dates |
-|   | during Phase 0 |
-| The operational team is not ready for | Use pilot houses, training, procedures, and |
-| launch | launch rehearsals |
-
+| Risk                                                                           | Proposed response                             |
+| ------------------------------------------------------------------------------ | --------------------------------------------- |
+| The operating model is not fully defined                                       | Resolve the main rules and responsibilities   |
+|                                                                                | during fixed-price Phase 0                    |
+| Multi-house order logic is more complex                                        | Validate the critical transaction through the |
+| than expected                                                                  | proof of concept                              |
+| Houses share stock with other sales                                            | Confirm the authoritative source and          |
+| channels                                                                       | estimate synchronization separately           |
+| Product customs information is incomplete Require validated information before |                                               |
+|                                                                                | publication                                   |
+| Shipping subsidies affect margin                                               | Model customer charges and house              |
+|                                                                                | allocation during discovery                   |
+| Refunds occur after supplier payment                                           | Use delayed release, reserves, and            |
+|                                                                                | financial-ledger adjustments                  |
+| Payment or shipping providers do not                                           | Validate pilot countries and legal entities   |
+| support every country                                                          | early                                         |
+| Distributed returns create inconsistent                                        | Agree routing, inspection, responsibility,    |
+| service                                                                        | and timing before implementation              |
+| External providers fail temporarily                                            | Use safe retries, monitoring, reconciliation, |
+|                                                                                | and manual recovery tools                     |
+| One house gains access to another house’s                                      | Enforce server-side isolation and include     |
+| data                                                                           | dedicated security tests                      |
+| Designs, content, or decisions arrive late                                     | Agree dependencies and delivery dates         |
+|                                                                                | during Phase 0                                |
+| The operational team is not ready for                                          | Use pilot houses, training, procedures, and   |
+| launch                                                                         | launch rehearsals                             |
 
 ## 11. Decisions required to establish the foundation
 
@@ -566,7 +550,6 @@ The following questions are the most important for the initial conversation. Mor
 Answers are not required before entering Phase 0.
 
 Resolving them is a key Phase 0 outcome.
-
 
 ## 12. Recommended next steps
 

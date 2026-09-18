@@ -15,6 +15,7 @@ Clean Architecture — don't restate it here, follow it at the source:
   follow when extending"
 
 ## The general principle, for when a new situation doesn't map cleanly onto
+
 ## an existing rule above
 
 - Inner layers (domain/business logic) never depend on outer layers
@@ -22,7 +23,7 @@ Clean Architecture — don't restate it here, follow it at the source:
   fully testable without an HTTP request object or an Express-shaped
   req/res in scope.
 - A dependency points inward: `API routes → workflows → module services →
-  persistence`. If you find a module service reaching back out to read
+persistence`. If you find a module service reaching back out to read
   something from the HTTP layer, or a workflow importing an Express type,
   that's the boundary being crossed backwards — stop and route the data in
   as a plain input instead.

@@ -24,7 +24,7 @@ vendor-booked-quantity input that replaces it.
    against the same last unit before either system's update reaches the other — and
    what's the cheapest fix if it does?
 2. Do independent vendors' catalogues collide on Medusa's globally-unique variant
-   columns (`sku`, `barcode`, `ean`, `upc` — unique across the *whole* catalogue, not
+   columns (`sku`, `barcode`, `ean`, `upc` — unique across the _whole_ catalogue, not
    per product) often enough in practice to need a namespacing strategy before this
    goes live?
 3. Can a re-runnable, resumable sync (product/variant/price/image/inventory in,
@@ -66,8 +66,9 @@ before drawing any conclusion from it:
     historical order import." This project's own rule against raw SQL / "always the
     Medusa way, no workarounds" (`agents/backend.md`) already rules that out.
 
-**Decision:** not installed. Worth reusing as *technique*, not as code, once building
+**Decision:** not installed. Worth reusing as _technique_, not as code, once building
 starts:
+
 - Its resumable sync-run job-tracking model — one row per manual run holding a cursor,
   running/completed/failed/stopped status, per-page counters, and a `stop_requested`
   flag the executor checks before each page — closely matches what Medusa's own
@@ -78,7 +79,7 @@ starts:
   a pragmatic default before anything more deliberate is designed for the
   cross-vendor SKU-collision question above.
 - Its "structural option drift" handling — when a vendor adds a new option axis
-  (e.g. a new "Quantity" variant dimension) on Shopify *after* the initial sync, it
+  (e.g. a new "Quantity" variant dimension) on Shopify _after_ the initial sync, it
   updates the Medusa product's options first, then backfills existing variants' option
   values from Shopify's own `selectedOptions`, falling back to skipping just that
   variant if the structural change is rejected. This is a real edge case worth
@@ -91,6 +92,7 @@ server's import-guide tool) as the base shape, adapted for our two directions an
 per-vendor multiplicity:
 
 **In (Shopify → Medusa), per connected vendor:**
+
 - A module owning: a per-vendor connection record (store domain, encrypted
   credentials, last-synced cursor/timestamp) instead of the plugin's singleton config;
   a job-progress model (status, cursor, created/updated/failed counters, resumable);
@@ -112,7 +114,8 @@ plugin and needs its own workflow.
 
 **Known gotchas to design around from the start** (confirmed against Shopify's Admin
 API and Medusa's product-import DTOs, current as of this evaluation):
-- Shopify prices are decimal *strings* in the shop's own default currency — never
+
+- Shopify prices are decimal _strings_ in the shop's own default currency — never
   multiply by 100, and don't assume it matches our store's default currency.
 - Medusa's batch-product input wants tag/category/type **ids**, not the
   `{ value: "x" }` shape — the latter silently drops the field rather than erroring.
@@ -122,7 +125,7 @@ API and Medusa's product-import DTOs, current as of this evaluation):
 - Re-import should update product-level fields conservatively and avoid blindly
   pushing a variants array through the update path, since Medusa's update input
   treats an omitted variant as "delete this variant."
-- `sku` / `barcode` / `ean` / `upc` are unique across the *entire* Medusa catalogue,
+- `sku` / `barcode` / `ean` / `upc` are unique across the _entire_ Medusa catalogue,
   not per product — this is Question 2 above, and needs a real answer (reject on
   collision, or namespace per vendor) before two independent vendors' stores can both
   connect safely.
@@ -244,7 +247,7 @@ shape) — creates new products (linked to the vendor via
 `additional_data.vendor_id`) and updates already-imported ones (matched by
 `external_id`), forcing `status: proposed` on either path so staff re-approves
 a re-synced product exactly like a new one. This workflow above
-(`sync-shopify-products/`) stays as it was — create-only, no vendor link — 
+(`sync-shopify-products/`) stays as it was — create-only, no vendor link —
 since it's now only what the Admin debug widget calls, not a real trigger.
 Variant handling on update is a full replace (Shopify's current variant set
 wins entirely), not a preserve-by-identity merge — deliberate, since no
@@ -265,7 +268,7 @@ The pull briefly had a staff-facing Admin button (`product.list.before` widget +
 an `/admin/shopify-sync/test-pull` route) purely to prove the mechanics fast.
 Removed once the mechanics were proven: **a staff member clicking a button to
 pull a specific vendor's Shopify catalogue is the wrong long-term shape** — the
-trigger belongs wherever a vendor manages *its own* Shopify connection, not on a
+trigger belongs wherever a vendor manages _its own_ Shopify connection, not on a
 page staff use for every vendor's products at once. The workflow itself
 (`src/workflows/sync-shopify-products/`) and its underlying pull were
 unaffected and stayed — only the staff-facing front door was removed at the

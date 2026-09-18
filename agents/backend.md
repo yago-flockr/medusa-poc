@@ -56,12 +56,12 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
   Names are mechanically derived from the HTTP verb + resource, the same way `@dtc/api-contracts` derives a schema name from method + path — never hand-picked. Step file names follow a fixed verb vocabulary that also tells you whether it needs compensation:
 
-  | Step does | File | Const | Compensation |
-  | --- | --- | --- | --- |
-  | I/O precondition check, throws if invalid | `assert-<thing>.ts` | `assert<Thing>Step` | none — nothing mutated |
-  | Fetch + return a value (may also assert) | `resolve-<thing>.ts` | `resolve<Thing>Step` | none |
-  | Pure read, no assert | `list-`/`get-<thing>.ts` | `list<Thing>Step` | none |
-  | Mutation | `create-`/`update-`/`delete-<thing>.ts` | `create<Thing>Step` | real, always (rule 8 below) |
+  | Step does                                 | File                                    | Const                | Compensation                |
+  | ----------------------------------------- | --------------------------------------- | -------------------- | --------------------------- |
+  | I/O precondition check, throws if invalid | `assert-<thing>.ts`                     | `assert<Thing>Step`  | none — nothing mutated      |
+  | Fetch + return a value (may also assert)  | `resolve-<thing>.ts`                    | `resolve<Thing>Step` | none                        |
+  | Pure read, no assert                      | `list-`/`get-<thing>.ts`                | `list<Thing>Step`    | none                        |
+  | Mutation                                  | `create-`/`update-`/`delete-<thing>.ts` | `create<Thing>Step`  | real, always (rule 8 below) |
 
   Input/output types: `<PascalCase(name)>WorkflowInput`, `<PascalCase(name)>StepInput`/`StepOutput`. Mapper functions: plain camelCase of the filename, no suffix (`build-countries.ts` → `buildCountries`). Named exports only — no `export default`; that existed only to make a folder importable as one path, which one-file-per-thing no longer needs.
 
@@ -79,9 +79,10 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
   Shared-step tiering, promoted only once a second real consumer at that tier needs it, never speculatively: `workflows/shared/steps/` crosses actors entirely (vendor + admin + storefront); `workflows/<actor>/shared/steps/` (plural actor, e.g. `workflows/vendors/shared/`) crosses 2+ sub-domains of one actor (e.g. `resolve-vendor-user`, called from most `/vendors/*` domains); a step used by exactly one domain stays in that domain's own `steps/`.
 
-  `workflows/hooks/*.ts` is a different thing (callbacks registered onto an *existing* core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat, outside this convention — it was never a workflow of its own.
+  `workflows/hooks/*.ts` is a different thing (callbacks registered onto an _existing_ core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat, outside this convention — it was never a workflow of its own.
 
   **Old shape, still present in unmigrated domains:** `workflows/<name>/index.ts` holds the `createWorkflow` composition; `workflows/<name>/steps/<step-name>.ts` holds one `createStep` per file. No `steps/index.ts` barrel either way.
+
 - `links/`: links between module data models
 - `subscribers/`: react to Medusa events
 - `jobs/`: scheduled work (payouts later)
@@ -90,11 +91,12 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 - `seeds/` (app root, **not** under `src/` — it's demo/test data, not application source): one file per entity, but only ever one thing actually gets run — `seed.ts` is the single `medusa exec` entry point (`pnpm run seed`), and just calls the three below in order. Each keeps its own `pnpm run seed:<name>` script too, for running just one on its own; `seed.ts` isn't a copy of their logic, it imports and calls their default-exported functions directly, so there's exactly one place each one's behavior is defined.
   1. `seed-catalog.ts` — platform-level setup only: sales channel, publishable key, store currencies, regions, tax regions. No stock location, no shipping, no demo products/categories/options — those are always created by vendors (`seed-vendors.ts` locally, or the real vendor panel, via `createVendorStockLocationWorkflow`/`createVendorProductWorkflow`), never by this script. A stock location seeded here that belonged to no vendor used to duplicate the vendor-location shipping setup with a different (paid, flat-rate) pricing scheme — removed once `createVendorStockLocationWorkflow` started auto-provisioning free shipping per vendor location, since a vendor now always has one real place its own products can hold stock. **Not idempotent**: assumes a fresh DB, re-running errors on duplicate handles/regions. Run alone with `pnpm run seed:catalog`. The store + default sales channel are the one exception: Medusa's core migration already creates one of each (store defaults to `eur` only), so this script now looks them up first and reuses/updates them (`updateStoresWorkflow`) instead of always calling `createStoresWorkflow`/`createSalesChannelsWorkflow` — blindly creating a second store previously left the migration-created, EUR-only store as the one `resolve-store-prerequisites.ts` (and everything downstream, incl. vendor product pricing) resolves via `query.graph({ entity: "store" })`, so vendor products silently got EUR-only prices while every seeded region was GBP/USD — the exact cause of a "can't add to cart" 500 (Medusa core's `prepare-variants-and-items-with-prices` step throws an unhandled `TypeError` instead of a clean validation error when a variant has no price in the cart's currency).
   2. `seed-identity.ts` — the admin user only, via the same workflow the admin routes use. **Idempotent**: skips if a user with that email already exists. Run alone with `pnpm run seed:identity`.
-  3. `seed-vendors.ts` — two fixed demo vendors (`asd@asd.com` / `zxc@zxc.com`, not randomly generated — memorable logins someone can actually type from memory, not a different faker output every rebuild), each with a vendor user, a stock location, and 2 vendor products (2-3 priced variants each, stocked at that location), built through the *same* `createVendorWorkflow`/`createVendorUserWorkflow`/`createVendorStockLocationWorkflow`/`createVendorProductWorkflow`/`setVendorInventoryLevelWorkflow` + `resolveStorePrerequisites`/`resolveProductVariants` helpers the real vendor panel and `POST /vendors/products` route use (`src/lib/resolve-store-prerequisites.ts`, `src/api/vendors/products/build-variants.ts`) rather than reimplementing any of it. **Idempotent**: skips any vendor/vendor user/location/product that already exists (by handle/email/vendor-ownership/handle respectively) instead of erroring. Depends on `seed-catalog.ts` having already created the shipping profile and default sales channel, so it must run after it. Run alone with `pnpm run seed:vendors`.
+  3. `seed-vendors.ts` — two fixed demo vendors (`asd@asd.com` / `zxc@zxc.com`, not randomly generated — memorable logins someone can actually type from memory, not a different faker output every rebuild), each with a vendor user, a stock location, and 2 vendor products (2-3 priced variants each, stocked at that location), built through the _same_ `createVendorWorkflow`/`createVendorUserWorkflow`/`createVendorStockLocationWorkflow`/`createVendorProductWorkflow`/`setVendorInventoryLevelWorkflow` + `resolveStorePrerequisites`/`resolveProductVariants` helpers the real vendor panel and `POST /vendors/products` route use (`src/lib/resolve-store-prerequisites.ts`, `src/api/vendors/products/build-variants.ts`) rather than reimplementing any of it. **Idempotent**: skips any vendor/vendor user/location/product that already exists (by handle/email/vendor-ownership/handle respectively) instead of erroring. Depends on `seed-catalog.ts` having already created the shipping profile and default sales channel, so it must run after it. Run alone with `pnpm run seed:vendors`.
 
   Also here: `sync-publishable-key.ts` (publishable key sync). Root `pnpm run db:reset` (`scripts/reset-db.sh`) is the occasional full-reset escape hatch — wipes the DB (drops and recreates the `public` schema), reruns migrations + `pnpm run seed` from zero, then runs `sync-publishable-key.ts` itself (skipped with a log line if `apps/storefront/.env.local` doesn't exist) — every reset generates a brand-new publishable key, so without this the storefront is silently left pointing at a key that no longer exists. Prompts for confirmation unless passed `-y`/`--yes`. Not something to reach for between every feature now that identity and vendor seeding are both safe to rerun on their own.
+
 - `workflows/create-admin-user/`: mirrors `create-vendor-user/` exactly (register an emailpass auth identity → create the domain row → `setAuthAppMetadataStep` to link them), but for the `user` actor type and with a caller-chosen password instead of a random one — an admin/staff login is meant to be typed in and known, unlike a vendor's. Exists because `medusa user` (the CLI command that normally creates an admin) is not reliably re-runnable: it sometimes throws "User with email: ..., already exists" instead of a graceful no-op, which is exactly what broke a plain wipe-free reseed. `seed-identity.ts` checks for an existing user by email first and only calls this workflow when there isn't one.
-- `integrations/`: one folder per external, non-Medusa system this app talks to (currently just `shopify`) — owns that system's client, auth, and mapper code, and nothing outside it should reach past the folder's public exports into another external system's internals. Not for Medusa-internal cross-module concerns (that's `links/`). The URL surface for a given integration mirrors this: every vendor- or admin-facing route touching it nests under a **static** `.../shopify/...` segment (`/vendors/shopify/products`, `/vendors/shopify/connection`, `/admin/vendors/:id/shopify/products`) rather than a dynamic `[integration]` catch-all. `/vendors/me` is reserved exclusively for the vendor's own identity/profile (mirroring Medusa's own `/store/customers/me` convention) — every other vendor-scoped resource (`shopify`, `products`, `orders`, `stock-locations`, `regions`) is equally scoped to `auth_context.actor_id` but does **not** get a `me` segment, since routing everything through the actor already makes it "mine"; adding `me` to just one resource would imply the others aren't actor-scoped, which is false. A second integration gets its own sibling static segment when it's real, with its own `middlewares.ts`/contract entries — deliberately not a shared generic dispatcher, since that would force every future integration's routing to be decided by a runtime string switch instead of Medusa's own file-based routing, and would bet on a shape for an integration that doesn't exist yet. Inside one integration's folder, split by role, not by convenience: `client.ts` is the generic transport for that external API (auth headers, request/response envelope, error mapping — zero resource-specific knowledge, e.g. `runShopifyQuery` + `ShopifyStoreCredentials`), and `oauth.ts` covers connection/auth flow the same way; both stay flat at the folder root. A resource-specific file per thing being synced (`products.ts` today; a future `orders.ts`/`stock.ts` once two-way sync grows beyond products, per the marketplace constraints below) holds that resource's queries/mutations and shape-mapping, built on top of `client.ts` rather than duplicating it. `mappers/` holds shape-translation functions that convert an external resource into a Medusa create/update input (kept separate from the resource file itself since it's translating *into* our domain, not just querying the external one). `helpers/` holds pure, local support logic that never leaves this app — assertions, dedupe-by-`external_id` lookups against our own DB, anything that isn't itself a call to the external API. Copy this shape (`client`/`oauth` at root, one file per resource, `mappers/`, `helpers/`) for a second integration or a new resource within this one, rather than inventing a new split.
+- `integrations/`: one folder per external, non-Medusa system this app talks to (currently just `shopify`) — owns that system's client, auth, and mapper code, and nothing outside it should reach past the folder's public exports into another external system's internals. Not for Medusa-internal cross-module concerns (that's `links/`). The URL surface for a given integration mirrors this: every vendor- or admin-facing route touching it nests under a **static** `.../shopify/...` segment (`/vendors/shopify/products`, `/vendors/shopify/connection`, `/admin/vendors/:id/shopify/products`) rather than a dynamic `[integration]` catch-all. `/vendors/me` is reserved exclusively for the vendor's own identity/profile (mirroring Medusa's own `/store/customers/me` convention) — every other vendor-scoped resource (`shopify`, `products`, `orders`, `stock-locations`, `regions`) is equally scoped to `auth_context.actor_id` but does **not** get a `me` segment, since routing everything through the actor already makes it "mine"; adding `me` to just one resource would imply the others aren't actor-scoped, which is false. A second integration gets its own sibling static segment when it's real, with its own `middlewares.ts`/contract entries — deliberately not a shared generic dispatcher, since that would force every future integration's routing to be decided by a runtime string switch instead of Medusa's own file-based routing, and would bet on a shape for an integration that doesn't exist yet. Inside one integration's folder, split by role, not by convenience: `client.ts` is the generic transport for that external API (auth headers, request/response envelope, error mapping — zero resource-specific knowledge, e.g. `runShopifyQuery` + `ShopifyStoreCredentials`), and `oauth.ts` covers connection/auth flow the same way; both stay flat at the folder root. A resource-specific file per thing being synced (`products.ts` today; a future `orders.ts`/`stock.ts` once two-way sync grows beyond products, per the marketplace constraints below) holds that resource's queries/mutations and shape-mapping, built on top of `client.ts` rather than duplicating it. `mappers/` holds shape-translation functions that convert an external resource into a Medusa create/update input (kept separate from the resource file itself since it's translating _into_ our domain, not just querying the external one). `helpers/` holds pure, local support logic that never leaves this app — assertions, dedupe-by-`external_id` lookups against our own DB, anything that isn't itself a call to the external API. Copy this shape (`client`/`oauth` at root, one file per resource, `mappers/`, `helpers/`) for a second integration or a new resource within this one, rather than inventing a new split.
 - `lib/`: shared helpers with no domain/vendor ownership (default markets seed config, generic store-prerequisite resolution, random password generation, the `ExternalProduct` type + `build-medusa-product-input.ts`'s create/update-input builders — see below). If a helper is specific to one external integration, it belongs in `integrations/<name>/`, not here — `lib/` drifting into an integration's dumping ground is exactly the mess this rule exists to prevent.
 
 ## Patterns to follow when extending
@@ -127,7 +129,7 @@ is still real, working code, but Sensus's answers mean it's no longer the
 intended path for a vendor's catalogue to arrive. A vendor's own Shopify
 store is meant to be the source of that data, synced in, not typed into
 this API by the vendor themselves. See `docs/plan.md` Decisions for the
-full reasoning. The vendor-facing UI that *created/edited product content* through this API
+full reasoning. The vendor-facing UI that _created/edited product content_ through this API
 (title, description, images, variants — typed in by hand) was removed and
 stays removed — a vendor's catalogue content comes from their Shopify store,
 not from typing it into this API. What did come back, on a separate
@@ -135,7 +137,7 @@ not from typing it into this API. What did come back, on a separate
 self-approval entry below) — that's not a reversal of the "don't type
 products in by hand" decision, it's a different capability (manage an
 already-arrived product's visibility) layered on the same untouched API.
-Don't extend the create/update surface's *content* fields (title/images/
+Don't extend the create/update surface's _content_ fields (title/images/
 variants) assuming it's the long-term ingestion path — extend the sync
 design instead when that work
 starts.
@@ -297,7 +299,7 @@ starts.
   delete it (`DELETE /vendors/products/:id`, unchanged, no confirmation at
   the API level — the storefront adds its own `window.confirm` before
   calling it). Staff can still review from the unmodified Admin product page
-  too; nothing there was removed, it's just no longer the *only* way a
+  too; nothing there was removed, it's just no longer the _only_ way a
   product goes live. Variant/option
   authoring and image upload are done, including **per-variant pricing**: a
   vendor passes `options` (e.g. Size/Color) and one `variants` entry per
@@ -328,7 +330,7 @@ starts.
   /vendors/products/:id` never reached the variant's linked InventoryItem
   row.** Every synced-in Shopify variant is created with `sku: null` (real
   Shopify catalogues commonly have no SKU set), so filling one in through the
-  edit form — required before publish, per the gate above — is the *only*
+  edit form — required before publish, per the gate above — is the _only_
   way an external product's variant ever gets a SKU. Confirmed by direct
   inspection and live testing: Medusa's core `updateProductVariantsWorkflow`
   (what this route calls to save the new SKU) only ever writes
@@ -365,7 +367,7 @@ starts.
   not a gap, it's Medusa's real, fully-supported "untracked stock" mode:
   traced through the cart-confirmation and fulfillment code, no inventory
   item, location, or reservation is ever required or checked for such a
-  variant, at any stage. The one piece that *was* a real gap: vendor
+  variant, at any stage. The one piece that _was_ a real gap: vendor
   products got no `shipping_profile_id` at all, which let checkout complete
   but threw a hard error the moment staff tried to fulfill the order (Medusa
   requires the order item's product's shipping profile to match the chosen
@@ -375,7 +377,7 @@ starts.
   product at creation (`src/api/vendors/products/route.ts`) — no new model,
   no per-vendor warehouse system. Additionally, `create-consignments`
   (`steps/assert-items-fulfillable.ts`) now checks every cart item's product
-  has a shipping profile *before* the cart is ever completed into an order,
+  has a shipping profile _before_ the cart is ever completed into an order,
   not after — so a still-missing profile (e.g. on data from before this fix)
   surfaces as a checkout error, not as an order that silently can never
   ship. Verified live: a product with no shipping profile is blocked with a
@@ -389,7 +391,7 @@ starts.
   a linked product can be deleted — `deleteProductsWorkflow` already handles
   that itself, for any module link, confirmed by direct testing — which in
   turn surfaced a **real, pre-existing bug** in the Brand feature's own
-  `deleteProductsWorkflow.hooks.productsDeleted` handler that blocked *every*
+  `deleteProductsWorkflow.hooks.productsDeleted` handler that blocked _every_
   product deletion in the system, not just vendors'. That hook (and the
   vendor route's own unnecessary link-dismissal workflow) were both removed
   rather than fixed, once testing showed neither was solving a real problem.
@@ -456,7 +458,7 @@ starts.
   and regenerated on every `pnpm run build`/`pnpm run dev` via the
   `prebuild`/`predev` scripts (npm/pnpm's lifecycle convention). Committing the
   schema file matters because `@shopify/api-codegen-preset` only hits the
-  network (`shopify.dev`) when that file is *absent* — with it committed, a
+  network (`shopify.dev`) when that file is _absent_ — with it committed, a
   fresh clone, CI run, or Cloud deploy generates types purely locally, no
   network dependency on Shopify's schema proxy at build time. Run
   `pnpm run shopify-codegen:refresh-schema` (deletes the committed schema file,
@@ -471,7 +473,7 @@ starts.
   debug-only "Log a vendor's Shopify products" widget on the Admin Products
   list page (vendor ID input → console.log the raw pull, nothing is created)
   — explicitly a manual verification tool, not a production trigger. An
-  earlier staff-facing button that actually *created* products from that
+  earlier staff-facing button that actually _created_ products from that
   same shared-across-vendors surface was built then deliberately removed for
   being the wrong surface for that.
 
@@ -481,7 +483,7 @@ starts.
   product flagged `already_imported` by matching `external_id`), checks
   which ones to bring in or re-sync (pre-checked if already imported), and
   `POST /vendors/shopify/products/import` (`src/api/vendors/
-  shopify/products/import/route.ts`) runs a new, separate workflow —
+shopify/products/import/route.ts`) runs a new, separate workflow —
   `src/workflows/import-vendor-shopify-products/` — that re-fetches exactly
   those checked products fresh from Shopify (`pullShopifyProductsByIds` in
   `integrations/shopify/products.ts`; never trusts the product payload the frontend
@@ -562,12 +564,12 @@ starts.
   confirmed it reused an existing shared option rather than creating its own.
 
   **Real bug hit in production use, now fixed:** importing two or more
-  brand-new products in the *same* batch that both introduce the same
+  brand-new products in the _same_ batch that both introduce the same
   never-before-seen shared option title (e.g. two new products both getting
   a "Color" option for the first time) threw `"Product option with title:
-  color, already exists."` `resolveSharedOptionsWithLocking` used to defer
+color, already exists."` `resolveSharedOptionsWithLocking` used to defer
   creating a missing shared option to the later bulk `createProductsWorkflow`
-  call, and only handled races for options that *already* existed (locked
+  call, and only handled races for options that _already_ existed (locked
   per-id, re-read under the lock) — a title with no existing row at all had
   no such guard, so two occurrences of it in one flattened batch each built
   their own fresh `{title, values, is_exclusive: false}` object, and the
@@ -583,9 +585,9 @@ starts.
   option id with values unioned, not two competing rows.
 
   **The Shopify→Medusa product mapping is split into a generic core (`lib/
-  external-product.ts` + `lib/build-medusa-product-input.ts`) and a thin
+external-product.ts` + `lib/build-medusa-product-input.ts`) and a thin
   Shopify-specific adapter (`integrations/shopify/mappers/
-  product-input.mapper.ts`), so a second integration wouldn't have to
+product-input.mapper.ts`), so a second integration wouldn't have to
   reinvent the variant/option-building logic — only its own translation
   into the neutral shape.** `ExternalProduct` (`external_id`, `external_source`,
   `title`, `description`, `handle`, `image_urls`, `options`, `variants`) is
@@ -601,7 +603,7 @@ starts.
   field recording which system wrote it — real ambiguity today, not a
   hypothetical: `buildCreateProductInputFromExternal` now always sets
   `metadata.external_source`, and `integrations/shopify/helpers/
-  resolve-existing-products.ts`'s `findExistingShopifyProductIds` filters on
+resolve-existing-products.ts`'s `findExistingShopifyProductIds` filters on
   it (`metadata.external_source === "shopify"`) in addition to `external_id`,
   so a future second integration's ids can never be misread as an existing
   Shopify product. Medusa merges (doesn't replace) `metadata` on update, so
@@ -619,7 +621,7 @@ starts.
   the array is the only shape, for both display and editing.**
   `@dtc/api-contracts/admin/vendors`' `vendorSchema` carries
   `integration_connections: {provider, external_account_identifier,
-  client_id, connected}[]` (`connected` = has a non-null `connected_at`;
+client_id, connected}[]` (`connected` = has a non-null `connected_at`;
   `client_secret` is never round-tripped back — write-only). The Vendors
   table's "Integrations" column counts connected entries the same way its
   own "Users" column already counts `users.length` — copy that accessor
@@ -627,7 +629,7 @@ starts.
   status-badge-per-provider approach that doesn't scale past one
   integration. The edit drawer (`admin/forms/vendors/update-vendor.tsx`)
   submits a matching nested `integration_connection: {provider: "shopify",
-  external_account_identifier, client_id, client_secret}` — `provider` is a
+external_account_identifier, client_id, client_secret}` — `provider` is a
   literal `"shopify"` in `updateVendorSchema` today (honest about there
   being exactly one real integration; widening it to more literals or a
   bare string is a one-line change once a second provider exists, not a
@@ -655,7 +657,7 @@ starts.
   widget: `medusa-config.ts` enables the `view_configurations` feature flag
   (Medusa v2.18+, marked experimental upstream) and registers
   `@medusajs/medusa/settings` with `entityOverrides.Product.
-  defaultVisibleFields: ["vendor.name"]` (plus a `defaultFieldOrdering`
+defaultVisibleFields: ["vendor.name"]` (plus a `defaultFieldOrdering`
   entry). This is the only supported way to add a genuine column to a core
   Admin data table — a widget zone (`product.list`/`.before`/`.after`) can
   only place a separate block above/below/within the list page, never a
@@ -676,24 +678,25 @@ starts.
   pull mechanics. Don't extend the spike workflow to match the new one's
   behavior. It does share the product-input mapping and prerequisite-resolution
   logic with the real workflow now — both call `integrations/shopify/mappers/
-  product-input.mapper.ts` and `workflows/shared/steps/
-  resolve-shopify-product-prerequisites.ts` rather than each hand-rolling its
+product-input.mapper.ts` and `workflows/shared/steps/
+resolve-shopify-product-prerequisites.ts` rather than each hand-rolling its
   own copy — since that shared need materialized (the two had drifted into
   duplicate, silently-diverging logic) and got extracted per the rule above.
   Still don't extend the spike workflow's own create-only/no-vendor-link
   behavior to match the real one's; that's a deliberate, separate difference,
   not drift.
+
 - **Vendor's Shopify connection uses OAuth authorization-code-grant, one
   Shopify app per vendor — see `shopify-app-config.md` and
   `docs/vendor-shopify-connection-guide.md`.**
   Superseded the client-credentials approach the pull spike started with,
   which only works for stores in our own Shopify organization and can never
   work for a real vendor's independent store. `src/api/hooks/shopify/oauth/callback`
-  + `src/workflows/complete-vendor-shopify-connection/` handle Shopify's
-  redirect and save the access token/scope/connected-at. Confirmed hands-on:
-  Shopify's Custom Distribution caps a single app at one live production
-  store, so "one app per vendor" isn't a choice, it's a platform constraint —
-  see `docs/plan.md`'s Open Questions entry for the full reasoning.
+  - `src/workflows/complete-vendor-shopify-connection/` handle Shopify's
+    redirect and save the access token/scope/connected-at. Confirmed hands-on:
+    Shopify's Custom Distribution caps a single app at one live production
+    store, so "one app per vendor" isn't a choice, it's a platform constraint —
+    see `docs/plan.md`'s Open Questions entry for the full reasoning.
 - **Per-integration connection credentials live on their own model,
   `modules/vendor/models/vendor-integration-connection.ts`
   (`vendor_integration_connection`, one row per vendor+provider), not as
@@ -706,7 +709,7 @@ starts.
   `client_id`, `client_secret`, `access_token`, `scope`, `connected_at`,
   `oauth_state`) — the standard "connected account" pattern, one row per
   vendor+provider. `workflows/shared/steps/
-  upsert-vendor-integration-connection.ts` is the one place that creates or
+upsert-vendor-integration-connection.ts` is the one place that creates or
   updates a connection (looks up by `vendor_id`+`provider`, creates if
   missing, updates in place otherwise — verified hands-on that a second call
   updates the same row rather than duplicating it), with real compensation
@@ -714,12 +717,12 @@ starts.
   update-then-fail). `updateVendorStep`/`updateVendorWorkflow` now only
   touch plain vendor fields (`name`/`handle`/`is_active`); a caller that also
   needs to touch a connection passes an optional `integration_connection:
-  {provider, ...}` and the workflow composes both steps. The wire contracts
+{provider, ...}` and the workflow composes both steps. The wire contracts
   (`@dtc/api-contracts/admin/vendors`, `@dtc/api-contracts/vendor/me`,
   `.../shopify-connection`, `.../shopify-products`) deliberately keep their
   existing flat Shopify-named fields (`shopify_store_domain` etc.) unchanged
   — those describe a genuinely Shopify-scoped endpoint or a UI's display
-  shape, so only the *internal* storage/route logic generalized; each admin
+  shape, so only the _internal_ storage/route logic generalized; each admin
   route re-flattens `vendor.integration_connections` back to those fields
   before responding (`api/admin/vendors/map-vendor-response.ts`). Legacy-data
   note (see the POC data policy in `agents/overview.md`): the migration
@@ -776,7 +779,7 @@ staff, never self-serve, so this is the only way one is created.
 Brief: `docs/features/affiliate-referrals.md`. Decisions: `docs/plan.md`.
 **Nomenclature — two nouns, one job each.** `Affiliate` is the person;
 `Referral` is the immutable record created at order placement. The test: if it
-exists *before* an order, it cannot be called a referral. The affiliate's public
+exists _before_ an order, it cannot be called a referral. The affiliate's public
 identifier is their **`handle`** (same word as `Vendor.handle`/`Product.handle`),
 and it travels as `affiliate_handle` everywhere — additional_data, cart metadata,
 the storefront cookie, and frozen onto `Referral.affiliate_handle`. The single
@@ -791,7 +794,7 @@ The chain, in order:
    `@dtc/api-contracts/common/cart-affiliate` — because both apps must agree on
    it; wired in via `api/store/carts/middlewares.ts` (Zod, so a non-string 400s).
    Medusa's own `StoreCreateCart`/`StoreUpdateCart` types omit `additional_data`
-   entirely though the routes accept it, so the storefront's cart *update* call
+   entirely though the routes accept it, so the storefront's cart _update_ call
    goes through `sdk.client.fetch` rather than `sdk.store.cart.update`.
 3. `createCartWorkflow.hooks.cartCreated` / `updateCartWorkflow.hooks.cartUpdated`
    (`workflows/hooks/created-cart.ts`, `updated-cart.ts`) merge the handle into
@@ -805,7 +808,7 @@ The chain, in order:
 Rules the code enforces, verified by real checkouts:
 
 - **Attribution never fails an order.** Unknown handle, inactive affiliate, or no
-  handle at all → the order completes with no referral. The handle is *not*
+  handle at all → the order completes with no referral. The handle is _not_
   validated at cart time, so `cart.metadata.affiliate_handle` is untrusted until
   step 4 resolves it.
 - **`Referral` copies `affiliate_handle` and `commission_rate` as plain values.**
@@ -826,7 +829,14 @@ Rules the code enforces, verified by real checkouts:
 
 ## Testing
 
-Two tiers, both real Jest (`pnpm run test:unit` / `pnpm run test:integration:http`), no third mocking-heavy tier:
+Two tiers, both real Jest (`pnpm run test:unit` / `pnpm run test:integration:http`), no third mocking-heavy tier.
+
+**Integration specs truncate between tests.** Each `it` starts from a DB with
+only what `beforeAll` created — rows written inside one `it` are gone by the
+next. Build each test's fixtures inside that test (see
+`integration-tests/http/affiliates.spec.ts`, which seeds its own affiliate per
+case); chaining state across `it` blocks fails in confusing ways, because the
+admin JWT minted in `beforeAll` keeps working while the rows it created vanish.
 
 - **Unit** (`src/**/__tests__/**/*.unit.spec.ts`, colocated with the source it tests) — **pure functions only**, zero container, zero DB, zero mocking of Medusa internals. Every `mappers/` function is exactly this shape by construction, so it gets a matching `mappers/__tests__/<name>.unit.spec.ts` — one spec file per mapper file, same one-thing-per-file discipline as everything else in `workflows/`. A step or workflow itself (I/O-based) is not unit-tested this way — Medusa's step/workflow engine isn't meaningfully testable without a real container.
 - **Integration** (`integration-tests/http/<domain>.spec.ts`, `@medusajs/test-utils`'s `medusaIntegrationTestRunner`) — a full real app boot + real temp Postgres DB + real HTTP requests through `api` (a plain axios instance — non-2xx throws, assert with `.rejects.toMatchObject({ response: { status } })`, not a `try/catch`). This is the actual replacement for hand-verifying a route with `curl`/`medusa exec` during development — it exercises auth middleware, CORS, the route, the workflow, and response validation together, which a mapper unit test or a direct `medusa exec` workflow call both skip. Seed test fixtures (vendor, vendor user, region, etc.) directly through the same workflows the real app uses, via `getContainer()` in `beforeAll` — never hand-insert rows. Always `jest.setTimeout(60000)` at the top of the file — Jest's 5s default is far too short for a full migration + app boot.
@@ -847,6 +857,10 @@ From `apps/backend`:
 - `pnpm exec medusa exec ./seeds/<file>.ts`
 - `pnpm run test:unit` — pure-function tests, fast, no DB.
 - `pnpm run test:integration:http` — real app + temp DB + real HTTP, ~15s per spec file.
+- `pnpm run typecheck` → `tsc --noEmit`. From the repo root, `pnpm typecheck`
+  runs it across all three workspaces including `@dtc/api-contracts`, which has
+  no build of its own and is otherwise only ever checked through whichever app
+  happens to import the broken bit.
 
 ## Gotchas and notes
 
@@ -860,7 +874,7 @@ From `apps/backend`:
 - DataTable row actions: `columnHelper.action({ actions })`. The table only fit-widths and pins that column when its id is `action` (singular). A display column named `actions` is treated as a data column and shares remaining width. Wrapping the cell in `w-*` / `justify-end` does not shrink the `<td>`. For a custom cell, still set `id: "action"`.
 - Admin UI that imports `@medusajs/js-sdk`, `react-hook-form`, `@hookform/resolvers`, or `@medusajs/icons` needs them as **direct** backend dependencies (same `@medusajs/*` version as the rest). They are not reliably pulled in by `@medusajs/admin-sdk` alone for Vite resolution.
 - Multi-vendor planning notes: `docs/spikes/multi-vendor-order.md` (do not productize on the demo path yet).
-- **Every custom Zod HTTP contract — admin and vendor alike — lives in `packages/api-contracts`, always, not just the ones a second app currently calls.** Originally scoped narrower ("only a resource `apps/storefront` actually calls belongs here; Admin-only stays in a local `contract.ts`, since Admin shares this TS program anyway") — corrected once that boundary-based rule caused a real inconsistency in practice (the vendor-products contract split half in `@dtc/api-contracts`, half in a local file, for no reason a reader could infer) and Yago pushed further: centralizing unconditionally means a schema never has to be *moved* later just because a route gains a new frontend consumer. One domain per `src/<domain>/` subfolder — `vendor/` (composed into a `vendorContract` ts-rest router, since `apps/storefront`'s vendor panel is a real ts-rest client) and `admin/` (plain resource files only, `brands.ts`/`vendor-users.ts`/`vendors.ts` — no router, since the Admin dashboard calls `sdk.client.fetch()` directly, not a ts-rest client; don't add one speculatively). The one hard constraint this rule doesn't relax: **the package must never ship Medusa *runtime* code** into `apps/storefront`'s bundle (a plain Next.js app that also depends on it) — narrower than "no Medusa imports at all." A **type-only** import (`import type {...}`) is always safe: TypeScript fully erases it at compile time, so nothing reaches a bundler no matter how large the source package is — confirmed hands-on by running `apps/storefront`'s production build after adding `@medusajs/types` as a real dependency and checking the route's First Load JS didn't move. So every schema uses plain `zod` (never `@medusajs/framework/zod`, which is a value import), and `FindParams`/`PaginatedResponse<T>`/`DeleteResponse<T>` are `import type`'d straight from `@medusajs/types` rather than hand-declared — an earlier pass in this same session hand-wrote plain-TS equivalents of those three types to "play it safe," which was itself a mistake (duplicating a type Medusa already exports, the exact anti-pattern the top of `packages/api-contracts/README.md` warns against, just applied to Medusa's own types instead of ours) and was reverted once verified safe. The one thing that's genuinely forbidden is a **value** import of anything Medusa that executes at runtime. Separately, and unrelated to the framework constraint: **there is no shared field-validation helper anywhere in this package** (no `requiredTrimmedString(message)`, no `optionalTrimmedText`) — every field's validation is written out in full at its own definition, even when the same rule repeats across a create/update pair or across resources. Corrected mid-session after Yago called out exactly this pattern ("i don't like things like this optionalTrimmedText... just use a explicit schema, always, everything always explicit and easy to change") — a helper hides *how* a field validates behind a name, and a later change to the helper silently changes every field reusing it. This targets validation *pattern* sugar specifically, not real domain-named schemas (`vendorProductStatusSchema`, `brandSchema`, an image/variant shape) — those stay named and shared, same reasoning as "always centralize" itself. Full explanation: `packages/api-contracts/README.md`, "No shared field-validation helpers." What still stays backend-local, and always will: a resource with no real Zod request/response contract at all — just a `HttpTypes.AdminProduct &` extension for TS convenience (`api/admin/products/types.ts` — deliberately not named `contract.ts`, since there is no contract here to name it after) — per the package's own "Not for: core Medusa resources → use `HttpTypes`" rule; and the actual Medusa-framework-coupled runtime query builder (`createFindParams()`/`createSelectParams()` in each resource's `validators.ts`), which only ever consumes the shared filters schema, never needs to be shared itself. A Module Link between two Medusa data models is a different concern entirely and never needs a contract entry (see "Patterns to follow when extending" below). Full pattern and how to add a new resource or domain: `packages/api-contracts/README.md`.
+- **Every custom Zod HTTP contract — admin and vendor alike — lives in `packages/api-contracts`, always, not just the ones a second app currently calls.** Originally scoped narrower ("only a resource `apps/storefront` actually calls belongs here; Admin-only stays in a local `contract.ts`, since Admin shares this TS program anyway") — corrected once that boundary-based rule caused a real inconsistency in practice (the vendor-products contract split half in `@dtc/api-contracts`, half in a local file, for no reason a reader could infer) and Yago pushed further: centralizing unconditionally means a schema never has to be _moved_ later just because a route gains a new frontend consumer. One domain per `src/<domain>/` subfolder — `vendor/` (composed into a `vendorContract` ts-rest router, since `apps/storefront`'s vendor panel is a real ts-rest client) and `admin/` (plain resource files only, `brands.ts`/`vendor-users.ts`/`vendors.ts` — no router, since the Admin dashboard calls `sdk.client.fetch()` directly, not a ts-rest client; don't add one speculatively). The one hard constraint this rule doesn't relax: **the package must never ship Medusa _runtime_ code** into `apps/storefront`'s bundle (a plain Next.js app that also depends on it) — narrower than "no Medusa imports at all." A **type-only** import (`import type {...}`) is always safe: TypeScript fully erases it at compile time, so nothing reaches a bundler no matter how large the source package is — confirmed hands-on by running `apps/storefront`'s production build after adding `@medusajs/types` as a real dependency and checking the route's First Load JS didn't move. So every schema uses plain `zod` (never `@medusajs/framework/zod`, which is a value import), and `FindParams`/`PaginatedResponse<T>`/`DeleteResponse<T>` are `import type`'d straight from `@medusajs/types` rather than hand-declared — an earlier pass in this same session hand-wrote plain-TS equivalents of those three types to "play it safe," which was itself a mistake (duplicating a type Medusa already exports, the exact anti-pattern the top of `packages/api-contracts/README.md` warns against, just applied to Medusa's own types instead of ours) and was reverted once verified safe. The one thing that's genuinely forbidden is a **value** import of anything Medusa that executes at runtime. Separately, and unrelated to the framework constraint: **there is no shared field-validation helper anywhere in this package** (no `requiredTrimmedString(message)`, no `optionalTrimmedText`) — every field's validation is written out in full at its own definition, even when the same rule repeats across a create/update pair or across resources. Corrected mid-session after Yago called out exactly this pattern ("i don't like things like this optionalTrimmedText... just use a explicit schema, always, everything always explicit and easy to change") — a helper hides _how_ a field validates behind a name, and a later change to the helper silently changes every field reusing it. This targets validation _pattern_ sugar specifically, not real domain-named schemas (`vendorProductStatusSchema`, `brandSchema`, an image/variant shape) — those stay named and shared, same reasoning as "always centralize" itself. Full explanation: `packages/api-contracts/README.md`, "No shared field-validation helpers." What still stays backend-local, and always will: a resource with no real Zod request/response contract at all — just a `HttpTypes.AdminProduct &` extension for TS convenience (`api/admin/products/types.ts` — deliberately not named `contract.ts`, since there is no contract here to name it after) — per the package's own "Not for: core Medusa resources → use `HttpTypes`" rule; and the actual Medusa-framework-coupled runtime query builder (`createFindParams()`/`createSelectParams()` in each resource's `validators.ts`), which only ever consumes the shared filters schema, never needs to be shared itself. A Module Link between two Medusa data models is a different concern entirely and never needs a contract entry (see "Patterns to follow when extending" below). Full pattern and how to add a new resource or domain: `packages/api-contracts/README.md`.
 
 ## Production start — run it from `.medusa/server`, not from `apps/backend`
 

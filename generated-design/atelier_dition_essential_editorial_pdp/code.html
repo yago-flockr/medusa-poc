@@ -1,511 +1,960 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>L'Écharpe Cashmere Trench — Atelier Édition</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "surface-variant": "#e4e2de",
-            "foreground": "#1A1715",
-            "surface-tint": "#625d5b",
-            "surface-container": "#efeeea",
-            "primary-foreground": "#FBF9F5",
-            "card-foreground": "#1A1715",
-            "muted": "#EFECE4",
-            "espresso-dark": "#12100E",
-            "popover": "#FBF9F5",
-            "ochre-champagne": "#9E7B56",
-            "muted-foreground": "#78726A",
-            "border": "#E4DFD5",
-            "input": "#E4DFD5",
-            "surface-container-low": "#f5f3ef",
-            "primary": "#1A1715",
-            "card": "#F5F2EB",
-            "parchment-deep": "#ECE7DD",
-            "success": "#3E5742",
-            "secondary": "#EFECE4",
-            "on-surface-variant": "#4d4540",
-            "accent-foreground": "#1A1715",
-            "ring": "#9E7B56",
-            "surface": "#fbf9f5",
-            "on-surface": "#1b1c1a",
-            "accent": "#E6E1D6",
-            "background": "#FBF9F5"
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>L'Écharpe Cashmere Trench — Atelier Édition</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#e4e2de",
+              foreground: "#1A1715",
+              "surface-tint": "#625d5b",
+              "surface-container": "#efeeea",
+              "primary-foreground": "#FBF9F5",
+              "card-foreground": "#1A1715",
+              muted: "#EFECE4",
+              "espresso-dark": "#12100E",
+              popover: "#FBF9F5",
+              "ochre-champagne": "#9E7B56",
+              "muted-foreground": "#78726A",
+              border: "#E4DFD5",
+              input: "#E4DFD5",
+              "surface-container-low": "#f5f3ef",
+              primary: "#1A1715",
+              card: "#F5F2EB",
+              "parchment-deep": "#ECE7DD",
+              success: "#3E5742",
+              secondary: "#EFECE4",
+              "on-surface-variant": "#4d4540",
+              "accent-foreground": "#1A1715",
+              ring: "#9E7B56",
+              surface: "#fbf9f5",
+              "on-surface": "#1b1c1a",
+              accent: "#E6E1D6",
+              background: "#FBF9F5",
+            },
+            fontFamily: {
+              serif: ["Playfair Display", "serif"],
+              sans: ["Inter", "sans-serif"],
+            },
           },
-          fontFamily: {
-            serif: ["Playfair Display", "serif"],
-            sans: ["Inter", "sans-serif"]
-          }
+        },
+      }
+    </script>
+    <style>
+      body {
+        background-color: #fbf9f5;
+        color: #1a1715;
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 300,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface antialiased min-h-screen flex flex-col"
+  >
+    <!-- TOP BANNER -->
+    <div
+      class="bg-primary text-primary-foreground py-2.5 text-center text-xs tracking-[0.2em] uppercase font-light border-b border-primary/20"
+    >
+      Complimentary white-glove delivery on all curation orders.
+    </div>
+    <!-- NAVIGATION -->
+    <header
+      class="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border"
+    >
+      <div
+        class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 h-20 flex items-center justify-between"
+      >
+        <!-- LOGO -->
+        <a
+          class="font-serif text-xl tracking-[0.2em] uppercase text-primary font-medium hover:opacity-85 transition-opacity"
+          href="#"
+        >
+          Atelier Édition
+        </a>
+        <!-- CENTER NAV LINKS -->
+        <nav
+          class="hidden md:flex items-center space-x-10 text-xs uppercase tracking-[0.22em] font-medium text-muted-foreground"
+        >
+          <a class="hover:text-primary transition-colors" href="#">Curations</a>
+          <a class="hover:text-primary transition-colors" href="#"
+            >Collections</a
+          >
+          <a class="text-primary border-b border-primary pb-1" href="#"
+            >Store</a
+          >
+          <a class="hover:text-primary transition-colors" href="#">Maisons</a>
+          <a class="hover:text-primary transition-colors" href="#">Editorial</a>
+        </nav>
+        <!-- UTILITY ACTIONS -->
+        <div class="flex items-center space-x-6 text-primary">
+          <button
+            aria-label="Search"
+            class="p-1 hover:text-ochre-champagne transition-colors"
+            type="button"
+          >
+            <span class="material-symbols-outlined text-xl">search</span>
+          </button>
+          <button
+            aria-label="Account"
+            class="p-1 hover:text-ochre-champagne transition-colors"
+            type="button"
+          >
+            <span class="material-symbols-outlined text-xl">person</span>
+          </button>
+          <button
+            aria-label="Cart"
+            class="p-1 flex items-center gap-1.5 hover:text-ochre-champagne transition-colors"
+            type="button"
+          >
+            <span class="material-symbols-outlined text-xl">shopping_bag</span>
+            <span class="text-xs font-medium tracking-normal">(2)</span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <!-- MAIN CONTENT CONTAINER -->
+    <main
+      class="flex-grow max-w-[1440px] mx-auto w-full px-6 sm:px-10 lg:px-16 pt-8 pb-20"
+    >
+      <!-- BREADCRUMB TRAIL -->
+      <nav
+        aria-label="Breadcrumb"
+        class="flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground mb-8"
+      >
+        <a class="hover:text-primary transition-colors" href="#">Store</a>
+        <span class="text-border">/</span>
+        <a class="hover:text-primary transition-colors" href="#">Outerwear</a>
+        <span class="text-border">/</span>
+        <span class="text-primary font-medium">L'Écharpe Cashmere Trench</span>
+      </nav>
+      <!-- PRODUCT HERO: 2-COLUMN LUXURY LAYOUT -->
+      <div
+        class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
+      >
+        <!-- LEFT COLUMN: IMAGE GALLERY (58% approx -> 7 cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Main Large Featured Image -->
+          <div
+            class="w-full aspect-[3/4] bg-surface-container overflow-hidden border border-border/40"
+          >
+            <img
+              alt="L'Écharpe Cashmere Trench in brushed camel"
+              class="w-full h-full object-cover transition-opacity duration-300"
+              id="main-product-image"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHKduAuGPHoXRVz4KGyQkLeLGr2zKw13wpNavJGA-SVQDVw2WtU3RFJYx2ajXJYrH6rXvE_utq2BFt0maCj5SzoJoK6qvYbSv32CZ8-72mViYPC1_rrSc7ZDoQQjYmfv2Ost38-YAmH5ZSP-sx0HfjIFCdaPe6zI5R1KcQJyJF6Vr-kKOFRZyL4XXjElimXyyXv0VSsNWabmJ3Kog1ObfWuv3goDBv0R9b5nZ4gzFvQJONpRJQvqw8"
+            />
+          </div>
+          <!-- Thumbnail Strip -->
+          <div class="grid grid-cols-4 gap-3 sm:gap-4 pt-1">
+            <button
+              class="thumb-btn aspect-[3/4] bg-surface-container overflow-hidden border-2 border-primary transition-all focus:outline-none"
+              onclick="
+                updateHeroImage(
+                  this,
+                  'https://lh3.googleusercontent.com/aida-public/AB6AXuCHKduAuGPHoXRVz4KGyQkLeLGr2zKw13wpNavJGA-SVQDVw2WtU3RFJYx2ajXJYrH6rXvE_utq2BFt0maCj5SzoJoK6qvYbSv32CZ8-72mViYPC1_rrSc7ZDoQQjYmfv2Ost38-YAmH5ZSP-sx0HfjIFCdaPe6zI5R1KcQJyJF6Vr-kKOFRZyL4XXjElimXyyXv0VSsNWabmJ3Kog1ObfWuv3goDBv0R9b5nZ4gzFvQJONpRJQvqw8',
+                )
+              "
+              type="button"
+            >
+              <img
+                alt="Silhouette View"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHKduAuGPHoXRVz4KGyQkLeLGr2zKw13wpNavJGA-SVQDVw2WtU3RFJYx2ajXJYrH6rXvE_utq2BFt0maCj5SzoJoK6qvYbSv32CZ8-72mViYPC1_rrSc7ZDoQQjYmfv2Ost38-YAmH5ZSP-sx0HfjIFCdaPe6zI5R1KcQJyJF6Vr-kKOFRZyL4XXjElimXyyXv0VSsNWabmJ3Kog1ObfWuv3goDBv0R9b5nZ4gzFvQJONpRJQvqw8"
+              />
+            </button>
+            <button
+              class="thumb-btn aspect-[3/4] bg-surface-container overflow-hidden border border-border hover:border-muted-foreground transition-all focus:outline-none"
+              onclick="
+                updateHeroImage(
+                  this,
+                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAgIxo5Jxe1HvIBUfx_68cFSEqcaOI-bxUk4YFV6IwEDxfQuK_8Q5saTwCnRzat786H9VMz2T8pzHiyqq8WsSTEVmjEVMhpw98ECkjQu2Bu-ZzupDVJSIijE-xxWdCw7A9an0lJfdHzWWOJ-GIq9AxgJCFZF9SG1-MK4ru7SE0o0dFgCSLZMVHXvWZApST_-nBDZbSyoacSdAi84gFohphlJP5_qke8U6V59yKNgLhpj-PG1hveLDMd',
+                )
+              "
+              type="button"
+            >
+              <img
+                alt="Horn Button Detail"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgIxo5Jxe1HvIBUfx_68cFSEqcaOI-bxUk4YFV6IwEDxfQuK_8Q5saTwCnRzat786H9VMz2T8pzHiyqq8WsSTEVmjEVMhpw98ECkjQu2Bu-ZzupDVJSIijE-xxWdCw7A9an0lJfdHzWWOJ-GIq9AxgJCFZF9SG1-MK4ru7SE0o0dFgCSLZMVHXvWZApST_-nBDZbSyoacSdAi84gFohphlJP5_qke8U6V59yKNgLhpj-PG1hveLDMd"
+              />
+            </button>
+            <button
+              class="thumb-btn aspect-[3/4] bg-surface-container overflow-hidden border border-border hover:border-muted-foreground transition-all focus:outline-none"
+              onclick="
+                updateHeroImage(
+                  this,
+                  'https://lh3.googleusercontent.com/aida-public/AB6AXuCt9-p9A6tOVw486J0qkg0-TsKtL1VK5P6ifh9jngbMeOyjDj5XQOk_xXK2_2BjtRuAsdn8tq8DxDtMiUWQZ2Z58Uzc_14qO-8TAwQ9_1oWx6BKzRMeMuj8EIurRQTJkXcspTk8w5MBiT86i7mS0ZG2BzK2Vkaf8d5qxNvkH0ebqq8dVAQsbVlYPYdkm2HmmokyphsUaFG-j-NUaXjTVFXbzZaSMW-FpvVAcy64QZmj-ANCgy4_19Ze',
+                )
+              "
+              type="button"
+            >
+              <img
+                alt="Back Silhouette"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt9-p9A6tOVw486J0qkg0-TsKtL1VK5P6ifh9jngbMeOyjDj5XQOk_xXK2_2BjtRuAsdn8tq8DxDtMiUWQZ2Z58Uzc_14qO-8TAwQ9_1oWx6BKzRMeMuj8EIurRQTJkXcspTk8w5MBiT86i7mS0ZG2BzK2Vkaf8d5qxNvkH0ebqq8dVAQsbVlYPYdkm2HmmokyphsUaFG-j-NUaXjTVFXbzZaSMW-FpvVAcy64QZmj-ANCgy4_19Ze"
+              />
+            </button>
+            <button
+              class="thumb-btn aspect-[3/4] bg-surface-container overflow-hidden border border-border hover:border-muted-foreground transition-all focus:outline-none"
+              onclick="
+                updateHeroImage(
+                  this,
+                  'https://lh3.googleusercontent.com/aida-public/AB6AXuC75anDH2FKdsow4WSD0UVYq4WGTy1BgIRH9W686VM5Ygz261Orl7uYOK4YSU4_9KMeA2fg72t1CjgNf1Izz5Q4wSeyVaVb0D_RD_bMWdBaOca6cQMCEOzCxl2Fsu1vIUSiAFTzrmh1-zJUYsOLlCztIjFgpPc7WDjwGdlb7gflA050YGxdKw7n5Cd-uYRCjvFisMtuPg7TNuboWynKOZsuJMQYLa3LPTqvhLrpqublerVuna2KV2LO',
+                )
+              "
+              type="button"
+            >
+              <img
+                alt="Pure Wool &amp; Cashmere Texture"
+                class="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC75anDH2FKdsow4WSD0UVYq4WGTy1BgIRH9W686VM5Ygz261Orl7uYOK4YSU4_9KMeA2fg72t1CjgNf1Izz5Q4wSeyVaVb0D_RD_bMWdBaOca6cQMCEOzCxl2Fsu1vIUSiAFTzrmh1-zJUYsOLlCztIjFgpPc7WDjwGdlb7gflA050YGxdKw7n5Cd-uYRCjvFisMtuPg7TNuboWynKOZsuJMQYLa3LPTqvhLrpqublerVuna2KV2LO"
+              />
+            </button>
+          </div>
+        </div>
+        <!-- RIGHT COLUMN: PRODUCT PURCHASING PANE (42% approx -> 5 cols) -->
+        <div class="lg:col-span-5 lg:sticky lg:top-28 lg:pl-6 xl:pl-10">
+          <!-- Vendor -->
+          <a
+            class="inline-block text-xs uppercase tracking-[0.25em] text-muted-foreground font-medium hover:text-ochre-champagne transition-colors mb-2"
+            href="#"
+          >
+            Maison Vaneau
+          </a>
+          <!-- Title -->
+          <h1
+            class="font-serif text-3xl sm:text-4xl text-primary font-normal tracking-tight leading-tight mb-3"
+          >
+            L'Écharpe Cashmere Trench
+          </h1>
+          <!-- Price & Stock Status -->
+          <div class="flex items-baseline gap-4 mb-5">
+            <span class="text-2xl font-light tracking-tight text-primary"
+              >$1,850</span
+            >
+            <span
+              class="inline-flex items-center gap-1.5 text-xs font-normal text-success tracking-wider uppercase"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+              In Stock
+            </span>
+          </div>
+          <!-- Editorial Description -->
+          <p
+            class="text-on-surface-variant text-sm font-light leading-relaxed mb-8"
+          >
+            Sculpted double-breasted outerwear with an integrated scarf collar,
+            unlined fluid drape, and cold-pressed horn closures. Tailored for an
+            unhurried, monolithic silhouette.
+          </p>
+          <div class="border-t border-border pt-6 mb-6">
+            <!-- VARIANT 1: SHADE / COLOR -->
+            <div class="mb-6">
+              <div
+                class="flex items-center justify-between mb-3 text-xs uppercase tracking-wider font-medium"
+              >
+                <span class="text-primary"
+                  >Color:
+                  <span
+                    class="text-muted-foreground font-normal"
+                    id="selected-color-label"
+                    >Brushed Camel</span
+                  ></span
+                >
+              </div>
+              <div
+                aria-label="Color Options"
+                class="flex items-center space-x-3"
+                role="radiogroup"
+              >
+                <!-- Swatch: Brushed Camel -->
+                <button
+                  aria-label="Brushed Camel"
+                  class="color-btn relative w-8 h-8 rounded-full p-0.5 ring-2 ring-primary ring-offset-2 ring-offset-background transition-all focus:outline-none"
+                  onclick="selectColor(this, 'Brushed Camel')"
+                  type="button"
+                >
+                  <span
+                    class="block w-full h-full rounded-full bg-[#C4A482]"
+                  ></span>
+                </button>
+                <!-- Swatch: Alabaster Stone -->
+                <button
+                  aria-label="Alabaster Stone"
+                  class="color-btn relative w-8 h-8 rounded-full p-0.5 ring-1 ring-border hover:ring-primary ring-offset-2 ring-offset-background transition-all focus:outline-none"
+                  onclick="selectColor(this, 'Alabaster Stone')"
+                  type="button"
+                >
+                  <span
+                    class="block w-full h-full rounded-full bg-[#F5F2EB] border border-border/80"
+                  ></span>
+                </button>
+                <!-- Swatch: Noir Charbon -->
+                <button
+                  aria-label="Noir Charbon"
+                  class="color-btn relative w-8 h-8 rounded-full p-0.5 ring-1 ring-border hover:ring-primary ring-offset-2 ring-offset-background transition-all focus:outline-none"
+                  onclick="selectColor(this, 'Noir Charbon')"
+                  type="button"
+                >
+                  <span
+                    class="block w-full h-full rounded-full bg-[#1A1715]"
+                  ></span>
+                </button>
+              </div>
+            </div>
+            <!-- VARIANT 2: SIZES -->
+            <div class="mb-8">
+              <div
+                class="flex items-center justify-between mb-3 text-xs uppercase tracking-wider font-medium"
+              >
+                <span class="text-primary">Size</span>
+                <button
+                  class="text-muted-foreground hover:text-primary transition-colors underline underline-offset-4"
+                  onclick="openSizeGuide()"
+                  type="button"
+                >
+                  Size Guide
+                </button>
+              </div>
+              <div
+                aria-label="Garment Sizes"
+                class="grid grid-cols-4 gap-2.5"
+                role="radiogroup"
+              >
+                <button
+                  class="size-pill py-3 text-center text-xs tracking-wider uppercase border border-border bg-transparent text-primary hover:border-primary transition-colors focus:outline-none"
+                  onclick="selectSize(this, 'FR 34')"
+                  type="button"
+                >
+                  FR 34
+                </button>
+                <button
+                  class="size-pill py-3 text-center text-xs tracking-wider uppercase border border-primary bg-primary text-primary-foreground transition-colors focus:outline-none active-size"
+                  onclick="selectSize(this, 'FR 36')"
+                  type="button"
+                >
+                  FR 36
+                </button>
+                <button
+                  class="size-pill py-3 text-center text-xs tracking-wider uppercase border border-border bg-transparent text-primary hover:border-primary transition-colors focus:outline-none"
+                  onclick="selectSize(this, 'FR 38')"
+                  type="button"
+                >
+                  FR 38
+                </button>
+                <button
+                  class="size-pill py-3 text-center text-xs tracking-wider uppercase border border-border bg-transparent text-primary hover:border-primary transition-colors focus:outline-none"
+                  onclick="selectSize(this, 'FR 40')"
+                  type="button"
+                >
+                  FR 40
+                </button>
+              </div>
+            </div>
+            <!-- PURCHASE ACTIONS ROW -->
+            <div class="flex items-stretch gap-3 mb-6">
+              <!-- Stepper -->
+              <div
+                class="flex items-center border border-border px-2 h-14 bg-background"
+              >
+                <button
+                  aria-label="Decrease quantity"
+                  class="w-8 h-full flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+                  onclick="changeQty(-1)"
+                  type="button"
+                >
+                  <span class="text-base font-light">−</span>
+                </button>
+                <span
+                  class="w-8 text-center text-xs font-medium text-primary"
+                  id="product-qty"
+                  >1</span
+                >
+                <button
+                  aria-label="Increase quantity"
+                  class="w-8 h-full flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+                  onclick="changeQty(1)"
+                  type="button"
+                >
+                  <span class="text-base font-light">+</span>
+                </button>
+              </div>
+              <!-- Primary Add to Bag Button -->
+              <button
+                class="flex-1 h-14 bg-primary text-primary-foreground text-xs uppercase tracking-[0.2em] font-medium transition-all duration-200 hover:bg-[#2e2a27] active:scale-[0.99] flex items-center justify-center"
+                id="add-bag-button"
+                onclick="handleAddToBag()"
+                type="button"
+              >
+                <span id="bag-button-text">Add to Bag — $1,850</span>
+              </button>
+            </div>
+            <!-- Vendor Shipped Note -->
+            <div class="text-xs text-muted-foreground text-center py-2">
+              Sold and shipped by
+              <a
+                class="text-primary hover:underline underline-offset-2"
+                href="#"
+                >Maison Vaneau</a
+              >
+            </div>
+          </div>
+          <!-- MINIMAL COLLAPSIBLE SECTIONS -->
+          <div class="border-t border-border divide-y divide-border">
+            <!-- Accordion 1: Details & Care -->
+            <div class="py-4">
+              <button
+                class="w-full flex items-center justify-between text-xs uppercase tracking-widest font-medium text-primary py-1 hover:text-ochre-champagne transition-colors text-left"
+                onclick="toggleAccordion('details-content', this)"
+                type="button"
+              >
+                <span>Details &amp; Care</span>
+                <span
+                  class="material-symbols-outlined text-lg transition-transform duration-200"
+                  id="icon-details"
+                  >add</span
+                >
+              </button>
+              <div
+                class="hidden pt-3 text-xs text-on-surface-variant font-light leading-relaxed space-y-1.5"
+                id="details-content"
+              >
+                <p>• 100% Ultra-fine Mongolian Cashmere</p>
+                <p>• Hand-carved water buffalo horn button fastenings</p>
+                <p>• Unlined construction with bound interior silk seams</p>
+                <p>
+                  • Specialized gentle dry clean only; store on cedar hanger
+                </p>
+                <p>• Handcrafted in Paris, France</p>
+              </div>
+            </div>
+            <!-- Accordion 2: Shipping & Returns -->
+            <div class="py-4">
+              <button
+                class="w-full flex items-center justify-between text-xs uppercase tracking-widest font-medium text-primary py-1 hover:text-ochre-champagne transition-colors text-left"
+                onclick="toggleAccordion('shipping-content', this)"
+                type="button"
+              >
+                <span>Shipping &amp; Returns</span>
+                <span
+                  class="material-symbols-outlined text-lg transition-transform duration-200"
+                  id="icon-shipping"
+                  >add</span
+                >
+              </button>
+              <div
+                class="hidden pt-3 text-xs text-on-surface-variant font-light leading-relaxed space-y-1.5"
+                id="shipping-content"
+              >
+                <p>
+                  • White-glove carbon-neutral delivery included on all orders
+                </p>
+                <p>
+                  • Signature required upon arrival; archival garment bag
+                  included
+                </p>
+                <p>
+                  • Complimentary return logistics provided within 14 days of
+                  receipt
+                </p>
+                <p>
+                  • Tailored custom adjustments available via our atelier
+                  concierge
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- MORE FROM MAISON VANEAU -->
+      <section class="mt-28 pt-12 border-t border-border">
+        <!-- Section Header -->
+        <div
+          class="flex flex-col sm:flex-row items-baseline justify-between mb-10"
+        >
+          <div>
+            <h2 class="font-serif text-2xl text-primary font-normal">
+              More from Maison Vaneau
+            </h2>
+            <p class="text-xs text-muted-foreground mt-1">
+              Harmonious wardrobe complements tailored by the same Parisian
+              atelier.
+            </p>
+          </div>
+          <a
+            class="text-xs uppercase tracking-[0.2em] font-medium text-primary hover:text-ochre-champagne transition-colors flex items-center gap-1.5 mt-4 sm:mt-0"
+            href="#"
+          >
+            <span>View Maison Archive</span>
+            <span class="material-symbols-outlined text-base"
+              >arrow_forward</span
+            >
+          </a>
+        </div>
+        <!-- 4-Column Product Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- Card 1 -->
+          <a class="group block" href="#">
+            <div
+              class="w-full aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-border/40"
+            >
+              <img
+                alt="Colbert Sculpté Coat"
+                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxkmXk1lLWgAQtjcjdruEsrKTB647dAH3KuPyIJMm6e_Xcj2IjGFFxdLN7MfhFph1y8D2_xfAlV3WjZT1loRD_gI5kpjUX9Jay_v_04hYZ2zB7z6RhdmWLaLLsBxgYH_FJZnZVMkRv0v3ViwBjRa3OnoepKdqisksaBFXNp87345AusUcNF8pzaTAu0Bc-iBliLFJLh2pBQ-ldzQejU7nAOYaYBn7t-gAuecigvzEsthVfQKtmvRfQ"
+              />
+            </div>
+            <div
+              class="text-[11px] uppercase tracking-widest text-muted-foreground mb-1"
+            >
+              Maison Vaneau
+            </div>
+            <h3
+              class="font-serif text-base text-primary font-normal group-hover:text-ochre-champagne transition-colors mb-1"
+            >
+              Colbert Sculpté Coat
+            </h3>
+            <div class="text-sm font-light text-primary">$2,850</div>
+          </a>
+          <!-- Card 2 -->
+          <a class="group block" href="#">
+            <div
+              class="w-full aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-border/40"
+            >
+              <img
+                alt="Pleated Belgian Flax Trouser"
+                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCakLJsOEN4m5MRbyDq9KOjpPWDUPcIh9-HDKOWy0yeAMG3qpSQfUzc-dwLCn81bVTvrqFJwPkWwJ1eJhzJsoJh1XNQdqCK-krxUIEAeBSjE4jBK8OMaI4HpF22gRcJpy370Xaht0p53nqCTSfMJktUliL8NDVKebQmKI5AE1Rkakbc2RTU4gOuiuu-3JxQNNrMBCOow3_1V9rCspLOft5GYjWJXM1uWQqZqfCPIW3vcyftzMdgfih9"
+              />
+            </div>
+            <div
+              class="text-[11px] uppercase tracking-widest text-muted-foreground mb-1"
+            >
+              Maison Vaneau
+            </div>
+            <h3
+              class="font-serif text-base text-primary font-normal group-hover:text-ochre-champagne transition-colors mb-1"
+            >
+              Pleated Belgian Flax Trouser
+            </h3>
+            <div class="text-sm font-light text-primary">$740</div>
+          </a>
+          <!-- Card 3 -->
+          <a class="group block" href="#">
+            <div
+              class="w-full aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-border/40"
+            >
+              <img
+                alt="High-Gauge Cashmere Rollneck"
+                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1jTlAMf2ak7eVFwyPE3419axEVFRjh_vVATNOVBqBMTq84yiSRm0WEwMUSmtf7tBntoORFrPybBLJjFLHkeRIonQ7BGR3l2M7wi7uQCcvW0QNjH1SXmY6c6M_iA4KEzZSpyR2xcJbXoNIgQQMWeCxJCSI4BDXsbda1x0oaXZWNGjFvVJYrtUfewGInqz7cIp9lc-9hqu9R7yeW2QFtO21TVMQU8XkdULHvN8u7s5rQDWl6IUtUZtj"
+              />
+            </div>
+            <div
+              class="text-[11px] uppercase tracking-widest text-muted-foreground mb-1"
+            >
+              Maison Vaneau
+            </div>
+            <h3
+              class="font-serif text-base text-primary font-normal group-hover:text-ochre-champagne transition-colors mb-1"
+            >
+              High-Gauge Cashmere Rollneck
+            </h3>
+            <div class="text-sm font-light text-primary">$940</div>
+          </a>
+          <!-- Card 4 -->
+          <a class="group block" href="#">
+            <div
+              class="w-full aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-border/40"
+            >
+              <img
+                alt="Sculpted Collarless Silk Blazer"
+                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzIybp1F0R1zWmX6eqnb_sUCuDfnA-2_k_cbX2FSrjwe6yUHcsI8fy9LKKPGHMvTcVN9DKI2VSg8MTYD093kHVZeBfepqUwpc0UrlghtPFpW0JqqRLReYqIsHGiWdpUadAN948OmtaaZWYNAH7nafi6WzXrjDYNPcrjMu51Ul_WSclYJP2FM2go8UxJM-vzHcE--5239rszRe7M63nF81ssBXeS6PQqaymhXNo9fM0BQNfGaF2Xyjg"
+              />
+            </div>
+            <div
+              class="text-[11px] uppercase tracking-widest text-muted-foreground mb-1"
+            >
+              Maison Vaneau
+            </div>
+            <h3
+              class="font-serif text-base text-primary font-normal group-hover:text-ochre-champagne transition-colors mb-1"
+            >
+              Sculpted Collarless Silk Blazer
+            </h3>
+            <div class="text-sm font-light text-primary">$1,120</div>
+          </a>
+        </div>
+      </section>
+    </main>
+    <!-- SIZE GUIDE MODAL (Accessible on trigger) -->
+    <div
+      class="fixed inset-0 z-50 bg-primary/40 backdrop-blur-sm hidden flex items-center justify-center p-4"
+      id="size-guide-modal"
+    >
+      <div
+        class="bg-background max-w-md w-full p-8 border border-border shadow-2xl relative"
+      >
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="font-serif text-xl text-primary">Sartorial Size Guide</h3>
+          <button
+            class="text-muted-foreground hover:text-primary"
+            onclick="closeSizeGuide()"
+            type="button"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div
+          class="text-xs text-on-surface-variant leading-relaxed space-y-4 font-light"
+        >
+          <p>
+            Outerwear is conceived with an unhurried, oversized architectural
+            drape. We suggest choosing your normal size for the runway
+            silhouette, or one size down for a more fitted profile.
+          </p>
+          <table
+            class="w-full text-left border-collapse mt-4 text-xs font-normal"
+          >
+            <thead>
+              <tr
+                class="border-b border-border text-primary uppercase tracking-wider text-[10px]"
+              >
+                <th class="py-2">French (FR)</th>
+                <th class="py-2">US / UK</th>
+                <th class="py-2">Bust (cm)</th>
+                <th class="py-2">Waist (cm)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border/60 text-muted-foreground">
+              <tr>
+                <td class="py-2 text-primary font-medium">FR 34</td>
+                <td class="py-2">US 2 / UK 6</td>
+                <td class="py-2">80 - 84</td>
+                <td class="py-2">60 - 64</td>
+              </tr>
+              <tr>
+                <td class="py-2 text-primary font-medium">FR 36</td>
+                <td class="py-2">US 4 / UK 8</td>
+                <td class="py-2">84 - 88</td>
+                <td class="py-2">64 - 68</td>
+              </tr>
+              <tr>
+                <td class="py-2 text-primary font-medium">FR 38</td>
+                <td class="py-2">US 6 / UK 10</td>
+                <td class="py-2">88 - 92</td>
+                <td class="py-2">68 - 72</td>
+              </tr>
+              <tr>
+                <td class="py-2 text-primary font-medium">FR 40</td>
+                <td class="py-2">US 8 / UK 12</td>
+                <td class="py-2">92 - 96</td>
+                <td class="py-2">72 - 76</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-8 text-center">
+          <button
+            class="w-full py-3 bg-primary text-primary-foreground text-xs uppercase tracking-widest"
+            onclick="closeSizeGuide()"
+            type="button"
+          >
+            Close Guide
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- TOAST FEEDBACK NOTIFICATION -->
+    <div
+      class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-primary text-primary-foreground px-5 py-4 border border-primary/20 shadow-2xl flex items-center gap-3"
+      id="cart-toast"
+    >
+      <span class="material-symbols-outlined text-ochre-champagne text-lg"
+        >check_circle</span
+      >
+      <div>
+        <div
+          class="text-xs uppercase tracking-wider font-medium text-primary-foreground"
+        >
+          Acquisition Placed in Bag
+        </div>
+        <div
+          class="text-[11px] text-accent font-light mt-0.5"
+          id="toast-summary"
+        >
+          L'Écharpe Cashmere Trench (FR 36)
+        </div>
+      </div>
+    </div>
+    <!-- FOOTER -->
+    <footer class="w-full bg-[#f4f1ea] border-t border-border mt-auto">
+      <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 pt-16 pb-12">
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-14 border-b border-border/80"
+        >
+          <!-- Col 1: Brand & Newsletter -->
+          <div class="lg:col-span-5 space-y-4">
+            <div
+              class="font-serif text-lg tracking-widest uppercase text-primary font-medium"
+            >
+              Atelier Édition
+            </div>
+            <p
+              class="text-xs font-light text-on-surface-variant max-w-sm leading-relaxed"
+            >
+              A curated sanctuary of haute couture tailoring, rare botanical
+              dyes, and numbered archival garments conceived for discerning
+              collectors.
+            </p>
+            <div class="pt-2">
+              <div
+                class="text-[11px] uppercase text-primary tracking-[0.2em] font-medium mb-3"
+              >
+                Join the Édition Gazette
+              </div>
+              <div
+                class="flex max-w-sm items-center border-b border-primary/40 focus-within:border-primary transition-colors py-2"
+              >
+                <input
+                  class="w-full bg-transparent text-xs text-on-surface placeholder:text-muted-foreground outline-none border-none ring-0 focus:ring-0 px-0"
+                  placeholder="Enter your correspondence email"
+                  type="email"
+                />
+                <button
+                  class="text-xs uppercase tracking-widest text-primary font-medium hover:text-ochre-champagne transition-colors pl-4"
+                  type="button"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Col 2: Curations -->
+          <div class="lg:col-span-2 space-y-3">
+            <div
+              class="text-xs uppercase tracking-[0.2em] text-primary font-medium"
+            >
+              Curations
+            </div>
+            <ul class="space-y-2 text-xs font-light text-on-surface-variant">
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Sartorial Suites</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Atelier Silk &amp; Cashmere</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Monochrome Objects</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Archival Reissues</a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Col 3: Maisons -->
+          <div class="lg:col-span-2 space-y-3">
+            <div
+              class="text-xs uppercase tracking-[0.2em] text-primary font-medium"
+            >
+              Maisons
+            </div>
+            <ul class="space-y-2 text-xs font-light text-on-surface-variant">
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >The Atelier Manifesto</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Master Artisans</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >The Gazette</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Bespoke Appointments</a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Col 4: Concierge -->
+          <div class="lg:col-span-3 space-y-3">
+            <div
+              class="text-xs uppercase tracking-[0.2em] text-primary font-medium"
+            >
+              Concierge
+            </div>
+            <ul class="space-y-2 text-xs font-light text-on-surface-variant">
+              <li>White-Glove Courier Logistics</li>
+              <li>Bespoke Tailoring Inquiries</li>
+              <li>Care of Rare Textiles</li>
+              <li>salon@atelier-edition.com</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Footer Bottom -->
+        <div
+          class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-light text-muted-foreground"
+        >
+          <div>
+            © 2025 Atelier Édition S.A. All rights reserved. Single Global
+            Atelier Registry.
+          </div>
+          <div
+            class="flex items-center space-x-6 text-[11px] uppercase tracking-widest"
+          >
+            <a class="hover:text-primary transition-colors" href="#"
+              >Privacy Policy</a
+            >
+            <a class="hover:text-primary transition-colors" href="#"
+              >Terms of Curation</a
+            >
+            <a class="hover:text-primary transition-colors" href="#"
+              >Provenance</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- MICRO-INTERACTIONS SCRIPT -->
+    <script>
+      let quantity = 1
+      const basePrice = 1850
+      let selectedSize = "FR 36"
+      let selectedColor = "Brushed Camel"
+
+      function updateHeroImage(btn, src) {
+        const hero = document.getElementById("main-product-image")
+        hero.style.opacity = "0.4"
+        setTimeout(() => {
+          hero.src = src
+          hero.style.opacity = "1"
+        }, 150)
+
+        document.querySelectorAll(".thumb-btn").forEach((b) => {
+          b.classList.remove("border-2", "border-primary")
+          b.classList.add("border", "border-border")
+        })
+        btn.classList.remove("border", "border-border")
+        btn.classList.add("border-2", "border-primary")
+      }
+
+      function selectColor(btn, name) {
+        document.querySelectorAll(".color-btn").forEach((b) => {
+          b.classList.remove("ring-2", "ring-primary")
+          b.classList.add("ring-1", "ring-border")
+        })
+        btn.classList.remove("ring-1", "ring-border")
+        btn.classList.add("ring-2", "ring-primary")
+        selectedColor = name
+        document.getElementById("selected-color-label").innerText = name
+      }
+
+      function selectSize(btn, size) {
+        document.querySelectorAll(".size-pill").forEach((b) => {
+          b.classList.remove(
+            "bg-primary",
+            "text-primary-foreground",
+            "border-primary",
+            "active-size",
+          )
+          b.classList.add("bg-transparent", "text-primary", "border-border")
+        })
+        btn.classList.remove("bg-transparent", "border-border")
+        btn.classList.add(
+          "bg-primary",
+          "text-primary-foreground",
+          "border-primary",
+          "active-size",
+        )
+        selectedSize = size
+      }
+
+      function changeQty(delta) {
+        quantity = Math.max(1, quantity + delta)
+        document.getElementById("product-qty").innerText = quantity
+        const total = (basePrice * quantity).toLocaleString()
+        document.getElementById("bag-button-text").innerText =
+          `Add to Bag — $${total}`
+      }
+
+      function toggleAccordion(id, btn) {
+        const content = document.getElementById(id)
+        const icon = btn.querySelector(".material-symbols-outlined")
+        if (content.classList.contains("hidden")) {
+          content.classList.remove("hidden")
+          icon.innerText = "remove"
+        } else {
+          content.classList.add("hidden")
+          icon.innerText = "add"
         }
       }
-    }
-  </script>
-<style>
-    body {
-      background-color: #FBF9F5;
-      color: #1A1715;
-      font-family: 'Inter', sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-    }
-  </style>
-</head>
-<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col">
-<!-- TOP BANNER -->
-<div class="bg-primary text-primary-foreground py-2.5 text-center text-xs tracking-[0.2em] uppercase font-light border-b border-primary/20">
-    Complimentary white-glove delivery on all curation orders.
-  </div>
-<!-- NAVIGATION -->
-<header class="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
-<div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 h-20 flex items-center justify-between">
-<!-- LOGO -->
-<a class="font-serif text-xl tracking-[0.2em] uppercase text-primary font-medium hover:opacity-85 transition-opacity" href="#">
-        Atelier Édition
-      </a>
-<!-- CENTER NAV LINKS -->
-<nav class="hidden md:flex items-center space-x-10 text-xs uppercase tracking-[0.22em] font-medium text-muted-foreground">
-<a class="hover:text-primary transition-colors" href="#">Curations</a>
-<a class="hover:text-primary transition-colors" href="#">Collections</a>
-<a class="text-primary border-b border-primary pb-1" href="#">Store</a>
-<a class="hover:text-primary transition-colors" href="#">Maisons</a>
-<a class="hover:text-primary transition-colors" href="#">Editorial</a>
-</nav>
-<!-- UTILITY ACTIONS -->
-<div class="flex items-center space-x-6 text-primary">
-<button aria-label="Search" class="p-1 hover:text-ochre-champagne transition-colors" type="button">
-<span class="material-symbols-outlined text-xl">search</span>
-</button>
-<button aria-label="Account" class="p-1 hover:text-ochre-champagne transition-colors" type="button">
-<span class="material-symbols-outlined text-xl">person</span>
-</button>
-<button aria-label="Cart" class="p-1 flex items-center gap-1.5 hover:text-ochre-champagne transition-colors" type="button">
-<span class="material-symbols-outlined text-xl">shopping_bag</span>
-<span class="text-xs font-medium tracking-normal">(2)</span>
-</button>
-</div>
-</div>
-</header>
-<!-- MAIN CONTENT CONTAINER -->
-<main class="flex-grow max-w-[1440px] mx-auto w-full px-6 sm:px-10 lg:px-16 pt-8 pb-20">
-<!-- BREADCRUMB TRAIL -->
-<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground mb-8">
-<a class="hover:text-primary transition-colors" href="#">Store</a>
-<span class="text-border">/</span>
-<a class="hover:text-primary transition-colors" href="#">Outerwear</a>
-<span class="text-border">/</span>
-<span class="text-primary font-medium">L'Écharpe Cashmere Trench</span>
-</nav>
-<!-- PRODUCT HERO: 2-COLUMN LUXURY LAYOUT -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-<!-- LEFT COLUMN: IMAGE GALLERY (58% approx -> 7 cols) -->
-<div class="lg:col-span-7 space-y-4">
-<!-- Main Large Featured Image -->
-<div class="w-full aspect-[3/4] bg-surface-container overflow-hidden border border-border/40">
-<img alt="L'Écharpe Cashmere Trench in brushed camel" class="w-full h-full object-cover transition-opacity duration-300" id="main-product-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHKduAuGPHoXRVz4KGyQkLeLGr2zKw13wpNavJGA-SVQDVw2WtU3RFJYx2ajXJYrH6rXvE_utq2BFt0maCj5SzoJoK6qvYbSv32CZ8-72mViYPC1_rrSc7ZDoQQjYmfv2Ost38-YAmH5ZSP-sx0HfjIFCdaPe6zI5R1KcQJyJF6Vr-kKOFRZyL4XXjElimXyyXv0VSsNWabmJ3Kog1ObfWuv3goDBv0R9b5nZ4gzFvQJONpRJQvqw8"/>
-</div>
-<!-- Thumbnail Strip -->
-<div class="grid grid-cols-4 gap-3 sm:gap-4 pt-1">
-<button class="thumb-btn aspect-[3/4] bg-surface-container overflow-hidden border-2 border-primary transition-all focus:outline-none" onclick="updateHeroImage(this, 'https://lh3.googleusercontent.com/aida-public/AB6AXuCHKduAuGPHoXRVz4KGyQkLeLGr2zKw13wpNavJGA-SVQDVw2WtU3RFJYx2ajXJYrH6rXvE_utq2BFt0maCj5SzoJoK6qvYbSv32CZ8-72mViYPC1_rrSc7ZDoQQjYmfv2Ost38-YAmH5ZSP-sx0HfjIFCdaPe6zI5R1KcQJyJF6Vr-kKOFRZyL4XXjElimXyyXv0VSsNWabmJ3Kog1ObfWuv3goDBv0R9b5nZ4gzFvQJONpRJQvqw8')" type="button">
-<img alt="Silhouette View" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHKduAuGPHoXRVz4KGyQkLeLGr2zKw13wpNavJGA-SVQDVw2WtU3RFJYx2ajXJYrH6rXvE_utq2BFt0maCj5SzoJoK6qvYbSv32CZ8-72mViYPC1_rrSc7ZDoQQjYmfv2Ost38-YAmH5ZSP-sx0HfjIFCdaPe6zI5R1KcQJyJF6Vr-kKOFRZyL4XXjElimXyyXv0VSsNWabmJ3Kog1ObfWuv3goDBv0R9b5nZ4gzFvQJONpRJQvqw8"/>
-</button>
-<button class="thumb-btn aspect-[3/4] bg-surface-container overflow-hidden border border-border hover:border-muted-foreground transition-all focus:outline-none" onclick="updateHeroImage(this, 'https://lh3.googleusercontent.com/aida-public/AB6AXuAgIxo5Jxe1HvIBUfx_68cFSEqcaOI-bxUk4YFV6IwEDxfQuK_8Q5saTwCnRzat786H9VMz2T8pzHiyqq8WsSTEVmjEVMhpw98ECkjQu2Bu-ZzupDVJSIijE-xxWdCw7A9an0lJfdHzWWOJ-GIq9AxgJCFZF9SG1-MK4ru7SE0o0dFgCSLZMVHXvWZApST_-nBDZbSyoacSdAi84gFohphlJP5_qke8U6V59yKNgLhpj-PG1hveLDMd')" type="button">
-<img alt="Horn Button Detail" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgIxo5Jxe1HvIBUfx_68cFSEqcaOI-bxUk4YFV6IwEDxfQuK_8Q5saTwCnRzat786H9VMz2T8pzHiyqq8WsSTEVmjEVMhpw98ECkjQu2Bu-ZzupDVJSIijE-xxWdCw7A9an0lJfdHzWWOJ-GIq9AxgJCFZF9SG1-MK4ru7SE0o0dFgCSLZMVHXvWZApST_-nBDZbSyoacSdAi84gFohphlJP5_qke8U6V59yKNgLhpj-PG1hveLDMd"/>
-</button>
-<button class="thumb-btn aspect-[3/4] bg-surface-container overflow-hidden border border-border hover:border-muted-foreground transition-all focus:outline-none" onclick="updateHeroImage(this, 'https://lh3.googleusercontent.com/aida-public/AB6AXuCt9-p9A6tOVw486J0qkg0-TsKtL1VK5P6ifh9jngbMeOyjDj5XQOk_xXK2_2BjtRuAsdn8tq8DxDtMiUWQZ2Z58Uzc_14qO-8TAwQ9_1oWx6BKzRMeMuj8EIurRQTJkXcspTk8w5MBiT86i7mS0ZG2BzK2Vkaf8d5qxNvkH0ebqq8dVAQsbVlYPYdkm2HmmokyphsUaFG-j-NUaXjTVFXbzZaSMW-FpvVAcy64QZmj-ANCgy4_19Ze')" type="button">
-<img alt="Back Silhouette" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt9-p9A6tOVw486J0qkg0-TsKtL1VK5P6ifh9jngbMeOyjDj5XQOk_xXK2_2BjtRuAsdn8tq8DxDtMiUWQZ2Z58Uzc_14qO-8TAwQ9_1oWx6BKzRMeMuj8EIurRQTJkXcspTk8w5MBiT86i7mS0ZG2BzK2Vkaf8d5qxNvkH0ebqq8dVAQsbVlYPYdkm2HmmokyphsUaFG-j-NUaXjTVFXbzZaSMW-FpvVAcy64QZmj-ANCgy4_19Ze"/>
-</button>
-<button class="thumb-btn aspect-[3/4] bg-surface-container overflow-hidden border border-border hover:border-muted-foreground transition-all focus:outline-none" onclick="updateHeroImage(this, 'https://lh3.googleusercontent.com/aida-public/AB6AXuC75anDH2FKdsow4WSD0UVYq4WGTy1BgIRH9W686VM5Ygz261Orl7uYOK4YSU4_9KMeA2fg72t1CjgNf1Izz5Q4wSeyVaVb0D_RD_bMWdBaOca6cQMCEOzCxl2Fsu1vIUSiAFTzrmh1-zJUYsOLlCztIjFgpPc7WDjwGdlb7gflA050YGxdKw7n5Cd-uYRCjvFisMtuPg7TNuboWynKOZsuJMQYLa3LPTqvhLrpqublerVuna2KV2LO')" type="button">
-<img alt="Pure Wool &amp; Cashmere Texture" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC75anDH2FKdsow4WSD0UVYq4WGTy1BgIRH9W686VM5Ygz261Orl7uYOK4YSU4_9KMeA2fg72t1CjgNf1Izz5Q4wSeyVaVb0D_RD_bMWdBaOca6cQMCEOzCxl2Fsu1vIUSiAFTzrmh1-zJUYsOLlCztIjFgpPc7WDjwGdlb7gflA050YGxdKw7n5Cd-uYRCjvFisMtuPg7TNuboWynKOZsuJMQYLa3LPTqvhLrpqublerVuna2KV2LO"/>
-</button>
-</div>
-</div>
-<!-- RIGHT COLUMN: PRODUCT PURCHASING PANE (42% approx -> 5 cols) -->
-<div class="lg:col-span-5 lg:sticky lg:top-28 lg:pl-6 xl:pl-10">
-<!-- Vendor -->
-<a class="inline-block text-xs uppercase tracking-[0.25em] text-muted-foreground font-medium hover:text-ochre-champagne transition-colors mb-2" href="#">
-          Maison Vaneau
-        </a>
-<!-- Title -->
-<h1 class="font-serif text-3xl sm:text-4xl text-primary font-normal tracking-tight leading-tight mb-3">
-          L'Écharpe Cashmere Trench
-        </h1>
-<!-- Price & Stock Status -->
-<div class="flex items-baseline gap-4 mb-5">
-<span class="text-2xl font-light tracking-tight text-primary">$1,850</span>
-<span class="inline-flex items-center gap-1.5 text-xs font-normal text-success tracking-wider uppercase">
-<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
-            In Stock
-          </span>
-</div>
-<!-- Editorial Description -->
-<p class="text-on-surface-variant text-sm font-light leading-relaxed mb-8">
-          Sculpted double-breasted outerwear with an integrated scarf collar, unlined fluid drape, and cold-pressed horn closures. Tailored for an unhurried, monolithic silhouette.
-        </p>
-<div class="border-t border-border pt-6 mb-6">
-<!-- VARIANT 1: SHADE / COLOR -->
-<div class="mb-6">
-<div class="flex items-center justify-between mb-3 text-xs uppercase tracking-wider font-medium">
-<span class="text-primary">Color: <span class="text-muted-foreground font-normal" id="selected-color-label">Brushed Camel</span></span>
-</div>
-<div aria-label="Color Options" class="flex items-center space-x-3" role="radiogroup">
-<!-- Swatch: Brushed Camel -->
-<button aria-label="Brushed Camel" class="color-btn relative w-8 h-8 rounded-full p-0.5 ring-2 ring-primary ring-offset-2 ring-offset-background transition-all focus:outline-none" onclick="selectColor(this, 'Brushed Camel')" type="button">
-<span class="block w-full h-full rounded-full bg-[#C4A482]"></span>
-</button>
-<!-- Swatch: Alabaster Stone -->
-<button aria-label="Alabaster Stone" class="color-btn relative w-8 h-8 rounded-full p-0.5 ring-1 ring-border hover:ring-primary ring-offset-2 ring-offset-background transition-all focus:outline-none" onclick="selectColor(this, 'Alabaster Stone')" type="button">
-<span class="block w-full h-full rounded-full bg-[#F5F2EB] border border-border/80"></span>
-</button>
-<!-- Swatch: Noir Charbon -->
-<button aria-label="Noir Charbon" class="color-btn relative w-8 h-8 rounded-full p-0.5 ring-1 ring-border hover:ring-primary ring-offset-2 ring-offset-background transition-all focus:outline-none" onclick="selectColor(this, 'Noir Charbon')" type="button">
-<span class="block w-full h-full rounded-full bg-[#1A1715]"></span>
-</button>
-</div>
-</div>
-<!-- VARIANT 2: SIZES -->
-<div class="mb-8">
-<div class="flex items-center justify-between mb-3 text-xs uppercase tracking-wider font-medium">
-<span class="text-primary">Size</span>
-<button class="text-muted-foreground hover:text-primary transition-colors underline underline-offset-4" onclick="openSizeGuide()" type="button">
-                Size Guide
-              </button>
-</div>
-<div aria-label="Garment Sizes" class="grid grid-cols-4 gap-2.5" role="radiogroup">
-<button class="size-pill py-3 text-center text-xs tracking-wider uppercase border border-border bg-transparent text-primary hover:border-primary transition-colors focus:outline-none" onclick="selectSize(this, 'FR 34')" type="button">
-                FR 34
-              </button>
-<button class="size-pill py-3 text-center text-xs tracking-wider uppercase border border-primary bg-primary text-primary-foreground transition-colors focus:outline-none active-size" onclick="selectSize(this, 'FR 36')" type="button">
-                FR 36
-              </button>
-<button class="size-pill py-3 text-center text-xs tracking-wider uppercase border border-border bg-transparent text-primary hover:border-primary transition-colors focus:outline-none" onclick="selectSize(this, 'FR 38')" type="button">
-                FR 38
-              </button>
-<button class="size-pill py-3 text-center text-xs tracking-wider uppercase border border-border bg-transparent text-primary hover:border-primary transition-colors focus:outline-none" onclick="selectSize(this, 'FR 40')" type="button">
-                FR 40
-              </button>
-</div>
-</div>
-<!-- PURCHASE ACTIONS ROW -->
-<div class="flex items-stretch gap-3 mb-6">
-<!-- Stepper -->
-<div class="flex items-center border border-border px-2 h-14 bg-background">
-<button aria-label="Decrease quantity" class="w-8 h-full flex items-center justify-center text-muted-foreground hover:text-primary transition-colors" onclick="changeQty(-1)" type="button">
-<span class="text-base font-light">−</span>
-</button>
-<span class="w-8 text-center text-xs font-medium text-primary" id="product-qty">1</span>
-<button aria-label="Increase quantity" class="w-8 h-full flex items-center justify-center text-muted-foreground hover:text-primary transition-colors" onclick="changeQty(1)" type="button">
-<span class="text-base font-light">+</span>
-</button>
-</div>
-<!-- Primary Add to Bag Button -->
-<button class="flex-1 h-14 bg-primary text-primary-foreground text-xs uppercase tracking-[0.2em] font-medium transition-all duration-200 hover:bg-[#2e2a27] active:scale-[0.99] flex items-center justify-center" id="add-bag-button" onclick="handleAddToBag()" type="button">
-<span id="bag-button-text">Add to Bag — $1,850</span>
-</button>
-</div>
-<!-- Vendor Shipped Note -->
-<div class="text-xs text-muted-foreground text-center py-2">
-            Sold and shipped by <a class="text-primary hover:underline underline-offset-2" href="#">Maison Vaneau</a>
-</div>
-</div>
-<!-- MINIMAL COLLAPSIBLE SECTIONS -->
-<div class="border-t border-border divide-y divide-border">
-<!-- Accordion 1: Details & Care -->
-<div class="py-4">
-<button class="w-full flex items-center justify-between text-xs uppercase tracking-widest font-medium text-primary py-1 hover:text-ochre-champagne transition-colors text-left" onclick="toggleAccordion('details-content', this)" type="button">
-<span>Details &amp; Care</span>
-<span class="material-symbols-outlined text-lg transition-transform duration-200" id="icon-details">add</span>
-</button>
-<div class="hidden pt-3 text-xs text-on-surface-variant font-light leading-relaxed space-y-1.5" id="details-content">
-<p>• 100% Ultra-fine Mongolian Cashmere</p>
-<p>• Hand-carved water buffalo horn button fastenings</p>
-<p>• Unlined construction with bound interior silk seams</p>
-<p>• Specialized gentle dry clean only; store on cedar hanger</p>
-<p>• Handcrafted in Paris, France</p>
-</div>
-</div>
-<!-- Accordion 2: Shipping & Returns -->
-<div class="py-4">
-<button class="w-full flex items-center justify-between text-xs uppercase tracking-widest font-medium text-primary py-1 hover:text-ochre-champagne transition-colors text-left" onclick="toggleAccordion('shipping-content', this)" type="button">
-<span>Shipping &amp; Returns</span>
-<span class="material-symbols-outlined text-lg transition-transform duration-200" id="icon-shipping">add</span>
-</button>
-<div class="hidden pt-3 text-xs text-on-surface-variant font-light leading-relaxed space-y-1.5" id="shipping-content">
-<p>• White-glove carbon-neutral delivery included on all orders</p>
-<p>• Signature required upon arrival; archival garment bag included</p>
-<p>• Complimentary return logistics provided within 14 days of receipt</p>
-<p>• Tailored custom adjustments available via our atelier concierge</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- MORE FROM MAISON VANEAU -->
-<section class="mt-28 pt-12 border-t border-border">
-<!-- Section Header -->
-<div class="flex flex-col sm:flex-row items-baseline justify-between mb-10">
-<div>
-<h2 class="font-serif text-2xl text-primary font-normal">More from Maison Vaneau</h2>
-<p class="text-xs text-muted-foreground mt-1">Harmonious wardrobe complements tailored by the same Parisian atelier.</p>
-</div>
-<a class="text-xs uppercase tracking-[0.2em] font-medium text-primary hover:text-ochre-champagne transition-colors flex items-center gap-1.5 mt-4 sm:mt-0" href="#">
-<span>View Maison Archive</span>
-<span class="material-symbols-outlined text-base">arrow_forward</span>
-</a>
-</div>
-<!-- 4-Column Product Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-<!-- Card 1 -->
-<a class="group block" href="#">
-<div class="w-full aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-border/40">
-<img alt="Colbert Sculpté Coat" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxkmXk1lLWgAQtjcjdruEsrKTB647dAH3KuPyIJMm6e_Xcj2IjGFFxdLN7MfhFph1y8D2_xfAlV3WjZT1loRD_gI5kpjUX9Jay_v_04hYZ2zB7z6RhdmWLaLLsBxgYH_FJZnZVMkRv0v3ViwBjRa3OnoepKdqisksaBFXNp87345AusUcNF8pzaTAu0Bc-iBliLFJLh2pBQ-ldzQejU7nAOYaYBn7t-gAuecigvzEsthVfQKtmvRfQ"/>
-</div>
-<div class="text-[11px] uppercase tracking-widest text-muted-foreground mb-1">Maison Vaneau</div>
-<h3 class="font-serif text-base text-primary font-normal group-hover:text-ochre-champagne transition-colors mb-1">
-            Colbert Sculpté Coat
-          </h3>
-<div class="text-sm font-light text-primary">$2,850</div>
-</a>
-<!-- Card 2 -->
-<a class="group block" href="#">
-<div class="w-full aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-border/40">
-<img alt="Pleated Belgian Flax Trouser" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCakLJsOEN4m5MRbyDq9KOjpPWDUPcIh9-HDKOWy0yeAMG3qpSQfUzc-dwLCn81bVTvrqFJwPkWwJ1eJhzJsoJh1XNQdqCK-krxUIEAeBSjE4jBK8OMaI4HpF22gRcJpy370Xaht0p53nqCTSfMJktUliL8NDVKebQmKI5AE1Rkakbc2RTU4gOuiuu-3JxQNNrMBCOow3_1V9rCspLOft5GYjWJXM1uWQqZqfCPIW3vcyftzMdgfih9"/>
-</div>
-<div class="text-[11px] uppercase tracking-widest text-muted-foreground mb-1">Maison Vaneau</div>
-<h3 class="font-serif text-base text-primary font-normal group-hover:text-ochre-champagne transition-colors mb-1">
-            Pleated Belgian Flax Trouser
-          </h3>
-<div class="text-sm font-light text-primary">$740</div>
-</a>
-<!-- Card 3 -->
-<a class="group block" href="#">
-<div class="w-full aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-border/40">
-<img alt="High-Gauge Cashmere Rollneck" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1jTlAMf2ak7eVFwyPE3419axEVFRjh_vVATNOVBqBMTq84yiSRm0WEwMUSmtf7tBntoORFrPybBLJjFLHkeRIonQ7BGR3l2M7wi7uQCcvW0QNjH1SXmY6c6M_iA4KEzZSpyR2xcJbXoNIgQQMWeCxJCSI4BDXsbda1x0oaXZWNGjFvVJYrtUfewGInqz7cIp9lc-9hqu9R7yeW2QFtO21TVMQU8XkdULHvN8u7s5rQDWl6IUtUZtj"/>
-</div>
-<div class="text-[11px] uppercase tracking-widest text-muted-foreground mb-1">Maison Vaneau</div>
-<h3 class="font-serif text-base text-primary font-normal group-hover:text-ochre-champagne transition-colors mb-1">
-            High-Gauge Cashmere Rollneck
-          </h3>
-<div class="text-sm font-light text-primary">$940</div>
-</a>
-<!-- Card 4 -->
-<a class="group block" href="#">
-<div class="w-full aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-border/40">
-<img alt="Sculpted Collarless Silk Blazer" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzIybp1F0R1zWmX6eqnb_sUCuDfnA-2_k_cbX2FSrjwe6yUHcsI8fy9LKKPGHMvTcVN9DKI2VSg8MTYD093kHVZeBfepqUwpc0UrlghtPFpW0JqqRLReYqIsHGiWdpUadAN948OmtaaZWYNAH7nafi6WzXrjDYNPcrjMu51Ul_WSclYJP2FM2go8UxJM-vzHcE--5239rszRe7M63nF81ssBXeS6PQqaymhXNo9fM0BQNfGaF2Xyjg"/>
-</div>
-<div class="text-[11px] uppercase tracking-widest text-muted-foreground mb-1">Maison Vaneau</div>
-<h3 class="font-serif text-base text-primary font-normal group-hover:text-ochre-champagne transition-colors mb-1">
-            Sculpted Collarless Silk Blazer
-          </h3>
-<div class="text-sm font-light text-primary">$1,120</div>
-</a>
-</div>
-</section>
-</main>
-<!-- SIZE GUIDE MODAL (Accessible on trigger) -->
-<div class="fixed inset-0 z-50 bg-primary/40 backdrop-blur-sm hidden flex items-center justify-center p-4" id="size-guide-modal">
-<div class="bg-background max-w-md w-full p-8 border border-border shadow-2xl relative">
-<div class="flex items-center justify-between mb-6">
-<h3 class="font-serif text-xl text-primary">Sartorial Size Guide</h3>
-<button class="text-muted-foreground hover:text-primary" onclick="closeSizeGuide()" type="button">
-<span class="material-symbols-outlined">close</span>
-</button>
-</div>
-<div class="text-xs text-on-surface-variant leading-relaxed space-y-4 font-light">
-<p>Outerwear is conceived with an unhurried, oversized architectural drape. We suggest choosing your normal size for the runway silhouette, or one size down for a more fitted profile.</p>
-<table class="w-full text-left border-collapse mt-4 text-xs font-normal">
-<thead>
-<tr class="border-b border-border text-primary uppercase tracking-wider text-[10px]">
-<th class="py-2">French (FR)</th>
-<th class="py-2">US / UK</th>
-<th class="py-2">Bust (cm)</th>
-<th class="py-2">Waist (cm)</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-border/60 text-muted-foreground">
-<tr><td class="py-2 text-primary font-medium">FR 34</td><td class="py-2">US 2 / UK 6</td><td class="py-2">80 - 84</td><td class="py-2">60 - 64</td></tr>
-<tr><td class="py-2 text-primary font-medium">FR 36</td><td class="py-2">US 4 / UK 8</td><td class="py-2">84 - 88</td><td class="py-2">64 - 68</td></tr>
-<tr><td class="py-2 text-primary font-medium">FR 38</td><td class="py-2">US 6 / UK 10</td><td class="py-2">88 - 92</td><td class="py-2">68 - 72</td></tr>
-<tr><td class="py-2 text-primary font-medium">FR 40</td><td class="py-2">US 8 / UK 12</td><td class="py-2">92 - 96</td><td class="py-2">72 - 76</td></tr>
-</tbody>
-</table>
-</div>
-<div class="mt-8 text-center">
-<button class="w-full py-3 bg-primary text-primary-foreground text-xs uppercase tracking-widest" onclick="closeSizeGuide()" type="button">
-          Close Guide
-        </button>
-</div>
-</div>
-</div>
-<!-- TOAST FEEDBACK NOTIFICATION -->
-<div class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-primary text-primary-foreground px-5 py-4 border border-primary/20 shadow-2xl flex items-center gap-3" id="cart-toast">
-<span class="material-symbols-outlined text-ochre-champagne text-lg">check_circle</span>
-<div>
-<div class="text-xs uppercase tracking-wider font-medium text-primary-foreground">Acquisition Placed in Bag</div>
-<div class="text-[11px] text-accent font-light mt-0.5" id="toast-summary">L'Écharpe Cashmere Trench (FR 36)</div>
-</div>
-</div>
-<!-- FOOTER -->
-<footer class="w-full bg-[#f4f1ea] border-t border-border mt-auto">
-<div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 pt-16 pb-12">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-14 border-b border-border/80">
-<!-- Col 1: Brand & Newsletter -->
-<div class="lg:col-span-5 space-y-4">
-<div class="font-serif text-lg tracking-widest uppercase text-primary font-medium">Atelier Édition</div>
-<p class="text-xs font-light text-on-surface-variant max-w-sm leading-relaxed">
-            A curated sanctuary of haute couture tailoring, rare botanical dyes, and numbered archival garments conceived for discerning collectors.
-          </p>
-<div class="pt-2">
-<div class="text-[11px] uppercase text-primary tracking-[0.2em] font-medium mb-3">Join the Édition Gazette</div>
-<div class="flex max-w-sm items-center border-b border-primary/40 focus-within:border-primary transition-colors py-2">
-<input class="w-full bg-transparent text-xs text-on-surface placeholder:text-muted-foreground outline-none border-none ring-0 focus:ring-0 px-0" placeholder="Enter your correspondence email" type="email"/>
-<button class="text-xs uppercase tracking-widest text-primary font-medium hover:text-ochre-champagne transition-colors pl-4" type="button">
-                Subscribe
-              </button>
-</div>
-</div>
-</div>
-<!-- Col 2: Curations -->
-<div class="lg:col-span-2 space-y-3">
-<div class="text-xs uppercase tracking-[0.2em] text-primary font-medium">Curations</div>
-<ul class="space-y-2 text-xs font-light text-on-surface-variant">
-<li><a class="hover:text-primary transition-colors" href="#">Sartorial Suites</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Atelier Silk &amp; Cashmere</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Monochrome Objects</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Archival Reissues</a></li>
-</ul>
-</div>
-<!-- Col 3: Maisons -->
-<div class="lg:col-span-2 space-y-3">
-<div class="text-xs uppercase tracking-[0.2em] text-primary font-medium">Maisons</div>
-<ul class="space-y-2 text-xs font-light text-on-surface-variant">
-<li><a class="hover:text-primary transition-colors" href="#">The Atelier Manifesto</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Master Artisans</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">The Gazette</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Bespoke Appointments</a></li>
-</ul>
-</div>
-<!-- Col 4: Concierge -->
-<div class="lg:col-span-3 space-y-3">
-<div class="text-xs uppercase tracking-[0.2em] text-primary font-medium">Concierge</div>
-<ul class="space-y-2 text-xs font-light text-on-surface-variant">
-<li>White-Glove Courier Logistics</li>
-<li>Bespoke Tailoring Inquiries</li>
-<li>Care of Rare Textiles</li>
-<li>salon@atelier-edition.com</li>
-</ul>
-</div>
-</div>
-<!-- Footer Bottom -->
-<div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-light text-muted-foreground">
-<div>© 2025 Atelier Édition S.A. All rights reserved. Single Global Atelier Registry.</div>
-<div class="flex items-center space-x-6 text-[11px] uppercase tracking-widest">
-<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
-<a class="hover:text-primary transition-colors" href="#">Terms of Curation</a>
-<a class="hover:text-primary transition-colors" href="#">Provenance</a>
-</div>
-</div>
-</div>
-</footer>
-<!-- MICRO-INTERACTIONS SCRIPT -->
-<script>
-    let quantity = 1;
-    const basePrice = 1850;
-    let selectedSize = "FR 36";
-    let selectedColor = "Brushed Camel";
 
-    function updateHeroImage(btn, src) {
-      const hero = document.getElementById('main-product-image');
-      hero.style.opacity = '0.4';
-      setTimeout(() => {
-        hero.src = src;
-        hero.style.opacity = '1';
-      }, 150);
-
-      document.querySelectorAll('.thumb-btn').forEach(b => {
-        b.classList.remove('border-2', 'border-primary');
-        b.classList.add('border', 'border-border');
-      });
-      btn.classList.remove('border', 'border-border');
-      btn.classList.add('border-2', 'border-primary');
-    }
-
-    function selectColor(btn, name) {
-      document.querySelectorAll('.color-btn').forEach(b => {
-        b.classList.remove('ring-2', 'ring-primary');
-        b.classList.add('ring-1', 'ring-border');
-      });
-      btn.classList.remove('ring-1', 'ring-border');
-      btn.classList.add('ring-2', 'ring-primary');
-      selectedColor = name;
-      document.getElementById('selected-color-label').innerText = name;
-    }
-
-    function selectSize(btn, size) {
-      document.querySelectorAll('.size-pill').forEach(b => {
-        b.classList.remove('bg-primary', 'text-primary-foreground', 'border-primary', 'active-size');
-        b.classList.add('bg-transparent', 'text-primary', 'border-border');
-      });
-      btn.classList.remove('bg-transparent', 'border-border');
-      btn.classList.add('bg-primary', 'text-primary-foreground', 'border-primary', 'active-size');
-      selectedSize = size;
-    }
-
-    function changeQty(delta) {
-      quantity = Math.max(1, quantity + delta);
-      document.getElementById('product-qty').innerText = quantity;
-      const total = (basePrice * quantity).toLocaleString();
-      document.getElementById('bag-button-text').innerText = `Add to Bag — $${total}`;
-    }
-
-    function toggleAccordion(id, btn) {
-      const content = document.getElementById(id);
-      const icon = btn.querySelector('.material-symbols-outlined');
-      if (content.classList.contains('hidden')) {
-        content.classList.remove('hidden');
-        icon.innerText = 'remove';
-      } else {
-        content.classList.add('hidden');
-        icon.innerText = 'add';
+      function openSizeGuide() {
+        document.getElementById("size-guide-modal").classList.remove("hidden")
       }
-    }
 
-    function openSizeGuide() {
-      document.getElementById('size-guide-modal').classList.remove('hidden');
-    }
+      function closeSizeGuide() {
+        document.getElementById("size-guide-modal").classList.add("hidden")
+      }
 
-    function closeSizeGuide() {
-      document.getElementById('size-guide-modal').classList.add('hidden');
-    }
+      function handleAddToBag() {
+        const btnText = document.getElementById("bag-button-text")
+        const original = btnText.innerText
+        btnText.innerText = "Added to Curated Bag"
 
-    function handleAddToBag() {
-      const btnText = document.getElementById('bag-button-text');
-      const original = btnText.innerText;
-      btnText.innerText = "Added to Curated Bag";
+        const toast = document.getElementById("cart-toast")
+        const summary = document.getElementById("toast-summary")
+        summary.innerText = `L'Écharpe Cashmere Trench • ${selectedColor} • ${selectedSize}`
 
-      const toast = document.getElementById('cart-toast');
-      const summary = document.getElementById('toast-summary');
-      summary.innerText = `L'Écharpe Cashmere Trench • ${selectedColor} • ${selectedSize}`;
+        toast.classList.remove("translate-y-20", "opacity-0")
+        toast.classList.add("translate-y-0", "opacity-100")
 
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-
-      setTimeout(() => {
-        btnText.innerText = original;
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3200);
-    }
-  </script>
-</body></html>
+        setTimeout(() => {
+          btnText.innerText = original
+          toast.classList.remove("translate-y-0", "opacity-100")
+          toast.classList.add("translate-y-20", "opacity-0")
+        }, 3200)
+      }
+    </script>
+  </body>
+</html>

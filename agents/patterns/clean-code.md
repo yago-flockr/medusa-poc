@@ -6,13 +6,13 @@ change without being asked. This file exists so nobody has to keep repeating
 
 ## Commenting rules (strict)
 
-- **No comments explaining *what* the code does.** A well-named function or
+- **No comments explaining _what_ the code does.** A well-named function or
   variable already says that; a comment repeating it is noise to maintain.
 - **No comment blocks or docstrings on internal, unexported helpers.**
-- **Comment only the *why*:** a hidden constraint, a workaround for a specific
+- **Comment only the _why_:** a hidden constraint, a workaround for a specific
   framework quirk, an invariant that isn't obvious from the code around it.
   Example from this repo: `lib/generate-random-password.ts`
-  is worth a one-line comment saying *why* the password must be
+  is worth a one-line comment saying _why_ the password must be
   server-generated (security, not UX — see `agents/backend.md`), because that
   reasoning isn't visible from the code alone. It would not be worth a
   comment saying "generates a random password" — the function name already
@@ -47,7 +47,7 @@ change without being asked. This file exists so nobody has to keep repeating
   `build-variants.ts`/`resolveProductVariants`).
 - This does not mean wrapping every literal in a constant — a `0` used as an
   array index or a `1` used as "increment by one" needs no name. Name a value
-  when its *meaning*, not its use, would otherwise be unclear.
+  when its _meaning_, not its use, would otherwise be unclear.
 
 ## Example (this repo's shape)
 

@@ -13,7 +13,7 @@ the route/workflow/module shape.
 
 - A function does one thing; a class/module owns one concern. If a Medusa
   step or an Admin hook is doing two unrelated things (e.g. validating input
-  *and* formatting a response), split it.
+  _and_ formatting a response), split it.
 - Signal it's grown too big: you can't describe what it does in one sentence
   without "and". That's the trigger to split — not a specific line count.
 

@@ -34,7 +34,7 @@ vendor then connects their own Shopify store from inside their own panel — not
 public, self-service signup (nobody gets in without being invited first), but the
 connection action itself is the vendor's to take, not staff's. This is a hard
 constraint, not a design preference: a private-distribution Shopify app can only be
-created by someone with access to the *installing* store's own organization, so
+created by someone with access to the _installing_ store's own organization, so
 staff was never able to do this step on the vendor's behalf.
 
 **Bringing the catalogue in.** Once connected, the vendor sees their Shopify catalogue

@@ -187,6 +187,17 @@ If deploying this monorepo to **Medusa Cloud**: set Project root to `apps/backen
 - `pnpm run storefront:dev` → http://localhost:8000 (customer storefront)
 - `docker compose up -d`
 
+Repo-wide gates, all three workspaces: `pnpm lint`, `pnpm typecheck`,
+`pnpm test`, `pnpm format:check`. `typecheck` is the only one that covers
+`@dtc/api-contracts` — it has no build step, so a broken contract otherwise
+stays invisible until an app that imports it is built.
+
+Prettier is the formatter (`pnpm format` / `pnpm format:check`) and is separate
+from `pnpm lint`, so a green lint says nothing about formatting. Tool-generated
+output — Shopify codegen and every `migrations/` folder — is in
+`.prettierignore` on purpose: formatting it only makes the next codegen or
+`medusa db:generate` run dirty it again.
+
 From `apps/backend`: `pnpm exec medusa db:migrate`, `pnpm exec medusa user -e ... -p ...`
 
 ## Gotchas

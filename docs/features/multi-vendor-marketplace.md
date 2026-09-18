@@ -111,18 +111,18 @@ when a vendor handles the physical return.
 The minimum set of states, and what the customer is told at each. Add to it if a
 clone needs more; do not collapse it.
 
-| State | Moved by | What the customer sees |
-| --- | --- | --- |
-| Placed | System, on payment | One confirmation listing every part with its expected dispatch window |
-| Accepted | Vendor | Nothing — the window is confirmed, not changed |
-| Unfulfillable | Vendor | That part cannot be supplied; that line refunded, rest of the order unaffected |
-| In production | Vendor | A lead time, shown against that part only |
-| Dispatched | Vendor | Dispatch notice and tracking for that part alone |
-| Delivered | Carrier | Delivery confirmation for that part |
-| Cancelled | Customer or staff, before dispatch | Cancellation confirmed, partial refund against the original order |
-| Return requested | Customer | Instructions and the window that applies to that vendor |
-| Return received | Vendor, on inspection | Confirmation the return is being processed |
-| Refunded | System | Refund confirmed, partial against the original order |
+| State            | Moved by                           | What the customer sees                                                         |
+| ---------------- | ---------------------------------- | ------------------------------------------------------------------------------ |
+| Placed           | System, on payment                 | One confirmation listing every part with its expected dispatch window          |
+| Accepted         | Vendor                             | Nothing — the window is confirmed, not changed                                 |
+| Unfulfillable    | Vendor                             | That part cannot be supplied; that line refunded, rest of the order unaffected |
+| In production    | Vendor                             | A lead time, shown against that part only                                      |
+| Dispatched       | Vendor                             | Dispatch notice and tracking for that part alone                               |
+| Delivered        | Carrier                            | Delivery confirmation for that part                                            |
+| Cancelled        | Customer or staff, before dispatch | Cancellation confirmed, partial refund against the original order              |
+| Return requested | Customer                           | Instructions and the window that applies to that vendor                        |
+| Return received  | Vendor, on inspection              | Confirmation the return is being processed                                     |
+| Refunded         | System                             | Refund confirmed, partial against the original order                           |
 
 ## What each audience sees
 

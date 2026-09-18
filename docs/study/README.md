@@ -200,7 +200,7 @@ orders.
 **Goal:** the half of a marketplace Medusa has no concept of — what a vendor is
 owed. Intent: `docs/features/commission-and-payouts.md`.
 **Build:** a commission rate per vendor, an append-only ledger entry written
-*inside* the order workflow, and a scheduled job that settles eligible entries
+_inside_ the order workflow, and a scheduled job that settles eligible entries
 into a simulated payout.
 **Done when:** placing an order writes the split as a stored fact, the job settles
 it, and a later partial refund adjusts only that vendor's balance — with the

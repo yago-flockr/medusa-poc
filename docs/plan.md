@@ -24,7 +24,7 @@ should treat them as constraints rather than choices.
   stock** — Medusa syncs it in (read) and pushes a sale back out (write) via
   the Shopify Admin API, the same way any other upstream system feeds a
   cache. This doesn't reopen "never a second commerce system": Medusa still
-  owns every commercial fact *our* storefront and checkout depend on: our
+  owns every commercial fact _our_ storefront and checkout depend on: our
   own pricing/curation layer, the aggregated availability we show, the
   order split per vendor, commission. What changed is that a vendor's own
   catalogue/stock is no longer typed into ours by hand or by a bespoke
@@ -268,8 +268,8 @@ in short form, with what's genuinely still open flagged as such:
   checkout owning the sale?** Shopify Payments is a gateway that, as far as
   we've found, only works through Shopify's own checkout — it isn't
   offered as a standalone payment API the way Stripe is. If the mandate is
-  literally that gateway, our checkout may need to be a *headless Shopify
-  checkout* (Shopify Storefront API / Shopify Checkout) rather than
+  literally that gateway, our checkout may need to be a _headless Shopify
+  checkout_ (Shopify Storefront API / Shopify Checkout) rather than
   Medusa's own payment/order flow — which would be a materially different
   build than "Medusa processes the sale, then notifies each vendor." Needs
   resolving before the checkout architecture is settled, not discovered
@@ -305,7 +305,7 @@ in short form, with what's genuinely still open flagged as such:
   vendor-facing panel for v1.** Two hands-on-confirmed facts settled this,
   both harder constraints than assumed when this was first raised:
   (1) the client-credentials grant used by the first spike only works for
-  stores in *our own* Shopify organization, never a real vendor's store, so
+  stores in _our own_ Shopify organization, never a real vendor's store, so
   the connection has to use a proper OAuth authorization-code-grant app
   instead (`docs/vendor-shopify-connection-guide.md`); (2) Shopify's Custom
   Distribution caps a single app at **one live production store** (any
@@ -405,7 +405,7 @@ in short form, with what's genuinely still open flagged as such:
   written as "one shared app, staff generates a link per vendor"; hands-on
   testing corrected that (see the Open Questions entry above) — Custom
   Distribution caps a single app at one live production store, so it's one
-  *app* per vendor, not one link per vendor from a shared app. Still not a
+  _app_ per vendor, not one link per vendor from a shared app. Still not a
   public app: that path means Shopify App Store review, an unknown timeline
   sitting on the critical path of a 3-month build, for a self-serve-install
   capability nobody asked for — onboarding is already staff-driven (see the
@@ -480,7 +480,7 @@ in short form, with what's genuinely still open flagged as such:
   pastes credentials" shape assumed staff could act inside a vendor's
   Shopify org, which hands-on testing already proved false — a
   custom-distribution app can only be created by someone with access to the
-  *installing* store's own org, so the connection step was always going to
+  _installing_ store's own org, so the connection step was always going to
   have to be vendor-driven, not staff-driven, regardless of this decision.
   Staff still originates the relationship (invite, approval) — only the
   "click connect, pick what to bring in" action moves to the vendor. One
@@ -495,7 +495,7 @@ in short form, with what's genuinely still open flagged as such:
   superseded there.
 - **Shopify sync is vendor-pull-triggered for v1, not webhook-push** —
   refines the sync direction above rather than reversing it (product/stock
-  still flows in, a sale still flows out; only what *triggers* an inbound
+  still flows in, a sale still flows out; only what _triggers_ an inbound
   refresh changes). Three layers, none of them a persistent listener: (1) a
   vendor's own login to their panel triggers a refresh pull for their
   connected store; (2) a scheduled job (`defineJobConfig` — fires and
@@ -609,7 +609,7 @@ in short form, with what's genuinely still open flagged as such:
   defaults to zero or assumes a value.
 - **A stock location's address becomes required, reversing the "fully
   optional" shape the location form shipped with earlier this same
-  session.** That earlier call was about never forcing a *link* between
+  session.** That earlier call was about never forcing a _link_ between
   vendor, product and location at creation time — it was never a decision
   that a location's own address should be optional. An address-less
   location can't have shipping rated from it, so it belongs in the same
@@ -622,7 +622,7 @@ in short form, with what's genuinely still open flagged as such:
   unchanged in shape: a multi-vendor marketplace, open to sellers
   (vendors) and to people who refer sales without selling anything
   themselves (affiliates), each earning a commission. The earlier reading
-  of this — that an influencer was another *seller* type — is superseded
+  of this — that an influencer was another _seller_ type — is superseded
   by the affiliate decision below.
   Whether the project continues at all past the current work is still
   genuinely open — do not assume either way. Existing Sensus-derived
@@ -638,7 +638,7 @@ in short form, with what's genuinely still open flagged as such:
   per-seller child orders — which only works because it pairs that with
   real per-seller payment splitting (Stripe Connect-shaped), a different
   foundational bet than this project's centralized-payment model. Whether
-  Mercur can be added to an *existing* app like ours (vs. requiring a fresh
+  Mercur can be added to an _existing_ app like ours (vs. requiring a fresh
   project) is undocumented and unresolved. Decision: finish the current
   workflows/routes refactor and next planned UI work first; revisit Mercur
   only as its own deliberate spike later, never as a silent scope-creep
@@ -650,7 +650,7 @@ in short form, with what's genuinely still open flagged as such:
   each is expensive to change once orders exist:
   - **One entity, not the `Vendor`/`VendorUser` pair.** That split exists
     because products, stock locations, shipping profiles, consignments and
-    the Shopify connection all attach to the *company* while staff come and
+    the Shopify connection all attach to the _company_ while staff come and
     go. Nothing attaches to an affiliate org — codes and referrals belong to
     the person — so an owning company would be a join to a row that says
     nothing. Adding one later is additive and safe precisely because a

@@ -1,544 +1,1094 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Atelier Édition — Haute Couture &amp; Sartorial Sanctuary</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "background": "#FBF9F5",
-            "foreground": "#1A1715",
-            "primary": "#1A1715",
-            "primary-foreground": "#FBF9F5",
-            "secondary": "#EFECE4",
-            "card": "#F5F2EB",
-            "card-foreground": "#1A1715",
-            "muted": "#EFECE4",
-            "muted-foreground": "#78726A",
-            "border": "#E4DFD5",
-            "ochre-champagne": "#9E7B56",
-            "espresso-dark": "#12100E",
-            "parchment-deep": "#ECE7DD",
-            "surface": "#FBF9F5",
-            "surface-container-low": "#F5F3EF",
-            "surface-container": "#EFEEEA",
-            "surface-container-high": "#EAE8E4",
-            "on-surface": "#1B1C1A",
-            "on-surface-variant": "#4D4540",
-            "success": "#3E5742",
-            "destructive": "#8A3C34"
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atelier Édition — Haute Couture &amp; Sartorial Sanctuary</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              background: "#FBF9F5",
+              foreground: "#1A1715",
+              primary: "#1A1715",
+              "primary-foreground": "#FBF9F5",
+              secondary: "#EFECE4",
+              card: "#F5F2EB",
+              "card-foreground": "#1A1715",
+              muted: "#EFECE4",
+              "muted-foreground": "#78726A",
+              border: "#E4DFD5",
+              "ochre-champagne": "#9E7B56",
+              "espresso-dark": "#12100E",
+              "parchment-deep": "#ECE7DD",
+              surface: "#FBF9F5",
+              "surface-container-low": "#F5F3EF",
+              "surface-container": "#EFEEEA",
+              "surface-container-high": "#EAE8E4",
+              "on-surface": "#1B1C1A",
+              "on-surface-variant": "#4D4540",
+              success: "#3E5742",
+              destructive: "#8A3C34",
+            },
+            fontFamily: {
+              serif: ["'Playfair Display'", "Georgia", "serif"],
+              sans: ["'Inter'", "-apple-system", "sans-serif"],
+              mono: ["'Inter'", "monospace"],
+            },
+            spacing: {
+              gutter: "2rem",
+              margin: "4rem",
+              "margin-mobile": "1.5rem",
+            },
           },
-          fontFamily: {
-            serif: ["'Playfair Display'", "Georgia", "serif"],
-            sans: ["'Inter'", "-apple-system", "sans-serif"],
-            mono: ["'Inter'", "monospace"]
-          },
-          spacing: {
-            'gutter': '2rem',
-            'margin': '4rem',
-            'margin-mobile': '1.5rem'
-          }
+        },
+      }
+    </script>
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+          background-color: #fbf9f5;
+          color: #1a1715;
+          scroll-behavior: smooth;
         }
       }
-    }
-  </script>
-<style>
-    @layer base {
-      html, body {
-        margin: 0;
-        padding: 0;
-        background-color: #FBF9F5;
-        color: #1A1715;
-        scroll-behavior: smooth;
+      ::-webkit-scrollbar {
+        display: none;
       }
-    }
-    ::-webkit-scrollbar { display: none; }
-  </style>
-</head>
-<body class="bg-background text-foreground font-sans antialiased selection:bg-[#9E7B56]/20 selection:text-primary">
-<!-- TOP DISCREET ANNOUNCEMENT BAR -->
-<aside class="w-full bg-[#1A1715] text-[#FBF9F5] text-center py-2.5 px-4 text-[10px] sm:text-[11px] font-mono tracking-[0.24em] uppercase border-b border-[#2B2623] relative z-50">
-    Complimentary white-glove courier on all bespoke curation orders.
-  </aside>
-<!-- NAVIGATION HEADER -->
-<header class="sticky top-0 left-0 right-0 z-40 bg-[#FBF9F5]/95 backdrop-blur-md border-b border-border/70 transition-all">
-<div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 h-20 flex items-center justify-between">
-<!-- Brand Logo -->
-<a class="flex items-center group" href="#">
-<div class="h-8 flex items-center">
-<svg class="h-7 w-auto" fill="none" viewbox="0 0 240 48" xmlns="http://www.w3.org/2000/svg">
-<text fill="#1A1715" font-family="'Playfair Display', Georgia, serif" font-size="24" font-weight="600" letter-spacing="0.2em" x="0" y="32">ATELIER</text>
-<text fill="#8C7A6B" font-family="'Playfair Display', Georgia, serif" font-size="24" font-style="italic" font-weight="400" letter-spacing="0.15em" x="142" y="32">ÉDITION</text>
-</svg>
-</div>
-</a>
-<!-- Primary Nav Links -->
-<nav class="hidden md:flex items-center space-x-9 text-[11.5px] font-sans tracking-[0.18em] uppercase text-[#4D4540]">
-<a class="hover:text-primary transition-colors py-1 text-primary font-medium" href="#curations">Curations</a>
-<a class="hover:text-primary transition-colors py-1" href="#collections">Collections</a>
-<a class="hover:text-primary transition-colors py-1" href="#archive">Store</a>
-<a class="hover:text-primary transition-colors py-1" href="#maisons">Maisons</a>
-<a class="hover:text-primary transition-colors py-1" href="#monograph">Editorial</a>
-</nav>
-<!-- Utility Actions -->
-<div class="flex items-center space-x-6">
-<button aria-label="Search Archives" class="text-[#4D4540] hover:text-primary transition-colors p-1 flex items-center">
-<span class="material-symbols-outlined text-[21px]">search</span>
-</button>
-<a aria-label="Curator Profile" class="flex items-center gap-2.5 text-[#4D4540] hover:text-primary transition-colors" href="#">
-<img alt="Account" class="w-7 h-7 rounded-full object-cover border border-border grayscale hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida/AEtjO1Xe6szkKF-B6qaLl69hZPlm_IZ62iKnlwtoZXZQFgAHhGjt30bRr38ISVagfLhFJYvUzPbklTffSXFw0DRnll8gIcVPbIep8bs-1dRZxFrrsTomTgYt4tGSMru3V3tzphbQX4rsOrWvczBWxna7CY-l5C2YaEsE9-HhcEJpqEqyCRDtGbNH1KMMFfrr-yUChqtwYLey4TpxKFfch7WvoA515sTXK0Et54_W3o1xwI4ADzHFOXWko6BRu04"/>
-</a>
-<button aria-label="Archive Bag" class="flex items-center space-x-1.5 text-primary group pl-1">
-<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform">shopping_bag</span>
-<span class="font-mono text-[11px] tracking-wider text-primary font-medium">(2)</span>
-</button>
-</div>
-</div>
-</header>
-<main class="w-full">
-<!-- SECTION 1: SHOPMY-INSPIRED CINEMATIC HERO -->
-<section class="relative w-full min-h-[88vh] lg:min-h-[92vh] bg-[#12100E] overflow-hidden flex flex-col justify-end text-[#FBF9F5]">
-<!-- Background Image Chiaroscuro Texture -->
-<div class="absolute inset-0 z-0">
-<img alt="Editorial Haute Couture Still Life" class="w-full h-full object-cover object-center scale-100 filter brightness-[0.92] contrast-[1.05]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3UHM2dz83Lw3SqYzJqQ8S9_KpWOIGjCKwnFa_iSsyu5cQmheuOfc8VglUSYlrnUZ63ubuSl9A2naMYR46CfEufq30nZVcrOEMA20Kd1LOMYo5yUpf4boWrDRThdUMfH7IbMg4cdxYNmTcO19mYZSKsxMYnXmCVolMotlG2BoEM6u1nzUwVkLpzrx7MiI9tNFf64wYPY-2SC0a8wJBqUj_TEj2vI6CDnQK2dj5ZFRfzf6oI9KYbnyL"/>
-<!-- Soft gradient masks for deep contrast & luxury readability -->
-<div class="absolute inset-0 bg-gradient-to-t from-[#12100E] via-[#12100E]/40 to-transparent"></div>
-<div class="absolute inset-0 bg-gradient-to-r from-[#12100E]/80 via-transparent to-transparent"></div>
-</div>
-<!-- Hero Typography & Direct Call-to-Action -->
-<div class="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 pt-36 pb-20 lg:pb-24">
-<div class="max-w-4xl space-y-6">
-<div class="inline-flex items-center gap-3">
-<span class="w-8 h-[1px] bg-[#9E7B56]"></span>
-<span class="font-mono text-[11px] tracking-[0.26em] uppercase text-[#E6E1D6]">The Vernissage Edition · 2025</span>
-</div>
-<h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl xl:text-[82px] font-normal leading-[1.08] tracking-tight text-[#FBF9F5]">
-            Curated by the <span class="italic font-normal text-[#EAE8E4]">obsessed</span>,<br/>not the algorithm.
-          </h1>
-<p class="font-sans text-base sm:text-lg text-[#E4DFD5]/90 max-w-2xl font-light leading-relaxed pt-1">
-            Bespoke silhouettes, rare natural botanical dyes, and numbered archival garments from the world's most guarded ateliers.
-          </p>
-<div class="pt-6 flex flex-wrap items-center gap-5 sm:gap-7">
-<a class="inline-flex items-center justify-center px-9 py-4 bg-[#FBF9F5] text-[#1A1715] hover:bg-[#9E7B56] hover:text-[#FBF9F5] transition-all text-[11px] font-sans font-semibold tracking-[0.22em] uppercase" href="#curations">
-              Explore The Vernissage →
-            </a>
-<a class="inline-flex items-center justify-center px-8 py-4 border border-[#FBF9F5]/40 text-[#FBF9F5] hover:border-[#FBF9F5] hover:bg-[#FBF9F5]/10 transition-all text-[11px] font-sans tracking-[0.22em] uppercase" href="#maisons">
-              View Curated Edits
-            </a>
-</div>
-</div>
-<!-- Scroll Indicator / Down Arrow Motif inspired by ShopMy -->
-<div class="mt-14 lg:mt-16 flex items-center justify-between border-t border-[#FBF9F5]/20 pt-6">
-<div class="flex items-center gap-3">
-<a aria-label="Scroll to Curations" class="w-10 h-10 rounded-full border border-[#FBF9F5]/40 flex items-center justify-center text-[#FBF9F5] hover:border-[#FBF9F5] hover:scale-105 transition-all" href="#curations">
-<span class="material-symbols-outlined text-[20px]">arrow_downward</span>
-</a>
-<span class="text-[10px] font-mono tracking-[0.2em] uppercase text-[#E4DFD5]/70">Scroll To Browse Collection</span>
-</div>
-<div class="hidden sm:flex items-center space-x-6 text-[11px] font-mono tracking-[0.16em] uppercase text-[#E4DFD5]/70">
-<span>Paris</span>
-<span>·</span>
-<span>Lyon</span>
-<span>·</span>
-<span>Kyoto</span>
-<span>·</span>
-<span>Florence</span>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 2: SHOPMY-STYLE CURATED TASTEMAKER "SHELF" / "EDITS" -->
-<section class="w-full bg-[#FBF9F5] py-24 sm:py-32 border-b border-border/80" id="curations">
-<div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
-<!-- Curator Header Strip -->
-<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-14 border-b border-border">
-<div class="flex items-start sm:items-center gap-6">
-<div class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-border shadow-sm">
-<img alt="Éléonore de Marigny" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1Xe6szkKF-B6qaLl69hZPlm_IZ62iKnlwtoZXZQFgAHhGjt30bRr38ISVagfLhFJYvUzPbklTffSXFw0DRnll8gIcVPbIep8bs-1dRZxFrrsTomTgYt4tGSMru3V3tzphbQX4rsOrWvczBWxna7CY-l5C2YaEsE9-HhcEJpqEqyCRDtGbNH1KMMFfrr-yUChqtwYLey4TpxKFfch7WvoA515sTXK0Et54_W3o1xwI4ADzHFOXWko6BRu04"/>
-</div>
-<div>
-<span class="font-mono text-[11px] tracking-[0.24em] text-[#9E7B56] uppercase block mb-1">
-                Tastemaker Shelf — Curated by Éléonore de Marigny
-              </span>
-<h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-primary font-normal">
-                Transitional Cold-Weather Armor
-              </h2>
-<p class="font-sans text-sm sm:text-base text-muted-foreground font-light mt-1.5 max-w-xl">
-                "A personal selection of transitional cold-weather armor, focusing on fluid tailoring and unlined Mongolian cashmere."
-              </p>
-</div>
-</div>
-<div class="flex items-center gap-3">
-<span class="font-mono text-[11px] tracking-[0.18em] uppercase text-muted-foreground">Permanent Archives</span>
-<span class="text-border">/</span>
-<a class="inline-flex items-center gap-1.5 font-sans text-[11px] font-medium tracking-[0.2em] uppercase text-primary underline underline-offset-8 hover:text-[#9E7B56] transition-colors" href="#archive">
-<span>View All 24 Edits</span>
-<span class="material-symbols-outlined text-sm">east</span>
-</a>
-</div>
-</div>
-<!-- 4 Curated Pieces Row (Strict Hard Limits: Only real entities, real pricing, NO stars/hearts/urgency) -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pt-12">
-<!-- Item 1: Maison Vaneau Overcoat (On Sale) -->
-<article class="group flex flex-col bg-card/40 p-3 transition-colors hover:bg-card">
-<a class="block relative aspect-[3/4] w-full overflow-hidden bg-surface-container-high mb-4" href="#">
-<img alt="Colbert Sculpté Cashmere Overcoat" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMOgSLz4Sx_f1AFnnwn0PXW2CJusd4LicguKlE-mjdH5dGw6xo-q0_hyBaXtsfSDwciiQhgkaqDkaYNZwI__fFVe9uz2f2Om9JBf-IWZsIdhh3SQ_JlSNNbGv1AEWu7VjTivJQxYV90_eHQppR8_BXjAyhkn91YHBlsb_MO5pyEyyY9UhavL-z1uHgIqkxX10xSBUFgYnuTvoOW_NVka48it5kMM-K9hy9PsQp_jRWpj4WYE13K_N5"/>
-<div class="absolute top-3 left-3 bg-[#1A1715] text-[#FBF9F5] px-2.5 py-1 text-[10px] font-mono tracking-widest uppercase">
-                -16%
-              </div>
-</a>
-<div class="flex flex-col flex-grow justify-between">
-<div>
-<div class="flex items-center justify-between mb-1">
-<span class="text-[10.5px] font-mono tracking-[0.2em] uppercase text-muted-foreground">Maison Vaneau</span>
-<div class="flex gap-1">
-<span class="w-2.5 h-2.5 rounded-full bg-[#B89F82] inline-block border border-border" title="Camel"></span>
-<span class="w-2.5 h-2.5 rounded-full bg-[#201D1B] inline-block border border-border" title="Obsidian"></span>
-</div>
-</div>
-<h3 class="font-serif text-lg text-primary group-hover:text-[#9E7B56] transition-colors leading-snug">
-                  Colbert Sculpté Cashmere Overcoat
-                </h3>
-</div>
-<div class="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-sm">
-<div class="flex items-baseline gap-2">
-<span class="font-sans font-medium text-primary">$2,850</span>
-<span class="font-mono text-xs text-muted-foreground line-through">$3,400</span>
-</div>
-<span class="text-[10.5px] font-mono tracking-wider uppercase text-[#3E5742]">Archival Spec</span>
-</div>
-</div>
-</article>
-<!-- Item 2: Studio Noire Trouser -->
-<article class="group flex flex-col bg-card/40 p-3 transition-colors hover:bg-card">
-<a class="block relative aspect-[3/4] w-full overflow-hidden bg-surface-container-high mb-4" href="#">
-<img alt="Double-Pleat Belgian Flax Trouser" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqHR5BiMDXXESXg12w-QnTDLLS_q24NOeKfiWGfY7vDKf8YaW3CETIS64da5ipN1RJ84Vtv8SOaHyUtMBmz3HCEc5qmIahKBXBQMDq6I4Jz4X3AZJMkLuhjEy-CpSFQI1m2OIsDt9a8BXlHg4is1d2JiR1NGPPvoJPojkHDO181AoKH8a5vbwwGktHIpEUPyqhj5as0g4gijx8NXH49ieNHE16XwgYDhgnbnXviCbtaZjkmryZZbjr"/>
-</a>
-<div class="flex flex-col flex-grow justify-between">
-<div>
-<div class="flex items-center justify-between mb-1">
-<span class="text-[10.5px] font-mono tracking-[0.2em] uppercase text-muted-foreground">Studio Noire</span>
-<div class="flex gap-1">
-<span class="w-2.5 h-2.5 rounded-full bg-[#41403E] inline-block border border-border" title="Charcoal"></span>
-<span class="w-2.5 h-2.5 rounded-full bg-[#E8E2D5] inline-block border border-border" title="Ecru"></span>
-</div>
-</div>
-<h3 class="font-serif text-lg text-primary group-hover:text-[#9E7B56] transition-colors leading-snug">
-                  Double-Pleat Belgian Flax Trouser
-                </h3>
-</div>
-<div class="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-sm">
-<span class="font-sans font-medium text-primary">$720</span>
-<span class="text-[10.5px] font-mono tracking-wider uppercase text-[#3E5742]">In Atelier</span>
-</div>
-</div>
-</article>
-<!-- Item 3: Atelier Kō Kimono Jacket -->
-<article class="group flex flex-col bg-card/40 p-3 transition-colors hover:bg-card">
-<a class="block relative aspect-[3/4] w-full overflow-hidden bg-surface-container-high mb-4" href="#">
-<img alt="Kyoto Raw Habotai Kimono Jacket" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxyGjUQh5wmNIh-drdqKGNZDc2qsJTIg4q20ieADEvPumjm6sZtv8kt32IcZxUnV7dmJlnZR7_XfPLJoTmgP4TxDqWfHOqXR2MqJ8DKo96op6ml7BTSCXrCpQbOQJ5LOrFhBmr4tc5B_5Ie9NayObDt_24WSPWPKdc80Zbg1Jrvzkqzrht3TuezwXYSDlKH2aXS2FrP9c6L8TQRmLXWFkJEK4U3Dhx0w6hbbLlP-2fRkEu_ROSHzNZ"/>
-</a>
-<div class="flex flex-col flex-grow justify-between">
-<div>
-<div class="flex items-center justify-between mb-1">
-<span class="text-[10.5px] font-mono tracking-[0.2em] uppercase text-muted-foreground">Atelier Kō</span>
-<div class="flex gap-1">
-<span class="w-2.5 h-2.5 rounded-full bg-[#181615] inline-block border border-border" title="Sumi Ink"></span>
-</div>
-</div>
-<h3 class="font-serif text-lg text-primary group-hover:text-[#9E7B56] transition-colors leading-snug">
-                  Kyoto Raw Habotai Kimono Jacket
-                </h3>
-</div>
-<div class="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-sm">
-<span class="font-sans font-medium text-primary">$1,680</span>
-<span class="text-[10.5px] font-mono tracking-wider uppercase text-[#3E5742]">Botanical Dye</span>
-</div>
-</div>
-</article>
-<!-- Item 4: Paloma Leatherworks Courier -->
-<article class="group flex flex-col bg-card/40 p-3 transition-colors hover:bg-card">
-<a class="block relative aspect-[3/4] w-full overflow-hidden bg-surface-container-high mb-4" href="#">
-<img alt="Archival Saddle Vacchetta Courier" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI1FBf0Uw0HIdKuvbt5Wn4813CTmZMBM-iIE2ydHdWF6rMhLuVAlA7vMgZDWVZJ6AS6EhglmYQobBaPU4m6u2aHlJ7tJBRXPJEJETmZIFDyQin9J9gIHMoFnPpu-TYl9CU4CA9HxzHjNAY8CecWZuiqA5-1B4xQynEoQe3NX9zPqwsxJVm1uVqeKbUrngDpkwmmNrsXeQj3YQSuNQlOdFUEsAn_K8UODkdW0wwuIlE13eEcoAsrkAu"/>
-</a>
-<div class="flex flex-col flex-grow justify-between">
-<div>
-<div class="flex items-center justify-between mb-1">
-<span class="text-[10.5px] font-mono tracking-[0.2em] uppercase text-muted-foreground">Paloma Leatherworks</span>
-<div class="flex gap-1">
-<span class="w-2.5 h-2.5 rounded-full bg-[#6B4B32] inline-block border border-border" title="Vacchetta"></span>
-<span class="w-2.5 h-2.5 rounded-full bg-[#1F1E1D] inline-block border border-border" title="Noir"></span>
-</div>
-</div>
-<h3 class="font-serif text-lg text-primary group-hover:text-[#9E7B56] transition-colors leading-snug">
-                  Archival Saddle Vacchetta Courier
-                </h3>
-</div>
-<div class="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-sm">
-<span class="font-sans font-medium text-primary">$1,890</span>
-<span class="text-[10.5px] font-mono tracking-wider uppercase text-[#3E5742]">Florentine Calf</span>
-</div>
-</div>
-</article>
-</div>
-</div>
-</section>
-<!-- SECTION 3: TACTILE "MATERIAL & CRAFT MONOGRAPH" FEATURE -->
-<section class="w-full bg-[#F5F2EB] py-24 sm:py-32 border-b border-border/80" id="monograph">
-<div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-<!-- Image column showcasing macro detail -->
-<div class="lg:col-span-7 relative">
-<div class="aspect-[4/3] w-full overflow-hidden shadow-2xl bg-surface-container">
-<img alt="Archival Cashmere Monograph Stitch Detail" class="w-full h-full object-cover hover:scale-102 transition-transform duration-1000" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZPMJaR039TfKVcHjSRqApUiCXPNSxXYR868Poi0550IjGJlsbnWT0CHddDlc0MIXna-MM_5MCRFMGlQ35F0cWs-yaDJ5Ss_3gZzdoO866a2-uptsG38Tjjb74_mCVsJrQW13oYpllIbZjk67cGnrip9KnITW8CTHP_hsPLfsygnqFF7N_8FGqkU1ShFUGlwD-zEvdMC_XWWjFruA793zwhg2I9t1LECmHm7gC5e8_BQImCz1PC4hF"/>
-</div>
-<div class="mt-4 flex items-center justify-between text-[11px] font-mono tracking-widest text-muted-foreground uppercase">
-<span>Figure 088 / Macro Detail</span>
-<span>Double-Faced Cashmere &amp; Water Buffalo Horn</span>
-</div>
-</div>
-<!-- Editorial Story & Specifications -->
-<div class="lg:col-span-5 space-y-8">
-<div class="space-y-3">
-<span class="font-mono text-[11px] tracking-[0.24em] text-[#9E7B56] uppercase block">
-                Archival Monograph N° 088
-              </span>
-<h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-primary font-normal leading-[1.15]">
-                The Art of Unlined Weightlessness
-              </h2>
-</div>
-<p class="font-sans text-base text-on-surface-variant font-light leading-relaxed">
-              Traditional tailoring relies on layers of stiff interlinings and horsehair canvas. At Atelier Édition, our partnered houses engineer structure directly into the yarn itself.
-            </p>
-<p class="font-sans text-base text-on-surface-variant font-light leading-relaxed">
-              Using double-faced grade-A Inner Mongolian cashmere, master craftspeople carefully hand-split every edge along seamlines, folding the margins inward and securing them with 14 hours of invisible hand-blind stitching per garment.
-            </p>
-<!-- Metric Specification Cards -->
-<div class="grid grid-cols-3 gap-4 pt-4 border-t border-border">
-<div class="p-3 bg-surface border border-border/60">
-<span class="font-serif text-2xl text-primary block">14.8 µm</span>
-<span class="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mt-1 block">Fiber Fineness</span>
-</div>
-<div class="p-3 bg-surface border border-border/60">
-<span class="font-serif text-2xl text-primary block">480 gsm</span>
-<span class="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mt-1 block">Thermal Weight</span>
-</div>
-<div class="p-3 bg-surface border border-border/60">
-<span class="font-serif text-2xl text-primary block">100%</span>
-<span class="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mt-1 block">Capra Hircus</span>
-</div>
-</div>
-<div class="pt-2">
-<a class="inline-flex items-center gap-3 text-[11px] font-sans font-medium tracking-[0.2em] uppercase text-primary underline underline-offset-8 decoration-1 hover:text-[#9E7B56] transition-colors" href="#maisons">
-<span>Read the Complete Fiber Dissertation</span>
-<span class="material-symbols-outlined text-sm">north_east</span>
-</a>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 4: FEATURED MAISONS & ARCHIVAL TAXONOMY -->
-<section class="w-full bg-[#FBF9F5] py-24 sm:py-32 border-b border-border/80" id="maisons">
-<div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
-<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-border">
-<div>
-<span class="font-mono text-[11px] tracking-[0.24em] text-[#9E7B56] uppercase block mb-1">Archival Registry</span>
-<h2 class="font-serif text-3xl sm:text-4xl text-primary font-normal">The Guarded Maisons</h2>
-</div>
-<p class="font-mono text-xs uppercase tracking-wider text-muted-foreground mt-3 md:mt-0">
-            [4 Certified Independent Ateliers]
-          </p>
-</div>
-<!-- Geometric Minimalist Grid of 4 Houses -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-<!-- Maison 1: Maison Vaneau -->
-<div class="group border border-border p-8 bg-surface transition-all duration-300 hover:border-primary hover:bg-[#F5F2EB]/50 flex flex-col justify-between min-h-[340px]">
-<div>
-<div class="flex justify-between items-start mb-6">
-<span class="font-serif text-2xl italic text-[#9E7B56]">01</span>
-<span class="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Paris, FR</span>
-</div>
-<h3 class="font-serif text-2xl text-primary mb-2">Maison Vaneau</h3>
-<p class="text-xs font-mono tracking-wider uppercase text-muted-foreground mb-4">Fluid Outerwear &amp; Bespoke Suiting</p>
-<p class="font-sans text-sm text-on-surface-variant font-light leading-relaxed">
-                Refined Parisian tailoring prioritizing soft shoulders, double-faced cashmere drapery, and unconstructed luxury.
-              </p>
-</div>
-<div class="pt-6 border-t border-border/60 mt-6 flex items-center justify-between">
-<span class="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Collection 2025</span>
-<span class="material-symbols-outlined text-primary text-base transition-transform group-hover:translate-x-1.5">arrow_forward</span>
-</div>
-</div>
-<!-- Maison 2: Studio Noire -->
-<div class="group border border-border p-8 bg-surface transition-all duration-300 hover:border-primary hover:bg-[#F5F2EB]/50 flex flex-col justify-between min-h-[340px]">
-<div>
-<div class="flex justify-between items-start mb-6">
-<span class="font-serif text-2xl italic text-[#9E7B56]">02</span>
-<span class="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Lyon, FR</span>
-</div>
-<h3 class="font-serif text-2xl text-primary mb-2">Studio Noire</h3>
-<p class="text-xs font-mono tracking-wider uppercase text-muted-foreground mb-4">Architectural Monochrome Silhouettes</p>
-<p class="font-sans text-sm text-on-surface-variant font-light leading-relaxed">
-                Sculptural tailoring constructed strictly in numbered micro-batches from pure silk faille and heavy Belgian flax.
-              </p>
-</div>
-<div class="pt-6 border-t border-border/60 mt-6 flex items-center justify-between">
-<span class="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Collection 2025</span>
-<span class="material-symbols-outlined text-primary text-base transition-transform group-hover:translate-x-1.5">arrow_forward</span>
-</div>
-</div>
-<!-- Maison 3: Atelier Kō -->
-<div class="group border border-border p-8 bg-surface transition-all duration-300 hover:border-primary hover:bg-[#F5F2EB]/50 flex flex-col justify-between min-h-[340px]">
-<div>
-<div class="flex justify-between items-start mb-6">
-<span class="font-serif text-2xl italic text-[#9E7B56]">03</span>
-<span class="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Kyoto, JP</span>
-</div>
-<h3 class="font-serif text-2xl text-primary mb-2">Atelier Kō</h3>
-<p class="text-xs font-mono tracking-wider uppercase text-muted-foreground mb-4">Botanical Dye &amp; Raw Silk Habotai</p>
-<p class="font-sans text-sm text-on-surface-variant font-light leading-relaxed">
-                Centuries-old botanical indigo, fermented persimmon tannin, and raw silk habotai woven on antique shuttle looms.
-              </p>
-</div>
-<div class="pt-6 border-t border-border/60 mt-6 flex items-center justify-between">
-<span class="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Collection 2025</span>
-<span class="material-symbols-outlined text-primary text-base transition-transform group-hover:translate-x-1.5">arrow_forward</span>
-</div>
-</div>
-<!-- Maison 4: Paloma Leatherworks -->
-<div class="group border border-border p-8 bg-surface transition-all duration-300 hover:border-primary hover:bg-[#F5F2EB]/50 flex flex-col justify-between min-h-[340px]">
-<div>
-<div class="flex justify-between items-start mb-6">
-<span class="font-serif text-2xl italic text-[#9E7B56]">04</span>
-<span class="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Florence, IT</span>
-</div>
-<h3 class="font-serif text-2xl text-primary mb-2">Paloma Leatherworks</h3>
-<p class="text-xs font-mono tracking-wider uppercase text-muted-foreground mb-4">Vegetable-Tanned Sculptural Objects</p>
-<p class="font-sans text-sm text-on-surface-variant font-light leading-relaxed">
-                Full-grain Tuscan vacchetta shaped with heated box-irons, featuring unlacquered hand-finished brass closures.
-              </p>
-</div>
-<div class="pt-6 border-t border-border/60 mt-6 flex items-center justify-between">
-<span class="text-[10px] font-mono tracking-widest uppercase text-muted-foreground">Collection 2025</span>
-<span class="material-symbols-outlined text-primary text-base transition-transform group-hover:translate-x-1.5">arrow_forward</span>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 5: PRIVATE CLIENT CONCIERGE / "NOIR" APP BANNER (Inspired by ShopMy) -->
-<section class="w-full bg-[#12100E] text-[#FBF9F5] relative overflow-hidden py-16 sm:py-20">
-<!-- Decorative faint watermark -->
-<div class="absolute right-0 top-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.04] text-[180px] lg:text-[240px] font-serif italic tracking-tighter leading-none pr-8">
-        NOIR
-      </div>
-<div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 relative z-10">
-<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-<div class="max-w-2xl">
-<div class="flex items-center gap-2.5 mb-3">
-<span class="w-2 h-2 rounded-full bg-[#9E7B56]"></span>
-<span class="font-mono text-[11px] tracking-[0.24em] text-[#9E7B56] uppercase">Mobile Protocol · Noir Concierge</span>
-</div>
-<h3 class="font-serif text-3xl sm:text-4xl text-[#FBF9F5] font-normal leading-tight">
-              Private Client Salon &amp; Mobile Concierge
-            </h3>
-<p class="font-sans text-sm sm:text-base text-[#CDC5BC] font-light mt-3 leading-relaxed">
-              Access 1:1 bespoke sartorial styling, priority allocation for numbered editions, and private fitting appointments at Rue de Vaneau.
-            </p>
-</div>
-<!-- Request Input & Action -->
-<div class="w-full lg:w-auto min-w-[340px] sm:min-w-[420px]">
-<form class="flex flex-col sm:flex-row gap-3" onsubmit="event.preventDefault(); this.querySelector('button').innerText = 'INVITATION PENDING';">
-<input class="bg-[#1E1B19] border border-[#332E2B] px-5 py-3.5 text-sm text-[#FBF9F5] placeholder-[#78726A] focus:outline-none focus:border-[#9E7B56] flex-grow font-sans" placeholder="salon.inquiry@client.com" required="" type="email"/>
-<button class="px-7 py-3.5 bg-[#9E7B56] text-[#FBF9F5] font-sans text-[11px] font-medium tracking-[0.2em] uppercase hover:bg-[#FBF9F5] hover:text-[#1A1715] transition-all whitespace-nowrap" type="submit">
-                Request Salon Entry
-              </button>
-</form>
-<div class="flex items-center justify-between mt-3 text-[10px] font-mono text-[#78726A] uppercase tracking-wider">
-<span>Strict client discretion</span>
-<span>Encrypted Salon Channel</span>
-</div>
-</div>
-</div>
-</div>
-</section>
-</main>
-<!-- ATELIER ÉDITION SIGNATURE FOOTER -->
-<footer class="w-full bg-[#ECE7DD]/50 border-t border-border pt-20 pb-14 text-primary">
-<div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
-<!-- Footer Columns -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-border">
-<!-- Brand & Gazette Column -->
-<div class="lg:col-span-5 space-y-6">
-<div class="h-7">
-<svg class="h-6 w-auto" fill="none" viewbox="0 0 240 48" xmlns="http://www.w3.org/2000/svg">
-<text fill="#1A1715" font-family="'Playfair Display', Georgia, serif" font-size="24" font-weight="600" letter-spacing="0.2em" x="0" y="32">ATELIER</text>
-<text fill="#8C7A6B" font-family="'Playfair Display', Georgia, serif" font-size="24" font-style="italic" font-weight="400" letter-spacing="0.15em" x="142" y="32">ÉDITION</text>
-</svg>
-</div>
-<p class="font-sans text-sm text-on-surface-variant max-w-md font-light leading-relaxed">
-            A guarded sanctuary of haute couture tailoring, rare botanical dyes, and numbered archival garments conceived for discerning collectors worldwide.
-          </p>
-<div class="pt-2">
-<span class="font-mono text-[10.5px] uppercase tracking-[0.2em] text-muted-foreground block mb-2">Correspondance Gazette</span>
-<div class="flex max-w-sm border-b border-primary/40 focus-within:border-primary transition-colors py-2">
-<input class="w-full bg-transparent border-0 p-0 text-sm font-sans placeholder:text-muted-foreground focus:ring-0 text-primary outline-none" placeholder="Enter your correspondence email" type="email"/>
-<button class="font-sans text-[10.5px] tracking-[0.2em] uppercase font-medium pl-3 text-primary hover:text-[#9E7B56] transition-colors" type="button">Join</button>
-</div>
-</div>
-</div>
-<!-- Navigation 1: Curations -->
-<div class="lg:col-span-2 space-y-4">
-<h4 class="font-mono text-[11px] uppercase tracking-[0.22em] text-primary font-medium">Curations</h4>
-<ul class="space-y-2.5 text-sm font-sans font-light text-on-surface-variant">
-<li><a class="hover:text-primary transition-colors" href="#">Permanent Archives</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Vernissage Edition</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Sartorial Suites</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Tactile Fiber Index</a></li>
-</ul>
-</div>
-<!-- Navigation 2: Maison -->
-<div class="lg:col-span-2 space-y-4">
-<h4 class="font-mono text-[11px] uppercase tracking-[0.22em] text-primary font-medium">Maison</h4>
-<ul class="space-y-2.5 text-sm font-sans font-light text-on-surface-variant">
-<li><a class="hover:text-primary transition-colors" href="#">The Manifesto</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Participating Ateliers</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Provenance Registry</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Gazette Essays</a></li>
-</ul>
-</div>
-<!-- Navigation 3: Concierge -->
-<div class="lg:col-span-3 space-y-4">
-<h4 class="font-mono text-[11px] uppercase tracking-[0.22em] text-primary font-medium">Concierge</h4>
-<ul class="space-y-2.5 text-sm font-sans font-light text-on-surface-variant">
-<li>White-Glove Courier Logistics</li>
-<li>Bespoke Tailoring Inquiries</li>
-<li>Private Salon Fitting Bookings</li>
-<li class="pt-2 text-xs font-mono text-muted-foreground">salon@atelier-edition.com</li>
-</ul>
-</div>
-</div>
-<!-- Provenance & Legal Strip -->
-<div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-muted-foreground">
-<div>
-          © 2025 Atelier Édition S.A. Single Global Atelier Registry. All rights reserved.
+    </style>
+  </head>
+  <body
+    class="bg-background text-foreground font-sans antialiased selection:bg-[#9E7B56]/20 selection:text-primary"
+  >
+    <!-- TOP DISCREET ANNOUNCEMENT BAR -->
+    <aside
+      class="w-full bg-[#1A1715] text-[#FBF9F5] text-center py-2.5 px-4 text-[10px] sm:text-[11px] font-mono tracking-[0.24em] uppercase border-b border-[#2B2623] relative z-50"
+    >
+      Complimentary white-glove courier on all bespoke curation orders.
+    </aside>
+    <!-- NAVIGATION HEADER -->
+    <header
+      class="sticky top-0 left-0 right-0 z-40 bg-[#FBF9F5]/95 backdrop-blur-md border-b border-border/70 transition-all"
+    >
+      <div
+        class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 h-20 flex items-center justify-between"
+      >
+        <!-- Brand Logo -->
+        <a class="flex items-center group" href="#">
+          <div class="h-8 flex items-center">
+            <svg
+              class="h-7 w-auto"
+              fill="none"
+              viewbox="0 0 240 48"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <text
+                fill="#1A1715"
+                font-family="'Playfair Display', Georgia, serif"
+                font-size="24"
+                font-weight="600"
+                letter-spacing="0.2em"
+                x="0"
+                y="32"
+              >
+                ATELIER
+              </text>
+              <text
+                fill="#8C7A6B"
+                font-family="'Playfair Display', Georgia, serif"
+                font-size="24"
+                font-style="italic"
+                font-weight="400"
+                letter-spacing="0.15em"
+                x="142"
+                y="32"
+              >
+                ÉDITION
+              </text>
+            </svg>
+          </div>
+        </a>
+        <!-- Primary Nav Links -->
+        <nav
+          class="hidden md:flex items-center space-x-9 text-[11.5px] font-sans tracking-[0.18em] uppercase text-[#4D4540]"
+        >
+          <a
+            class="hover:text-primary transition-colors py-1 text-primary font-medium"
+            href="#curations"
+            >Curations</a
+          >
+          <a
+            class="hover:text-primary transition-colors py-1"
+            href="#collections"
+            >Collections</a
+          >
+          <a class="hover:text-primary transition-colors py-1" href="#archive"
+            >Store</a
+          >
+          <a class="hover:text-primary transition-colors py-1" href="#maisons"
+            >Maisons</a
+          >
+          <a class="hover:text-primary transition-colors py-1" href="#monograph"
+            >Editorial</a
+          >
+        </nav>
+        <!-- Utility Actions -->
+        <div class="flex items-center space-x-6">
+          <button
+            aria-label="Search Archives"
+            class="text-[#4D4540] hover:text-primary transition-colors p-1 flex items-center"
+          >
+            <span class="material-symbols-outlined text-[21px]">search</span>
+          </button>
+          <a
+            aria-label="Curator Profile"
+            class="flex items-center gap-2.5 text-[#4D4540] hover:text-primary transition-colors"
+            href="#"
+          >
+            <img
+              alt="Account"
+              class="w-7 h-7 rounded-full object-cover border border-border grayscale hover:grayscale-0 transition-all"
+              src="https://lh3.googleusercontent.com/aida/AEtjO1Xe6szkKF-B6qaLl69hZPlm_IZ62iKnlwtoZXZQFgAHhGjt30bRr38ISVagfLhFJYvUzPbklTffSXFw0DRnll8gIcVPbIep8bs-1dRZxFrrsTomTgYt4tGSMru3V3tzphbQX4rsOrWvczBWxna7CY-l5C2YaEsE9-HhcEJpqEqyCRDtGbNH1KMMFfrr-yUChqtwYLey4TpxKFfch7WvoA515sTXK0Et54_W3o1xwI4ADzHFOXWko6BRu04"
+            />
+          </a>
+          <button
+            aria-label="Archive Bag"
+            class="flex items-center space-x-1.5 text-primary group pl-1"
+          >
+            <span
+              class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform"
+              >shopping_bag</span
+            >
+            <span
+              class="font-mono text-[11px] tracking-wider text-primary font-medium"
+              >(2)</span
+            >
+          </button>
         </div>
-<div class="flex items-center space-x-6 uppercase tracking-widest text-[10.5px]">
-<a class="hover:text-primary transition-colors" href="#">Privacy</a>
-<a class="hover:text-primary transition-colors" href="#">Terms of Curation</a>
-<a class="hover:text-primary transition-colors" href="#">Provenance</a>
-</div>
-</div>
-</div>
-</footer>
-</body></html>
+      </div>
+    </header>
+    <main class="w-full">
+      <!-- SECTION 1: SHOPMY-INSPIRED CINEMATIC HERO -->
+      <section
+        class="relative w-full min-h-[88vh] lg:min-h-[92vh] bg-[#12100E] overflow-hidden flex flex-col justify-end text-[#FBF9F5]"
+      >
+        <!-- Background Image Chiaroscuro Texture -->
+        <div class="absolute inset-0 z-0">
+          <img
+            alt="Editorial Haute Couture Still Life"
+            class="w-full h-full object-cover object-center scale-100 filter brightness-[0.92] contrast-[1.05]"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3UHM2dz83Lw3SqYzJqQ8S9_KpWOIGjCKwnFa_iSsyu5cQmheuOfc8VglUSYlrnUZ63ubuSl9A2naMYR46CfEufq30nZVcrOEMA20Kd1LOMYo5yUpf4boWrDRThdUMfH7IbMg4cdxYNmTcO19mYZSKsxMYnXmCVolMotlG2BoEM6u1nzUwVkLpzrx7MiI9tNFf64wYPY-2SC0a8wJBqUj_TEj2vI6CDnQK2dj5ZFRfzf6oI9KYbnyL"
+          />
+          <!-- Soft gradient masks for deep contrast & luxury readability -->
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-[#12100E] via-[#12100E]/40 to-transparent"
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-[#12100E]/80 via-transparent to-transparent"
+          ></div>
+        </div>
+        <!-- Hero Typography & Direct Call-to-Action -->
+        <div
+          class="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 pt-36 pb-20 lg:pb-24"
+        >
+          <div class="max-w-4xl space-y-6">
+            <div class="inline-flex items-center gap-3">
+              <span class="w-8 h-[1px] bg-[#9E7B56]"></span>
+              <span
+                class="font-mono text-[11px] tracking-[0.26em] uppercase text-[#E6E1D6]"
+                >The Vernissage Edition · 2025</span
+              >
+            </div>
+            <h1
+              class="font-serif text-4xl sm:text-6xl lg:text-7xl xl:text-[82px] font-normal leading-[1.08] tracking-tight text-[#FBF9F5]"
+            >
+              Curated by the
+              <span class="italic font-normal text-[#EAE8E4]">obsessed</span
+              >,<br />not the algorithm.
+            </h1>
+            <p
+              class="font-sans text-base sm:text-lg text-[#E4DFD5]/90 max-w-2xl font-light leading-relaxed pt-1"
+            >
+              Bespoke silhouettes, rare natural botanical dyes, and numbered
+              archival garments from the world's most guarded ateliers.
+            </p>
+            <div class="pt-6 flex flex-wrap items-center gap-5 sm:gap-7">
+              <a
+                class="inline-flex items-center justify-center px-9 py-4 bg-[#FBF9F5] text-[#1A1715] hover:bg-[#9E7B56] hover:text-[#FBF9F5] transition-all text-[11px] font-sans font-semibold tracking-[0.22em] uppercase"
+                href="#curations"
+              >
+                Explore The Vernissage →
+              </a>
+              <a
+                class="inline-flex items-center justify-center px-8 py-4 border border-[#FBF9F5]/40 text-[#FBF9F5] hover:border-[#FBF9F5] hover:bg-[#FBF9F5]/10 transition-all text-[11px] font-sans tracking-[0.22em] uppercase"
+                href="#maisons"
+              >
+                View Curated Edits
+              </a>
+            </div>
+          </div>
+          <!-- Scroll Indicator / Down Arrow Motif inspired by ShopMy -->
+          <div
+            class="mt-14 lg:mt-16 flex items-center justify-between border-t border-[#FBF9F5]/20 pt-6"
+          >
+            <div class="flex items-center gap-3">
+              <a
+                aria-label="Scroll to Curations"
+                class="w-10 h-10 rounded-full border border-[#FBF9F5]/40 flex items-center justify-center text-[#FBF9F5] hover:border-[#FBF9F5] hover:scale-105 transition-all"
+                href="#curations"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >arrow_downward</span
+                >
+              </a>
+              <span
+                class="text-[10px] font-mono tracking-[0.2em] uppercase text-[#E4DFD5]/70"
+                >Scroll To Browse Collection</span
+              >
+            </div>
+            <div
+              class="hidden sm:flex items-center space-x-6 text-[11px] font-mono tracking-[0.16em] uppercase text-[#E4DFD5]/70"
+            >
+              <span>Paris</span>
+              <span>·</span>
+              <span>Lyon</span>
+              <span>·</span>
+              <span>Kyoto</span>
+              <span>·</span>
+              <span>Florence</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- SECTION 2: SHOPMY-STYLE CURATED TASTEMAKER "SHELF" / "EDITS" -->
+      <section
+        class="w-full bg-[#FBF9F5] py-24 sm:py-32 border-b border-border/80"
+        id="curations"
+      >
+        <div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
+          <!-- Curator Header Strip -->
+          <div
+            class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-14 border-b border-border"
+          >
+            <div class="flex items-start sm:items-center gap-6">
+              <div
+                class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-border shadow-sm"
+              >
+                <img
+                  alt="Éléonore de Marigny"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida/AEtjO1Xe6szkKF-B6qaLl69hZPlm_IZ62iKnlwtoZXZQFgAHhGjt30bRr38ISVagfLhFJYvUzPbklTffSXFw0DRnll8gIcVPbIep8bs-1dRZxFrrsTomTgYt4tGSMru3V3tzphbQX4rsOrWvczBWxna7CY-l5C2YaEsE9-HhcEJpqEqyCRDtGbNH1KMMFfrr-yUChqtwYLey4TpxKFfch7WvoA515sTXK0Et54_W3o1xwI4ADzHFOXWko6BRu04"
+                />
+              </div>
+              <div>
+                <span
+                  class="font-mono text-[11px] tracking-[0.24em] text-[#9E7B56] uppercase block mb-1"
+                >
+                  Tastemaker Shelf — Curated by Éléonore de Marigny
+                </span>
+                <h2
+                  class="font-serif text-2xl sm:text-3xl lg:text-4xl text-primary font-normal"
+                >
+                  Transitional Cold-Weather Armor
+                </h2>
+                <p
+                  class="font-sans text-sm sm:text-base text-muted-foreground font-light mt-1.5 max-w-xl"
+                >
+                  "A personal selection of transitional cold-weather armor,
+                  focusing on fluid tailoring and unlined Mongolian cashmere."
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span
+                class="font-mono text-[11px] tracking-[0.18em] uppercase text-muted-foreground"
+                >Permanent Archives</span
+              >
+              <span class="text-border">/</span>
+              <a
+                class="inline-flex items-center gap-1.5 font-sans text-[11px] font-medium tracking-[0.2em] uppercase text-primary underline underline-offset-8 hover:text-[#9E7B56] transition-colors"
+                href="#archive"
+              >
+                <span>View All 24 Edits</span>
+                <span class="material-symbols-outlined text-sm">east</span>
+              </a>
+            </div>
+          </div>
+          <!-- 4 Curated Pieces Row (Strict Hard Limits: Only real entities, real pricing, NO stars/hearts/urgency) -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pt-12"
+          >
+            <!-- Item 1: Maison Vaneau Overcoat (On Sale) -->
+            <article
+              class="group flex flex-col bg-card/40 p-3 transition-colors hover:bg-card"
+            >
+              <a
+                class="block relative aspect-[3/4] w-full overflow-hidden bg-surface-container-high mb-4"
+                href="#"
+              >
+                <img
+                  alt="Colbert Sculpté Cashmere Overcoat"
+                  class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMOgSLz4Sx_f1AFnnwn0PXW2CJusd4LicguKlE-mjdH5dGw6xo-q0_hyBaXtsfSDwciiQhgkaqDkaYNZwI__fFVe9uz2f2Om9JBf-IWZsIdhh3SQ_JlSNNbGv1AEWu7VjTivJQxYV90_eHQppR8_BXjAyhkn91YHBlsb_MO5pyEyyY9UhavL-z1uHgIqkxX10xSBUFgYnuTvoOW_NVka48it5kMM-K9hy9PsQp_jRWpj4WYE13K_N5"
+                />
+                <div
+                  class="absolute top-3 left-3 bg-[#1A1715] text-[#FBF9F5] px-2.5 py-1 text-[10px] font-mono tracking-widest uppercase"
+                >
+                  -16%
+                </div>
+              </a>
+              <div class="flex flex-col flex-grow justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span
+                      class="text-[10.5px] font-mono tracking-[0.2em] uppercase text-muted-foreground"
+                      >Maison Vaneau</span
+                    >
+                    <div class="flex gap-1">
+                      <span
+                        class="w-2.5 h-2.5 rounded-full bg-[#B89F82] inline-block border border-border"
+                        title="Camel"
+                      ></span>
+                      <span
+                        class="w-2.5 h-2.5 rounded-full bg-[#201D1B] inline-block border border-border"
+                        title="Obsidian"
+                      ></span>
+                    </div>
+                  </div>
+                  <h3
+                    class="font-serif text-lg text-primary group-hover:text-[#9E7B56] transition-colors leading-snug"
+                  >
+                    Colbert Sculpté Cashmere Overcoat
+                  </h3>
+                </div>
+                <div
+                  class="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-sm"
+                >
+                  <div class="flex items-baseline gap-2">
+                    <span class="font-sans font-medium text-primary"
+                      >$2,850</span
+                    >
+                    <span
+                      class="font-mono text-xs text-muted-foreground line-through"
+                      >$3,400</span
+                    >
+                  </div>
+                  <span
+                    class="text-[10.5px] font-mono tracking-wider uppercase text-[#3E5742]"
+                    >Archival Spec</span
+                  >
+                </div>
+              </div>
+            </article>
+            <!-- Item 2: Studio Noire Trouser -->
+            <article
+              class="group flex flex-col bg-card/40 p-3 transition-colors hover:bg-card"
+            >
+              <a
+                class="block relative aspect-[3/4] w-full overflow-hidden bg-surface-container-high mb-4"
+                href="#"
+              >
+                <img
+                  alt="Double-Pleat Belgian Flax Trouser"
+                  class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqHR5BiMDXXESXg12w-QnTDLLS_q24NOeKfiWGfY7vDKf8YaW3CETIS64da5ipN1RJ84Vtv8SOaHyUtMBmz3HCEc5qmIahKBXBQMDq6I4Jz4X3AZJMkLuhjEy-CpSFQI1m2OIsDt9a8BXlHg4is1d2JiR1NGPPvoJPojkHDO181AoKH8a5vbwwGktHIpEUPyqhj5as0g4gijx8NXH49ieNHE16XwgYDhgnbnXviCbtaZjkmryZZbjr"
+                />
+              </a>
+              <div class="flex flex-col flex-grow justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span
+                      class="text-[10.5px] font-mono tracking-[0.2em] uppercase text-muted-foreground"
+                      >Studio Noire</span
+                    >
+                    <div class="flex gap-1">
+                      <span
+                        class="w-2.5 h-2.5 rounded-full bg-[#41403E] inline-block border border-border"
+                        title="Charcoal"
+                      ></span>
+                      <span
+                        class="w-2.5 h-2.5 rounded-full bg-[#E8E2D5] inline-block border border-border"
+                        title="Ecru"
+                      ></span>
+                    </div>
+                  </div>
+                  <h3
+                    class="font-serif text-lg text-primary group-hover:text-[#9E7B56] transition-colors leading-snug"
+                  >
+                    Double-Pleat Belgian Flax Trouser
+                  </h3>
+                </div>
+                <div
+                  class="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-sm"
+                >
+                  <span class="font-sans font-medium text-primary">$720</span>
+                  <span
+                    class="text-[10.5px] font-mono tracking-wider uppercase text-[#3E5742]"
+                    >In Atelier</span
+                  >
+                </div>
+              </div>
+            </article>
+            <!-- Item 3: Atelier Kō Kimono Jacket -->
+            <article
+              class="group flex flex-col bg-card/40 p-3 transition-colors hover:bg-card"
+            >
+              <a
+                class="block relative aspect-[3/4] w-full overflow-hidden bg-surface-container-high mb-4"
+                href="#"
+              >
+                <img
+                  alt="Kyoto Raw Habotai Kimono Jacket"
+                  class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxyGjUQh5wmNIh-drdqKGNZDc2qsJTIg4q20ieADEvPumjm6sZtv8kt32IcZxUnV7dmJlnZR7_XfPLJoTmgP4TxDqWfHOqXR2MqJ8DKo96op6ml7BTSCXrCpQbOQJ5LOrFhBmr4tc5B_5Ie9NayObDt_24WSPWPKdc80Zbg1Jrvzkqzrht3TuezwXYSDlKH2aXS2FrP9c6L8TQRmLXWFkJEK4U3Dhx0w6hbbLlP-2fRkEu_ROSHzNZ"
+                />
+              </a>
+              <div class="flex flex-col flex-grow justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span
+                      class="text-[10.5px] font-mono tracking-[0.2em] uppercase text-muted-foreground"
+                      >Atelier Kō</span
+                    >
+                    <div class="flex gap-1">
+                      <span
+                        class="w-2.5 h-2.5 rounded-full bg-[#181615] inline-block border border-border"
+                        title="Sumi Ink"
+                      ></span>
+                    </div>
+                  </div>
+                  <h3
+                    class="font-serif text-lg text-primary group-hover:text-[#9E7B56] transition-colors leading-snug"
+                  >
+                    Kyoto Raw Habotai Kimono Jacket
+                  </h3>
+                </div>
+                <div
+                  class="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-sm"
+                >
+                  <span class="font-sans font-medium text-primary">$1,680</span>
+                  <span
+                    class="text-[10.5px] font-mono tracking-wider uppercase text-[#3E5742]"
+                    >Botanical Dye</span
+                  >
+                </div>
+              </div>
+            </article>
+            <!-- Item 4: Paloma Leatherworks Courier -->
+            <article
+              class="group flex flex-col bg-card/40 p-3 transition-colors hover:bg-card"
+            >
+              <a
+                class="block relative aspect-[3/4] w-full overflow-hidden bg-surface-container-high mb-4"
+                href="#"
+              >
+                <img
+                  alt="Archival Saddle Vacchetta Courier"
+                  class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI1FBf0Uw0HIdKuvbt5Wn4813CTmZMBM-iIE2ydHdWF6rMhLuVAlA7vMgZDWVZJ6AS6EhglmYQobBaPU4m6u2aHlJ7tJBRXPJEJETmZIFDyQin9J9gIHMoFnPpu-TYl9CU4CA9HxzHjNAY8CecWZuiqA5-1B4xQynEoQe3NX9zPqwsxJVm1uVqeKbUrngDpkwmmNrsXeQj3YQSuNQlOdFUEsAn_K8UODkdW0wwuIlE13eEcoAsrkAu"
+                />
+              </a>
+              <div class="flex flex-col flex-grow justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span
+                      class="text-[10.5px] font-mono tracking-[0.2em] uppercase text-muted-foreground"
+                      >Paloma Leatherworks</span
+                    >
+                    <div class="flex gap-1">
+                      <span
+                        class="w-2.5 h-2.5 rounded-full bg-[#6B4B32] inline-block border border-border"
+                        title="Vacchetta"
+                      ></span>
+                      <span
+                        class="w-2.5 h-2.5 rounded-full bg-[#1F1E1D] inline-block border border-border"
+                        title="Noir"
+                      ></span>
+                    </div>
+                  </div>
+                  <h3
+                    class="font-serif text-lg text-primary group-hover:text-[#9E7B56] transition-colors leading-snug"
+                  >
+                    Archival Saddle Vacchetta Courier
+                  </h3>
+                </div>
+                <div
+                  class="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-sm"
+                >
+                  <span class="font-sans font-medium text-primary">$1,890</span>
+                  <span
+                    class="text-[10.5px] font-mono tracking-wider uppercase text-[#3E5742]"
+                    >Florentine Calf</span
+                  >
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      <!-- SECTION 3: TACTILE "MATERIAL & CRAFT MONOGRAPH" FEATURE -->
+      <section
+        class="w-full bg-[#F5F2EB] py-24 sm:py-32 border-b border-border/80"
+        id="monograph"
+      >
+        <div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center"
+          >
+            <!-- Image column showcasing macro detail -->
+            <div class="lg:col-span-7 relative">
+              <div
+                class="aspect-[4/3] w-full overflow-hidden shadow-2xl bg-surface-container"
+              >
+                <img
+                  alt="Archival Cashmere Monograph Stitch Detail"
+                  class="w-full h-full object-cover hover:scale-102 transition-transform duration-1000"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZPMJaR039TfKVcHjSRqApUiCXPNSxXYR868Poi0550IjGJlsbnWT0CHddDlc0MIXna-MM_5MCRFMGlQ35F0cWs-yaDJ5Ss_3gZzdoO866a2-uptsG38Tjjb74_mCVsJrQW13oYpllIbZjk67cGnrip9KnITW8CTHP_hsPLfsygnqFF7N_8FGqkU1ShFUGlwD-zEvdMC_XWWjFruA793zwhg2I9t1LECmHm7gC5e8_BQImCz1PC4hF"
+                />
+              </div>
+              <div
+                class="mt-4 flex items-center justify-between text-[11px] font-mono tracking-widest text-muted-foreground uppercase"
+              >
+                <span>Figure 088 / Macro Detail</span>
+                <span>Double-Faced Cashmere &amp; Water Buffalo Horn</span>
+              </div>
+            </div>
+            <!-- Editorial Story & Specifications -->
+            <div class="lg:col-span-5 space-y-8">
+              <div class="space-y-3">
+                <span
+                  class="font-mono text-[11px] tracking-[0.24em] text-[#9E7B56] uppercase block"
+                >
+                  Archival Monograph N° 088
+                </span>
+                <h2
+                  class="font-serif text-3xl sm:text-4xl lg:text-5xl text-primary font-normal leading-[1.15]"
+                >
+                  The Art of Unlined Weightlessness
+                </h2>
+              </div>
+              <p
+                class="font-sans text-base text-on-surface-variant font-light leading-relaxed"
+              >
+                Traditional tailoring relies on layers of stiff interlinings and
+                horsehair canvas. At Atelier Édition, our partnered houses
+                engineer structure directly into the yarn itself.
+              </p>
+              <p
+                class="font-sans text-base text-on-surface-variant font-light leading-relaxed"
+              >
+                Using double-faced grade-A Inner Mongolian cashmere, master
+                craftspeople carefully hand-split every edge along seamlines,
+                folding the margins inward and securing them with 14 hours of
+                invisible hand-blind stitching per garment.
+              </p>
+              <!-- Metric Specification Cards -->
+              <div class="grid grid-cols-3 gap-4 pt-4 border-t border-border">
+                <div class="p-3 bg-surface border border-border/60">
+                  <span class="font-serif text-2xl text-primary block"
+                    >14.8 µm</span
+                  >
+                  <span
+                    class="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mt-1 block"
+                    >Fiber Fineness</span
+                  >
+                </div>
+                <div class="p-3 bg-surface border border-border/60">
+                  <span class="font-serif text-2xl text-primary block"
+                    >480 gsm</span
+                  >
+                  <span
+                    class="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mt-1 block"
+                    >Thermal Weight</span
+                  >
+                </div>
+                <div class="p-3 bg-surface border border-border/60">
+                  <span class="font-serif text-2xl text-primary block"
+                    >100%</span
+                  >
+                  <span
+                    class="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mt-1 block"
+                    >Capra Hircus</span
+                  >
+                </div>
+              </div>
+              <div class="pt-2">
+                <a
+                  class="inline-flex items-center gap-3 text-[11px] font-sans font-medium tracking-[0.2em] uppercase text-primary underline underline-offset-8 decoration-1 hover:text-[#9E7B56] transition-colors"
+                  href="#maisons"
+                >
+                  <span>Read the Complete Fiber Dissertation</span>
+                  <span class="material-symbols-outlined text-sm"
+                    >north_east</span
+                  >
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- SECTION 4: FEATURED MAISONS & ARCHIVAL TAXONOMY -->
+      <section
+        class="w-full bg-[#FBF9F5] py-24 sm:py-32 border-b border-border/80"
+        id="maisons"
+      >
+        <div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
+          <div
+            class="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-border"
+          >
+            <div>
+              <span
+                class="font-mono text-[11px] tracking-[0.24em] text-[#9E7B56] uppercase block mb-1"
+                >Archival Registry</span
+              >
+              <h2
+                class="font-serif text-3xl sm:text-4xl text-primary font-normal"
+              >
+                The Guarded Maisons
+              </h2>
+            </div>
+            <p
+              class="font-mono text-xs uppercase tracking-wider text-muted-foreground mt-3 md:mt-0"
+            >
+              [4 Certified Independent Ateliers]
+            </p>
+          </div>
+          <!-- Geometric Minimalist Grid of 4 Houses -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Maison 1: Maison Vaneau -->
+            <div
+              class="group border border-border p-8 bg-surface transition-all duration-300 hover:border-primary hover:bg-[#F5F2EB]/50 flex flex-col justify-between min-h-[340px]"
+            >
+              <div>
+                <div class="flex justify-between items-start mb-6">
+                  <span class="font-serif text-2xl italic text-[#9E7B56]"
+                    >01</span
+                  >
+                  <span
+                    class="font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
+                    >Paris, FR</span
+                  >
+                </div>
+                <h3 class="font-serif text-2xl text-primary mb-2">
+                  Maison Vaneau
+                </h3>
+                <p
+                  class="text-xs font-mono tracking-wider uppercase text-muted-foreground mb-4"
+                >
+                  Fluid Outerwear &amp; Bespoke Suiting
+                </p>
+                <p
+                  class="font-sans text-sm text-on-surface-variant font-light leading-relaxed"
+                >
+                  Refined Parisian tailoring prioritizing soft shoulders,
+                  double-faced cashmere drapery, and unconstructed luxury.
+                </p>
+              </div>
+              <div
+                class="pt-6 border-t border-border/60 mt-6 flex items-center justify-between"
+              >
+                <span
+                  class="text-[10px] font-mono tracking-widest uppercase text-muted-foreground"
+                  >Collection 2025</span
+                >
+                <span
+                  class="material-symbols-outlined text-primary text-base transition-transform group-hover:translate-x-1.5"
+                  >arrow_forward</span
+                >
+              </div>
+            </div>
+            <!-- Maison 2: Studio Noire -->
+            <div
+              class="group border border-border p-8 bg-surface transition-all duration-300 hover:border-primary hover:bg-[#F5F2EB]/50 flex flex-col justify-between min-h-[340px]"
+            >
+              <div>
+                <div class="flex justify-between items-start mb-6">
+                  <span class="font-serif text-2xl italic text-[#9E7B56]"
+                    >02</span
+                  >
+                  <span
+                    class="font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
+                    >Lyon, FR</span
+                  >
+                </div>
+                <h3 class="font-serif text-2xl text-primary mb-2">
+                  Studio Noire
+                </h3>
+                <p
+                  class="text-xs font-mono tracking-wider uppercase text-muted-foreground mb-4"
+                >
+                  Architectural Monochrome Silhouettes
+                </p>
+                <p
+                  class="font-sans text-sm text-on-surface-variant font-light leading-relaxed"
+                >
+                  Sculptural tailoring constructed strictly in numbered
+                  micro-batches from pure silk faille and heavy Belgian flax.
+                </p>
+              </div>
+              <div
+                class="pt-6 border-t border-border/60 mt-6 flex items-center justify-between"
+              >
+                <span
+                  class="text-[10px] font-mono tracking-widest uppercase text-muted-foreground"
+                  >Collection 2025</span
+                >
+                <span
+                  class="material-symbols-outlined text-primary text-base transition-transform group-hover:translate-x-1.5"
+                  >arrow_forward</span
+                >
+              </div>
+            </div>
+            <!-- Maison 3: Atelier Kō -->
+            <div
+              class="group border border-border p-8 bg-surface transition-all duration-300 hover:border-primary hover:bg-[#F5F2EB]/50 flex flex-col justify-between min-h-[340px]"
+            >
+              <div>
+                <div class="flex justify-between items-start mb-6">
+                  <span class="font-serif text-2xl italic text-[#9E7B56]"
+                    >03</span
+                  >
+                  <span
+                    class="font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
+                    >Kyoto, JP</span
+                  >
+                </div>
+                <h3 class="font-serif text-2xl text-primary mb-2">
+                  Atelier Kō
+                </h3>
+                <p
+                  class="text-xs font-mono tracking-wider uppercase text-muted-foreground mb-4"
+                >
+                  Botanical Dye &amp; Raw Silk Habotai
+                </p>
+                <p
+                  class="font-sans text-sm text-on-surface-variant font-light leading-relaxed"
+                >
+                  Centuries-old botanical indigo, fermented persimmon tannin,
+                  and raw silk habotai woven on antique shuttle looms.
+                </p>
+              </div>
+              <div
+                class="pt-6 border-t border-border/60 mt-6 flex items-center justify-between"
+              >
+                <span
+                  class="text-[10px] font-mono tracking-widest uppercase text-muted-foreground"
+                  >Collection 2025</span
+                >
+                <span
+                  class="material-symbols-outlined text-primary text-base transition-transform group-hover:translate-x-1.5"
+                  >arrow_forward</span
+                >
+              </div>
+            </div>
+            <!-- Maison 4: Paloma Leatherworks -->
+            <div
+              class="group border border-border p-8 bg-surface transition-all duration-300 hover:border-primary hover:bg-[#F5F2EB]/50 flex flex-col justify-between min-h-[340px]"
+            >
+              <div>
+                <div class="flex justify-between items-start mb-6">
+                  <span class="font-serif text-2xl italic text-[#9E7B56]"
+                    >04</span
+                  >
+                  <span
+                    class="font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
+                    >Florence, IT</span
+                  >
+                </div>
+                <h3 class="font-serif text-2xl text-primary mb-2">
+                  Paloma Leatherworks
+                </h3>
+                <p
+                  class="text-xs font-mono tracking-wider uppercase text-muted-foreground mb-4"
+                >
+                  Vegetable-Tanned Sculptural Objects
+                </p>
+                <p
+                  class="font-sans text-sm text-on-surface-variant font-light leading-relaxed"
+                >
+                  Full-grain Tuscan vacchetta shaped with heated box-irons,
+                  featuring unlacquered hand-finished brass closures.
+                </p>
+              </div>
+              <div
+                class="pt-6 border-t border-border/60 mt-6 flex items-center justify-between"
+              >
+                <span
+                  class="text-[10px] font-mono tracking-widest uppercase text-muted-foreground"
+                  >Collection 2025</span
+                >
+                <span
+                  class="material-symbols-outlined text-primary text-base transition-transform group-hover:translate-x-1.5"
+                  >arrow_forward</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- SECTION 5: PRIVATE CLIENT CONCIERGE / "NOIR" APP BANNER (Inspired by ShopMy) -->
+      <section
+        class="w-full bg-[#12100E] text-[#FBF9F5] relative overflow-hidden py-16 sm:py-20"
+      >
+        <!-- Decorative faint watermark -->
+        <div
+          class="absolute right-0 top-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.04] text-[180px] lg:text-[240px] font-serif italic tracking-tighter leading-none pr-8"
+        >
+          NOIR
+        </div>
+        <div
+          class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 relative z-10"
+        >
+          <div
+            class="flex flex-col lg:flex-row lg:items-center justify-between gap-10"
+          >
+            <div class="max-w-2xl">
+              <div class="flex items-center gap-2.5 mb-3">
+                <span class="w-2 h-2 rounded-full bg-[#9E7B56]"></span>
+                <span
+                  class="font-mono text-[11px] tracking-[0.24em] text-[#9E7B56] uppercase"
+                  >Mobile Protocol · Noir Concierge</span
+                >
+              </div>
+              <h3
+                class="font-serif text-3xl sm:text-4xl text-[#FBF9F5] font-normal leading-tight"
+              >
+                Private Client Salon &amp; Mobile Concierge
+              </h3>
+              <p
+                class="font-sans text-sm sm:text-base text-[#CDC5BC] font-light mt-3 leading-relaxed"
+              >
+                Access 1:1 bespoke sartorial styling, priority allocation for
+                numbered editions, and private fitting appointments at Rue de
+                Vaneau.
+              </p>
+            </div>
+            <!-- Request Input & Action -->
+            <div class="w-full lg:w-auto min-w-[340px] sm:min-w-[420px]">
+              <form
+                class="flex flex-col sm:flex-row gap-3"
+                onsubmit="
+                  event.preventDefault()
+                  this.querySelector('button').innerText = 'INVITATION PENDING'
+                "
+              >
+                <input
+                  class="bg-[#1E1B19] border border-[#332E2B] px-5 py-3.5 text-sm text-[#FBF9F5] placeholder-[#78726A] focus:outline-none focus:border-[#9E7B56] flex-grow font-sans"
+                  placeholder="salon.inquiry@client.com"
+                  required=""
+                  type="email"
+                />
+                <button
+                  class="px-7 py-3.5 bg-[#9E7B56] text-[#FBF9F5] font-sans text-[11px] font-medium tracking-[0.2em] uppercase hover:bg-[#FBF9F5] hover:text-[#1A1715] transition-all whitespace-nowrap"
+                  type="submit"
+                >
+                  Request Salon Entry
+                </button>
+              </form>
+              <div
+                class="flex items-center justify-between mt-3 text-[10px] font-mono text-[#78726A] uppercase tracking-wider"
+              >
+                <span>Strict client discretion</span>
+                <span>Encrypted Salon Channel</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- ATELIER ÉDITION SIGNATURE FOOTER -->
+    <footer
+      class="w-full bg-[#ECE7DD]/50 border-t border-border pt-20 pb-14 text-primary"
+    >
+      <div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
+        <!-- Footer Columns -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-border"
+        >
+          <!-- Brand & Gazette Column -->
+          <div class="lg:col-span-5 space-y-6">
+            <div class="h-7">
+              <svg
+                class="h-6 w-auto"
+                fill="none"
+                viewbox="0 0 240 48"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  fill="#1A1715"
+                  font-family="'Playfair Display', Georgia, serif"
+                  font-size="24"
+                  font-weight="600"
+                  letter-spacing="0.2em"
+                  x="0"
+                  y="32"
+                >
+                  ATELIER
+                </text>
+                <text
+                  fill="#8C7A6B"
+                  font-family="'Playfair Display', Georgia, serif"
+                  font-size="24"
+                  font-style="italic"
+                  font-weight="400"
+                  letter-spacing="0.15em"
+                  x="142"
+                  y="32"
+                >
+                  ÉDITION
+                </text>
+              </svg>
+            </div>
+            <p
+              class="font-sans text-sm text-on-surface-variant max-w-md font-light leading-relaxed"
+            >
+              A guarded sanctuary of haute couture tailoring, rare botanical
+              dyes, and numbered archival garments conceived for discerning
+              collectors worldwide.
+            </p>
+            <div class="pt-2">
+              <span
+                class="font-mono text-[10.5px] uppercase tracking-[0.2em] text-muted-foreground block mb-2"
+                >Correspondance Gazette</span
+              >
+              <div
+                class="flex max-w-sm border-b border-primary/40 focus-within:border-primary transition-colors py-2"
+              >
+                <input
+                  class="w-full bg-transparent border-0 p-0 text-sm font-sans placeholder:text-muted-foreground focus:ring-0 text-primary outline-none"
+                  placeholder="Enter your correspondence email"
+                  type="email"
+                />
+                <button
+                  class="font-sans text-[10.5px] tracking-[0.2em] uppercase font-medium pl-3 text-primary hover:text-[#9E7B56] transition-colors"
+                  type="button"
+                >
+                  Join
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Navigation 1: Curations -->
+          <div class="lg:col-span-2 space-y-4">
+            <h4
+              class="font-mono text-[11px] uppercase tracking-[0.22em] text-primary font-medium"
+            >
+              Curations
+            </h4>
+            <ul
+              class="space-y-2.5 text-sm font-sans font-light text-on-surface-variant"
+            >
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Permanent Archives</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Vernissage Edition</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Sartorial Suites</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Tactile Fiber Index</a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Navigation 2: Maison -->
+          <div class="lg:col-span-2 space-y-4">
+            <h4
+              class="font-mono text-[11px] uppercase tracking-[0.22em] text-primary font-medium"
+            >
+              Maison
+            </h4>
+            <ul
+              class="space-y-2.5 text-sm font-sans font-light text-on-surface-variant"
+            >
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >The Manifesto</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Participating Ateliers</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Provenance Registry</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Gazette Essays</a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Navigation 3: Concierge -->
+          <div class="lg:col-span-3 space-y-4">
+            <h4
+              class="font-mono text-[11px] uppercase tracking-[0.22em] text-primary font-medium"
+            >
+              Concierge
+            </h4>
+            <ul
+              class="space-y-2.5 text-sm font-sans font-light text-on-surface-variant"
+            >
+              <li>White-Glove Courier Logistics</li>
+              <li>Bespoke Tailoring Inquiries</li>
+              <li>Private Salon Fitting Bookings</li>
+              <li class="pt-2 text-xs font-mono text-muted-foreground">
+                salon@atelier-edition.com
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- Provenance & Legal Strip -->
+        <div
+          class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-muted-foreground"
+        >
+          <div>
+            © 2025 Atelier Édition S.A. Single Global Atelier Registry. All
+            rights reserved.
+          </div>
+          <div
+            class="flex items-center space-x-6 uppercase tracking-widest text-[10.5px]"
+          >
+            <a class="hover:text-primary transition-colors" href="#">Privacy</a>
+            <a class="hover:text-primary transition-colors" href="#"
+              >Terms of Curation</a
+            >
+            <a class="hover:text-primary transition-colors" href="#"
+              >Provenance</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

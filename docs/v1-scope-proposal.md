@@ -138,7 +138,7 @@ ship first, and why shipping it simple doesn't cost us anything later.
 
 - **Full version:** a vendor connects their own Shopify store; the
   catalogue, imagery and variants sync in on their own.
-- **Sensus's answer:** two-way sync — catalogue *and* stock, both
+- **Sensus's answer:** two-way sync — catalogue _and_ stock, both
   directions — is "the single most-requested feature from the brands,"
   explicitly core at launch. **Reopened, not yet re-confirmed with Sensus:**
   building the stock half of that surfaced real problems (see
@@ -186,7 +186,7 @@ in short form so this document still reads as one piece.
 1. **How is a sale actually divided? — Answered.** Per-brand commission
    rates, applied at line level, net of refunds and chargebacks. Whether
    commission is inclusive of processing/FX fees is still being finalised
-   commercially — the *shape* is settled, the exact number isn't yet.
+   commercially — the _shape_ is settled, the exact number isn't yet.
 2. **When does a vendor actually get paid? — Answered in shape.** Scheduled/
    delayed payouts, so refunds and chargebacks settle before funds release.
    Exact timing is a Phase 0 item.
@@ -217,6 +217,6 @@ non-negotiable. These hold today, unaffected by anything on this page.
 ---
 
 Every path on this page is additive: the fuller version is a system built
-*on top of* what v1 ships, reading the same data, never a rewrite of it.
+_on top of_ what v1 ships, reading the same data, never a rewrite of it.
 Cutting scope here means choosing what stays manual for now — not choosing
 what we'll have to undo.

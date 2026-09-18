@@ -55,7 +55,9 @@ conventions for each already live in `agents/storefront.md` and
 function VendorProductCard({ product, compact }: Props) {
   const [vendor, setVendor] = useState<Vendor>()
   useEffect(() => {
-    sdk.admin.vendor.retrieve(product.vendor_id).then((r) => setVendor(r.vendor))
+    sdk.admin.vendor
+      .retrieve(product.vendor_id)
+      .then((r) => setVendor(r.vendor))
   }, [product.vendor_id])
 
   return compact ? <CompactLayout /> : <FullLayout />

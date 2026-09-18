@@ -12,6 +12,7 @@
     "build": "pnpm -r build",
     "start": "turbo start",
     "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "turbo test",

@@ -14,7 +14,7 @@ This is the **customer** surface only. Brand/theme config is a later concern.
 
 **Next.js and server rendering are fixed** (`docs/plan.md`, Fixed): discovery matters too much to ship a client-rendered store. Default to server rendering and treat a client component as a decision to justify. **The UI component library is decided: shadcn-style components in `src/components/ui/*`, each a thin wrapper around a `@base-ui/react/*` primitive** (not Radix — this app uses Base UI), following the exact pattern already set by `button.tsx`/`checkbox.tsx`/`badge.tsx`/`separator.tsx`: import the primitive's namespace, apply variants via `cva` where relevant, merge classes with `cn()`, tag the root with a `data-slot`. When a page needs a primitive this app doesn't have yet (a `Select`, an `AlertDialog`, etc.), check whether `@base-ui/react` ships it (it usually does — mirrors Radix's component set) and build the wrapper properly, matching this exact convention — don't fall back to a native HTML element (`<select>`, `window.confirm`) to avoid the work. That's a real, corrected mistake from this project's own history, not a hypothetical: a first pass used a native `<select>` and `window.confirm` for the vendor products page reasoning "it's a simple page, can't visually verify a new component blind" — both got corrected to real `components/ui/select.tsx` / `components/ui/alert-dialog.tsx` once it was pointed out that the design-system convention already existed and should be followed, "can't verify visually" being true of every component built this way, not a reason specific to these two.
 
-**Any floating popup (`Select`, `Popover`, `Tooltip`, future `Menu`/`Combobox`) nested inside a `Dialog` needs an explicit z-index on its `Positioner`, not its `Popup`.** `Positioner` is always `position: fixed`, which per the CSS spec always opens its own stacking context regardless of z-index — so a z-index on the `Popup` (a descendant of `Positioner`) only wins *inside* that context and can never out-rank a sibling `Dialog` popup, no matter how high the number. The `Dialog`'s own popup is `z-50`; every `*Content`/`TooltipContent` wrapper sets `className="z-100"` directly on its `Positioner` for this reason (see `select.tsx`, `popover.tsx`, `tooltip.tsx`). This was found by inspecting the live DOM of a nested Select that opened correctly (right position, right anchor) but was invisible and unclickable behind an opaque `Dialog` — confirming it was pure stacking order, not a Base UI portal/focus bug. Get this right on any new popup-in-dialog composition from the start; it's not something z-index on the content box alone will ever fix.
+**Any floating popup (`Select`, `Popover`, `Tooltip`, future `Menu`/`Combobox`) nested inside a `Dialog` needs an explicit z-index on its `Positioner`, not its `Popup`.** `Positioner` is always `position: fixed`, which per the CSS spec always opens its own stacking context regardless of z-index — so a z-index on the `Popup` (a descendant of `Positioner`) only wins _inside_ that context and can never out-rank a sibling `Dialog` popup, no matter how high the number. The `Dialog`'s own popup is `z-50`; every `*Content`/`TooltipContent` wrapper sets `className="z-100"` directly on its `Positioner` for this reason (see `select.tsx`, `popover.tsx`, `tooltip.tsx`). This was found by inspecting the live DOM of a nested Select that opened correctly (right position, right anchor) but was invisible and unclickable behind an opaque `Dialog` — confirming it was pure stacking order, not a Base UI portal/focus bug. Get this right on any new popup-in-dialog composition from the start; it's not something z-index on the content box alone will ever fix.
 
 ## Architecture and flow
 
@@ -31,7 +31,7 @@ supporting code under `src/vendor/**` (`forms/`, `hooks/{queries,mutations}/`,
 initially confirmed a vendor manages their own catalogue through their own
 Shopify store, not through us — then reinstated once hands-on testing of the
 Shopify OAuth flow showed the connection step is unavoidably vendor-driven
-(only someone with access to the *installing* store's own org can complete a
+(only someone with access to the _installing_ store's own org can complete a
 custom-distribution app install, so staff can't do this step on a vendor's
 behalf). See `docs/plan.md` Decisions, "A full vendor panel is back", for the
 full history. The panel's job is connection management (a vendor connects
@@ -51,20 +51,21 @@ still exists only for the one endpoint not in that contract
 
 **A form is just a form — no `useMutation` inside `src/vendor/forms/*`, ever.** Every vendor-panel form takes `CommonFormProps<TValues>` (`src/vendor/forms/form-type.ts` — `{defaultValues?, isLoading?, onSubmit}`), plus whatever extra display props it genuinely needs (e.g. `error?: string`). Submit button text is always a plain hardcoded string ("Save") — never a `submitLabel`-style prop parameterizing it per create/update/whatever stage; a form tried that once (`StockLocationForm`) and it was corrected explicitly: "remove the submitLabel from forms, just let always 'save' anyway i hate to pass labels as props." `onSubmit` just hands validated values to the caller; the mutation (or several, composed — `ShopifyConnectionForm`'s caller runs a save-then-generate-install-link sequence across two mutations) lives in whichever page or component renders the form, which owns `isPending`/`isError`/`error.message` and passes them down as plain props. This mirrors the Admin app's own `CommonFormProps<T>` convention (`apps/backend/src/admin/forms/form-type.ts`) exactly, and existed there before it existed here — the storefront's forms briefly drifted from it (`ProfileForm`, `LoginForm`, `ShopifyConnectionForm` all embedded their own `useMutation` and, in `LoginForm`'s case, even a direct side effect from inside the form), corrected explicitly: "I don't want to include mutation under the forms, I prefer to use the onSubmit outside them and I can control the mutation state on the page, a form is just a form." Copy `ShopifyConnectionForm`/its `page.tsx` caller as the reference shape for a form driving more than one mutation in sequence.
 
-**Singleton resources render the form inline; list resources render it in a `FormDialog` behind a button.** A vendor has exactly one profile and one Shopify connection, so `ProfileForm`/`ShopifyConnectionForm` render directly on the page — no dialog, no trigger button, nothing to pick. A vendor can have many stock locations (and will have many products), so `StockLocationForm` only ever appears inside a `FormDialog` (`src/components/display/form-dialog.tsx`), opened by an explicit Create/Edit button — the page's real content is the *list*, and the form is a transient action layered on top of it, driven by one `formValues: CommonFormValuesProps<TSchema, TEntity>` state carrying `state: "CREATING" | "UPDATING" | "DELETING"` (`locations/page.tsx` is the reference shape — one shared `FormDialog` for both create and edit, one `ConfirmDeleteDialog` for delete, branching entirely on `formValues.state`). The deciding factor for any new resource: does this page show *one thing* or *a list of things*? One thing → the form **is** the page. A list of things → the list **is** the page, and the form is a dialog.
+**Singleton resources render the form inline; list resources render it in a `FormDialog` behind a button.** A vendor has exactly one profile and one Shopify connection, so `ProfileForm`/`ShopifyConnectionForm` render directly on the page — no dialog, no trigger button, nothing to pick. A vendor can have many stock locations (and will have many products), so `StockLocationForm` only ever appears inside a `FormDialog` (`src/components/display/form-dialog.tsx`), opened by an explicit Create/Edit button — the page's real content is the _list_, and the form is a transient action layered on top of it, driven by one `formValues: CommonFormValuesProps<TSchema, TEntity>` state carrying `state: "CREATING" | "UPDATING" | "DELETING"` (`locations/page.tsx` is the reference shape — one shared `FormDialog` for both create and edit, one `ConfirmDeleteDialog` for delete, branching entirely on `formValues.state`). The deciding factor for any new resource: does this page show _one thing_ or _a list of things_? One thing → the form **is** the page. A list of things → the list **is** the page, and the form is a dialog.
 
 **The full naming chain from contract to form is documented end to end in
 two sibling docs** (worked on the vendor login flow throughout):
 `docs/vendor-contract-hook-pattern.md` covers contract → key → hook — every
-schema/key/hook name is **mechanically derived from the route's HTTP method
-+ path**, never hand-picked (`PostAuthVendorEmailpassInput`/
-`PostAuthVendorEmailpassResponse` → `mutationKeys.auth.postAuthVendorEmailpass`
-→ `usePostAuthVendorEmailpass`, plus the key-registry/hook-shape/key-
-parameterization conventions every hook file follows), and
-`docs/vendor-hook-form-pattern.md` continues from the hook into the form
-(`LoginForm`'s own, independently human-named `loginVendorSchema` + parsers
-— the form layer is deliberately *not* mechanically named). Copy that recipe
-for every new vendor contract + hook + form triplet.
+schema/key/hook name is \*\*mechanically derived from the route's HTTP method
+
+- path\**, never hand-picked (`PostAuthVendorEmailpassInput`/
+  `PostAuthVendorEmailpassResponse` → `mutationKeys.auth.postAuthVendorEmailpass`
+  → `usePostAuthVendorEmailpass`, plus the key-registry/hook-shape/key-
+  parameterization conventions every hook file follows), and
+  `docs/vendor-hook-form-pattern.md` continues from the hook into the form
+  (`LoginForm`'s own, independently human-named `loginVendorSchema` + parsers
+  — the form layer is deliberately *not\* mechanically named). Copy that recipe
+  for every new vendor contract + hook + form triplet.
 
 **Hook naming is fixed, not a style preference:** every `src/vendor/hooks/{queries,mutations}/*` hook wrapping a `vendorClient` call is named `use<MethodName>`, exactly matching the ts-rest contract method it calls (`vendorClient.getVendorsMe()` → `useGetVendorsMe`, `vendorClient.getVendorsShopifyProducts()` → `useGetVendorsShopifyProducts`) — and that contract method name is itself mechanically derived from the route (see `docs/vendor-contract-hook-pattern.md`), never a rephrased verb like `useFindOneVendor`/`useFindManyVendorOrders`. The query/mutation key string and the call-site local variable (already-established convention: the hook's result is assigned to one const named after the hook itself minus `use`) follow the same name, so the route, the contract method, the hook, its cache key, and its call-site variable are the same word end to end — a hook whose name doesn't match what it calls forces a reader into its body just to learn what it does.
 
@@ -118,6 +119,17 @@ From `apps/storefront`:
 
 ## Gotchas and notes
 
+- **Killing the dev server by command name does not work.** Next renames its
+  process to `next-server (vX.Y.Z)` once running, so `pkill -f "next dev"`
+  matches the wrapper and leaves the real listener holding port 8000. Find it
+  by port instead: `ss -ltnp | grep :8000`. A missed kill is not obvious —
+  the port still answers, so a restart looks instant and you end up testing
+  stale code. The same applies to the backend's `medusa develop`.
+- **Never run `next build` while the dev server is running.** Both write
+  `.next`; the build wipes the manifests out from under dev and every route
+  then 500s with `ENOENT ... build-manifest.json`. Stop dev, build, then
+  `rm -rf .next` before starting dev again.
+
 - Confirm `apps/storefront/` exists before storefront-only tasks.
 - Do not commit `.env.local`.
 - Backend and storefront are separate processes; backend-only `dev` does not start port 8000.
@@ -134,12 +146,12 @@ From `apps/storefront`:
 over the file wholesale. Do not add project-specific tokens to it.
 
 - **`colors.css` = paste-over target.** Canonical set only: the
-  `background`/`foreground` pair convention (a bare token is the *surface*,
+  `background`/`foreground` pair convention (a bare token is the _surface_,
   its `-foreground` is the text/icon colour on that surface), `card`,
   `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive` (+
   `-foreground`), `border`, `input`, `ring`, `chart-1..5`, `sidebar*`,
   `radius`, `spacing`, `letter-spacing`, `shadow-2xs..2xl`.
-- **`extensions.css` = ours.** `--success` and `--warning` are *not* in the
+- **`extensions.css` = ours.** `--success` and `--warning` are _not_ in the
   shadcn/tweakcn contract but `badge.tsx` and `alert.tsx` consume them, so
   they live here and survive a paste. Anything else non-standard goes here too.
 - **Fonts stay out of the pasted block.** `--font-sans`/`--font-serif` come
@@ -155,9 +167,9 @@ over the file wholesale. Do not add project-specific tokens to it.
 
 - **`primary` is the brand colour**, not a second `foreground`. They were
   set to the same value here once, which left the brand accent homeless and
-  pushed it into `--ring`. `ring` is the *focus-ring* colour; a theme may tie
+  pushed it into `--ring`. `ring` is the _focus-ring_ colour; a theme may tie
   it to primary or not (tweakcn's own "claude" theme uses an unrelated blue).
-- **`accent` is a hover/selected *surface*** (used by `select`,
+- **`accent` is a hover/selected _surface_** (used by `select`,
   `dropdown-menu`, `combobox`, `sidebar`), not a brand accent colour.
   `accent-foreground` is the text on that surface.
 - **`secondary` is the low-emphasis filled action**, not a neutral surface.

@@ -54,7 +54,7 @@ not on the first hint of similarity.
   when the storefront's `InfoList` needed a way to render a real hyperlink,
   `InfoList.Link` was added because a field (the connected Shopify store
   domain) genuinely needed an `<a href>`, not just label/value styling.
-  `InfoList.Copy` (a copy-to-clipboard variant) was deliberately *not* added
+  `InfoList.Copy` (a copy-to-clipboard variant) was deliberately _not_ added
   alongside it — nothing in the codebase needs that behavior yet. Build the
   subcomponent a real field needs today; don't pre-build the rest of a
   plausible-sounding set on the assumption something will need it later.
