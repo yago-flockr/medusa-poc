@@ -1,7 +1,7 @@
 import type { MedusaRequestHandler } from "@medusajs/framework/http"
 import { parseCorsOrigins } from "@medusajs/framework/utils"
 
-const rawOrigins = (process.env.VENDOR_CORS ?? process.env.STORE_CORS ?? "")
+const rawOrigins = (process.env.VENDOR_CORS || process.env.STORE_CORS || "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean)
@@ -29,11 +29,18 @@ function isAllowedOrigin(origin: string): boolean {
   )
 }
 
-// Kept as the first *raw* origin string (never a regex) — this is used
-// to build a real redirect URL after Shopify OAuth completes
-// (see api/hooks/shopify/oauth/callback), which needs an actual origin to
-// redirect to, not a matching pattern.
-export const vendorPanelOrigin = rawOrigins[0]
+function isAbsoluteOrigin(value: string): boolean {
+  try {
+    const { protocol } = new URL(value)
+    return protocol === "http:" || protocol === "https:"
+  } catch {
+    return false
+  }
+}
+
+// Must be a concrete origin, not a regex entry: Cloud auto-configures
+// STORE_CORS as a regex, which res.redirect would emit as a relative path.
+export const vendorPanelOrigin = rawOrigins.find(isAbsoluteOrigin)
 
 export const vendorCors: MedusaRequestHandler = (req, res, next) => {
   const origin = req.headers.origin

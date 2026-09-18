@@ -23,7 +23,7 @@ const vendorMeSchema = z.object({
             provider: z.string(),
             external_account_identifier: z.string().nullable(),
             client_id: z.string().nullable(),
-            connected_at: z.string().nullable(),
+            connected_at: z.union([z.string(), z.date()]).nullable(),
           })
           .nullable(),
       )

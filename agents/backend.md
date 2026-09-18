@@ -75,7 +75,7 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
   (core-flows operate on arrays, not one call per item). Redesign the step,
   don't call it twice.
 
-  **Never use `as` to cast a `query.graph` result into a shape TypeScript didn't infer.** Define a small Zod schema for exactly the fields requested and `.safeParse()` it instead — real runtime validation instead of lying to the compiler, and `@medusajs/framework/zod` (not plain `zod`) matching every other backend-internal Zod usage (`lib/list-query.ts`, `integrations/external-source.ts`). Plain `zod` stays reserved for `packages/api-contracts`, where it matters for frontend-bundle safety.
+  **Never use `as` to cast a `query.graph` result into a shape TypeScript didn't infer.** Define a small Zod schema for exactly the fields requested and `.safeParse()` it instead — real runtime validation instead of lying to the compiler, and `@medusajs/framework/zod` (not plain `zod`) matching every other backend-internal Zod usage (`lib/list-query.ts`, `integrations/external-source.ts`). Plain `zod` stays reserved for `packages/api-contracts`, where it matters for frontend-bundle safety. **A schema over a raw `query.graph` result must type a `timestamptz` column as `z.date()`, not `z.string()`** — the ODM hands back a real `Date`, and only response-shaping mappers (`build-vendor.ts`, `build-affiliate.ts`) turn it into an ISO string. That's why the contract schemas in `packages/api-contracts` correctly use `created_at: z.string()` while a step schema must not. This bit `/vendors/me` in production: `connected_at: z.string()` passed for every vendor whose Shopify connection was still `null`, and only started throwing `Invalid input: expected string, received Date` once a vendor actually completed OAuth.
 
   Shared-step tiering, promoted only once a second real consumer at that tier needs it, never speculatively: `workflows/shared/steps/` crosses actors entirely (vendor + admin + storefront); `workflows/<actor>/shared/steps/` (plural actor, e.g. `workflows/vendors/shared/`) crosses 2+ sub-domains of one actor (e.g. `resolve-vendor-user`, called from most `/vendors/*` domains); a step used by exactly one domain stays in that domain's own `steps/`.
 
@@ -252,6 +252,20 @@ starts.
   `src/api/vendors/middlewares.ts` — since it's still callable
   cross-origin by whatever eventually consumes it (Bruno today; possibly a
   vendor panel again later, per `docs/plan.md`).
+
+  **`VENDOR_CORS` must be a concrete origin on Cloud, not just inherited.**
+  Cloud auto-configures `STORE_CORS` as a **regex** (preview domains aren't
+  known ahead of time). `cors.ts` falls back to `STORE_CORS` when
+  `VENDOR_CORS` is unset, and the Shopify OAuth callback
+  (`api/hooks/shopify/oauth/callback`) redirects to that origin — so a regex
+  entry used to be interpolated straight into `res.redirect`, producing a
+  relative path and a broken URL like
+  `https://<host>/medusa-poc/.medusajs/.site$//vendor/shopify` (the `$` is the
+  regex anchor). `vendorPanelOrigin` now skips any entry that isn't an
+  absolute `http(s)` origin and the route throws a named error instead of
+  redirecting to garbage — but OAuth still won't complete until `VENDOR_CORS`
+  is set to the real vendor panel origin in the Cloud environment. Covered by
+  `src/api/vendors/__tests__/cors.unit.spec.ts`.
   **Vendor invitation is fully closed off, staff-only:** every vendor and
   vendor user is created from Admin (`/admin/vendors`, `/admin/vendor-users`)
   — there is no public registration route at all any more. This satisfies
@@ -396,6 +410,7 @@ starts.
   vendor route's own unnecessary link-dismissal workflow) were both removed
   rather than fixed, once testing showed neither was solving a real problem.
   See `docs/ER_MODEL.md` "Deleting a vendor's product" for the full story.
+
 - **Order splitting is settled: consignments, not child orders —
   `docs/spikes/multi-vendor-order.md`.** The official marketplace recipe
   (parent order + one child order per vendor via `createOrderWorkflow`,

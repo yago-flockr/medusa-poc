@@ -15,7 +15,7 @@ type RawVendorMe = {
           provider: string
           external_account_identifier: string | null
           client_id: string | null
-          connected_at: string | null
+          connected_at: string | Date | null
         } | null)[]
       | null
   }

@@ -74,4 +74,28 @@ describe("buildVendorMe", () => {
 
     expect(result.vendor.integration_connections).toEqual([])
   })
+
+  it("treats a Date connected_at as connected, since query.graph returns Dates", () => {
+    const result = buildVendorMe({
+      id: "vu_1",
+      first_name: null,
+      last_name: null,
+      email: "jane@example.com",
+      vendor: {
+        id: "vendor_1",
+        name: "Acme",
+        handle: "acme",
+        integration_connections: [
+          {
+            provider: "shopify",
+            external_account_identifier: "store.myshopify.com",
+            client_id: "abc",
+            connected_at: new Date("2026-09-18T14:42:41.237Z"),
+          },
+        ],
+      },
+    })
+
+    expect(result.vendor.integration_connections[0].connected).toBe(true)
+  })
 })

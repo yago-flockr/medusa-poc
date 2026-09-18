@@ -8,7 +8,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   if (!vendorPanelOrigin) {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
-      "VENDOR_CORS is not configured",
+      "VENDOR_CORS must contain a concrete vendor panel origin (e.g. https://example.com) — a regex entry cannot be redirected to",
     )
   }
 
