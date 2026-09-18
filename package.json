@@ -7,7 +7,7 @@
   },
   "scripts": {
     "setup": "bash scripts/setup.sh",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "db:reset": "bash scripts/reset-db.sh",
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
