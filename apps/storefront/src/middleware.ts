@@ -15,7 +15,7 @@ async function getRegionMap(cacheId: string) {
 
   if (!BACKEND_URL) {
     throw new Error(
-      "Middleware.ts: Error fetching regions. Did you set up regions in your Medusa Admin and define a NEXT_PUBLIC_MEDUSA_BACKEND_URL environment variable."
+      "Middleware.ts: Error fetching regions. Did you set up regions in your Medusa Admin and define a NEXT_PUBLIC_MEDUSA_BACKEND_URL environment variable.",
     )
   }
 
@@ -68,14 +68,16 @@ async function getRegionMap(cacheId: string) {
  */
 async function getCountryCode(
   request: NextRequest,
-  regionMap: Map<string, HttpTypes.StoreRegion | number>
+  regionMap: Map<string, HttpTypes.StoreRegion | number>,
 ) {
   let countryCode
 
   const urlCountryCode = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
 
   // Cloudflare Workers provides country via request.cf.country
-  const cloudflareCountryCode = (request as { cf?: { country?: string } }).cf?.country?.toLowerCase()
+  const cloudflareCountryCode = (
+    request as { cf?: { country?: string } }
+  ).cf?.country?.toLowerCase()
 
   // Vercel provides x-vercel-ip-country header
   const vercelCountryCode = request.headers
@@ -95,6 +97,23 @@ async function getCountryCode(
   }
 
   return countryCode
+}
+
+const AFFILIATE_HANDLE_COOKIE = "_affiliate_handle"
+const AFFILIATE_HANDLE_MAX_AGE = 60 * 60 * 24 * 30
+
+function persistAffiliateHandle(request: NextRequest, response: NextResponse) {
+  const affiliateHandle = request.nextUrl.searchParams.get("ref")
+
+  if (affiliateHandle) {
+    response.cookies.set(AFFILIATE_HANDLE_COOKIE, affiliateHandle, {
+      maxAge: AFFILIATE_HANDLE_MAX_AGE,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    })
+  }
+
+  return response
 }
 
 /**
@@ -124,14 +143,15 @@ export async function middleware(request: NextRequest) {
   const urlHasCountry = firstPathSegment === country.toLowerCase()
 
   if (urlHasCountry) {
+    const response = NextResponse.next()
+
     if (!cacheIdCookie) {
-      const response = NextResponse.next()
       response.cookies.set("_medusa_cache_id", cacheId, {
         maxAge: 60 * 60 * 24,
       })
-      return response
     }
-    return NextResponse.next()
+
+    return persistAffiliateHandle(request, response)
   }
 
   // if the url doesn't have the country, redirect to it
@@ -140,7 +160,7 @@ export async function middleware(request: NextRequest) {
   const queryString = request.nextUrl.search || ""
   const redirectUrl = `${request.nextUrl.origin}/${country}${redirectPath}${queryString}`
 
-  return NextResponse.redirect(redirectUrl, 307)
+  return persistAffiliateHandle(request, NextResponse.redirect(redirectUrl, 307))
 }
 
 export const config = {

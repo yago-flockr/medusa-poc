@@ -1,21 +1,21 @@
+import type { CartAffiliateAdditionalData } from "@dtc/api-contracts/common/cart-affiliate"
 import type { CartDTO, MedusaContainer } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
-import type { AffiliateAdditionalData } from "../../../api/affiliates/additional-data"
-import { cartReferralMetadata } from "../../shared/lib/cart-referral-metadata"
+import { cartAffiliateHandleMetadata } from "../../shared/lib/cart-affiliate-handle"
 
-export type CartReferralCompensation = {
+export type CartAffiliateHandleCompensation = {
   cartId: string
   previousMetadata: Record<string, unknown>
 }
 
-export async function applyReferralToCart(
+export async function applyAffiliateHandleToCart(
   cart: CartDTO,
   additionalData: unknown,
   container: MedusaContainer,
-): Promise<CartReferralCompensation | null> {
-  const data = additionalData as AffiliateAdditionalData | undefined
+): Promise<CartAffiliateHandleCompensation | null> {
+  const data = additionalData as CartAffiliateAdditionalData | undefined
 
-  if (!data?.referral_code) {
+  if (!data?.affiliate_handle) {
     return null
   }
 
@@ -25,15 +25,15 @@ export async function applyReferralToCart(
   await cartModuleService.updateCarts(cart.id, {
     metadata: {
       ...previousMetadata,
-      ...cartReferralMetadata(data.referral_code),
+      ...cartAffiliateHandleMetadata(data.affiliate_handle),
     },
   })
 
   return { cartId: cart.id, previousMetadata }
 }
 
-export async function revertReferralOnCart(
-  compensation: CartReferralCompensation,
+export async function revertAffiliateHandleOnCart(
+  compensation: CartAffiliateHandleCompensation,
   container: MedusaContainer,
 ) {
   const cartModuleService = container.resolve(Modules.CART)

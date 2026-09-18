@@ -6,16 +6,16 @@ import type AffiliateModuleService from "../../../modules/affiliate/service"
 
 export type CreateReferralStepInput = {
   orderId: string
-  referralCode: string | null
+  affiliateHandle: string | null
 }
 
 export const createReferralStep = createStep(
   "create-referral",
   async (
-    { orderId, referralCode }: CreateReferralStepInput,
+    { orderId, affiliateHandle }: CreateReferralStepInput,
     { container },
   ) => {
-    if (!referralCode) {
+    if (!affiliateHandle) {
       return new StepResponse({ linkDefs: [] as LinkDefinition[] }, null)
     }
 
@@ -23,7 +23,7 @@ export const createReferralStep = createStep(
       container.resolve(AFFILIATE_MODULE)
 
     const [affiliate] = await affiliateModuleService.listAffiliates({
-      handle: referralCode,
+      handle: affiliateHandle,
       is_active: true,
     })
 
@@ -32,7 +32,7 @@ export const createReferralStep = createStep(
     }
 
     const referral = await affiliateModuleService.createReferrals({
-      code: affiliate.handle,
+      affiliate_handle: affiliate.handle,
       commission_rate: affiliate.commission_rate,
       affiliate_id: affiliate.id,
     })

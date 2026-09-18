@@ -17,7 +17,7 @@ import consignmentOrderLink from "../../links/consignment-order"
 import { assertItemsFulfillableStep } from "./steps/assert-items-fulfillable"
 import { createConsignmentsStep } from "./steps/create-consignments"
 import { groupVendorItemsStep } from "./steps/group-vendor-items"
-import { readCartReferralCode } from "../shared/lib/cart-referral-metadata"
+import { readCartAffiliateHandle } from "../shared/lib/cart-affiliate-handle"
 import { createReferralStep } from "./steps/create-referral"
 import { resolveConsignmentsStep } from "./steps/resolve-consignments"
 
@@ -43,8 +43,8 @@ export const createConsignmentsWorkflow = createWorkflow(
       ),
     ) as unknown as CartLineItemDTO[]
 
-    const referralCode = transform({ carts }, (data) =>
-      readCartReferralCode(data.carts[0].metadata),
+    const affiliateHandle = transform({ carts }, (data) =>
+      readCartAffiliateHandle(data.carts[0].metadata),
     )
 
     assertItemsFulfillableStep({ items: cartItems })
@@ -100,7 +100,7 @@ export const createConsignmentsWorkflow = createWorkflow(
 
       const { linkDefs: referralLinkDefs } = createReferralStep({
         orderId,
-        referralCode,
+        affiliateHandle,
       })
 
       const allLinkDefs = transform(

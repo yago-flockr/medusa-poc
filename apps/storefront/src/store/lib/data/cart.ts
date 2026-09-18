@@ -2,6 +2,7 @@
 
 import { sdk } from "@/store/lib/config"
 import medusaError from "@/store/lib/util/medusa-error"
+import { CartAffiliateAdditionalData } from "@dtc/api-contracts/common/cart-affiliate"
 import { HttpTypes } from "@medusajs/types"
 import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
@@ -10,6 +11,7 @@ import {
   getCacheOptions,
   getCacheTag,
   getCartId,
+  getAffiliateHandle,
   removeCartId,
   setCartId,
 } from "./cookies"
@@ -59,22 +61,42 @@ export async function getOrSetCart(countryCode: string) {
     throw new Error(`Region not found for country code: ${countryCode}`)
   }
 
-  let cart = await retrieveCart(undefined, "id,region_id")
+  let cart = await retrieveCart(undefined, "id,region_id,metadata")
 
   const headers = {
     ...(await getAuthHeaders()),
   }
 
+  const affiliateHandle = await getAffiliateHandle()
+  const affiliateData: { additional_data?: CartAffiliateAdditionalData } =
+    affiliateHandle
+      ? { additional_data: { affiliate_handle: affiliateHandle } }
+      : {}
+
   if (!cart) {
     const locale = await getLocale()
     const cartResp = await sdk.store.cart.create(
-      { region_id: region.id, locale: locale || undefined },
+      { region_id: region.id, locale: locale || undefined, ...affiliateData },
       {},
       headers,
     )
     cart = cartResp.cart
 
     await setCartId(cart.id)
+
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+  } else if (
+    affiliateHandle &&
+    cart.metadata?.affiliate_handle !== affiliateHandle
+  ) {
+    // Medusa's StoreUpdateCart type omits additional_data even though the
+    // route accepts it, so this one call can't go through sdk.store.cart.
+    await sdk.client.fetch(`/store/carts/${cart.id}`, {
+      method: "POST",
+      body: affiliateData,
+      headers,
+    })
 
     const cartCacheTag = await getCacheTag("carts")
     revalidateTag(cartCacheTag)

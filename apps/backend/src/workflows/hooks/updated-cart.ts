@@ -1,14 +1,14 @@
 import { StepResponse } from "@medusajs/framework/workflows-sdk"
 import { updateCartWorkflow } from "@medusajs/medusa/core-flows"
 import {
-  applyReferralToCart,
-  revertReferralOnCart,
-  type CartReferralCompensation,
-} from "./lib/apply-referral-to-cart"
+  applyAffiliateHandleToCart,
+  revertAffiliateHandleOnCart,
+  type CartAffiliateHandleCompensation,
+} from "./lib/apply-affiliate-handle-to-cart"
 
 updateCartWorkflow.hooks.cartUpdated(
   async ({ cart, additional_data }, { container }) => {
-    const compensation = await applyReferralToCart(
+    const compensation = await applyAffiliateHandleToCart(
       cart,
       additional_data,
       container,
@@ -17,13 +17,13 @@ updateCartWorkflow.hooks.cartUpdated(
     return new StepResponse(compensation, compensation)
   },
   async (
-    compensation: CartReferralCompensation | null | undefined,
+    compensation: CartAffiliateHandleCompensation | null | undefined,
     { container },
   ) => {
     if (!compensation) {
       return
     }
 
-    await revertReferralOnCart(compensation, container)
+    await revertAffiliateHandleOnCart(compensation, container)
   },
 )

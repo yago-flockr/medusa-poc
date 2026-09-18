@@ -136,6 +136,11 @@ export const setCartId = async (cartId: string) => {
   })
 }
 
+export const getAffiliateHandle = async () => {
+  const cookies = await nextCookies()
+  return cookies.get("_affiliate_handle")?.value
+}
+
 export const removeCartId = async () => {
   const cookies = await nextCookies()
   cookies.set("_medusa_cart_id", "", {

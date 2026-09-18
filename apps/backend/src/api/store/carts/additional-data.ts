@@ -1,5 +1,5 @@
-import { affiliateAdditionalData } from "../../affiliates/additional-data"
+import { cartAffiliateAdditionalData } from "@dtc/api-contracts/common/cart-affiliate"
 
 export const cartAdditionalDataValidators = {
-  ...affiliateAdditionalData,
+  ...cartAffiliateAdditionalData,
 }

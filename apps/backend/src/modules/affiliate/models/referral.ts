@@ -3,7 +3,7 @@ import { Affiliate } from "./affiliate"
 
 export const Referral = model.define("referral", {
   id: model.id().primaryKey(),
-  code: model.text(),
+  affiliate_handle: model.text(),
   commission_rate: model.bigNumber(),
   affiliate: model.belongsTo(() => Affiliate, {
     mappedBy: "referrals",

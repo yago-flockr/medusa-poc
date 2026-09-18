@@ -230,8 +230,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "code": {
-          "name": "code",
+        "affiliate_handle": {
+          "name": "affiliate_handle",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
