@@ -25,10 +25,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # admin.generated.d.ts / admin.types.d.ts are gitignored, so nothing
-      # that typechecks the backend works until codegen has run.
-      - name: Generate Shopify types
-        run: pnpm --filter @dtc/backend run shopify-codegen
+      - name: Build backend
+        working-directory: apps/backend
+        run: pnpm run build
 
       - run: pnpm format:check
       - run: pnpm lint
