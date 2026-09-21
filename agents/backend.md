@@ -578,6 +578,23 @@ shopify/products/import/route.ts`) runs a new, separate workflow —
   against real data: deleted an already-imported product, re-imported it,
   confirmed it reused an existing shared option rather than creating its own.
 
+  **Second real bug, found by `integration-tests/http/vendor-shopify-import.spec.ts`
+  and now fixed:** re-importing an already-imported product failed with
+  `"Product variant with sku: <sku>, already exists."` Shared options are
+  stored canonicalized to lowercase (`canonicalize` in
+  `resolve-shared-product-options.ts`), but `buildUpdateProductInputFromExternal`
+  matched a re-synced variant to its existing Medusa variant by comparing raw
+  Shopify option casing (`{Size: "S"}`) against the stored canonical form
+  (`{size: "s"}`). The keys never matched, so no existing variant id was
+  attached, Medusa treated every re-synced variant as brand new, and it
+  collided on the SKU already in the database. `remapOptionTitles` did not
+  save it: the workflow applies that _after_ the mapper has already done its
+  matching. Fixed inside `optionsKey` (`src/lib/build-medusa-product-input.ts`),
+  which now lowercases both title and value so both sides of the comparison
+  go through the same normalization. This hit every product with a
+  capitalized option (i.e. essentially all of them), so any re-sync of a
+  real Shopify catalogue would have failed.
+
   **Real bug hit in production use, now fixed:** importing two or more
   brand-new products in the _same_ batch that both introduce the same
   never-before-seen shared option title (e.g. two new products both getting
@@ -856,6 +873,35 @@ admin JWT minted in `beforeAll` keeps working while the rows it created vanish.
 - **Unit** (`src/**/__tests__/**/*.unit.spec.ts`, colocated with the source it tests) — **pure functions only**, zero container, zero DB, zero mocking of Medusa internals. Every `mappers/` function is exactly this shape by construction, so it gets a matching `mappers/__tests__/<name>.unit.spec.ts` — one spec file per mapper file, same one-thing-per-file discipline as everything else in `workflows/`. A step or workflow itself (I/O-based) is not unit-tested this way — Medusa's step/workflow engine isn't meaningfully testable without a real container.
 - **Integration** (`integration-tests/http/<domain>.spec.ts`, `@medusajs/test-utils`'s `medusaIntegrationTestRunner`) — a full real app boot + real temp Postgres DB + real HTTP requests through `api` (a plain axios instance — non-2xx throws, assert with `.rejects.toMatchObject({ response: { status } })`, not a `try/catch`). This is the actual replacement for hand-verifying a route with `curl`/`medusa exec` during development — it exercises auth middleware, CORS, the route, the workflow, and response validation together, which a mapper unit test or a direct `medusa exec` workflow call both skip. Seed test fixtures (vendor, vendor user, region, etc.) directly through the same workflows the real app uses, via `getContainer()` in `beforeAll` — never hand-insert rows. Always `jest.setTimeout(60000)` at the top of the file — Jest's 5s default is far too short for a full migration + app boot.
 
+**Storefront content used to accept any id.** `POST
+/admin/{collections,product-categories}/:id/storefront-content` answered 200
+for an id that did not exist, creating a `storefront_content` row linked to
+nothing — so a typo'd id silently "succeeded" while editing nothing. The
+shared upsert step already queried the target entity; it just never checked
+the result before falling through to its create branch. It now throws
+`NOT_FOUND`. The same step backs vendor storefront content
+(`workflows/vendors/update-vendor.ts`), which is covered by
+`integration-tests/http/admin-vendors.spec.ts`.
+
+**Pure checkout logic lives in `create-consignments/mappers/`.** The
+consignment steps used to hold their own pure logic inline, which left the
+marketplace's order-routing rules (which vendor gets which line item, what
+blocks an order from completing) reachable only through a full app boot.
+`group-items-by-vendor.ts`, `assert-products-fulfillable.ts` and
+`build-consignment-list.ts` are now plain functions the steps call, each with
+a unit spec. Keep new pure logic there rather than inline in a step.
+
+**Each spec file boots its own Medusa app, so the suite is memory-bound, not
+time-bound.** `test:integration:http` runs `jest --maxWorkers=1
+--workerIdleMemoryLimit=700MB`, not `--runInBand`. Both run spec files
+serially, but `--runInBand` keeps every booted app in one process: at 12 spec
+files that reliably died with `FATAL ERROR: Reached heap limit Allocation
+failed - JavaScript heap out of memory` (exit 134) after about ten suites.
+Running in a worker lets Jest recycle the process once it crosses the limit,
+which bounds memory instead of just raising the ceiling. Do not "simplify"
+this back to `--runInBand`, and do not fix a future recurrence with
+`--max-old-space-size` — lower the idle-memory limit instead.
+
 **Gotcha, costs real setup time if missed**: `@medusajs/test-utils` completely ignores `DATABASE_URL` and reads `DB_HOST`/`DB_PORT`/`DB_USERNAME`/`DB_PASSWORD` instead (defaulting to `postgres` with no password) to create its own temp DB — these must be set in `.env`/`.env.template` matching the real Postgres credentials or `test:integration:http` fails immediately trying to authenticate as the wrong user.
 
 ## Environment variables
@@ -871,7 +917,9 @@ From `apps/backend`:
 - `pnpm exec medusa user -e ... -p ...`
 - `pnpm exec medusa exec ./seeds/<file>.ts`
 - `pnpm run test:unit` — pure-function tests, fast, no DB.
-- `pnpm run test:integration:http` — real app + temp DB + real HTTP, ~15s per spec file.
+- `pnpm run test:integration:http` — real app + temp DB + real HTTP, ~15s per spec file (12 files, ~3min).
+- Browser end-to-end tests live outside this workspace, in `e2e/` at the repo
+  root — see `agents/e2e.md`.
 - `pnpm run typecheck` → `tsc --noEmit`. From the repo root, `pnpm typecheck`
   runs it across all three workspaces including `@dtc/api-contracts`, which has
   no build of its own and is otherwise only ever checked through whichever app

@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import consignmentOrderLink from "../../../links/consignment-order"
+import { buildConsignmentList } from "../mappers/build-consignment-list"
 
 export type ResolveConsignmentsStepInput = {
   orderId: string
@@ -19,18 +20,6 @@ export const resolveConsignmentsStep = createStep(
       filters: { order_id: orderId },
     })
 
-    const consignments = links
-      .map((link) => link.consignment)
-      .filter(
-        (consignment): consignment is NonNullable<typeof consignment> =>
-          consignment != null,
-      )
-      .map((consignment) => ({
-        id: consignment.id,
-        status: consignment.status,
-        vendor_id: consignment.vendor?.id,
-      }))
-
-    return new StepResponse(consignments)
+    return new StepResponse(buildConsignmentList(links))
   },
 )

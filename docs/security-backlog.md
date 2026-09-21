@@ -246,3 +246,41 @@ each was found while building or adversarially testing the marketplace spine
   reads it, and a visitor can store a well-formed handle belonging to an
   affiliate they have nothing to do with. Attribution is only ever decided
   from the resolved affiliate at order placement, never from cart metadata.
+
+## Vendor user deletion
+
+Found while writing `integration-tests/http/admin-vendor-users.spec.ts`;
+both items verified against a real app boot, not inferred.
+
+- **Deleting a vendor user does not revoke their auth identity.** After
+  `DELETE /admin/vendor-users/:id` returns `{ deleted: true }`, the same
+  email and password still authenticate successfully against
+  `POST /auth/vendor/emailpass` (HTTP 200, with a usable-looking JWT).
+  Data access _is_ cut off — `/vendors/me` and `/vendors/products` both
+  reject that token — so this is not currently a data-exposure hole, and
+  the integration spec asserts that access cutoff as the real guarantee.
+  It is still wrong that revoked credentials keep minting tokens: the
+  auth identity created alongside the vendor user is never deleted with
+  it. Fix by deleting the linked auth identity inside
+  `deleteVendorUserWorkflow`.
+- **A token for a missing vendor user is rejected with HTTP 400, not 401.**
+  This has a user-visible consequence today: the storefront vendor panel
+  clears its stored token only on 401 (`apps/storefront/src/vendor/lib/client.ts`),
+  so a vendor user who is deleted mid-session stays "logged in" with a
+  token that fails every request, instead of being returned to the login
+  form. Whatever resolves the actor for `/vendors/*` should answer 401 for
+  an unknown or deleted actor.
+
+## Verified safe — recorded so it is not mistaken for a hole later
+
+- **Posting one actor's credentials to another actor's login endpoint
+  returns HTTP 200.** `POST /auth/user/emailpass` with a _vendor_ user's
+  email and password succeeds, and so does the reverse. This looks alarming
+  and is not: Medusa authenticates the shared auth identity, and when no
+  actor of that type is linked it issues a registration-shaped token whose
+  `actor_id` is empty. Probed directly against every admin route
+  (`/admin/vendors`, `/admin/vendor-users`, `/admin/products`,
+  `/admin/orders`, `/admin/users`, plus `POST /admin/vendors`): all answer 401. `integration-tests/http/auth-boundaries.spec.ts` locks this in by
+  asserting the cross-minted token opens nothing, rather than asserting the
+  login itself fails — if Medusa ever starts issuing a usable token here,
+  that spec breaks.

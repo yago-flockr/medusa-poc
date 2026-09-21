@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Format, lint, typecheck and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # admin.generated.d.ts / admin.types.d.ts are gitignored, so nothing
+      # that typechecks the backend works until codegen has run.
+      - name: Generate Shopify types
+        run: pnpm --filter @dtc/backend run shopify-codegen
+
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+
+      - name: Typecheck admin panel
+        working-directory: apps/backend
+        run: pnpm exec tsc -p src/admin/tsconfig.json
+
+      - run: pnpm test

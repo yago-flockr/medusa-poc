@@ -11,6 +11,7 @@ Medusa v2 monorepo chassis: reusable commerce foundation (clone, configure brand
 - **Repo-wide:** `agents/overview.md` (start here)
 - **Backend:** `agents/backend.md` (when working under `apps/backend/`)
 - **Storefront:** `agents/storefront.md` (when working under `apps/storefront/`)
+- **Browser end-to-end tests:** `agents/e2e.md` (when working under `e2e/`)
 - **Medusa learning map:** `agents/medusa-learning-map.md`
 - **Coding patterns (apply on every change, not on request):** `agents/patterns/`
 - **Scope and fixed constraints:** `docs/plan.md`

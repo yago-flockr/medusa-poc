@@ -147,6 +147,10 @@ Current but replaceable:
   when a route needs an entry here, and what stays out of scope (core
   Medusa resources, and anything that's a Module Link rather than an HTTP
   boundary — see `agents/backend.md` "Patterns to follow when extending").
+- `e2e/`: Playwright browser end-to-end tests for the whole stack (own
+  workspace, `@dtc/e2e`) — the only tier that exercises the storefront.
+  Boots its own backend/storefront on ports 9100/8100 against a dedicated
+  `medusa_e2e` database, so it never touches the dev DB. `agents/e2e.md`.
 - `docs/plan.md`: what the product must do, what is **Fixed** and **Decided**, and what is **Not decided** — read before assuming a host or a provider (hosting itself is decided; see Decisions)
 - `docs/study/`: Medusa study stages with done criteria; notes per stage
 - `docs/features/`: intent briefs (what we want + likely Medusa primitives); `_template.md` is the shape
@@ -187,20 +191,33 @@ If deploying this monorepo to **Medusa Cloud**: set Project root to `apps/backen
 - `pnpm run storefront:dev` → http://localhost:8000 (customer storefront)
 - `docker compose up -d`
 
-Repo-wide gates, all three workspaces: `pnpm lint`, `pnpm typecheck`,
-`pnpm test`, `pnpm format:check`. `typecheck` is the only one that covers
+Repo-wide gates, all four workspaces: `pnpm lint`, `pnpm typecheck`,
+`pnpm test`, `pnpm format:check`. `pnpm test` is deliberately the fast tier
+only (backend unit tests); the two slow tiers are opt-in, `pnpm test:integration`
+(real app + temp DB, ~3min) and `pnpm e2e` (real browser, boots both apps). `typecheck` is the only one that covers
 `@dtc/api-contracts` — it has no build step, so a broken contract otherwise
 stays invisible until an app that imports it is built.
 
+GitHub Actions (`.github/workflows/ci.yml`) runs one job on every push and PR:
+install, Shopify codegen, `format:check`, `lint`, `typecheck` (repo and admin
+panel) and `pnpm test`. It deliberately stops there — integration and e2e need
+a database, Redis and a browser, and are run locally rather than on every push.
+Codegen must come before any typecheck: the generated Shopify `.d.ts` files are
+gitignored, so the backend does not compile without it.
+
 Prettier is the formatter (`pnpm format` / `pnpm format:check`) and is separate
-from `pnpm lint`, so a green lint says nothing about formatting. A Husky `pre-commit`
-hook is two lines: `npx lint-staged` (one root `.lintstagedrc.json`, running
-`prettier --write` on staged files) then `pnpm lint`. Formatting is auto-fixed
-and restaged; a lint error aborts the commit. `pnpm lint` runs over the whole
-repo rather than staged files because that reuses each workspace's existing lint
-script — running `eslint` from the root would apply the root config to every
-app's files — and it costs about 6s. This exists so neither problem is first
-discovered at build time. Tool-generated
+from `pnpm lint`, so a green lint says nothing about formatting. A Husky `pre-commit` hook is two
+lines: `npx lint-staged` (the `lint-staged` key in the root `package.json`,
+running `prettier --write` on staged files) then `pnpm lint`. Formatting is
+auto-fixed and restaged; a lint error aborts the commit.
+
+`pnpm lint` runs over the whole repo rather than staged files because that
+reuses each workspace's own lint script. A single `eslint` from the root cannot
+replace it: `@medusajs/eslint-plugin`'s recommended config ignores
+`**/apps/storefront/**`, `**/__tests__/**`, `**/integration-tests/**` and
+`**/*.spec.*`, so a root-level run silently lints nothing in the storefront and
+no test file anywhere — it exits green having checked almost nothing. It costs
+about 6s. Tool-generated
 output — Shopify codegen and every `migrations/` folder — is in
 `.prettierignore` on purpose: formatting it only makes the next codegen or
 `medusa db:generate` run dirty it again.

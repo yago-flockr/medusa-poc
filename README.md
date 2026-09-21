@@ -144,6 +144,20 @@ pnpm run storefront:dev
 
 If you do need a true clean slate (e.g. the catalogue step above already ran and you want to redo it), `pnpm run db:reset` (repo root) drops and recreates the database schema, migrates, reseeds everything from zero, and re-syncs the storefront's publishable API key (seeding always generates a new one, so the storefront would otherwise be left pointing at a key that no longer exists). Requires Docker running; prompts for confirmation unless run as `pnpm run db:reset -- -y`. This is the occasional full-reset option, not something to reach for between every feature — `pnpm run seed` alone covers that.
 
+## Testing
+
+Three tiers. Only the first is wired into `pnpm test`, because the other two are slow and need Docker running.
+
+| Command                 | What it runs                                                                       | Roughly |
+| ----------------------- | ---------------------------------------------------------------------------------- | ------- |
+| `pnpm test`             | Backend unit tests — pure functions, no DB                                         | ~12s    |
+| `pnpm test:integration` | Backend HTTP tests — real app boot, real temp Postgres, real requests              | ~3min   |
+| `pnpm e2e`              | Playwright browser tests — drives the real storefront and vendor panel in Chromium | ~4min   |
+
+`pnpm e2e` is self-contained: it resets and seeds its own `medusa_e2e` database, then starts a backend on port 9100 and a storefront on port 8100 and stops them when it finishes. It never touches your dev database or your dev ports, so you can leave `pnpm dev` running. Use `pnpm e2e:quick` while writing a test to re-run the specs without reseeding, and `pnpm --filter @dtc/e2e run test:e2e:ui` to step through a failing one in Playwright's UI. Failure screenshots, videos and traces land in `e2e/test-results/`.
+
+The browser tests need Chromium installed once: `cd e2e && pnpm exec playwright install chromium`.
+
 ## Useful docs in this repo
 
 - [`docs/plan.md`](./docs/plan.md) — what we're building, what is fixed, and what is deliberately still open

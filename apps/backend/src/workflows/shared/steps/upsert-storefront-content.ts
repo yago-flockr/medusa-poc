@@ -1,5 +1,8 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
 import type { LinkDefinition, MedusaContainer } from "@medusajs/framework/types"
 import { STOREFRONT_CONTENT_MODULE } from "../../../modules/storefront-content"
 import StorefrontContentModuleService from "../../../modules/storefront-content/service"
@@ -73,7 +76,14 @@ export async function upsertStorefrontContent(
     ],
   })
 
-  const existing = entity?.storefront_content as
+  if (!entity) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_FOUND,
+      `No ${input.queryEntity} found with id ${input.entityId}`,
+    )
+  }
+
+  const existing = entity.storefront_content as
     | {
         id: string
         name: string | null

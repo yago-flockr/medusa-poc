@@ -1,9 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import {
-  ContainerRegistrationKeys,
-  MedusaError,
-} from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import type { CartLineItemDTO } from "@medusajs/framework/types"
+import { assertProductsFulfillable } from "../mappers/assert-products-fulfillable"
 
 export type AssertItemsFulfillableStepInput = {
   items: CartLineItemDTO[]
@@ -34,30 +32,7 @@ export const assertItemsFulfillableStep = createStep(
       filters: { id: productIds },
     })
 
-    const unfulfillable = products.filter(
-      (product) => !product.shipping_profile?.id,
-    )
-
-    if (unfulfillable.length) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Cannot complete this order — missing shipping information for: ${unfulfillable
-          .map((product) => product.title)
-          .join(", ")}.`,
-      )
-    }
-
-    // A vendor-less product can't be routed downstream (group-vendor-items.ts).
-    const unassigned = products.filter((product) => !product.vendor?.id)
-
-    if (unassigned.length) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Cannot complete this order — no vendor assigned for: ${unassigned
-          .map((product) => product.title)
-          .join(", ")}.`,
-      )
-    }
+    assertProductsFulfillable(products)
 
     return new StepResponse(undefined)
   },

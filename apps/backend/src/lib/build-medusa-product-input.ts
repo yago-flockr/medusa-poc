@@ -28,8 +28,21 @@ export type ExistingProductVariant = {
   optionValues: Record<string, string>
 }
 
+// An external price is free-form text upstream: Shopify has returned "",
+// and a non-numeric value would otherwise reach Medusa as NaN.
+function toPriceAmount(price: string): number {
+  const amount = Number(price)
+  return Number.isFinite(amount) ? amount : 0
+}
+
+// Compared case-insensitively on purpose: stored options are canonicalized to
+// lowercase, while an external system sends whatever casing it likes.
 function optionsKey(options: Record<string, string>): string {
   return Object.entries(options)
+    .map(([key, value]) => [
+      key.trim().toLowerCase(),
+      value.trim().toLowerCase(),
+    ])
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, value]) => `${key}=${value}`)
     .join("|")
@@ -116,7 +129,9 @@ function toMedusaVariants(
       // real quantity through the existing inventory-management screen.
       manage_inventory: true,
       options,
-      prices: [{ amount: Number(variant.price), currency_code: currencyCode }],
+      prices: [
+        { amount: toPriceAmount(variant.price), currency_code: currencyCode },
+      ],
     }
   })
 }

@@ -18,7 +18,11 @@
     "format:check": "prettier --check .",
     "test": "turbo test",
     "backend:dev": "turbo dev --filter=@dtc/backend",
-    "storefront:dev": "turbo dev --filter=@dtc/storefront"
+    "storefront:dev": "turbo dev --filter=@dtc/storefront",
+    "e2e": "pnpm --filter @dtc/e2e run test:e2e",
+    "e2e:quick": "pnpm --filter @dtc/e2e run test:e2e:quick",
+    "e2e:prepare": "pnpm --filter @dtc/e2e run prepare:db",
+    "test:integration": "pnpm --filter @dtc/backend run test:integration:http"
   },
   "devDependencies": {
     "@medusajs/eslint-plugin": "2.18.0",
@@ -28,5 +32,8 @@
     "lint-staged": "^17.5.1",
     "prettier": "^3.2.5",
     "turbo": "^2.0.14"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}": "prettier --write"
   }
 }
