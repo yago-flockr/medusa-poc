@@ -904,6 +904,16 @@ this back to `--runInBand`, and do not fix a future recurrence with
 
 **Gotcha, costs real setup time if missed**: `@medusajs/test-utils` completely ignores `DATABASE_URL` and reads `DB_HOST`/`DB_PORT`/`DB_USERNAME`/`DB_PASSWORD` instead (defaulting to `postgres` with no password) to create its own temp DB — these must be set in `.env`/`.env.template` matching the real Postgres credentials or `test:integration:http` fails immediately trying to authenticate as the wrong user.
 
+**`tsc` needs `medusa build` to have run first.** The build writes
+`.medusa/types/` (gitignored), which augments the container so
+`container.resolve(VENDOR_MODULE)` is a typed module service rather than
+`unknown`. Without it, `tsc --noEmit` fails with `TS18046: 'vendorModuleService'
+is of type 'unknown'` across the consignment steps — which is why CI builds
+before it typechecks. The build also runs the Shopify codegen through its
+`prebuild`, so one step covers both sets of generated types. Beware that
+`pnpm typecheck` can _hide_ this: turbo replays a cached pass, so reproduce
+with `pnpm exec tsc --noEmit` from `apps/backend`, or `TURBO_FORCE=true`.
+
 ## Environment variables
 
 Declared in `.env.template`. Required locally: `DATABASE_URL`, CORS vars, JWT/cookie secrets, and (for `pnpm run test:integration:http` — see Testing above) `DB_HOST`/`DB_PORT`/`DB_USERNAME`/`DB_PASSWORD` matching the same Postgres. Prefer setting `REDIS_URL` to match Docker Compose. Do not set `projectConfig.databaseUrl` or `projectConfig.redisUrl` in `medusa-config.ts` (Cloud injects them; explicit env reads override defaults with `undefined` at Cloud build). Locally, `defineConfig` still reads `DATABASE_URL` from `.env`.
