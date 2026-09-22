@@ -2,13 +2,14 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
 import { completeVendorShopifyConnectionWorkflow } from "../../../../../workflows/vendor-shopify-connection/complete-vendor-shopify-connection"
 import { parseRawQuery } from "../../../../../integrations/shopify/oauth"
-import { vendorPanelOrigin } from "../../../../vendors/cors"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  if (!vendorPanelOrigin) {
+  const panelUrl = process.env.PANEL_URL
+
+  if (!panelUrl) {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
-      "VENDOR_CORS must contain a concrete vendor panel origin (e.g. https://example.com) — a regex entry cannot be redirected to",
+      "PANEL_URL must be set to the origin serving the vendor panel (e.g. https://example.com) for the Shopify OAuth redirect",
     )
   }
 
@@ -16,7 +17,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { shop, code } = query
 
   if (!shop || !code) {
-    res.redirect(`${vendorPanelOrigin}/vendor/shopify`)
+    res.redirect(`${panelUrl}/vendor/shopify`)
     return
   }
 
@@ -28,5 +29,5 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     console.error("Couldn't complete Shopify OAuth connection:", error)
   }
 
-  res.redirect(`${vendorPanelOrigin}/vendor/shopify`)
+  res.redirect(`${panelUrl}/vendor/shopify`)
 }

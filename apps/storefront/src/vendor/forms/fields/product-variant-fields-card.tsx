@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { Item } from "@/components/ui/item"
-import { TextField } from "./text-field"
+import { TextField } from "@/forms/fields/text-field"
 
 export type ProductVariantFieldsValue = {
   price: string

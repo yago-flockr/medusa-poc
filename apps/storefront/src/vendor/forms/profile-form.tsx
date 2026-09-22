@@ -7,8 +7,8 @@ import type { VendorUser } from "@dtc/api-contracts/vendor/vendor"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import z from "zod"
-import { TextField } from "./fields/text-field"
-import type { CommonFormProps } from "./form-type"
+import { TextField } from "@/forms/fields/text-field"
+import type { CommonFormProps } from "@/forms/form-type"
 
 export const profileSchema = z.object({
   first_name: z.string().min(1, "First name is required"),

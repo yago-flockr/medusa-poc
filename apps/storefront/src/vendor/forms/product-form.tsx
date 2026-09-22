@@ -8,16 +8,16 @@ import type { VendorProductCategory } from "@dtc/api-contracts/vendor/product-ca
 import { uniq } from "lodash"
 import { useMemo, useState, type FormEvent } from "react"
 import z from "zod"
-import { ComboboxChipsField } from "./fields/combobox-chips-field"
-import { FieldArray } from "./fields/field-array"
-import { ImagesField } from "./fields/images-field"
+import { ComboboxChipsField } from "@/forms/fields/combobox-chips-field"
+import { FieldArray } from "@/forms/fields/field-array"
+import { ImagesField } from "@/forms/fields/images-field"
 import {
   ProductVariantFieldsCard,
   type ProductVariantFieldsValue,
 } from "./fields/product-variant-fields-card"
-import { TextField } from "./fields/text-field"
-import { TextareaField } from "./fields/textarea-field"
-import type { CommonFormProps } from "./form-type"
+import { TextField } from "@/forms/fields/text-field"
+import { TextareaField } from "@/forms/fields/textarea-field"
+import type { CommonFormProps } from "@/forms/form-type"
 
 const MAX_OPTIONS = 5
 const MAX_VARIANTS = 50

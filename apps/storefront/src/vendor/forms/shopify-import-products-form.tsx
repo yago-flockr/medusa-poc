@@ -18,7 +18,7 @@ import type {
 } from "@dtc/api-contracts/vendor/shopify-products"
 import { useState, type FormEvent } from "react"
 import z from "zod"
-import type { CommonFormProps } from "./form-type"
+import type { CommonFormProps } from "@/forms/form-type"
 
 export const shopifyImportProductsSchema = z.object({
   shopify_product_ids: z

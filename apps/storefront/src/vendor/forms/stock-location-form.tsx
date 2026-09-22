@@ -7,9 +7,12 @@ import type { VendorStockLocation } from "@dtc/api-contracts/vendor/stock-locati
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import z from "zod"
-import { SelectField, type SelectFieldOption } from "./fields/select-field"
-import { TextField } from "./fields/text-field"
-import type { CommonFormProps } from "./form-type"
+import {
+  SelectField,
+  type SelectFieldOption,
+} from "@/forms/fields/select-field"
+import { TextField } from "@/forms/fields/text-field"
+import type { CommonFormProps } from "@/forms/form-type"
 
 export const stockLocationSchema = z.object({
   name: z.string().min(1, "Name is required"),

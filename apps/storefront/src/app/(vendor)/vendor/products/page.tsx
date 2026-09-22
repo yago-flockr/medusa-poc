@@ -14,7 +14,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
-import { VendorSection } from "@/vendor/components/section"
+import { Section } from "@/components/display/section"
 import {
   ProductInventoryForm,
   productInventoryFormToInput,
@@ -70,7 +70,7 @@ export default function VendorProductsPage() {
   const editingProduct = getVendorsProductsById.data?.product
 
   return (
-    <VendorSection
+    <Section
       title="Products"
       description="View your catalogue, publish products yourself, or remove them. Anything synced from Shopify keeps its details in sync from there — this page only controls whether it's visible to customers."
       action={
@@ -262,6 +262,6 @@ export default function VendorProductsPage() {
           </DataState.Content>
         </DataState>
       </FormDialog>
-    </VendorSection>
+    </Section>
   )
 }

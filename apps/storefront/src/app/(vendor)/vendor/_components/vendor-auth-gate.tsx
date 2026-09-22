@@ -8,9 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { LoginForm } from "@/vendor/forms/login-form"
+import { LoginForm } from "@/forms/login-form"
 
-import { VendorShell } from "./vendor-shell"
+import { PanelShell } from "@/components/panel/panel-shell"
+import { VendorSidebar } from "./vendor-sidebar"
 import { usePostAuthVendorEmailpass } from "@/vendor/hooks/mutations/auth"
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
 import { useEffect, useState } from "react"
@@ -57,5 +58,5 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
     )
   }
 
-  return <VendorShell>{children}</VendorShell>
+  return <PanelShell sidebar={<VendorSidebar />}>{children}</PanelShell>
 }

@@ -9,19 +9,19 @@ import {
 import { Separator } from "@/components/ui/separator"
 import type { ComponentProps, ReactNode } from "react"
 
-interface VendorSectionProps extends ComponentProps<typeof CardContent> {
+interface SectionProps extends ComponentProps<typeof CardContent> {
   title: string
   description?: ReactNode
   action?: ReactNode
 }
 
-export function VendorSection({
+export function Section({
   title,
   description,
   action,
   children,
   ...props
-}: VendorSectionProps) {
+}: SectionProps) {
   return (
     <Card>
       <CardHeader>

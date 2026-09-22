@@ -10,19 +10,18 @@ import {
 } from "@/components/ui/sidebar"
 import { RiRefreshLine } from "@remixicon/react"
 import { useQueryClient } from "@tanstack/react-query"
-import { ComponentProps } from "react"
+import type { ComponentProps, ReactNode } from "react"
 
-import { VendorSidebar } from "./vendor-sidebar"
+type PanelShellProps = ComponentProps<typeof SidebarProvider> & {
+  sidebar: ReactNode
+}
 
-export function VendorShell({
-  children,
-  ...props
-}: ComponentProps<typeof SidebarProvider>) {
+export function PanelShell({ children, sidebar, ...props }: PanelShellProps) {
   const queryClient = useQueryClient()
 
   return (
     <SidebarProvider {...props}>
-      <VendorSidebar />
+      {sidebar}
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger />

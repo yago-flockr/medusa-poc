@@ -1,7 +1,8 @@
-import type { AuthenticationInput } from "@medusajs/framework/types"
-import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { generateRandomPassword } from "../../../lib/generate-random-password"
+import {
+  deleteActorAuthIdentity,
+  registerActorAuthIdentity,
+} from "../../shared/lib/actor-auth"
 
 export type RegisterVendorAuthIdentityStepInput = {
   email: string
@@ -13,26 +14,11 @@ export type RegisterVendorAuthIdentityStepInput = {
 export const registerVendorAuthIdentityStep = createStep(
   "register-vendor-auth-identity",
   async (input: RegisterVendorAuthIdentityStepInput, { container }) => {
-    const authModuleService = container.resolve(Modules.AUTH)
-    const password = input.password ?? generateRandomPassword()
-
-    const { success, authIdentity, error } = await authModuleService.register(
-      "emailpass",
-      {
-        url: "",
-        headers: {},
-        query: {},
-        protocol: "https",
-        body: { email: input.email, password },
-      } as AuthenticationInput,
-    )
-
-    if (!success || !authIdentity) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        error ?? "Could not create a login for this vendor user.",
-      )
-    }
+    const { authIdentity, password } = await registerActorAuthIdentity({
+      container,
+      email: input.email,
+      password: input.password,
+    })
 
     return new StepResponse({ authIdentity, password }, authIdentity.id)
   },
@@ -41,7 +27,6 @@ export const registerVendorAuthIdentityStep = createStep(
       return
     }
 
-    const authModuleService = container.resolve(Modules.AUTH)
-    await authModuleService.deleteAuthIdentities([authIdentityId])
+    await deleteActorAuthIdentity({ container, authIdentityId })
   },
 )

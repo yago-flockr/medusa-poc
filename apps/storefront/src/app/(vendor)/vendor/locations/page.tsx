@@ -13,8 +13,8 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item"
-import { VendorSection } from "@/vendor/components/section"
-import type { CommonFormValuesProps } from "@/vendor/forms/form-type"
+import { Section } from "@/components/display/section"
+import type { CommonFormValuesProps } from "@/forms/form-type"
 import {
   StockLocationForm,
   stockLocationFormToInput,
@@ -86,7 +86,7 @@ export default function VendorLocationsPage() {
   }
 
   return (
-    <VendorSection
+    <Section
       title="Locations"
       description="Where your stock is held. Link a product's variants to a location and quantity from the Products page."
       action={
@@ -205,6 +205,6 @@ export default function VendorLocationsPage() {
           })
         }}
       />
-    </VendorSection>
+    </Section>
   )
 }

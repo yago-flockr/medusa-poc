@@ -2,7 +2,7 @@
 
 import { DataState } from "@/components/display/data-state"
 import { InfoList } from "@/components/display/info-list"
-import { VendorSection } from "@/vendor/components/section"
+import { Section } from "@/components/display/section"
 import {
   ProfileForm,
   profileFormToInput,
@@ -18,7 +18,7 @@ export default function VendorProfilePage() {
 
   return (
     <>
-      <VendorSection
+      <Section
         title="Vendor information"
         description="View your vendor information"
       >
@@ -41,8 +41,8 @@ export default function VendorProfilePage() {
             </InfoList.Root>
           </DataState.Content>
         </DataState>
-      </VendorSection>
-      <VendorSection
+      </Section>
+      <Section
         title="User information"
         description={
           getVendorsMe.data?.vendor_user
@@ -67,7 +67,7 @@ export default function VendorProfilePage() {
             />
           </DataState.Content>
         </DataState>
-      </VendorSection>
+      </Section>
     </>
   )
 }

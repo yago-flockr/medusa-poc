@@ -6,8 +6,8 @@ import type { PostVendorsOrdersByIdDispatchInput } from "@dtc/api-contracts/vend
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import z from "zod"
-import { TextField } from "./fields/text-field"
-import type { CommonFormProps } from "./form-type"
+import { TextField } from "@/forms/fields/text-field"
+import type { CommonFormProps } from "@/forms/form-type"
 
 export const dispatchOrderSchema = z.object({
   tracking_number: z.string().min(1, "Tracking number is required"),

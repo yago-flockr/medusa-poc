@@ -1,39 +1,23 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { TextField } from "@/forms/fields/text-field"
 import { cn } from "@/lib/utils"
-import { PostAuthVendorEmailpassInput } from "@dtc/api-contracts/vendor/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
+import type { ComponentProps } from "react"
 import { useForm } from "react-hook-form"
 import z from "zod"
-import { TextField } from "./fields/text-field"
-import type { CommonFormProps } from "./form-type"
 
-export const loginVendorSchema = z.object({
+const loginSchema = z.object({
   email: z.email(),
   password: z.string().min(1),
 })
 
-export type LoginVendorSchema = z.infer<typeof loginVendorSchema>
+type LoginSchema = z.infer<typeof loginSchema>
 
-type LoginFormProps = CommonFormProps<LoginVendorSchema>
-
-export function loginVendorFormToInput(
-  values: LoginVendorSchema,
-): PostAuthVendorEmailpassInput {
-  return {
-    email: values.email,
-    password: values.password,
-  }
-}
-
-export function loginVendorInputToForm(
-  values: PostAuthVendorEmailpassInput,
-): LoginVendorSchema {
-  return {
-    email: values.email,
-    password: values.password,
-  }
+type LoginFormProps = Omit<ComponentProps<"form">, "onSubmit"> & {
+  isLoading?: boolean
+  onSubmit: (values: LoginSchema) => void
 }
 
 export function LoginForm({
@@ -46,31 +30,30 @@ export function LoginForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginVendorSchema>({
-    resolver: zodResolver(loginVendorSchema),
+  } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   })
 
   return (
     <form
-      onSubmit={handleSubmit(
-        (values) => onSubmit?.(values),
-        (formErrors) => console.error("Form validation failed:", formErrors),
-      )}
+      onSubmit={handleSubmit((values) => onSubmit(values))}
       className={cn("flex flex-col gap-4", className)}
       {...props}
     >
       <TextField
-        id="vendor-email"
+        id="login-email"
         label="Email"
         type="email"
+        autoComplete="email"
         error={errors.email?.message}
         {...register("email")}
       />
       <TextField
-        id="vendor-password"
+        id="login-password"
         label="Password"
         type="password"
+        autoComplete="current-password"
         error={errors.password?.message}
         {...register("password")}
       />

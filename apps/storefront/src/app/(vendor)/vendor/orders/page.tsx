@@ -21,7 +21,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item"
-import { VendorSection } from "@/vendor/components/section"
+import { Section } from "@/components/display/section"
 import {
   DispatchOrderForm,
   dispatchOrderFormToInput,
@@ -83,7 +83,7 @@ export default function VendorOrdersPage() {
   const viewingOrder = getVendorsOrdersById.data
 
   return (
-    <VendorSection
+    <Section
       title="Orders"
       description="Manage your orders"
       className="flex flex-col gap-3"
@@ -252,6 +252,6 @@ export default function VendorOrdersPage() {
           </DataState.Content>
         </DataState>
       </FormDialog>
-    </VendorSection>
+    </Section>
   )
 }

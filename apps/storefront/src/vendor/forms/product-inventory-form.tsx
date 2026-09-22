@@ -10,8 +10,8 @@ import type {
 } from "@dtc/api-contracts/vendor/product-inventory"
 import { useState, type FormEvent } from "react"
 import z from "zod"
-import { NumberControlField } from "./fields/number-field-control"
-import type { CommonFormProps } from "./form-type"
+import { NumberControlField } from "@/forms/fields/number-field-control"
+import type { CommonFormProps } from "@/forms/form-type"
 
 export const productInventorySchema = z.object({
   levels: z.array(

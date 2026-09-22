@@ -2,7 +2,7 @@
 
 import { DataState } from "@/components/display/data-state"
 import { Badge } from "@/components/ui/badge"
-import { VendorSection } from "@/vendor/components/section"
+import { Section } from "@/components/display/section"
 import {
   ShopifyConnectionForm,
   shopifyConnectionFormToInput,
@@ -40,7 +40,7 @@ export default function VendorShopifyPage() {
 
   return (
     <>
-      <VendorSection
+      <Section
         title="Shopify connection"
         description={
           isConnected
@@ -87,9 +87,9 @@ export default function VendorShopifyPage() {
             />
           </DataState.Content>
         </DataState>
-      </VendorSection>
+      </Section>
       {isConnected && (
-        <VendorSection
+        <Section
           title="Import products"
           description="Pull products from your Shopify store and choose which ones to bring in."
           className="flex flex-col gap-4"
@@ -124,7 +124,7 @@ export default function VendorShopifyPage() {
               />
             </DataState.Content>
           </DataState>
-        </VendorSection>
+        </Section>
       )}
     </>
   )
