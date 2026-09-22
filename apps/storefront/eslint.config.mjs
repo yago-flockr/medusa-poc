@@ -36,9 +36,40 @@ export default [
         {
           patterns: [
             {
-              group: ["@/store/*", "**/store/*", "**/store"],
+              group: [
+                "@/store/*",
+                "**/store/*",
+                "**/store",
+                "@/affiliate/*",
+                "**/affiliate/*",
+                "**/affiliate",
+              ],
               message:
-                "vendor/ must never import from store/ — these are isolated actor boundaries.",
+                "vendor/ must never import from store/ or affiliate/ — these are isolated actor boundaries.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/affiliate/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "@/store/*",
+                "**/store/*",
+                "**/store",
+                "@/vendor/*",
+                "**/vendor/*",
+                "**/vendor",
+              ],
+              message:
+                "affiliate/ must never import from store/ or vendor/ — these are isolated actor boundaries.",
             },
           ],
         },
@@ -53,9 +84,16 @@ export default [
         {
           patterns: [
             {
-              group: ["@/vendor/*", "**/vendor/*", "**/vendor"],
+              group: [
+                "@/vendor/*",
+                "**/vendor/*",
+                "**/vendor",
+                "@/affiliate/*",
+                "**/affiliate/*",
+                "**/affiliate",
+              ],
               message:
-                "store/ must never import from vendor/ — these are isolated actor boundaries.",
+                "store/ must never import from vendor/ or affiliate/ — these are isolated actor boundaries.",
             },
           ],
         },

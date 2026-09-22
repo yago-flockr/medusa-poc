@@ -77,6 +77,8 @@ Full diagram and field detail: `apps/backend/docs/ER_MODEL.md`.
 
   **Never use `as` to cast a `query.graph` result into a shape TypeScript didn't infer.** Define a small Zod schema for exactly the fields requested and `.safeParse()` it instead — real runtime validation instead of lying to the compiler, and `@medusajs/framework/zod` (not plain `zod`) matching every other backend-internal Zod usage (`lib/list-query.ts`, `integrations/external-source.ts`). Plain `zod` stays reserved for `packages/api-contracts`, where it matters for frontend-bundle safety. **A schema over a raw `query.graph` result must type a `timestamptz` column as `z.date()`, not `z.string()`** — the ODM hands back a real `Date`, and only response-shaping mappers (`build-vendor.ts`, `build-affiliate.ts`) turn it into an ISO string. That's why the contract schemas in `packages/api-contracts` correctly use `created_at: z.string()` while a step schema must not. This bit `/vendors/me` in production: `connected_at: z.string()` passed for every vendor whose Shopify connection was still `null`, and only started throwing `Invalid input: expected string, received Date` once a vendor actually completed OAuth.
 
+  **`query.graph` is already autocompleted and result-typed — nothing to wire up.** `medusa build`/`medusa dev` regenerates `.medusa/types/query-entry-points.d.ts`, which augments Medusa's `RemoteQueryEntryPoints` interface with every entity in the project — our custom models (`affiliate`, `referral`), every link table (`affiliate_product`, `referral_order`) and the cross-module relations they add to core models (`Product.affiliates`, `Order.referral`). `apps/backend/tsconfig.json` already pulls it in via `"include": [..., ".medusa/types/*"]`, so `query.graph({ entity: "affiliate", fields: [...] })` returns `data: Affiliate[]` with real field types, and `entity`/`fields` offer completions from that union. Two consequences worth knowing: the directory is gitignored, so a fresh clone has no completions until the first `build`/`dev` (run one before wondering why the editor is quiet); and a typo is **not** a type error — Medusa types `entity` as `TEntry | keyof RemoteQueryEntryPoints` and `fields` as `...[] | string[]` on purpose, so unknown names fall back to `any[]` rather than failing. That fallback is exactly why the Zod-parse rule above exists — the compiler will not catch a wrong field name for you.
+
   Shared-step tiering, promoted only once a second real consumer at that tier needs it, never speculatively: `workflows/shared/steps/` crosses actors entirely (vendor + admin + storefront); `workflows/<actor>/shared/steps/` (plural actor, e.g. `workflows/vendors/shared/`) crosses 2+ sub-domains of one actor (e.g. `resolve-vendor-user`, called from most `/vendors/*` domains); a step used by exactly one domain stays in that domain's own `steps/`.
 
   `workflows/hooks/*.ts` is a different thing (callbacks registered onto an _existing_ core workflow's named extension point, e.g. `createProductsWorkflow.hooks.productsCreated`) and stays flat, outside this convention — it was never a workflow of its own.
@@ -247,25 +249,24 @@ starts.
   `docs/plan.md` Decisions: Sensus's answers confirmed a vendor manages
   their own catalogue through their own Shopify store, not through us, so
   there's no vendor-facing UI to build against this API at all right now).
-  `/vendors/*` still needs its own CORS handling regardless — `VENDOR_CORS`
-  env var, `src/api/vendors/cors.ts`, applied in
-  `src/api/vendors/middlewares.ts` — since it's still callable
-  cross-origin by whatever eventually consumes it (Bruno today; possibly a
-  vendor panel again later, per `docs/plan.md`).
+  `/vendors/*` and `/affiliates/*` still need their own CORS handling
+  regardless — Medusa applies `storeCors` to `/store/*` only. Both panels are
+  served from the storefront, so they share one `panelCors`
+  (`src/api/lib/panel-cors.ts`) built from **`STORE_CORS`**. There are no
+  per-actor CORS env vars: they would all hold the same origin. If a panel is
+  ever deployed separately (a React+Vite SPA was discussed), that is the point
+  to reopen this — not before.
 
-  **`VENDOR_CORS` must be a concrete origin on Cloud, not just inherited.**
-  Cloud auto-configures `STORE_CORS` as a **regex** (preview domains aren't
-  known ahead of time). `cors.ts` falls back to `STORE_CORS` when
-  `VENDOR_CORS` is unset, and the Shopify OAuth callback
-  (`api/hooks/shopify/oauth/callback`) redirects to that origin — so a regex
-  entry used to be interpolated straight into `res.redirect`, producing a
-  relative path and a broken URL like
-  `https://<host>/medusa-poc/.medusajs/.site$//vendor/shopify` (the `$` is the
-  regex anchor). `vendorPanelOrigin` now skips any entry that isn't an
-  absolute `http(s)` origin and the route throws a named error instead of
-  redirecting to garbage — but OAuth still won't complete until `VENDOR_CORS`
-  is set to the real vendor panel origin in the Cloud environment. Covered by
-  `src/api/vendors/__tests__/cors.unit.spec.ts`.
+  **`PANEL_URL` is a separate, concrete origin** — the origin serving the
+  panels — used only for the Shopify OAuth redirect
+  (`api/hooks/shopify/oauth/callback`). It is named for its purpose, not for
+  today's host: the panels currently live in the Next.js storefront, so it
+  holds the same value as `STORE_CORS`, and it is the one var to repoint if the
+  panels ever move to their own SPA. It must not be derived from a CORS list: Cloud auto-configures `STORE_CORS` as a **regex**, and
+  interpolating that into `res.redirect` produced a relative path and a broken
+  URL like `https://<host>/medusa-poc/.medusajs/.site$//vendor/shopify` (the
+  `$` is the regex anchor). The route throws a named error when it is unset
+  rather than redirecting somewhere meaningless.
   **Vendor invitation is fully closed off, staff-only:** every vendor and
   vendor user is created from Admin (`/admin/vendors`, `/admin/vendor-users`)
   — there is no public registration route at all any more. This satisfies
@@ -862,6 +863,16 @@ Rules the code enforces, verified by real checkouts:
 ## Testing
 
 Two tiers, both real Jest (`pnpm run test:unit` / `pnpm run test:integration:http`), no third mocking-heavy tier.
+
+**E2E specs do not — they share one seeded database.** Playwright runs against
+a real app on `medusa_e2e`, seeded once by `pnpm e2e:prepare`, and
+`test:e2e:quick` skips that reseed. So an e2e test must be self-contained: never
+assert on a row _count_ taken from ambient state, and clean up whatever it
+creates. Assert on the specific row it made instead (`locator("tbody tr", {
+hasText: title })`), or a leftover from a previously failed run makes the next
+one fail for an unrelated reason. Affiliate fixtures come from
+`seeds/seed-affiliates.ts`, which runs after `seed:vendors` because the
+affiliate fixture promotes a vendor's product.
 
 **Integration specs truncate between tests.** Each `it` starts from a DB with
 only what `beforeAll` created — rows written inside one `it` are gone by the

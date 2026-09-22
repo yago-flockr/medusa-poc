@@ -86,6 +86,23 @@ export const updateAffiliateSchema = z
 
 export type UpdateAffiliate = z.infer<typeof updateAffiliateSchema>
 
+export const affiliateWithPasswordResponseSchema = z.object({
+  affiliate: affiliateSchema,
+  password: z.string(),
+})
+
+export type AffiliateWithPasswordResponse = z.infer<
+  typeof affiliateWithPasswordResponseSchema
+>
+
+export const regenerateAffiliatePasswordResponseSchema = z.object({
+  password: z.string(),
+})
+
+export type RegenerateAffiliatePasswordResponse = z.infer<
+  typeof regenerateAffiliatePasswordResponseSchema
+>
+
 export const affiliateDeleteResponseSchema = z.object({
   id: z.string(),
   object: z.literal("affiliate"),

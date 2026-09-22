@@ -1,4 +1,5 @@
 import { defineMiddlewares } from "@medusajs/framework/http"
+import { affiliateRoutesMiddlewares } from "./affiliates/middlewares"
 import { adminAffiliateRoutesMiddlewares } from "./admin/affiliates/middlewares"
 import { adminBrandRoutesMiddlewares } from "./admin/brands/middlewares"
 import { adminCollectionRoutesMiddlewares } from "./admin/collections/middlewares"
@@ -23,6 +24,7 @@ export default defineMiddlewares({
     ...storeCartRoutesMiddlewares,
     ...storeProductRoutesMiddlewares,
     ...storeVendorRoutesMiddlewares,
+    ...affiliateRoutesMiddlewares,
     ...vendorRoutesMiddlewares,
   ],
 })

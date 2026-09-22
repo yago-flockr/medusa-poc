@@ -387,9 +387,9 @@ in short form, with what's genuinely still open flagged as such:
   too — so the data/auth layer already matches what that migration needs
   today, and only the wrapping project (Next.js route vs. a separate app)
   would ever need to change, not the logic inside it. The accepted costs of
-  this choice, now: `/vendors/*` needs its own CORS handling
-  (`VENDOR_CORS`, `src/api/vendors/cors.ts`) since the browser calls it
-  cross-origin; and the vendor's JWT sits in `localStorage`, readable by any
+  this choice, now: the panel routes need their own CORS handling
+  (`panelCors`, `src/api/lib/panel-cors.ts`, from `STORE_CORS`) since the
+  browser calls them cross-origin; and the vendor's JWT sits in `localStorage`, readable by any
   JS on the page (weaker than an `httpOnly` cookie against XSS) — acceptable
   while the vendor portal has no invite flow or approval flow yet, worth
   revisiting (shorter-lived tokens, a refresh flow) once it's closer to real
@@ -661,6 +661,13 @@ in short form, with what's genuinely still open flagged as such:
     influencers say their handle out loud as their "code", and a per-share
     code cannot be spoken. Per-campaign breakdowns, when wanted, are an extra
     value carried on the address, not extra handles.
+  - **Commercial rules, decided.** An affiliate earns on the **whole order**,
+    not per promoted product — paying per product would push every affiliate to
+    promote the entire catalogue just to get paid. The **last** handle seen
+    wins. The attribution window is **7 days**. Commission is paid to both
+    vendors and affiliates, so it is its own line rather than being carved out
+    of either side — and nothing is paid yet: this only records what is owed.
+    Returns/refunds are deliberately not modelled; there is no refund flow yet.
   - **Naming is fixed.** `Affiliate` is the person, `Referral` is the record
     created at order placement — if it exists before an order it is not a
     referral. The identifier is the affiliate's `handle`, matching

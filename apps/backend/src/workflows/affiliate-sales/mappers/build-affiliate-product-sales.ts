@@ -1,3 +1,5 @@
+import type { AffiliateProductSales } from "@dtc/api-contracts/affiliate/sales"
+
 export type ReferredOrderItem = {
   product_id?: string | null
   product_title?: string | null
@@ -12,15 +14,7 @@ export type ReferredOrder = {
   items?: (ReferredOrderItem | null)[] | null
 }
 
-export type AffiliateProductSales = {
-  product_id: string
-  product_title: string | null
-  product_handle: string | null
-  units_sold: number
-  units_returned: number
-  revenue: number
-  orders: number
-}
+export type { AffiliateProductSales }
 
 export function buildAffiliateProductSales(
   orders: (ReferredOrder | null)[],

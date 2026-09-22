@@ -100,7 +100,7 @@ async function getCountryCode(
 }
 
 const AFFILIATE_HANDLE_COOKIE = "_affiliate_handle"
-const AFFILIATE_HANDLE_MAX_AGE = 60 * 60 * 24 * 30
+const AFFILIATE_HANDLE_MAX_AGE = 60 * 60 * 24 * 7
 
 function persistAffiliateHandle(request: NextRequest, response: NextResponse) {
   const affiliateHandle = request.nextUrl.searchParams.get("ref")
@@ -124,10 +124,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // /vendor is a back-office surface for the vendor actor type, not a
-  // customer-facing regional page — it must never be prefixed with a
-  // country code.
-  if (request.nextUrl.pathname.startsWith("/vendor")) {
+  // /vendor and /affiliate are back-office surfaces for their actor types,
+  // not customer-facing regional pages — never prefix them with a country code.
+  if (
+    request.nextUrl.pathname.startsWith("/vendor") ||
+    request.nextUrl.pathname.startsWith("/affiliate")
+  ) {
     return NextResponse.next()
   }
 
@@ -168,6 +170,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|vendor|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
+    "/((?!api|vendor|affiliate|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
   ],
 }

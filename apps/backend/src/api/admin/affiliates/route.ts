@@ -2,6 +2,7 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import {
   affiliateListResponseSchema,
   affiliateResponseSchema,
+  affiliateWithPasswordResponseSchema,
   type CreateAffiliate,
 } from "@dtc/api-contracts/admin/affiliates"
 import { createAffiliateWorkflow } from "../../../workflows/affiliates/create-affiliate"
@@ -23,5 +24,5 @@ export const POST = async (
     input: req.validatedBody,
   })
 
-  res.json(affiliateResponseSchema.parse({ affiliate: result }))
+  res.json(affiliateWithPasswordResponseSchema.parse(result))
 }

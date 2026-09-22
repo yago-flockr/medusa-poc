@@ -4,7 +4,7 @@ const cartAffiliateHandleMetadataSchema = z.object({
   affiliate_handle: z.string().min(1),
 })
 
-export type CartAffiliateHandleMetadata = z.infer<
+type CartAffiliateHandleMetadata = z.infer<
   typeof cartAffiliateHandleMetadataSchema
 >
 

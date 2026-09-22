@@ -82,10 +82,13 @@ vendors, and it is solved once for both.
   refund, cancellation or unavailable item is reflected without anyone correcting
   anything by hand.
 - **The rate is per affiliate** and can differ between them and change over time.
-- Unknown — **whether the affiliate earns on the whole order or only on the products
-  they promoted.** A customer sent to one product often buys three.
-- Unknown — **how long we remember where a customer came from.**
-- Unknown — **whose money the commission comes out of**, ours or the vendor's.
+- **The affiliate earns on the whole order**, not only on the products they
+  promoted. Paying per product would push every affiliate to promote the entire
+  catalogue just to get paid, which is the opposite of what we want them doing.
+- **We remember where a customer came from for 7 days.**
+- **Both vendors and affiliates are paid commission**, so the split is not taken
+  out of one or the other's side — it is its own line. Nothing is paid yet; we
+  only record what is owed.
 
 ## What each audience sees
 
@@ -127,12 +130,6 @@ unless we deliberately attach an offer to it.
 
 ## Open questions
 
-- **Blocking — does the affiliate earn on the whole order or only on what they
-  promoted?** This decides the figures and what we can honestly promise them.
-- **Blocking — whose margin pays the commission, ours or the vendor's?** The
-  same record either way, but a completely different consequence for vendors, who
-  did not choose the affiliate.
-- How long do we remember where a customer came from?
 - Does an affiliate's handle also give the customer something — a discount, free
   delivery — or is it invisible to the customer?
 - Do vendors get any say in who promotes their products, or see which affiliate

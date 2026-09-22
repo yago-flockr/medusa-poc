@@ -79,6 +79,10 @@ async function main() {
   console.log("[e2e] seeding vendors")
   runInBackend(["run", "seed:vendors"])
 
+  // After vendors: the affiliate fixture promotes a vendor's product.
+  console.log("[e2e] seeding affiliates")
+  runInBackend(["run", "seed:affiliates"])
+
   writeFileSync(PUBLISHABLE_KEY_FILE, await readPublishableKey())
   console.log("[e2e] ready")
 }

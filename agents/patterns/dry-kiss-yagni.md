@@ -26,6 +26,43 @@ prematurely" judgment in KISS/YAGNI below still applies — extract a shared
 helper once a third real use case shows the abstraction is actually correct,
 not on the first hint of similarity.
 
+## Name and place it generically at creation
+
+**`generic > specific > magic (NEVER)`** — the ordering to apply every time.
+Generic is the default; domain-specific is the correct fallback, not a failure;
+a catch-all abstraction that tries to solve every case is never acceptable. If
+the only way to make something generic is to make it magic — flags, deep
+configuration, implicit indirection — stop and write the specific version.
+
+Distinct from both DRY and YAGNI, and cheaper than either: when the thing you
+are writing carries **no domain knowledge**, give it the generic name and the
+shared location immediately — don't prefix it with the first caller's domain.
+
+The test is not "will this be reused?" (that's a guess) but **"does this thing
+actually know anything about that domain?"** A card that renders a title,
+description and action knows nothing about vendors; a field that wraps an
+`<input>` knows nothing about products. Those were never "vendor things", even
+when a vendor page was their only caller.
+
+This is a cost-asymmetry rule, not a purity one. `TextField` in
+`src/forms/fields/` costs nothing on the day it is written;
+`VendorTextField` in `src/vendor/forms/fields/` cost a **44-file refactor** the
+day a second actor panel needed it — moving files, repointing imports, and
+re-verifying a working panel. Getting the name right up front is free;
+retrofitting it is not.
+
+What correctly keeps a domain name: things that encode domain rules or fields.
+`ProductVariantFieldsCard` hardcodes `price`/`sku`; `vendor/forms/*.tsx` encode
+vendor workflows; an auth gate carries "Vendor log in" copy. The rule of thumb
+is that the **container** stays with the domain while the generic parts it is
+built from do not.
+
+This does not license speculative parameterisation — a generic _name_ for
+something with no domain knowledge is free, whereas a config flag or type
+parameter for a variant that doesn't exist is the YAGNI violation described
+below. Nor does it override the preference for honest duplication over magic
+abstraction: two blocks that merely resemble each other still stay separate.
+
 ## KISS (Keep It Simple)
 
 - Reach for the Medusa primitive (module, workflow, link, subscriber, job)

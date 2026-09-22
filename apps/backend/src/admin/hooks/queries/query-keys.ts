@@ -17,4 +17,7 @@ export const queryKeys = {
   vendorUsers: {
     findMany: ["findManyVendorUsers"] as const,
   },
+  affiliates: {
+    findMany: ["findManyAffiliates"] as const,
+  },
 }

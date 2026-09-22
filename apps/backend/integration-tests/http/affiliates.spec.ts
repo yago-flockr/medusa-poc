@@ -174,6 +174,58 @@ medusaIntegrationTestRunner({
         ).rejects.toMatchObject({ response: { status: 404 } })
       })
 
+      describe("password reset", () => {
+        it("rotates the password: the old one stops working, the new one works", async () => {
+          const created = (
+            await postAffiliate({
+              name: "Maria Silva",
+              email: "maria@example.com",
+              commission_rate: 0.1,
+            })
+          ).data
+          const oldPassword = created.password
+
+          const beforeReset = await api.post("/auth/affiliate/emailpass", {
+            email: created.affiliate.email,
+            password: oldPassword,
+          })
+          expect(beforeReset.data.token).toBeTruthy()
+
+          const reset = await api.post(
+            `/admin/affiliates/${created.affiliate.id}/regenerate-password`,
+            {},
+            { headers: adminHeaders },
+          )
+          const newPassword = reset.data.password
+          expect(newPassword).toEqual(expect.any(String))
+          expect(newPassword).not.toBe(oldPassword)
+
+          await expect(
+            api.post("/auth/affiliate/emailpass", {
+              email: created.affiliate.email,
+              password: oldPassword,
+            }),
+          ).rejects.toMatchObject({ response: { status: 401 } })
+
+          const afterReset = await api.post("/auth/affiliate/emailpass", {
+            email: created.affiliate.email,
+            password: newPassword,
+          })
+          expect(afterReset.data.token).toBeTruthy()
+        })
+
+        it("rejects an unauthenticated reset", async () => {
+          const created = { affiliate: await seedAffiliate() }
+
+          await expect(
+            api.post(
+              `/admin/affiliates/${created.affiliate.id}/regenerate-password`,
+              {},
+            ),
+          ).rejects.toMatchObject({ response: { status: 401 } })
+        })
+      })
+
       it("refuses to delete an affiliate that an order is attributed to", async () => {
         const affiliate = await seedAffiliate()
 

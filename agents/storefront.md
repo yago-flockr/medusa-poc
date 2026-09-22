@@ -117,6 +117,48 @@ From `apps/storefront`:
 - `pnpm run build` / `pnpm run start`
 - `pnpm run lint` → `next lint` today
 
+## `/affiliate` — affiliate panel
+
+Mirrors `/vendor` file-for-file: `app/(affiliate)/affiliate/` for routes,
+`src/affiliate/` for lib/stores/hooks/forms, its own zustand token store
+(`affiliate_token`), its own QueryClient, and a `LoginForm` + auth gate.
+
+- **`affiliate/` is a third enforced actor boundary.** The eslint
+  `no-restricted-imports` rules now isolate all three ways round — `affiliate/`
+  cannot import `vendor/` or `store/`, and neither can import `affiliate/`.
+- **`/affiliate` must be exempt from the country-code middleware**, exactly
+  like `/vendor` — both in the early-return and in the `matcher` regex.
+  Missing either one makes every affiliate URL 307 to `/gb/affiliate`.
+- The product picker calls the **public** `/store/products` with the
+  publishable key rather than importing anything from `store/` — an HTTP call
+  crosses no boundary, so no new backend route was needed.
+- **Shared-vs-actor split.** Anything an actor panel needs but that carries no
+  domain knowledge now lives outside `vendor/` and `affiliate/`:
+  `src/forms/fields/*` and `src/forms/form-type.ts` (generic inputs),
+  `src/forms/login-form.tsx`, `src/components/display/section.tsx`,
+  `src/components/panel/panel-shell.tsx`, and `src/lib/panel/*`
+  (`createPanelApiClient`, `createPanelAuthStore`, `createPanelQueryClient` —
+  each actor supplies only its storage key and token accessor). The test is
+  Yago's: the _container_ stays with the domain, the generic parts move out —
+  a vendor form is vendor-only and stays in `vendor/forms/`, but the fields it
+  is built from are not. `ProductVariantFieldsCard` stays under
+  `vendor/forms/fields/` because it hardcodes `price`/`sku`.
+- **What deliberately stays duplicated:** each panel's auth gate and sidebar.
+  They carry user-facing copy ("Vendor log in") and nav items, and turning
+  those into props would violate the no-label-text-as-props rule.
+
+## E2E coverage
+
+`e2e/specs/` covers the storefront, both actor panels and Admin. Admin specs
+reach it through `lib/admin-login.ts` and absolute `adminUrl(path)` URLs,
+because Playwright's `baseURL` is the **storefront** — `page.goto("/app/...")`
+would hit the wrong server.
+
+Because the e2e database is seeded once and shared, any spec that mutates must
+use its own throwaway record and delete it afterwards. Concretely: never
+regenerate a _seeded_ login's password, or the panel specs that sign in with
+the fixed fixture password start failing for an unrelated reason.
+
 ## Gotchas and notes
 
 - **ESLint is flat config (`eslint.config.mjs`), not `.eslintrc.json`.** Migrated

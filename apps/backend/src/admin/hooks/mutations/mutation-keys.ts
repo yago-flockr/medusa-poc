@@ -16,4 +16,10 @@ export const mutationKeys = {
     deleteOne: ["deleteOneVendorUser"] as const,
     regeneratePassword: ["regenerateVendorUserPassword"] as const,
   },
+  affiliates: {
+    createOne: ["createOneAffiliate"] as const,
+    updateOne: ["updateOneAffiliate"] as const,
+    deleteOne: ["deleteOneAffiliate"] as const,
+    regeneratePassword: ["regenerateAffiliatePassword"] as const,
+  },
 }
