@@ -4,6 +4,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type AssertVendorHasNoConsignmentsStepInput = {
   id: string
 }
@@ -15,7 +16,7 @@ export const assertVendorHasNoConsignmentsStep = createStep(
 
     const {
       data: [vendor],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "vendor",
       filters: { id: input.id },
       fields: ["id", "consignments.id"],

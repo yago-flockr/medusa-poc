@@ -1,5 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { graph } from "../../../lib/query"
 import { PRODUCT_DETAIL_FIELDS } from "../mappers/build-vendor-product-detail"
 
 export type GetVendorProductDetailStepInput = {
@@ -15,7 +16,7 @@ export const getVendorProductDetailStep = createStep(
 
     const {
       data: [product],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "product",
       fields: PRODUCT_DETAIL_FIELDS,
       filters: { id: productId },

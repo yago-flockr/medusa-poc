@@ -4,8 +4,10 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import type { LinkDefinition, MedusaContainer } from "@medusajs/framework/types"
+import { graph } from "../../../lib/query"
 import { STOREFRONT_CONTENT_MODULE } from "../../../modules/storefront-content"
 import StorefrontContentModuleService from "../../../modules/storefront-content/service"
+import type { QueryEntity } from "../../../lib/query"
 
 const STOREFRONT_CONTENT_UPDATABLE_FIELDS = [
   "name",
@@ -19,7 +21,7 @@ type StorefrontContentUpdatableField =
 export type UpsertStorefrontContentInput = {
   linkModuleKey: string
   linkIdField: string
-  queryEntity: string
+  queryEntity: QueryEntity
   entityId: string
   name?: string
   description?: string
@@ -64,7 +66,7 @@ export async function upsertStorefrontContent(
 
   const {
     data: [entity],
-  } = await query.graph({
+  } = await graph(query, {
     entity: input.queryEntity,
     filters: { id: input.entityId },
     fields: [

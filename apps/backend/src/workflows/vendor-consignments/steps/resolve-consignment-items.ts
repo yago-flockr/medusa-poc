@@ -2,6 +2,7 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
 
+import { graph } from "../../../lib/query"
 const consignmentItemsSchema = z.object({
   order: z
     .object({
@@ -34,7 +35,7 @@ export const resolveConsignmentItemsStep = createStep(
 
     const {
       data: [rawConsignment],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "consignment",
       fields: ["order.items.*", "order.items.consignment.id"],
       filters: { id: consignmentId },

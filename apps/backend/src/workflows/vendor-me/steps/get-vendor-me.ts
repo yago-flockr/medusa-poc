@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
 
+import { graph } from "../../../lib/query"
 const vendorMeSchema = z.object({
   id: z.string(),
   first_name: z.string().nullable(),
@@ -42,7 +43,7 @@ export const getVendorMeStep = createStep(
 
     const {
       data: [rawVendorUser],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "vendor_user",
       fields: [
         "id",

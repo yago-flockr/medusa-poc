@@ -4,6 +4,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export const resolveSharedSalesChannelStep = createStep(
   "resolve-shared-sales-channel",
   async (_input: void, { container }) => {
@@ -11,7 +12,7 @@ export const resolveSharedSalesChannelStep = createStep(
 
     const {
       data: [store],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "store",
       fields: ["default_sales_channel_id"],
     })

@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import type { LinkDefinition } from "@medusajs/framework/types"
+import { graph } from "../../../lib/query"
 import { BRAND_MODULE } from "../../../modules/brand"
 import BrandModuleService from "../../../modules/brand/service"
 
@@ -23,7 +24,7 @@ export const deleteBrandStep = createStep(
 
     await brandModuleService.retrieveBrand(input.id)
 
-    const { data: brands } = await query.graph({
+    const { data: brands } = await graph(query, {
       entity: "brand",
       filters: { id: input.id },
       fields: ["id", "products.id"],

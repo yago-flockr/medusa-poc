@@ -3,6 +3,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { graph } from "../../../lib/query"
 
 export type AssertProductIsPromotableStepInput = {
   affiliateId: string
@@ -19,7 +20,7 @@ export const assertProductIsPromotableStep = createStep(
 
     const {
       data: [product],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "product",
       fields: ["id", "status"],
       filters: { id: productId },
@@ -41,7 +42,7 @@ export const assertProductIsPromotableStep = createStep(
 
     const {
       data: [affiliate],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "affiliate",
       fields: ["id", "products.id"],
       filters: { id: affiliateId },

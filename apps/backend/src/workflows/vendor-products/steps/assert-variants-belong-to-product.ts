@@ -4,6 +4,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type AssertVariantsBelongToProductStepInput = {
   productId: string
   variantIds: string[]
@@ -23,7 +24,7 @@ export const assertVariantsBelongToProductStep = createStep(
 
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const { data: variants } = await query.graph({
+    const { data: variants } = await graph(query, {
       entity: "variant",
       fields: ["id", "product_id"],
       filters: { id: variantIds },

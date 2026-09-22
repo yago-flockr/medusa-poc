@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type ListVendorProductsStepInput = {
   vendorId: string
   limit: number
@@ -15,7 +16,7 @@ export const listVendorProductsStep = createStep(
   ) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const { data: products, metadata } = await query.graph({
+    const { data: products, metadata } = await graph(query, {
       entity: "product",
       fields: [
         "id",

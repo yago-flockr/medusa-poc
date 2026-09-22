@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import type { LinkDefinition } from "@medusajs/framework/types"
+import { graph } from "../../../lib/query"
 import { VENDOR_MODULE } from "../../../modules/vendor"
 import VendorModuleService from "../../../modules/vendor/service"
 
@@ -28,7 +29,7 @@ export const deleteVendorStep = createStep(
 
     const {
       data: [vendor],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "vendor",
       filters: { id: input.id },
       fields: [

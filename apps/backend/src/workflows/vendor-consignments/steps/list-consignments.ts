@@ -3,6 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
 import { vendorConsignmentStatusSchema } from "@dtc/api-contracts/vendor/orders"
 
+import { graph } from "../../../lib/query"
 const consignmentListItemSchema = z.object({
   id: z.string().nullable(),
   title: z.string().nullable(),
@@ -44,7 +45,7 @@ export const listConsignmentsStep = createStep(
   ) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const { data: consignments, metadata } = await query.graph({
+    const { data: consignments, metadata } = await graph(query, {
       entity: "consignment",
       fields: [
         "id",

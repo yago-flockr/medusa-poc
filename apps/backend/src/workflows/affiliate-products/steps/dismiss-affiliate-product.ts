@@ -5,6 +5,7 @@ import {
   Modules,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { graph } from "../../../lib/query"
 import { AFFILIATE_MODULE } from "../../../modules/affiliate"
 
 export type DismissAffiliateProductStepInput = {
@@ -23,7 +24,7 @@ export const dismissAffiliateProductStep = createStep(
 
     const {
       data: [affiliate],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "affiliate",
       fields: ["id", "products.id"],
       filters: { id: affiliateId },

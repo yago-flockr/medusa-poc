@@ -3,6 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import type { ShopifyProduct } from "../../../integrations/shopify/products"
 import { findExistingShopifyProductIds } from "../../../integrations/shopify/helpers/resolve-existing-products"
 import type { ExistingProductVariant } from "../../../lib/build-medusa-product-input"
+import { graph } from "../../../lib/query"
 import {
   normalize,
   type CanonicalTitleByNormalized,
@@ -47,7 +48,7 @@ export const matchExistingShopifyProductsStep = createStep(
     >()
 
     if (matchedProductIds.length > 0) {
-      const { data: existingProducts } = await query.graph({
+      const { data: existingProducts } = await graph(query, {
         entity: "product",
         fields: [
           "id",

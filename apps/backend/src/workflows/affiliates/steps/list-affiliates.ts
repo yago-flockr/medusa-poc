@@ -2,6 +2,7 @@ import type { MedusaRequest } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
+import { graph } from "../../../lib/query"
 export type ListAffiliatesStepInput = {
   filters: MedusaRequest["filterableFields"]
   queryConfig: MedusaRequest["queryConfig"]
@@ -13,7 +14,7 @@ export const listAffiliatesStep = createStep(
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
     const { data: affiliates, metadata: { count, take, skip } = {} } =
-      await query.graph({
+      await graph(query, {
         entity: "affiliate",
         filters,
         ...queryConfig,

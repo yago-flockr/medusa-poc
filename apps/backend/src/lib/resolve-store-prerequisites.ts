@@ -1,5 +1,6 @@
 import type { RemoteQueryFunction } from "@medusajs/framework/types"
 
+import { graph } from "./query"
 export type StorePrerequisites = {
   salesChannelId: string | null
   storeCurrencies: string[]
@@ -10,7 +11,7 @@ export async function resolveStorePrerequisites(
 ): Promise<StorePrerequisites> {
   const {
     data: [store],
-  } = await query.graph({
+  } = await graph(query, {
     entity: "store",
     fields: ["default_sales_channel_id", "supported_currencies.currency_code"],
   })

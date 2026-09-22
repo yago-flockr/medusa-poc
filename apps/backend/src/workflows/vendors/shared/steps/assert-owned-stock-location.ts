@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
 
+import { graph } from "../../../../lib/query"
 const stockLocationOwnerSchema = z.object({
   id: z.string(),
   vendor: z.object({ id: z.string() }).nullable(),
@@ -25,7 +26,7 @@ export const assertOwnedStockLocationStep = createStep(
 
     const {
       data: [rawStockLocation],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "stock_location",
       fields: ["id", "vendor.id"],
       filters: { id: stockLocationId },

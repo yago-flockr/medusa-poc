@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type ResolveVendorCartItemsStepInput = {
   cartId: string
 }
@@ -30,7 +31,7 @@ export const resolveVendorCartItemsStep = createStep(
 
     const {
       data: [cart],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "cart",
       fields: [
         "id",
@@ -54,7 +55,7 @@ export const resolveVendorCartItemsStep = createStep(
       ),
     ]
 
-    const { data: products } = await query.graph({
+    const { data: products } = await graph(query, {
       entity: "product",
       fields: ["id", "vendor.id"],
       filters: { id: productIds },

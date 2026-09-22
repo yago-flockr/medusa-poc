@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type ResolveShippingProfileVendorsStepInput = {
   profileIds: string[]
 }
@@ -13,7 +14,7 @@ export const resolveShippingProfileVendorsStep = createStep(
   ) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const { data: shippingProfiles } = await query.graph({
+    const { data: shippingProfiles } = await graph(query, {
       entity: "shipping_profile",
       fields: ["id", "vendor.id", "vendor.name"],
       filters: { id: profileIds },

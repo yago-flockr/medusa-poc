@@ -4,6 +4,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
+import { graph } from "../../../lib/query"
 import { VENDOR_MODULE } from "../../../modules/vendor"
 
 const orderLinkSchema = z.object({
@@ -39,7 +40,7 @@ export const resolveOwnedConsignmentStep = createStep(
 
     const {
       data: [rawLink],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "consignment",
       fields: ["order.id"],
       filters: { id: consignmentId },

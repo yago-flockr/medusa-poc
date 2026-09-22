@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
 
+import { graph } from "../../../lib/query"
 const orderShippingMethodsSchema = z.object({
   shipping_methods: z
     .array(z.object({ shipping_option_id: z.string().nullable() }))
@@ -44,14 +45,14 @@ export const resolveVendorShippingOptionStep = createStep(
 
     const {
       data: [rawOrder],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "order",
       fields: ["shipping_methods.shipping_option_id"],
       filters: { id: orderId },
     })
     const order = orderShippingMethodsSchema.parse(rawOrder)
 
-    const { data: rawLocations } = await query.graph({
+    const { data: rawLocations } = await graph(query, {
       entity: "stock_location",
       fields: ["fulfillment_sets.service_zones.shipping_options.id"],
       filters: { vendor: { id: vendorId } },

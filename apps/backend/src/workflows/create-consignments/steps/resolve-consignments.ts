@@ -1,5 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { graph } from "../../../lib/query"
 import consignmentOrderLink from "../../../links/consignment-order"
 import { buildConsignmentList } from "../mappers/build-consignment-list"
 
@@ -14,8 +15,8 @@ export const resolveConsignmentsStep = createStep(
   async ({ orderId }: ResolveConsignmentsStepInput, { container }) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const { data: links } = await query.graph({
-      entity: consignmentOrderLink.entryPoint,
+    const { data: links } = await graph(query, {
+      entity: "consignment_order",
       fields: ["consignment.id", "consignment.status", "consignment.vendor.id"],
       filters: { order_id: orderId },
     })

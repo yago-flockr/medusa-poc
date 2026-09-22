@@ -1,13 +1,14 @@
 import { MedusaError } from "@medusajs/framework/utils"
 import type { RemoteQueryFunction } from "@medusajs/framework/types"
 
+import { graph } from "./query"
 export async function resolveVendorShippingProfileId(
   query: Omit<RemoteQueryFunction, symbol>,
   vendorId: string,
 ): Promise<string> {
   const {
     data: [vendor],
-  } = await query.graph({
+  } = await graph(query, {
     entity: "vendor",
     fields: ["id", "shipping_profile.id"],
     filters: { id: vendorId },

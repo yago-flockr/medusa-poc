@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import type { CartLineItemDTO } from "@medusajs/framework/types"
+import { graph } from "../../../lib/query"
 import { assertProductsFulfillable } from "../mappers/assert-products-fulfillable"
 
 export type AssertItemsFulfillableStepInput = {
@@ -26,7 +27,7 @@ export const assertItemsFulfillableStep = createStep(
       return new StepResponse(undefined)
     }
 
-    const { data: products } = await query.graph({
+    const { data: products } = await graph(query, {
       entity: "product",
       fields: ["id", "title", "shipping_profile.id", "vendor.id"],
       filters: { id: productIds },

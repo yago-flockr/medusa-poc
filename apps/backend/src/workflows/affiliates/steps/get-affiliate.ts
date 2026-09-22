@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
+import { graph } from "../../../lib/query"
 export type GetAffiliateStepInput = {
   id: string
   queryConfig: MedusaRequest["queryConfig"]
@@ -17,7 +18,7 @@ export const getAffiliateStep = createStep(
 
     const {
       data: [affiliate],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "affiliate",
       filters: { id },
       ...queryConfig,

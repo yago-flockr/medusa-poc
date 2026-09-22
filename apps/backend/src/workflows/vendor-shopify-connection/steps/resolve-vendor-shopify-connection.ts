@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
 
+import { graph } from "../../../lib/query"
 const vendorShopifyConnectionSchema = z.object({
   integration_connections: z
     .array(
@@ -32,7 +33,7 @@ export const resolveVendorShopifyConnectionStep = createStep(
 
     const {
       data: [rawVendor],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "vendor",
       fields: [
         "integration_connections.provider",

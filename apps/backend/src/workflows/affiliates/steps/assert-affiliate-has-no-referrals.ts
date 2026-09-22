@@ -4,6 +4,7 @@ import {
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
+import { graph } from "../../../lib/query"
 export type AssertAffiliateHasNoReferralsStepInput = {
   id: string
 }
@@ -15,7 +16,7 @@ export const assertAffiliateHasNoReferralsStep = createStep(
 
     const {
       data: [affiliate],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "affiliate",
       filters: { id: input.id },
       fields: ["id", "referrals.id"],

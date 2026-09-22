@@ -58,7 +58,7 @@ export const updateVendorWorkflow = createWorkflow(
       const storefrontContentInput = transform({ input }, (data) => ({
         linkModuleKey: VENDOR_MODULE,
         linkIdField: "vendor_id",
-        queryEntity: "vendor",
+        queryEntity: "vendor" as const,
         entityId: data.input.id,
         ...data.input.storefront_content!,
       }))

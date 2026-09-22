@@ -1,5 +1,6 @@
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { graph } from "../../../lib/query"
 
 export type ListAffiliateProductsStepInput = {
   affiliateId: string
@@ -12,7 +13,7 @@ export const listAffiliateProductsStep = createStep(
 
     const {
       data: [affiliate],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "affiliate",
       fields: [
         "id",

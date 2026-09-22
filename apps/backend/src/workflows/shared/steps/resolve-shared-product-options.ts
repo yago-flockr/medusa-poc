@@ -5,6 +5,7 @@ import type {
   MedusaContainer,
 } from "@medusajs/framework/types"
 
+import { graph } from "../../../lib/query"
 export type ResolveSharedProductOptionsStepInput = {
   options: { title: string; values: string[] }[]
   shared: boolean
@@ -111,7 +112,7 @@ async function resolveSharedOptionsWithLocking(
   const productModuleService = container.resolve(Modules.PRODUCT)
   const lockingModuleService = container.resolve(Modules.LOCKING)
 
-  const { data: existingOptions } = await query.graph({
+  const { data: existingOptions } = await graph(query, {
     entity: "product_option",
     fields: ["id", "title"],
     filters: { is_exclusive: false },
@@ -156,7 +157,7 @@ async function resolveSharedOptionsWithLocking(
             // Matched case-insensitively in JS and re-read fresh inside the
             // lock, so a pre-existing non-canonical row and a concurrent
             // creator's just-committed row are both still seen.
-            const { data: freshExisting } = await query.graph({
+            const { data: freshExisting } = await graph(query, {
               entity: "product_option",
               fields: ["id", "title", "values.value"],
               filters: { is_exclusive: false },

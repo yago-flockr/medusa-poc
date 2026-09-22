@@ -4,6 +4,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type AssertCategoriesExistStepInput = {
   categoryIds: string[]
 }
@@ -14,7 +15,7 @@ export const assertCategoriesExistStep = createStep(
     if (!categoryIds.length) return
 
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
-    const { data: categories } = await query.graph({
+    const { data: categories } = await graph(query, {
       entity: "product_category",
       fields: ["id"],
       filters: { id: categoryIds },

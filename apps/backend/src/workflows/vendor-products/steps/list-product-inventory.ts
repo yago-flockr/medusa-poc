@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type ListProductInventoryStepInput = {
   productId: string
   vendorId: string
@@ -20,7 +21,7 @@ export const listProductInventoryStep = createStep(
       },
       { data: locations },
     ] = await Promise.all([
-      query.graph({
+      graph(query, {
         entity: "product",
         fields: [
           "id",
@@ -30,7 +31,7 @@ export const listProductInventoryStep = createStep(
         ],
         filters: { id: productId },
       }),
-      query.graph({
+      graph(query, {
         entity: "stock_location",
         fields: ["id", "name"],
         filters: { vendor: { id: vendorId } },
@@ -45,7 +46,7 @@ export const listProductInventoryStep = createStep(
       .filter((id): id is string => Boolean(id))
 
     const { data: levels } = inventoryItemIds.length
-      ? await query.graph({
+      ? await graph(query, {
           entity: "inventory_level",
           fields: [
             "inventory_item_id",

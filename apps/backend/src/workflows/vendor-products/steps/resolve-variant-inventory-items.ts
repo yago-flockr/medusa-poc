@@ -1,6 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type ResolveVariantInventoryItemsStepInput = {
   variantSkus: { id: string; sku: string }[]
 }
@@ -19,7 +20,7 @@ export const resolveVariantInventoryItemsStep = createStep(
 
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-    const { data: variantsWithInventory } = await query.graph({
+    const { data: variantsWithInventory } = await graph(query, {
       entity: "product_variant",
       fields: ["id", "inventory_items.inventory.id"],
       filters: { id: variantSkus.map((variant) => variant.id) },

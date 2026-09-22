@@ -1,5 +1,6 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { graph } from "../../../lib/query"
 import {
   groupItemsByVendor,
   type VendorRoutableItem,
@@ -24,7 +25,7 @@ export const groupVendorItemsStep = createStep(
       ),
     ]
 
-    const { data: products } = await query.graph({
+    const { data: products } = await graph(query, {
       entity: "product",
       fields: ["id", "vendor.id"],
       filters: { id: productIds },

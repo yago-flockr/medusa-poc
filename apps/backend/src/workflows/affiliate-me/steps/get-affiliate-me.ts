@@ -5,6 +5,7 @@ import {
 import { z } from "@medusajs/framework/zod"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
+import { graph } from "../../../lib/query"
 const affiliateMeSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -25,8 +26,8 @@ export const getAffiliateMeStep = createStep(
 
     const {
       data: [rawAffiliate],
-    } = await query.graph({
-      entity: "",
+    } = await graph(query, {
+      entity: "affiliate",
       fields: ["id", "name", "handle", "email", "commission_rate", "is_active"],
       filters: { id: [actorId] },
     })

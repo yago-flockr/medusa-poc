@@ -4,6 +4,7 @@ import { StepResponse } from "@medusajs/framework/workflows-sdk"
 import { updateProductsWorkflow } from "@medusajs/medusa/core-flows"
 import type { BrandAdditionalData } from "../../api/admin/brands/additional-data"
 import type { VendorAdditionalData } from "../../api/vendors/additional-data"
+import { graph } from "../../lib/query"
 import { BRAND_MODULE } from "../../modules/brand"
 import BrandModuleService from "../../modules/brand/service"
 import { VENDOR_MODULE } from "../../modules/vendor"
@@ -73,7 +74,7 @@ updateProductsWorkflow.hooks.productsUpdated(
     for (const product of products) {
       const {
         data: [existing],
-      } = await query.graph({
+      } = await graph(query, {
         entity: "product",
         filters: { id: product.id },
         fields: ["id", "brand.id", "vendor.id"],

@@ -3,6 +3,7 @@ import {
   ContainerRegistrationKeys,
   MedusaError,
 } from "@medusajs/framework/utils"
+import { graph } from "../../../lib/query"
 import { isVariantComplete } from "../mappers/is-variant-complete"
 
 export type AssertPublishableVendorProductStepInput = {
@@ -19,7 +20,7 @@ export const assertPublishableVendorProductStep = createStep(
 
     const {
       data: [product],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "product",
       fields: ["id", "variants.id", "variants.title", "variants.sku"],
       filters: { id: productId },

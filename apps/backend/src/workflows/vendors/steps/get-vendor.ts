@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import type { MedusaRequest } from "@medusajs/framework/http"
 
+import { graph } from "../../../lib/query"
 export type GetVendorStepInput = {
   id: string
   queryConfig: MedusaRequest["queryConfig"]
@@ -17,7 +18,7 @@ export const getVendorStep = createStep(
 
     const {
       data: [vendor],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "vendor",
       filters: { id },
       ...queryConfig,

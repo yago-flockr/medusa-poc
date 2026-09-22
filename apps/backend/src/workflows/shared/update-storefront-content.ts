@@ -3,11 +3,12 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { upsertStorefrontContentStep } from "./steps/upsert-storefront-content"
+import type { QueryEntity } from "../../lib/query"
 
 export type UpdateStorefrontContentWorkflowInput = {
   linkModuleKey: string
   linkIdField: string
-  queryEntity: string
+  queryEntity: QueryEntity
   entityId: string
   name?: string
   description?: string

@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
 
+import { graph } from "../../../lib/query"
 const variantOwnerSchema = z.object({
   id: z.string(),
   product: z
@@ -27,7 +28,7 @@ export const assertOwnedVendorVariantStep = createStep(
 
     const {
       data: [rawVariant],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "variant",
       fields: ["id", "product.vendor.id"],
       filters: { id: variantId },

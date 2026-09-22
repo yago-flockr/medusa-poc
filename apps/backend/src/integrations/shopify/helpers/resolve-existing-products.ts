@@ -1,5 +1,6 @@
 import type { RemoteQueryFunction } from "@medusajs/framework/types"
 
+import { graph } from "../../../lib/query"
 export async function findExistingShopifyProductIds(
   query: Omit<RemoteQueryFunction, symbol>,
   shopifyIds: string[],
@@ -8,7 +9,7 @@ export async function findExistingShopifyProductIds(
     return new Map()
   }
 
-  const { data: existing } = await query.graph({
+  const { data: existing } = await graph(query, {
     entity: "product",
     fields: ["id", "external_id", "metadata"],
     filters: { external_id: shopifyIds },

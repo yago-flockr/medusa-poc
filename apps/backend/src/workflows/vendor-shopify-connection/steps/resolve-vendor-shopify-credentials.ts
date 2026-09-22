@@ -4,6 +4,7 @@ import { z } from "@medusajs/framework/zod"
 import { assertShopifyConnectionCredentials } from "../../../integrations/shopify/helpers/assert-shopify-connection-credentials"
 import type { ShopifyStoreCredentials } from "../../../integrations/shopify/client"
 
+import { graph } from "../../../lib/query"
 const vendorShopifyCredentialsSchema = z.object({
   integration_connections: z
     .array(
@@ -29,7 +30,7 @@ export const resolveVendorShopifyCredentialsStep = createStep(
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const {
       data: [rawVendor],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "vendor",
       fields: [
         "integration_connections.provider",

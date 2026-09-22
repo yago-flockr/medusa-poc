@@ -3,6 +3,7 @@ import {
   ContainerRegistrationKeys,
   MedusaError,
 } from "@medusajs/framework/utils"
+import { graph } from "../../../lib/query"
 import { PRODUCT_DETAIL_FIELDS } from "../mappers/build-vendor-product-detail"
 
 export type GetVendorProductStepInput = {
@@ -17,7 +18,7 @@ export const getVendorProductStep = createStep(
 
     const {
       data: [product],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "product",
       fields: PRODUCT_DETAIL_FIELDS,
       filters: { id: productId, vendor: { id: vendorId } },

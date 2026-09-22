@@ -4,6 +4,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 
+import { graph } from "../../../lib/query"
 export type ResolveOwnedVendorProductStepInput = {
   productId: string
   vendorId: string
@@ -19,7 +20,7 @@ export const resolveOwnedVendorProductStep = createStep(
 
     const {
       data: [product],
-    } = await query.graph({
+    } = await graph(query, {
       entity: "product",
       fields: ["id", "external_id"],
       filters: { id: productId, vendor: { id: vendorId } },
