@@ -1,7 +1,7 @@
 "use client"
 
 import { ErrorAlert } from "@/components/display/error-alert"
-import { TitleDescription } from "@/components/display/title-description"
+import { Pitch } from "@/components/display/pitch"
 import { Card } from "@/components/ui/card"
 import { LoginForm } from "@/forms/login-form"
 
@@ -28,40 +28,33 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
       <div className="container flex min-h-screen items-center justify-center py-12">
         <Card className="w-full max-w-5xl gap-0 overflow-hidden p-0">
           <div className="grid lg:grid-cols-2">
-            <div className="flex flex-col gap-6 border-b bg-muted/40 p-8 lg:border-r lg:border-b-0 lg:p-10">
-              <h1 className="font-heading text-3xl leading-tight sm:text-4xl">
-                Your house, your catalogue, our storefront.
-              </h1>
-              <p className="text-muted-foreground">
-                Sell alongside every other house under one storefront. One
-                basket, one payment, one checkout — and your share of every sale
-                recorded the moment an order is placed.
-              </p>
-              <div className="grid gap-5 sm:grid-cols-2">
-                <TitleDescription
-                  title="Publish it yourself"
-                  description="Add products, prices and stock. They reach customers without waiting on anyone."
-                />
-                <TitleDescription
-                  title="Only your orders"
-                  description="Each order splits per house. You see your part, never anyone else's."
-                />
-                <TitleDescription
-                  title="Earnings you can check"
-                  description="What you sold, what commission was taken and what you earned, per order."
-                />
-                <TitleDescription
-                  title="Bring your own store"
-                  description="Connect Shopify and your products sync across instead of being retyped."
-                />
-              </div>
-            </div>
+            <Pitch
+              className="border-b bg-muted/40 p-8 lg:border-r lg:border-b-0 lg:p-10"
+              title="Your house, your catalogue, our storefront."
+              description="Sell alongside every other house under one storefront. One basket, one payment, one checkout — and your share of every sale recorded the moment an order is placed."
+              cards={[
+                {
+                  title: "Publish it yourself",
+                  description:
+                    "Add products, prices and stock. They reach customers without waiting on anyone.",
+                },
+                {
+                  title: "Earnings you can check",
+                  description:
+                    "What you sold, what commission was taken and what you earned, per order.",
+                },
+              ]}
+            />
 
             <div className="flex flex-col justify-center gap-6 p-8 lg:p-10">
-              <TitleDescription
-                title="Vendor log in"
-                description="Sign in to your account."
-              />
+              <div className="flex flex-col gap-1.5">
+                <h2 className="font-medium text-xl leading-tight sm:text-2xl">
+                  Vendor log in
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Sign in to your account.
+                </p>
+              </div>
               <LoginForm
                 isLoading={postAuthVendorEmailpass.isPending}
                 onSubmit={(data) =>
