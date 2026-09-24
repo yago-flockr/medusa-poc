@@ -66,4 +66,35 @@ describe("buildVendor", () => {
       },
     ])
   })
+
+  it("adds up what every consignment earned the vendor", () => {
+    const result = buildVendor({
+      created_at: "2026-01-01T00:00:00.000Z",
+      updated_at: "2026-01-01T00:00:00.000Z",
+      consignments: [
+        { subtotal: 100, commission_total: 10, earning_total: 90 },
+        { subtotal: 40, commission_total: 10, earning_total: 30 },
+        null,
+      ],
+    })
+
+    expect(result.earnings_totals).toEqual({
+      subtotal: 140,
+      commission_total: 20,
+      earning_total: 120,
+    })
+  })
+
+  it("reports nothing earned for a vendor with no consignments", () => {
+    const result = buildVendor({
+      created_at: "2026-01-01T00:00:00.000Z",
+      updated_at: "2026-01-01T00:00:00.000Z",
+    })
+
+    expect(result.earnings_totals).toEqual({
+      subtotal: 0,
+      commission_total: 0,
+      earning_total: 0,
+    })
+  })
 })

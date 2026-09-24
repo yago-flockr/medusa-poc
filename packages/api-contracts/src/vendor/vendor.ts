@@ -3,8 +3,7 @@ import { vendorIntegrationConnectionSchema } from "@dtc/api-contracts/vendor/int
 
 export const vendorUserSchema = z.object({
   id: z.string(),
-  first_name: z.string().nullable(),
-  last_name: z.string().nullable(),
+  name: z.string().nullable(),
   email: z.string(),
 })
 

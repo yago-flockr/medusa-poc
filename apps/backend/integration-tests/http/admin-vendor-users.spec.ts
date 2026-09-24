@@ -18,7 +18,7 @@ medusaIntegrationTestRunner({
 
         const response = await api.post(
           "/admin/vendor-users",
-          { vendor_id: vendorId, email, first_name: "Staff" },
+          { vendor_id: vendorId, email, name: "Staff" },
           { headers: adminHeaders },
         )
 
@@ -91,12 +91,12 @@ medusaIntegrationTestRunner({
 
         const updated = await api.post(
           `/admin/vendor-users/${response.data.vendor_user.id}`,
-          { first_name: "Updated" },
+          { name: "Updated" },
           { headers: adminHeaders },
         )
 
         expect(updated.status).toBe(200)
-        expect(updated.data.vendor_user.first_name).toBe("Updated")
+        expect(updated.data.vendor_user.name).toBe("Updated")
       })
 
       it("regenerates a password and retires the previous one", async () => {

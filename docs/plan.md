@@ -90,7 +90,7 @@ surface faster.
 ### The marketplace spine — prove this first
 
 **A brand sells through us, and other brands sell through it too.**
-Vendors register, are approved, list their own products, and sell alongside
+Vendors are invited, list their own products, and sell alongside
 everyone else under one storefront. Each keeps a share of the sale; we keep a
 commission. → `docs/features/multi-vendor-marketplace.md`
 
@@ -114,10 +114,11 @@ reads its own statements, and can never reach another vendor's orders, customers
 performance. → `docs/features/multi-vendor-marketplace.md`,
 `docs/features/identity-and-access.md`
 
-**We control what gets published.**
-Vendors create products; we approve them before customers see them. Changes that
-affect what a customer was promised go back for review; routine stock updates do
-not. A vendor may be limited in how many products it can list at once.
+**Vendors are trusted to publish.**
+A vendor is invited, never self-registered, and that invitation is the trust
+boundary — so a vendor publishes its own products straight to the storefront
+with no staff approval, no review queue and no rejection flow. Staff control who
+becomes a vendor and can disable one entirely; they do not gate its catalogue.
 → `docs/features/multi-vendor-marketplace.md`
 
 **Stock that is honest.**
@@ -391,7 +392,7 @@ in short form, with what's genuinely still open flagged as such:
   (`panelCors`, `src/api/lib/panel-cors.ts`, from `STORE_CORS`) since the
   browser calls them cross-origin; and the vendor's JWT sits in `localStorage`, readable by any
   JS on the page (weaker than an `httpOnly` cookie against XSS) — acceptable
-  while the vendor portal has no invite flow or approval flow yet, worth
+  while the vendor portal has no invite flow yet, worth
   revisiting (shorter-lived tokens, a refresh flow) once it's closer to real
   production use. A third cost surfaced in practice, not anticipated up
   front: a vendor creating or publishing a product happens entirely outside
@@ -439,10 +440,10 @@ in short form, with what's genuinely still open flagged as such:
   a single shared API key — Shopify's terms forbid the simpler
   one-token-per-store "custom app" method across more than one merchant,
   so this needs a proper (if privately-distributed) OAuth app, not a
-  shortcut. Staff approval before a synced-in product is customer-visible
-  still holds and needs no new mechanism — the existing `ProductStatus`
-  `proposed`/`published` gate already built for the vendor panel applies
-  identically to a synced-in product; only the source of the data changes,
+  shortcut. A synced-in product needs no review before it is customer-visible:
+  vendors are trusted to publish (see "Vendors are trusted to publish" above),
+  so a synced-in product reaches the storefront on the same terms as one the
+  vendor created itself; only the source of the data changes,
   not the review step. The vendor-facing product/order CRUD API and its
   storefront UI, built before this answer came back, are deleted — see the
   superseded entry above. Vendor/VendorUser as a data model, and the
@@ -482,14 +483,14 @@ in short form, with what's genuinely still open flagged as such:
   custom-distribution app can only be created by someone with access to the
   _installing_ store's own org, so the connection step was always going to
   have to be vendor-driven, not staff-driven, regardless of this decision.
-  Staff still originates the relationship (invite, approval) — only the
+  Staff still originates the relationship (the invite) — only the
   "click connect, pick what to bring in" action moves to the vendor. One
   thing this does **not** reopen: for a Shopify-connected vendor, that
   product's own data (title, price, images, variants) still comes from
   Shopify only, never edited by hand on either side of the connection — see
   the SSOT rule in `docs/features/vendor-shopify-sync.md`. Vendor/VendorUser
-  as a model, staff approval via `ProductStatus`, and the order-splitting
-  work are all unaffected, exactly as when the sync decision first landed.
+  as a model and the order-splitting work are unaffected, exactly as when the
+  sync decision first landed.
   See the manual-creation decision below for the "typing in products by
   hand" question this entry originally called retired — that call is
   superseded there.
@@ -561,9 +562,8 @@ in short form, with what's genuinely still open flagged as such:
   rule for a Shopify-connected vendor's products (still sync-only, never
   hand-edited on either side); manual creation applies to a vendor's own
   products, entered by the vendor itself, the same way the backend already
-  modeled it. A manually-created product goes through the same
-  `ProductStatus` proposed/published staff-approval gate as any synced-in
-  one — no new review mechanism needed. The backend side of this was
+  modeled it. A manually-created product is published by the vendor itself,
+  like any synced-in one — there is no staff review gate. The backend side of this was
   already fully built and unexposed (`POST /vendors/products`,
   `createVendorProductWorkflow`, vendor-scoped via the authenticated
   vendor_user) — this decision is to surface it in the panel UI and finish

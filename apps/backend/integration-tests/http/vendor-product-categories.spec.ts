@@ -32,7 +32,7 @@ medusaIntegrationTestRunner({
             vendor_id: vendor.id,
             email: "categories-test@test.com",
             password: "test1234",
-            first_name: "Categories",
+            name: "Categories",
           },
         })
 

@@ -8,6 +8,7 @@ export const Vendor = model.define("vendor", {
   name: model.text().searchable(),
   handle: model.text().unique(),
   is_active: model.boolean().default(true),
+  commission_rate: model.bigNumber().default(0),
   users: model.hasMany(() => VendorUser, {
     mappedBy: "vendor",
   }),

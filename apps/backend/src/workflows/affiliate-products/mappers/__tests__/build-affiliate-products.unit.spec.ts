@@ -10,6 +10,7 @@ describe("buildAffiliateProducts", () => {
           title: "Classic Tee",
           handle: "classic-tee",
           thumbnail: "https://example.com/tee.jpg",
+          vendor: { name: "Asd Apparel" },
         },
       ]),
     ).toEqual([
@@ -18,8 +19,16 @@ describe("buildAffiliateProducts", () => {
         title: "Classic Tee",
         handle: "classic-tee",
         thumbnail: "https://example.com/tee.jpg",
+        vendor_name: "Asd Apparel",
       },
     ])
+  })
+
+  it("reports a product with no vendor link as null rather than undefined", () => {
+    const [product] = buildAffiliateProducts([
+      { id: "prod_1", title: "Classic Tee", handle: "classic-tee" },
+    ])
+    expect(product.vendor_name).toBeNull()
   })
 
   it("reports a missing thumbnail as null rather than undefined", () => {

@@ -4,8 +4,35 @@
 > Shape: `docs/features/_template.md`. The order model this sits on:
 > `docs/features/multi-vendor-marketplace.md`.
 
-**Status:** idea
+**Status:** tracking built; paying vendors deliberately not built
 **Scope:** optional per clone — ships with marketplace support
+
+## What exists today
+
+Recording only — this project has no payment processor and no carrier, so
+nothing that _moves_ money or goods is modelled.
+
+- `Vendor.commission_rate` — a 0–1 fraction, staff-set via Admin
+  (`POST /admin/vendors`, `POST /admin/vendors/:id`), defaults to 0.
+- `Consignment` carries the split as a stored fact, written once when the order
+  is placed: `currency_code`, `subtotal`, `commission_rate`,
+  `commission_total`, `earning_total`. The rate is copied onto the
+  consignment, so an old order still explains itself after a vendor's rate
+  changes.
+- `buildConsignmentEarnings` computes it; `earning_total` is always
+  `subtotal - commission_total`, never rounded independently, so the parts
+  always reconcile.
+- A vendor sees its own figures per order and in total at `GET /vendors/orders`
+  (`earnings`, `earnings_totals`); staff see every vendor's totals on the
+  Admin vendors table (`earnings_totals` on the admin vendor payload).
+- Proven end to end by `store-cart-vendor-checkout.spec.ts`, which places one
+  real order across two vendors on different rates and asserts each recorded
+  split.
+
+**Not built, and not wanted yet:** payouts, payment runs, ledger entries,
+refunds, returns, chargebacks, manual adjustments, payable-eligibility rules,
+and any division of shipping, discounts or payment fees. The two questions
+below marked blocking are blocking _those_, not the tracking above.
 
 ## What we want
 

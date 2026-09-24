@@ -298,7 +298,7 @@ medusaIntegrationTestRunner({
           const { headers } = await seedAffiliateSession()
 
           const response = await api.get("/affiliates/sales", { headers })
-          expect(response.data.product_sales).toEqual([])
+          expect(response.data.totals.orders).toBe(0)
         })
 
         it("does not count a promoted product that has never sold", async () => {
@@ -310,7 +310,19 @@ medusaIntegrationTestRunner({
           )
 
           const response = await api.get("/affiliates/sales", { headers })
-          expect(response.data.product_sales).toEqual([])
+          expect(response.data.totals.orders).toBe(0)
+        })
+
+        it("reports nothing earned before anything sells", async () => {
+          const { headers } = await seedAffiliateSession()
+
+          const response = await api.get("/affiliates/sales", { headers })
+          expect(response.data.totals).toEqual({
+            orders: 0,
+            units_sold: 0,
+            revenue: 0,
+            commission_total: 0,
+          })
         })
       })
     })

@@ -43,8 +43,7 @@ medusaIntegrationTestRunner({
             currency_code: "gbp",
             items: [{ title: "Test Item", quantity: 1, unit_price: 20 }],
             shipping_address: {
-              first_name: "Jane",
-              last_name: "Doe",
+              name: "Jane Doe",
               address_1: "1 Test St",
               city: "London",
               country_code: "gb",
@@ -62,7 +61,15 @@ medusaIntegrationTestRunner({
 
         const vendorModuleService = container.resolve(VENDOR_MODULE)
         const [consignment] = await vendorModuleService.createConsignments([
-          { vendor_id: vendorId, status },
+          {
+            vendor_id: vendorId,
+            status,
+            currency_code: "gbp",
+            subtotal: 100,
+            commission_rate: 0.1,
+            commission_total: 10,
+            earning_total: 90,
+          },
         ])
 
         const linkModule = container.resolve("remoteLink")
@@ -109,7 +116,7 @@ medusaIntegrationTestRunner({
             vendor_id: vendor.id,
             email: "orders-test@test.com",
             password: "test1234",
-            first_name: "Orders",
+            name: "Orders",
           },
         })
         vendorUserId = vendorUser.vendor_user.id
@@ -152,7 +159,7 @@ medusaIntegrationTestRunner({
             vendor_id: otherVendor.id,
             email: "orders-other@test.com",
             password: "test1234",
-            first_name: "Other",
+            name: "Other",
           },
         })
 
@@ -203,6 +210,38 @@ medusaIntegrationTestRunner({
             total: 20,
           }),
         )
+      })
+
+      it("shows the vendor what it earned on each order", async () => {
+        const response = await api.get("/vendors/orders", {
+          headers: { Authorization: `Bearer ${vendorToken}` },
+        })
+
+        expect(response.data.orders).toContainEqual(
+          expect.objectContaining({
+            id: consignmentId,
+            earnings: {
+              subtotal: 100,
+              commission_rate: 0.1,
+              commission_total: 10,
+              earning_total: 90,
+            },
+          }),
+        )
+      })
+
+      it("adds the vendor's earnings up across its orders", async () => {
+        const response = await api.get("/vendors/orders", {
+          headers: { Authorization: `Bearer ${vendorToken}` },
+        })
+
+        const expected = response.data.orders.reduce(
+          (sum: number, order: { earnings: { earning_total: number } }) =>
+            sum + order.earnings.earning_total,
+          0,
+        )
+
+        expect(response.data.earnings_totals.earning_total).toBe(expected)
       })
 
       it("does not list another vendor's order", async () => {

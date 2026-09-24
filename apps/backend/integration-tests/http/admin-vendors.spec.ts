@@ -48,6 +48,35 @@ medusaIntegrationTestRunner({
         })
       })
 
+      it("defaults a new vendor to no commission", async () => {
+        const response = await postVendor({ name: "Rateless Vendor" })
+
+        expect(response.data.vendor.commission_rate).toBe(0)
+      })
+
+      it("stores the commission rate staff set for a vendor", async () => {
+        const created = await postVendor({
+          name: "Rated Vendor",
+          commission_rate: 0.15,
+        })
+
+        expect(created.data.vendor.commission_rate).toBe(0.15)
+
+        const updated = await api.post(
+          `/admin/vendors/${created.data.vendor.id}`,
+          { commission_rate: 0.3 },
+          { headers: adminHeaders },
+        )
+
+        expect(updated.data.vendor.commission_rate).toBe(0.3)
+      })
+
+      it("refuses a commission rate above a whole share of the sale", async () => {
+        await expect(
+          postVendor({ name: "Greedy Vendor", commission_rate: 1.5 }),
+        ).rejects.toMatchObject({ response: { status: 400 } })
+      })
+
       it("lists created vendors", async () => {
         await postVendor({ name: "Listed Vendor" })
 

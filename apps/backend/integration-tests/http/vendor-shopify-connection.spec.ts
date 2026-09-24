@@ -37,7 +37,7 @@ medusaIntegrationTestRunner({
             vendor_id: vendor.id,
             email: "shopify-connection@test.com",
             password: "test1234",
-            first_name: "Shopify",
+            name: "Shopify",
           },
         })
 

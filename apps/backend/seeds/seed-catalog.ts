@@ -107,24 +107,50 @@ export default async function seed({ container }: ExecArgs) {
   }
 
   logger.info("Seeding region data (UK)...")
-  await createRegionsWorkflow(container).run({
-    input: {
-      regions: DEFAULT_MARKETS.map((market) => ({
-        name: market.regionName,
-        currency_code: market.currencyCode,
-        countries: market.countries,
-        payment_providers: ["pp_system_default"],
-      })),
-    },
+  const { data: existingRegions } = await query.graph({
+    entity: "region",
+    fields: ["name"],
   })
+  const seededRegionNames = new Set(
+    existingRegions.map((region) => region.name),
+  )
+  const missingMarkets = DEFAULT_MARKETS.filter(
+    (market) => !seededRegionNames.has(market.regionName),
+  )
+
+  if (missingMarkets.length) {
+    await createRegionsWorkflow(container).run({
+      input: {
+        regions: missingMarkets.map((market) => ({
+          name: market.regionName,
+          currency_code: market.currencyCode,
+          countries: market.countries,
+          payment_providers: ["pp_system_default"],
+        })),
+      },
+    })
+  }
   logger.info("Finished seeding regions.")
 
   logger.info("Seeding tax regions...")
-  await createTaxRegionsWorkflow(container).run({
-    input: countries.map((country_code) => ({
-      country_code,
-      provider_id: "tp_system",
-    })),
+  const { data: existingTaxRegions } = await query.graph({
+    entity: "tax_region",
+    fields: ["country_code"],
   })
+  const seededTaxCountries = new Set(
+    existingTaxRegions.map((taxRegion) => taxRegion.country_code),
+  )
+  const missingTaxCountries = countries.filter(
+    (country_code) => !seededTaxCountries.has(country_code),
+  )
+
+  if (missingTaxCountries.length) {
+    await createTaxRegionsWorkflow(container).run({
+      input: missingTaxCountries.map((country_code) => ({
+        country_code,
+        provider_id: "tp_system",
+      })),
+    })
+  }
   logger.info("Finished seeding tax regions.")
 }

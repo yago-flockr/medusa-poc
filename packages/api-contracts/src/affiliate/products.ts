@@ -5,6 +5,7 @@ export const affiliateProductSchema = z.object({
   title: z.string(),
   handle: z.string(),
   thumbnail: z.string().nullable(),
+  vendor_name: z.string().nullable(),
 })
 
 export type AffiliateProduct = z.infer<typeof affiliateProductSchema>

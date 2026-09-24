@@ -56,7 +56,7 @@ medusaIntegrationTestRunner({
             vendor_id: vendor.id,
             email: "boundaries-vendor@test.com",
             password: "test1234",
-            first_name: "Boundary",
+            name: "Boundary",
           },
         })
         const vendorLogin = await api.post("/auth/vendor/emailpass", {

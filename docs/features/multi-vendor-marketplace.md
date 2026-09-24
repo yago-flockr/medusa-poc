@@ -25,10 +25,10 @@ money and the customer promise live, so if it is wrong, nothing else matters.
 
 ## How it must work
 
-**Onboarding.** A vendor applies or is invited. We review and approve — vendors are
-selected, never self-serve. Once approved, the vendor completes its own details,
-including the public-facing name and description customers will see next to its
-products.
+**Onboarding.** A vendor is invited — vendors are selected, never self-serve. The
+invitation is where we decide who sells with us; once in, the vendor completes its
+own details, including the public-facing name and description customers will see
+next to its products.
 
 **Vendor users.** People are invited into a vendor's account by us or by the vendor,
 never by signing themselves up. Because they can see customer names and delivery
@@ -39,10 +39,11 @@ store it already runs elsewhere rather than re-typing everything. The system ref
 incomplete products: whatever we need for shipping, duties, accessibility and
 returns is required before a product can even be submitted.
 
-**Approval.** The vendor submits; we approve or send it back with a reason. Only
-approved products reach customers. Afterwards, a change to something we promised the
-customer — price, materials, dimensions, origin, customs information — goes back for
-review. Changing stock does not.
+**Publishing.** The vendor publishes its own products; they reach customers with no
+staff review, no approval queue and no rejection. We chose the vendor at invitation
+and that is the trust boundary — a vendor we would not let publish is a vendor we
+would not invite, or one we disable outright. Later changes, including price and
+stock, go live the same way.
 
 **Limits.** A vendor may be capped on how many products it can have live at once.
 The cap is enforced, and both we and the vendor can see how close it is.
@@ -92,7 +93,6 @@ when a vendor handles the physical return.
 - **A vendor sees only its own data.** Isolation is a hard requirement, not a
   filter someone remembers to apply. A vendor must never reach another vendor's
   orders, customers or performance.
-- **Nothing reaches customers unapproved.**
 - **The status a customer sees is worked out from the parts**, never stored beside
   them, so it can never contradict them.
 - **One consignment's state never changes another's.**
@@ -130,13 +130,13 @@ clone needs more; do not collapse it.
 several deliveries. Enough about each vendor to trust it, and a clear explanation of
 why one order arrives as several parcels.
 
-**Vendor** — its own dashboard: what needs action today, its catalogue and approval
-status, its stock, its consignments, its labels, its returns, its statements. Its own
-performance. Nothing belonging to anyone else.
+**Vendor** — its own dashboard: what needs action today, its catalogue and what it
+has published, its stock, its consignments, its labels, its returns, its statements.
+Its own performance. Nothing belonging to anyone else.
 
 **Our staff** — everything. All orders across all vendors, every consignment,
-approvals waiting, exceptions to fix, vendor records, and the ability to intervene
-on a customer's behalf without asking an engineer.
+exceptions to fix, vendor records, and the ability to intervene on a customer's
+behalf without asking an engineer.
 
 ## When it goes wrong
 

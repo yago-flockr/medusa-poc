@@ -31,7 +31,7 @@ medusaIntegrationTestRunner({
             vendor_id: vendor.id,
             email: "regions-test@test.com",
             password: "test1234",
-            first_name: "Regions",
+            name: "Regions",
           },
         })
 

@@ -236,6 +236,9 @@ medusaIntegrationTestRunner({
           affiliate_handle: affiliate.handle,
           commission_rate: affiliate.commission_rate,
           affiliate_id: affiliate.id,
+          currency_code: "gbp",
+          subtotal: 100,
+          commission_total: 10,
         })
 
         await expect(

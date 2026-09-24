@@ -5,8 +5,7 @@ describe("buildVendorMe", () => {
   it("filters null connection entries and derives connected from connected_at", () => {
     const result = buildVendorMe({
       id: "vu_1",
-      first_name: "Jane",
-      last_name: "Doe",
+      name: "Jane Doe",
       email: "jane@example.com",
       vendor: {
         id: "vendor_1",
@@ -37,8 +36,7 @@ describe("buildVendorMe", () => {
   it("drops a connection with an unrecognized provider", () => {
     const result = buildVendorMe({
       id: "vu_1",
-      first_name: "Jane",
-      last_name: "Doe",
+      name: "Jane Doe",
       email: "jane@example.com",
       vendor: {
         id: "vendor_1",
@@ -61,8 +59,7 @@ describe("buildVendorMe", () => {
   it("defaults a null integration_connections list to an empty array", () => {
     const result = buildVendorMe({
       id: "vu_1",
-      first_name: null,
-      last_name: null,
+      name: null,
       email: "jane@example.com",
       vendor: {
         id: "vendor_1",
@@ -78,8 +75,7 @@ describe("buildVendorMe", () => {
   it("treats a Date connected_at as connected, since query.graph returns Dates", () => {
     const result = buildVendorMe({
       id: "vu_1",
-      first_name: null,
-      last_name: null,
+      name: null,
       email: "jane@example.com",
       vendor: {
         id: "vendor_1",

@@ -86,12 +86,21 @@ test("staff can regenerate an affiliate's password", async ({ page }) => {
   await expect(row).toHaveCount(0)
 })
 
-test("staff can open the vendors and vendor users pages", async ({ page }) => {
+test("staff reach a vendor's own users from the vendors page", async ({
+  page,
+}) => {
   await loginAsAdmin(page)
 
   await page.goto(adminUrl("/vendors"))
-  await expect(page.locator("tbody tr").first()).toBeVisible()
+  const row = page.locator("tbody tr").first()
+  await expect(row).toBeVisible()
+  const vendorName = (await row.locator("td").nth(1).innerText()).trim()
 
-  await page.goto(adminUrl("/vendor-users"))
+  await row.getByRole("button").last().click()
+  await page.getByRole("menuitem", { name: "Manage users" }).click()
+
+  await expect(
+    page.getByRole("heading", { name: `${vendorName} users` }),
+  ).toBeVisible()
   await expect(page.locator("tbody tr").first()).toBeVisible()
 })

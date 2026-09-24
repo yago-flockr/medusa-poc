@@ -30,9 +30,10 @@ type ProductFixture = {
 type VendorFixture = {
   name: string
   handle: string
+  commissionRate: number
   email: string
   password: string
-  firstName: string
+  userName: string
   description: string
   location: {
     name: string
@@ -65,9 +66,10 @@ const VENDOR_FIXTURES: VendorFixture[] = [
   {
     name: "Asd Apparel",
     handle: "asd-apparel",
+    commissionRate: 0.1,
     email: "asd@asd.com",
     password: "asd",
-    firstName: "Asd",
+    userName: "Asd Owner",
     description:
       "A small studio making considered basics, reviewed and approved before anything goes live.",
     location: {
@@ -168,9 +170,10 @@ const VENDOR_FIXTURES: VendorFixture[] = [
   {
     name: "Zxc Threads",
     handle: "zxc-threads",
+    commissionRate: 0.15,
     email: "zxc@zxc.com",
     password: "zxc",
-    firstName: "Zxc",
+    userName: "Zxc Owner",
     description:
       "Independent house, hand-forged pieces, small runs never reordered.",
     location: {
@@ -321,7 +324,11 @@ export default async function seedVendors({ container }: ExecArgs) {
       logger.info(`Vendor "${vendorFixture.name}" already exists, skipping.`)
     } else {
       const { result: vendor } = await createVendorWorkflow(container).run({
-        input: { name: vendorFixture.name, handle: vendorFixture.handle },
+        input: {
+          name: vendorFixture.name,
+          handle: vendorFixture.handle,
+          commission_rate: vendorFixture.commissionRate,
+        },
       })
       vendorId = vendor.id
     }
@@ -357,7 +364,7 @@ export default async function seedVendors({ container }: ExecArgs) {
           vendor_id: vendorId,
           email: vendorFixture.email,
           password: vendorFixture.password,
-          first_name: vendorFixture.firstName,
+          name: vendorFixture.userName,
         },
       })
       vendorUserId = vendorUser.vendor_user.id

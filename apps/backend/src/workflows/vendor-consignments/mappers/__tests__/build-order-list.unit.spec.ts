@@ -6,6 +6,10 @@ function row(overrides: Partial<ConsignmentListRow> = {}): ConsignmentListRow {
   return {
     id: "cons_1",
     status: "placed",
+    subtotal: 40,
+    commission_rate: 0.1,
+    commission_total: 4,
+    earning_total: 36,
     order: {
       id: "order_1",
       display_id: 1,
@@ -35,6 +39,12 @@ describe("buildOrderList", () => {
         consignment_status: "placed",
         total: 40,
         currency_code: "gbp",
+        earnings: {
+          subtotal: 40,
+          commission_rate: 0.1,
+          commission_total: 4,
+          earning_total: 36,
+        },
         items: [{ id: "item_1", title: "Tee", quantity: 2 }],
       },
     ])

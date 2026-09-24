@@ -1,19 +1,16 @@
 import { z } from "zod"
 
-export const affiliateProductSalesSchema = z.object({
-  product_id: z.string(),
-  product_title: z.string().nullable(),
-  product_handle: z.string().nullable(),
-  units_sold: z.number(),
-  units_returned: z.number(),
-  revenue: z.number(),
+export const affiliateSalesTotalsSchema = z.object({
   orders: z.number(),
+  units_sold: z.number(),
+  revenue: z.number(),
+  commission_total: z.number(),
 })
 
-export type AffiliateProductSales = z.infer<typeof affiliateProductSalesSchema>
+export type AffiliateSalesTotals = z.infer<typeof affiliateSalesTotalsSchema>
 
 export const getAffiliatesSalesResponseSchema = z.object({
-  product_sales: z.array(affiliateProductSalesSchema),
+  totals: affiliateSalesTotalsSchema,
 })
 
 export type GetAffiliatesSalesResponse = z.infer<

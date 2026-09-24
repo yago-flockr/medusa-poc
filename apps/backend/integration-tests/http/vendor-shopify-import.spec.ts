@@ -84,7 +84,7 @@ medusaIntegrationTestRunner({
             vendor_id: vendor.id,
             email: "import-vendor@test.com",
             password: "test1234",
-            first_name: "Import",
+            name: "Import",
           },
         })
 

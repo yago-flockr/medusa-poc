@@ -1,6 +1,7 @@
 import { z } from "zod"
 import type { FindParams } from "@medusajs/types"
 import { paginationMetaSchema } from "@dtc/api-contracts/common/pagination"
+import { commissionRateSchema } from "@dtc/api-contracts/common/commission-rate"
 import { normalizeShopifyStoreDomain } from "@dtc/api-contracts/common/normalize-shopify-domain"
 import {
   storefrontContentSchema,
@@ -20,8 +21,7 @@ export {
 
 export const vendorUserSchema = z.object({
   id: z.string(),
-  first_name: z.string().nullable(),
-  last_name: z.string().nullable(),
+  name: z.string().nullable(),
   email: z.string(),
 })
 
@@ -32,6 +32,12 @@ export const vendorSchema = z.object({
   name: z.string(),
   handle: z.string(),
   is_active: z.boolean(),
+  commission_rate: z.number(),
+  earnings_totals: z.object({
+    subtotal: z.number(),
+    commission_total: z.number(),
+    earning_total: z.number(),
+  }),
   created_at: z.string(),
   updated_at: z.string(),
   deleted_at: z.string().nullable(),
@@ -76,6 +82,7 @@ export type VendorDeleteResponse = z.infer<typeof vendorDeleteResponseSchema>
 export const createVendorSchema = z
   .object({
     name: z.string().trim().min(1, "Name is required"),
+    commission_rate: commissionRateSchema.optional(),
     handle: z
       .string()
       .transform((value) => {
@@ -134,6 +141,7 @@ export type UpdateVendorIntegrationConnection = z.infer<
 export const updateVendorSchema = z
   .object({
     name: z.string().trim().min(1, "Name is required").optional(),
+    commission_rate: commissionRateSchema.optional(),
     handle: z
       .string()
       .transform((value) => {
@@ -151,11 +159,12 @@ export const updateVendorSchema = z
       data.name !== undefined ||
       data.handle !== undefined ||
       data.is_active !== undefined ||
+      data.commission_rate !== undefined ||
       data.integration_connection !== undefined ||
       data.storefront_content !== undefined,
     {
       message:
-        "At least one of name, handle, is_active, integration_connection, or storefront_content is required",
+        "At least one of name, handle, is_active, commission_rate, integration_connection, or storefront_content is required",
     },
   )
 

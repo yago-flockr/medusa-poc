@@ -3,6 +3,7 @@ import {
   paginationMetaSchema,
   paginationQuerySchema,
 } from "@dtc/api-contracts/common/pagination"
+import { commissionRateSchema } from "@dtc/api-contracts/common/commission-rate"
 
 // "placed" is the implicit starting state (no metadata set yet). Only
 // "accepted" and "dispatched" are reachable through the vendor panel today —
@@ -18,12 +19,22 @@ export type VendorConsignmentStatus = z.infer<
   typeof vendorConsignmentStatusSchema
 >
 
+export const vendorEarningsSchema = z.object({
+  subtotal: z.number(),
+  commission_rate: commissionRateSchema,
+  commission_total: z.number(),
+  earning_total: z.number(),
+})
+
+export type VendorEarnings = z.infer<typeof vendorEarningsSchema>
+
 export const vendorOrderSchema = z.object({
   id: z.string(),
   display_id: z.number(),
   consignment_status: vendorConsignmentStatusSchema,
   total: z.number(),
   currency_code: z.string(),
+  earnings: vendorEarningsSchema,
   items: z.array(
     z.object({ id: z.string(), title: z.string(), quantity: z.number() }),
   ),
@@ -33,6 +44,7 @@ export type VendorOrder = z.infer<typeof vendorOrderSchema>
 
 export const getVendorsOrdersResponseSchema = paginationMetaSchema.extend({
   orders: z.array(vendorOrderSchema),
+  earnings_totals: vendorEarningsSchema.omit({ commission_rate: true }),
 })
 
 export type GetVendorsOrdersResponse = z.infer<

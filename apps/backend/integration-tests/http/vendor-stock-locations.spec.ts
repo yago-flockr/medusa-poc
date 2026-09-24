@@ -30,7 +30,7 @@ medusaIntegrationTestRunner({
             vendor_id: owner.id,
             email: "owner@test.com",
             password: "test1234",
-            first_name: "Owner",
+            name: "Owner",
           },
         })
 
@@ -42,7 +42,7 @@ medusaIntegrationTestRunner({
             vendor_id: other.id,
             email: "other@test.com",
             password: "test1234",
-            first_name: "Other",
+            name: "Other",
           },
         })
 

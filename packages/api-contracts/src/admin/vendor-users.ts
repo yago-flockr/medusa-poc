@@ -6,8 +6,7 @@ export const vendorUserSchema = z.object({
   id: z.string(),
   vendor_id: z.string(),
   vendor: z.object({ id: z.string(), name: z.string() }).optional(),
-  first_name: z.string().nullable(),
-  last_name: z.string().nullable(),
+  name: z.string().nullable(),
   email: z.string(),
   is_active: z.boolean(),
   created_at: z.string(),
@@ -70,14 +69,7 @@ export const createVendorUserSchema = z
   .object({
     vendor_id: z.string().trim().min(1, "Vendor is required"),
     email: z.string().trim().pipe(z.email("A valid email is required")),
-    first_name: z
-      .string()
-      .transform((value) => {
-        const trimmed = value.trim()
-        return trimmed.length > 0 ? trimmed : undefined
-      })
-      .optional(),
-    last_name: z
+    name: z
       .string()
       .transform((value) => {
         const trimmed = value.trim()
@@ -91,14 +83,7 @@ export type CreateVendorUser = z.infer<typeof createVendorUserSchema>
 
 export const updateVendorUserSchema = z
   .object({
-    first_name: z
-      .string()
-      .transform((value) => {
-        const trimmed = value.trim()
-        return trimmed.length > 0 ? trimmed : undefined
-      })
-      .optional(),
-    last_name: z
+    name: z
       .string()
       .transform((value) => {
         const trimmed = value.trim()
@@ -108,15 +93,8 @@ export const updateVendorUserSchema = z
     is_active: z.boolean().optional(),
   })
   .strict()
-  .refine(
-    (data) =>
-      data.first_name !== undefined ||
-      data.last_name !== undefined ||
-      data.is_active !== undefined,
-    {
-      message:
-        "At least one of first name, last name, or is_active is required",
-    },
-  )
+  .refine((data) => data.name !== undefined || data.is_active !== undefined, {
+    message: "At least one of name or is_active is required",
+  })
 
 export type UpdateVendorUser = z.infer<typeof updateVendorUserSchema>

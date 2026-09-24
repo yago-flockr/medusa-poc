@@ -24,8 +24,7 @@ medusaIntegrationTestRunner({
             vendor_id: vendor.id,
             email: "me-test@test.com",
             password: "test1234",
-            first_name: "Me",
-            last_name: "Tester",
+            name: "Me Tester",
           },
         })
 
@@ -50,8 +49,7 @@ medusaIntegrationTestRunner({
         expect(response.status).toBe(200)
         expect(response.data.vendor_user).toMatchObject({
           email: "me-test@test.com",
-          first_name: "Me",
-          last_name: "Tester",
+          name: "Me Tester",
         })
         expect(response.data.vendor).toMatchObject({
           id: vendorId,
@@ -71,7 +69,7 @@ medusaIntegrationTestRunner({
       it("updates the signed-in vendor user's own name", async () => {
         const response = await api.patch(
           "/vendors/me",
-          { first_name: "Renamed", last_name: "Person" },
+          { name: "Renamed Person" },
           { headers: { Authorization: `Bearer ${vendorToken}` } },
         )
 
@@ -81,8 +79,7 @@ medusaIntegrationTestRunner({
           headers: { Authorization: `Bearer ${vendorToken}` },
         })
         expect(after.data.vendor_user).toMatchObject({
-          first_name: "Renamed",
-          last_name: "Person",
+          name: "Renamed Person",
         })
       })
     })

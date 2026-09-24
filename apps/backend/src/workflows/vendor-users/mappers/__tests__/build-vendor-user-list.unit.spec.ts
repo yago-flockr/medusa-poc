@@ -8,8 +8,7 @@ describe("buildVendorUserList", () => {
         {
           id: "vu_1",
           vendor_id: "vendor_1",
-          first_name: "Jane",
-          last_name: "Doe",
+          name: "Jane Doe",
           email: "jane@example.com",
           is_active: true,
           created_at: "2024-01-01T00:00:00.000Z",

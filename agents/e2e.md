@@ -71,6 +71,22 @@ commented out), so `prepare-db.ts` calls the three seed scripts explicitly.
 - **Never `pnpm install --filter <one-package>` here** — it prunes the other
   workspaces' `node_modules` (it removed Next entirely). Always plain
   `pnpm install` from the root.
+- **Killing Playwright does not kill the servers it started.** `playwright.config.ts`
+  spawns the backend (9100) and storefront (8100) as `webServer` children; a
+  `pkill -f playwright` leaves both holding their ports. Every later run then
+  waits on a storefront that can never answer and burns its whole timeout with
+  no output — it looks like "the tests got slow". Clear them by port before
+  re-running: `ss -lptnH "sport = :8100"` then kill the pid, same for 9100.
+- **Never run `apps/storefront`'s production build while the suite is running.**
+  Both use the same `.next` directory, so the build deletes the dev server's
+  chunks mid-test (`Cannot find module './vendor-chunks/...'`). Run them
+  sequentially.
+- **A wiped dev database invalidates the storefront's publishable key.**
+  Recreating `medusa_poc` seeds a fresh key, and
+  `apps/storefront/.env.local`'s `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` still
+  points at the old one — the storefront then 500s with a bare
+  `Backend returned 400`. Copy the new token from
+  `select token from api_key where type='publishable'` after any reseed.
 - If Node cannot reach Postgres after a WSL restart (`Connection terminated
 unexpectedly`) while `docker exec psql` works, the port mapping is stale:
   `docker compose restart postgres redis`.

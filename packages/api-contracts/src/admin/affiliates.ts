@@ -3,6 +3,11 @@ import type { FindParams } from "@medusajs/types"
 import { booleanStringSchema } from "@dtc/api-contracts/common/boolean-string"
 import { AFFILIATE_HANDLE_MAX_LENGTH } from "@dtc/api-contracts/common/cart-affiliate"
 import { paginationMetaSchema } from "@dtc/api-contracts/common/pagination"
+import { commissionRateSchema } from "@dtc/api-contracts/common/commission-rate"
+import {
+  storefrontContentSchema,
+  updateStorefrontContentSchema,
+} from "@dtc/api-contracts/common/storefront-content"
 
 export const affiliateSchema = z.object({
   id: z.string(),
@@ -11,6 +16,7 @@ export const affiliateSchema = z.object({
   email: z.string(),
   commission_rate: z.number(),
   is_active: z.boolean(),
+  storefront_content: storefrontContentSchema.nullable(),
   created_at: z.string(),
   updated_at: z.string(),
   deleted_at: z.string().nullable(),
@@ -40,11 +46,6 @@ export const affiliateResponseSchema = z.object({
 })
 
 export type AffiliateResponse = z.infer<typeof affiliateResponseSchema>
-
-const commissionRateSchema = z
-  .number()
-  .min(0, "Commission rate cannot be negative")
-  .max(1, "Commission rate is a fraction, so it cannot exceed 1")
 
 export const createAffiliateSchema = z
   .object({
@@ -81,6 +82,7 @@ export const updateAffiliateSchema = z
       .optional(),
     commission_rate: commissionRateSchema.optional(),
     is_active: z.boolean().optional(),
+    storefront_content: updateStorefrontContentSchema.optional(),
   })
   .strict()
 

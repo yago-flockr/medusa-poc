@@ -9,6 +9,11 @@ import { Vendor } from "./vendor"
 export const Consignment = model.define("consignment", {
   id: model.id().primaryKey(),
   status: model.enum(["placed", "accepted", "dispatched"]).default("placed"),
+  currency_code: model.text(),
+  subtotal: model.bigNumber(),
+  commission_rate: model.bigNumber(),
+  commission_total: model.bigNumber(),
+  earning_total: model.bigNumber(),
   vendor: model.belongsTo(() => Vendor, {
     mappedBy: "consignments",
   }),
