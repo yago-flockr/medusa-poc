@@ -1,4 +1,3 @@
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { ComponentProps } from "react"
@@ -39,7 +38,11 @@ const CatalogHero = ({
         />
         <div className="absolute inset-0 bg-linear-to-t from-background via-background/60 to-transparent" />
         <div className="relative z-10 flex flex-col gap-3 p-8">
-          {eyebrow && <Eyebrow variant="accent">{eyebrow}</Eyebrow>}
+          {eyebrow && (
+            <span className="text-xs uppercase tracking-widest text-primary">
+              {eyebrow}
+            </span>
+          )}
           <h1
             className="font-heading text-3xl text-foreground sm:text-4xl"
             data-testid={titleTestId}
@@ -65,7 +68,9 @@ const CatalogHero = ({
       {...props}
     >
       <div className="flex flex-col gap-3">
-        <Eyebrow variant="accent">{eyebrow ?? "Collection folio"}</Eyebrow>
+        <span className="text-xs uppercase tracking-widest text-primary">
+          {eyebrow ?? "Collection folio"}
+        </span>
         <h1
           className="font-heading text-4xl sm:text-5xl"
           data-testid={titleTestId}
@@ -79,9 +84,9 @@ const CatalogHero = ({
         )}
       </div>
       {count !== undefined && (
-        <Eyebrow>
+        <span className="text-xs uppercase tracking-widest text-muted-foreground">
           {count} {count === 1 ? "piece" : "pieces"}
-        </Eyebrow>
+        </span>
       )}
     </div>
   )

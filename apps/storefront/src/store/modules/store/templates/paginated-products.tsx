@@ -2,7 +2,6 @@ import { listProductsWithSort } from "@/store/lib/data/products"
 import { getRegion } from "@/store/lib/data/regions"
 import { OptionValueIds } from "@/store/lib/util/product-option-filters"
 import ProductPreview from "@/store/modules/products/components/product-preview"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { Pagination } from "@/store/modules/store/components/pagination"
 import { SortOptions } from "@/store/modules/store/components/refinement-list/sort-products"
 
@@ -97,10 +96,10 @@ export default async function PaginatedProducts({
         })}
       </ul>
       <div className="flex flex-wrap items-center justify-between gap-4 border-t pt-8">
-        <Eyebrow>
+        <span className="text-xs uppercase tracking-widest text-muted-foreground">
           Showing {(page - 1) * PRODUCT_LIMIT + 1}&ndash;
           {Math.min(page * PRODUCT_LIMIT, count)} of {count}
-        </Eyebrow>
+        </span>
         {totalPages > 1 && (
           <Pagination
             data-testid="product-pagination"

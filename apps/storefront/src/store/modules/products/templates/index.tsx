@@ -8,7 +8,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { eyebrowVariants } from "@/components/ui/eyebrow"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import ImageGallery from "@/store/modules/products/components/image-gallery"
 import ProductActions from "@/store/modules/products/components/product-actions"
@@ -44,7 +43,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <div className="container flex flex-col gap-16">
       <Breadcrumb>
-        <BreadcrumbList className={eyebrowVariants()}>
+        <BreadcrumbList className="text-xs uppercase tracking-widest text-muted-foreground">
           <BreadcrumbItem>
             <BreadcrumbLink render={<LocalizedClientLink href="/store" />}>
               Store

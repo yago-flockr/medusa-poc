@@ -1,4 +1,3 @@
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { cn } from "@/lib/utils"
 import { ComponentProps } from "react"
 
@@ -39,7 +38,9 @@ function FooterSection({
 }: ComponentProps<"ul"> & { title: string }) {
   return (
     <div className="flex flex-col gap-y-4">
-      <Eyebrow variant="accent">{title}</Eyebrow>
+      <span className="text-xs uppercase tracking-widest text-primary">
+        {title}
+      </span>
       <ul
         className={cn(
           "grid grid-cols-1 gap-3 text-sm text-muted-foreground",
@@ -76,7 +77,9 @@ export default async function Footer() {
               A marketplace where every house is chosen by invitation.
             </p>
             <div className="flex flex-col gap-4 pt-4">
-              <Eyebrow variant="accent">Correspondence</Eyebrow>
+              <span className="text-xs uppercase tracking-widest text-primary">
+                Correspondence
+              </span>
               <InputGroup>
                 <InputGroupInput
                   type="email"
@@ -143,9 +146,9 @@ export default async function Footer() {
         </div>
 
         <div className="border-t pt-8">
-          <Eyebrow>
+          <span className="text-xs uppercase tracking-widest text-muted-foreground">
             © {new Date().getFullYear()} Vitrine. All rights reserved.
-          </Eyebrow>
+          </span>
         </div>
       </div>
     </footer>

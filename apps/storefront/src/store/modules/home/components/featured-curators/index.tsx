@@ -10,7 +10,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { StoreAffiliate } from "@/store/lib/data/affiliates"
@@ -34,7 +33,9 @@ export default function FeaturedCurators({
       >
         <div className="flex items-end justify-between gap-6 border-b pb-8">
           <div className="flex flex-col gap-4">
-            <Eyebrow variant="accent">Curated by hand</Eyebrow>
+            <span className="text-xs uppercase tracking-widest text-primary">
+              Curated by hand
+            </span>
             <h2 className="font-heading text-3xl sm:text-4xl">
               The people who choose
             </h2>
@@ -64,18 +65,13 @@ export default function FeaturedCurators({
                     </p>
                   )}
                   <Separator className="mt-auto" />
-                  <Eyebrow
-                    variant="foreground"
-                    render={
-                      <LocalizedClientLink
-                        href={`/affiliates/${affiliate.handle}`}
-                      />
-                    }
-                    className="inline-flex items-center gap-2 hover:text-primary"
+                  <LocalizedClientLink
+                    className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-foreground hover:text-primary"
+                    href={`/affiliates/${affiliate.handle}`}
                   >
                     View their picks
                     <RiArrowRightLine className="size-3" />
-                  </Eyebrow>
+                  </LocalizedClientLink>
                 </CardContent>
               </Card>
             </CarouselItem>

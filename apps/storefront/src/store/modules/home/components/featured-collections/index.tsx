@@ -2,7 +2,6 @@ import { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { StoreCollectionWithStorefrontContent } from "@/store/lib/data/collections"
 import { listProducts } from "@/store/lib/data/products"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
@@ -45,7 +44,9 @@ export default async function FeaturedCollections({
     >
       <div className="flex flex-wrap items-end justify-between gap-6 border-b pb-8">
         <div className="flex max-w-2xl flex-col gap-4">
-          <Eyebrow variant="accent">Curated shelf</Eyebrow>
+          <span className="text-xs uppercase tracking-widest text-primary">
+            Curated shelf
+          </span>
           <h2 className="font-heading text-3xl sm:text-4xl">
             {collection.storefront_content?.name ?? collection.title}
           </h2>

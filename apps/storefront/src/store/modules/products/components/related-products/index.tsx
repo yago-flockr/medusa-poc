@@ -2,7 +2,6 @@ import { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { StoreProductWithVendor, listProducts } from "@/store/lib/data/products"
 import { getVendorByHandle } from "@/store/lib/data/vendors"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
@@ -51,7 +50,9 @@ export default async function RelatedProducts({
     <section className={cn("flex flex-col gap-10", className)} {...props}>
       <div className="flex flex-wrap items-end justify-between gap-6 border-b pb-8">
         <div className="flex flex-col gap-3">
-          <Eyebrow variant="accent">More from this maison</Eyebrow>
+          <span className="text-xs uppercase tracking-widest text-primary">
+            More from this maison
+          </span>
           <h2 className="font-heading text-2xl sm:text-3xl">
             {product.vendor.name}
           </h2>

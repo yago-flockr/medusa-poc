@@ -4,8 +4,6 @@ import { cn } from "@/lib/utils"
 
 import Image from "next/image"
 
-import { Eyebrow } from "@/components/ui/eyebrow"
-
 export default function ManifestoHeader({
   className,
   ...props
@@ -13,7 +11,9 @@ export default function ManifestoHeader({
   return (
     <section className={cn("flex flex-col gap-12", className)} {...props}>
       <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
-        <Eyebrow variant="accent">Provenance &amp; philosophy</Eyebrow>
+        <span className="text-xs uppercase tracking-widest text-primary">
+          Provenance &amp; philosophy
+        </span>
         <h1 className="font-heading text-4xl sm:text-5xl">
           Invited, not applied.
         </h1>
@@ -34,8 +34,12 @@ export default function ManifestoHeader({
           />
         </div>
         <figcaption className="flex flex-wrap items-center justify-between gap-4">
-          <Eyebrow>The cutting room</Eyebrow>
-          <Eyebrow>Independent houses, reviewed one at a time</Eyebrow>
+          <span className="text-xs uppercase tracking-widest text-muted-foreground">
+            The cutting room
+          </span>
+          <span className="text-xs uppercase tracking-widest text-muted-foreground">
+            Independent houses, reviewed one at a time
+          </span>
         </figcaption>
       </figure>
     </section>

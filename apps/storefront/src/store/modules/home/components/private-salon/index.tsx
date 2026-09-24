@@ -2,8 +2,6 @@ import { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 
-import { Eyebrow } from "@/components/ui/eyebrow"
-
 export default function PrivateSalon({
   className,
   ...props
@@ -13,7 +11,9 @@ export default function PrivateSalon({
       <div className="container">
         <div className="flex flex-wrap items-end justify-between gap-10">
           <div className="max-w-xl flex flex-col gap-4">
-            <Eyebrow variant="accent">Mobile protocol</Eyebrow>
+            <span className="text-xs uppercase tracking-widest text-primary">
+              Mobile protocol
+            </span>
             <h2 className="font-heading text-3xl text-foreground sm:text-4xl">
               Private client salon &amp; mobile concierge
             </h2>

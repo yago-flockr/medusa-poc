@@ -2,8 +2,6 @@ import { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 
-import { Eyebrow } from "@/components/ui/eyebrow"
-
 const PILLARS = [
   {
     label: "Provenance",
@@ -39,9 +37,9 @@ export default function ManifestoPillars({
     >
       {PILLARS.map((pillar, index) => (
         <div key={pillar.label} className="flex flex-col gap-4">
-          <Eyebrow variant="accent">
+          <span className="text-xs uppercase tracking-widest text-primary">
             {String(index + 1).padStart(2, "0")} / {pillar.label}
-          </Eyebrow>
+          </span>
           <h2 className="font-heading text-xl">{pillar.title}</h2>
           <p className="text-sm text-muted-foreground">{pillar.description}</p>
         </div>

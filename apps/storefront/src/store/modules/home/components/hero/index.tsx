@@ -5,7 +5,6 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { Separator } from "@/components/ui/separator"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { RiArrowDownLine, RiArrowRightLine } from "@remixicon/react"
@@ -30,10 +29,9 @@ const Hero = ({ className, ...props }: ComponentProps<"div">) => {
       />
       <div className="absolute inset-0 bg-linear-to-t from-background via-background/80 to-background/40" />
       <div className="container relative flex w-full flex-col gap-6">
-        <Eyebrow variant="accent" className="flex items-center gap-3">
-          <span className="h-px w-8 bg-primary" />
+        <span className="text-xs uppercase tracking-widest text-primary flex items-center gap-3">
           The Vernissage Edition
-        </Eyebrow>
+        </span>
         <h1 className="max-w-3xl font-heading text-4xl leading-tight text-foreground sm:text-6xl">
           Anyone can buy here. <em>Almost no one</em> gets to sell.
         </h1>
@@ -69,15 +67,15 @@ const Hero = ({ className, ...props }: ComponentProps<"div">) => {
         </div>
         <Separator />
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <Eyebrow className="flex items-center gap-3">
+          <span className="text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-3">
             <RiArrowDownLine className="size-4" />
             Scroll to browse collection
-          </Eyebrow>
-          <Eyebrow className="flex flex-wrap items-center gap-3">
+          </span>
+          <span className="text-xs uppercase tracking-widest text-muted-foreground flex flex-wrap items-center gap-3">
             {CITIES.map((city) => (
               <span key={city}>{city}</span>
             ))}
-          </Eyebrow>
+          </span>
         </div>
       </div>
     </div>

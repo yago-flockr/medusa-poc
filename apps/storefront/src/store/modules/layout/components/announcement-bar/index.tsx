@@ -1,4 +1,3 @@
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { cn } from "@/lib/utils"
 import { ComponentProps } from "react"
 
@@ -7,13 +6,14 @@ export default function AnnouncementBar({
   ...props
 }: ComponentProps<"aside">) {
   return (
-    <Eyebrow
-      variant="background"
-      render={<aside />}
-      className={cn("block w-full bg-foreground p-3 text-center", className)}
+    <aside
+      className={cn(
+        "block w-full bg-foreground p-3 text-center text-xs uppercase tracking-widest text-background",
+        className,
+      )}
       {...props}
     >
       Complimentary white-glove courier on all bespoke curation orders.
-    </Eyebrow>
+    </aside>
   )
 }

@@ -4,8 +4,6 @@ import { cn } from "@/lib/utils"
 
 import Image from "next/image"
 
-import { Eyebrow } from "@/components/ui/eyebrow"
-
 const STATS = [
   { value: "14.8 µm", label: "Fibre fineness" },
   { value: "480 gsm", label: "Thermal weight" },
@@ -29,7 +27,9 @@ export default function EditorialMonograph({
             />
           </div>
           <div className="flex flex-col gap-6">
-            <Eyebrow variant="accent">Archival monograph</Eyebrow>
+            <span className="text-xs uppercase tracking-widest text-primary">
+              Archival monograph
+            </span>
             <h2 className="font-heading text-3xl sm:text-4xl">
               The art of unlined weightlessness
             </h2>
@@ -48,7 +48,9 @@ export default function EditorialMonograph({
                 <div key={stat.label} className="flex flex-col gap-2">
                   <dt className="font-heading text-2xl">{stat.value}</dt>
                   <dd>
-                    <Eyebrow>{stat.label}</Eyebrow>
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground">
+                      {stat.label}
+                    </span>
                   </dd>
                 </div>
               ))}

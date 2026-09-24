@@ -6,8 +6,9 @@ test("an affiliate can log in and reach every panel section", async ({
 }) => {
   await loginAsAffiliate(page, QWE_CREATORS)
 
-  await expect(page.getByRole("link", { name: "Sales" })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Dashboard" })).toBeVisible()
   await expect(page.getByRole("link", { name: "Products" })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Profile" })).toBeVisible()
 })
 
 test("an affiliate sees the products they promote", async ({ page }) => {
@@ -15,10 +16,14 @@ test("an affiliate sees the products they promote", async ({ page }) => {
 
   await page.goto("/affiliate/products")
 
+  const promotedCard = page.locator('[data-slot="item"]').filter({
+    has: page.getByText(QWE_CREATORS.promotedProductTitle, { exact: true }),
+  })
+
+  await expect(promotedCard).toHaveCount(1)
   await expect(
-    page.getByText(QWE_CREATORS.promotedProductTitle, { exact: true }),
+    promotedCard.getByRole("button", { name: "Copy share link" }),
   ).toBeVisible()
-  await expect(page.getByRole("button", { name: "Copy link" })).toBeVisible()
 })
 
 test("an affiliate can promote and then stop promoting a product", async ({
@@ -27,23 +32,31 @@ test("an affiliate can promote and then stop promoting a product", async ({
   await loginAsAffiliate(page, QWE_CREATORS)
   await page.goto("/affiliate/products")
 
-  await page.getByRole("combobox").click()
-  const option = page.getByRole("option").first()
-  const promotedTitle = (await option.textContent())?.trim() ?? ""
-  await option.click()
   await page.getByRole("button", { name: "Promote", exact: true }).click()
 
-  // Asserted per row rather than by count: the e2e database is seeded once and
-  // shared, so any other promoted product would make a count assertion flaky.
-  const promotedRow = page.locator("tbody tr", { hasText: promotedTitle })
-  await expect(promotedRow).toHaveCount(1)
+  const pickable = page
+    .getByRole("dialog")
+    .locator('[data-slot="item"]')
+    .filter({ has: page.getByRole("button", { name: "Promote", exact: true }) })
+    .first()
+  const title =
+    (
+      await pickable.locator('[data-slot="item-title"]').textContent()
+    )?.trim() ?? ""
+  await pickable.getByRole("button", { name: "Promote", exact: true }).click()
 
-  await promotedRow.getByRole("button", { name: "Remove" }).click()
+  const promotedCard = page
+    .locator('[data-slot="item"]')
+    .filter({ has: page.getByText(title, { exact: true }) })
 
-  await expect(promotedRow).toHaveCount(0)
+  await expect(promotedCard).toHaveCount(1)
+
+  await promotedCard.getByRole("button", { name: "Stop promoting" }).click()
+
+  await expect(promotedCard).toHaveCount(0)
 })
 
-test("the sales page names the affiliate's own code", async ({ page }) => {
+test("the dashboard names the affiliate's own code", async ({ page }) => {
   await loginAsAffiliate(page, QWE_CREATORS)
 
   await page.goto("/affiliate")

@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { Thumbnail } from "@/components/ui/thumbnail"
 import { StoreProductWithVendor } from "@/store/lib/data/products"
 import { getProductPrice } from "@/store/lib/util/get-product-price"
@@ -36,7 +35,9 @@ export default function ProductPreview({
           </div>
           <div className="flex flex-col gap-1">
             {product.vendor && (
-              <Eyebrow variant="accent">{product.vendor.name}</Eyebrow>
+              <span className="text-xs uppercase tracking-widest text-primary">
+                {product.vendor.name}
+              </span>
             )}
             <span
               className="font-heading text-base leading-snug"

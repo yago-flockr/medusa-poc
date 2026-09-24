@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { RiArrowRightLine } from "@remixicon/react"
 
@@ -31,7 +30,9 @@ export default function ManifestoQuote({
           />
         </div>
         <figcaption>
-          <Eyebrow>A house under review</Eyebrow>
+          <span className="text-xs uppercase tracking-widest text-muted-foreground">
+            A house under review
+          </span>
         </figcaption>
       </figure>
       <div className="flex flex-col gap-8">

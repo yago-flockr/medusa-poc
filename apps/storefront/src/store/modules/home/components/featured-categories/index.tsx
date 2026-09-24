@@ -11,7 +11,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { Eyebrow } from "@/components/ui/eyebrow"
 import { StoreProductCategoryWithStorefrontContent } from "@/store/lib/data/categories"
 import ThumbnailCard from "@/store/modules/common/components/thumbnail-card"
 
@@ -34,7 +33,9 @@ export default function FeaturedCategories({
       >
         <div className="flex items-end justify-between gap-6 border-b pb-8">
           <div className="flex flex-col gap-4">
-            <Eyebrow variant="accent">Sartorial suites</Eyebrow>
+            <span className="text-xs uppercase tracking-widest text-primary">
+              Sartorial suites
+            </span>
             <h2 className="font-heading text-3xl sm:text-4xl">
               Shop by category
             </h2>
