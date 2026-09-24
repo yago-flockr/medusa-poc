@@ -24,6 +24,7 @@ import {
 import { retrieveCart } from "@/store/lib/data/cart"
 import { listCategories } from "@/store/lib/data/categories"
 import { listCollections } from "@/store/lib/data/collections"
+import { listAffiliates } from "@/store/lib/data/affiliates"
 import { listVendors } from "@/store/lib/data/vendors"
 import CartList from "@/store/modules/cart/components/cart-list"
 import CartSummary from "@/store/modules/cart/components/cart-summary"
@@ -94,12 +95,14 @@ function MobileNavSection({
 }
 
 export default async function Nav() {
-  const [categories, { collections }, { vendors }, cart] = await Promise.all([
-    listCategories({ fields: "id, handle, name" }),
-    listCollections({ fields: "id, handle, title" }),
-    listVendors(),
-    retrieveCart(),
-  ])
+  const [categories, { collections }, { vendors }, { affiliates }, cart] =
+    await Promise.all([
+      listCategories({ fields: "id, handle, name" }),
+      listCollections({ fields: "id, handle, title" }),
+      listVendors(),
+      listAffiliates(),
+      retrieveCart(),
+    ])
 
   const categoryItems = categories.map((category) => ({
     id: category.id,
@@ -115,6 +118,11 @@ export default async function Nav() {
     id: vendor.id,
     href: `/vendors/${vendor.handle}`,
     label: vendor.name,
+  }))
+  const affiliateItems = affiliates.map((affiliate) => ({
+    id: affiliate.id,
+    href: `/affiliates/${affiliate.handle}`,
+    label: affiliate.storefront_content?.name ?? affiliate.name,
   }))
 
   const cartItemsCount = cart?.items?.reduce(
@@ -164,6 +172,9 @@ export default async function Nav() {
                     items={collectionItems}
                   />
                   <MobileNavSection label="Vendors" items={vendorItems} />
+                  {affiliateItems.length > 0 && (
+                    <MobileNavSection label="Curators" items={affiliateItems} />
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
@@ -198,6 +209,9 @@ export default async function Nav() {
               <NavDropdown label="Categories" items={categoryItems} />
               <NavDropdown label="Collections" items={collectionItems} />
               <NavDropdown label="Vendors" items={vendorItems} />
+              {affiliateItems.length > 0 && (
+                <NavDropdown label="Curators" items={affiliateItems} />
+              )}
             </NavigationMenuList>
           </NavigationMenu>
 

@@ -33,7 +33,7 @@ const StoreTemplate = ({
       <CatalogHero
         eyebrow="Collection folio"
         title="The Archive"
-        description="Every piece in the catalog, reviewed before it was listed."
+        description="Every piece in the catalog, from a house we invited."
         titleTestId="store-page-title"
       />
       <CatalogFilterBar

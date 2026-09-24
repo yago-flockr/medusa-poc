@@ -4,8 +4,7 @@ import AboutTemplate from "@/store/modules/about/templates"
 
 export const metadata: Metadata = {
   title: "About",
-  description:
-    "Why every house in the catalog is reviewed before it is listed.",
+  description: "Why every house in the catalog is there by invitation.",
 }
 
 export default function AboutPage() {

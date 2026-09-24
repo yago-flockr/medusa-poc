@@ -1,7 +1,10 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-import { getVendorByHandle, listVendors } from "@/store/lib/data/vendors"
+import {
+  getAffiliateByHandle,
+  listAffiliates,
+} from "@/store/lib/data/affiliates"
 import { listProductOptions } from "@/store/lib/data/product-options"
 import { listRegions } from "@/store/lib/data/regions"
 import { parseOptionValueIds } from "@/store/lib/util/product-option-filters"
@@ -21,9 +24,9 @@ type Props = {
 }
 
 export async function generateStaticParams() {
-  const { vendors } = await listVendors()
+  const { affiliates } = await listAffiliates()
 
-  if (!vendors) {
+  if (!affiliates) {
     return []
   }
 
@@ -35,45 +38,39 @@ export async function generateStaticParams() {
         .filter(Boolean) as string[],
   )
 
-  const vendorHandles = vendors.map((vendor) => vendor.handle)
-
-  const staticParams = countryCodes
+  return countryCodes
     ?.map((country: string) =>
-      vendorHandles.map((handle: string) => ({
-        country,
-        handle,
-      })),
+      affiliates.map((affiliate) => ({ country, handle: affiliate.handle })),
     )
     .flat()
-
-  return staticParams
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
-  const vendor = await getVendorByHandle(params.handle)
+  const affiliate = await getAffiliateByHandle(params.handle)
 
-  if (!vendor) {
+  if (!affiliate) {
     notFound()
   }
 
-  const title = vendor.storefront_content?.name ?? vendor.name
+  const title = affiliate.storefront_content?.name ?? affiliate.name
 
   return {
     title: `${title} | Store`,
-    description: vendor.storefront_content?.description ?? `${title} products.`,
+    description:
+      affiliate.storefront_content?.description ?? `Picks from ${title}.`,
   }
 }
 
-export default async function VendorPage(props: Props) {
+export default async function AffiliatePage(props: Props) {
   const searchParams = await props.searchParams
   const params = await props.params
   const { sortBy, page } = searchParams
   const optionValueIds = parseOptionValueIds(searchParams)
 
-  const vendor = await getVendorByHandle(params.handle)
+  const affiliate = await getAffiliateByHandle(params.handle)
 
-  if (!vendor) {
+  if (!affiliate) {
     notFound()
   }
 
@@ -81,11 +78,11 @@ export default async function VendorPage(props: Props) {
 
   return (
     <CatalogTemplate
-      title={vendor.storefront_content?.name ?? vendor.name}
-      description={vendor.storefront_content?.description}
-      imageUrl={vendor.storefront_content?.hero_image_url}
-      productsIds={vendor.products?.map((product) => product.id) ?? []}
-      titleTestId="vendor-page-title"
+      title={affiliate.storefront_content?.name ?? affiliate.name}
+      description={affiliate.storefront_content?.description}
+      imageUrl={affiliate.storefront_content?.hero_image_url}
+      productsIds={affiliate.products?.map((product) => product.id) ?? []}
+      titleTestId="affiliate-page-title"
       page={page}
       sortBy={sortBy}
       country={params.country}

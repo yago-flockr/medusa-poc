@@ -1,6 +1,5 @@
 import { Suspense } from "react"
 
-import { StoreVendorWithProducts } from "@/store/lib/data/vendors"
 import { OptionValueIds } from "@/store/lib/util/product-option-filters"
 import SkeletonProductGrid from "@/store/modules/skeletons/templates/skeleton-product-grid"
 import CatalogFilterBar from "@/store/modules/store/components/catalog-filter-bar"
@@ -10,15 +9,23 @@ import { SortOptions } from "@/store/modules/store/components/refinement-list/so
 import PaginatedProducts from "@/store/modules/store/templates/paginated-products"
 import { HttpTypes } from "@medusajs/types"
 
-export default function VendorTemplate({
-  vendor,
+export default function CatalogTemplate({
+  title,
+  description,
+  imageUrl,
+  productsIds,
+  titleTestId,
   sortBy,
   page,
   country,
   optionValueIds,
   options,
 }: {
-  vendor: StoreVendorWithProducts
+  title: string
+  description?: string | null
+  imageUrl?: string | null
+  productsIds: string[]
+  titleTestId?: string
   sortBy?: SortOptions
   page?: string
   country: string
@@ -27,15 +34,14 @@ export default function VendorTemplate({
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
-  const productsIds = vendor.products?.map((product) => product.id) ?? []
 
   return (
     <ProductListingLayout.Root>
       <CatalogHero
-        title={vendor.storefront_content?.name ?? vendor.name}
-        description={vendor.storefront_content?.description}
-        imageUrl={vendor.storefront_content?.hero_image_url}
-        titleTestId="vendor-page-title"
+        title={title}
+        description={description}
+        imageUrl={imageUrl}
+        titleTestId={titleTestId}
       />
       <CatalogFilterBar options={options} sortBy={sort} />
       <Suspense

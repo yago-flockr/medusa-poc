@@ -116,7 +116,8 @@ export default function VendorOrdersPage() {
                 </ItemContent>
                 <ItemActions>
                   <Badge variant="muted">
-                    {order.total.toFixed(2)} {order.currency_code.toUpperCase()}
+                    {order.earnings.earning_total.toFixed(2)}{" "}
+                    {order.currency_code.toUpperCase()}
                   </Badge>
                   <TextTooltip content="Manage order">
                     <Button

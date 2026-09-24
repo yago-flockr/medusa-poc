@@ -6,4 +6,7 @@ export const mutationKeys = {
     postAffiliatesProducts: ["postAffiliatesProducts"] as const,
     deleteAffiliatesProduct: ["deleteAffiliatesProduct"] as const,
   },
+  profile: {
+    patchAffiliatesMe: ["patchAffiliatesMe"] as const,
+  },
 }

@@ -55,8 +55,7 @@ export default function VendorProfilePage() {
           <DataState.Content>
             <ProfileForm
               defaultValues={profileInputToForm({
-                first_name: getVendorsMe.data?.vendor_user.first_name ?? null,
-                last_name: getVendorsMe.data?.vendor_user.last_name ?? null,
+                name: getVendorsMe.data?.vendor_user.name ?? null,
               })}
               isLoading={patchVendorsMe.isPending}
               onSubmit={(values) =>

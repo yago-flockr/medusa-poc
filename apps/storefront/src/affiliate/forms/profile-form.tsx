@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { PatchVendorsMeInput } from "@dtc/api-contracts/vendor/profile"
-import type { VendorUser } from "@dtc/api-contracts/vendor/vendor"
+import type { PatchAffiliatesMeInput } from "@dtc/api-contracts/affiliate/profile"
+import type { AffiliateMe } from "@dtc/api-contracts/affiliate/me"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import z from "zod"
@@ -18,18 +18,16 @@ export type ProfileSchema = z.infer<typeof profileSchema>
 
 type ProfileFormProps = CommonFormProps<ProfileSchema>
 
-export function profileFormToInput(values: ProfileSchema): PatchVendorsMeInput {
-  return {
-    name: values.name,
-  }
+export function profileFormToInput(
+  values: ProfileSchema,
+): PatchAffiliatesMeInput {
+  return { name: values.name }
 }
 
 export function profileInputToForm(
-  vendorUser: Pick<VendorUser, "name">,
+  affiliate: Pick<AffiliateMe, "name">,
 ): ProfileSchema {
-  return {
-    name: vendorUser.name ?? "",
-  }
+  return { name: affiliate.name }
 }
 
 export function ProfileForm({
@@ -45,23 +43,17 @@ export function ProfileForm({
     formState: { errors },
   } = useForm<ProfileSchema>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: "",
-      ...defaultValues,
-    },
+    defaultValues: { name: "", ...defaultValues },
   })
 
   return (
     <form
-      onSubmit={handleSubmit(
-        (values) => onSubmit?.(values),
-        (formErrors) => console.error("Form validation failed:", formErrors),
-      )}
+      onSubmit={handleSubmit((values) => onSubmit?.(values))}
       className={cn("flex flex-col gap-4", className)}
       {...props}
     >
       <TextField
-        id="vendor-name"
+        id="affiliate-name"
         label="Name"
         error={errors.name?.message}
         {...register("name")}

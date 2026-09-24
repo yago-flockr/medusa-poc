@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/input-group"
 import { listCategories } from "@/store/lib/data/categories"
 import { listCollections } from "@/store/lib/data/collections"
+import { listAffiliates } from "@/store/lib/data/affiliates"
 import { listVendors } from "@/store/lib/data/vendors"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 
@@ -58,6 +59,7 @@ export default async function Footer() {
   })
   const productCategories = await listCategories()
   const { vendors } = await listVendors()
+  const { affiliates } = await listAffiliates()
 
   return (
     <footer className="w-full border-t">
@@ -71,8 +73,7 @@ export default async function Footer() {
               Vitrine
             </LocalizedClientLink>
             <p className="text-sm text-muted-foreground">
-              A marketplace where every product is reviewed before it&apos;s
-              listed.
+              A marketplace where every house is chosen by invitation.
             </p>
             <div className="flex flex-col gap-4 pt-4">
               <Eyebrow variant="accent">Correspondence</Eyebrow>
@@ -123,6 +124,17 @@ export default async function Footer() {
                 <li key={vendor.id}>
                   <FooterLink href={`/vendors/${vendor.handle}`}>
                     {vendor.name}
+                  </FooterLink>
+                </li>
+              ))}
+            </FooterSection>
+          )}
+          {affiliates && affiliates.length > 0 && (
+            <FooterSection title="Curators">
+              {affiliates.slice(0, 6).map((affiliate) => (
+                <li key={affiliate.id}>
+                  <FooterLink href={`/affiliates/${affiliate.handle}`}>
+                    {affiliate.storefront_content?.name ?? affiliate.name}
                   </FooterLink>
                 </li>
               ))}

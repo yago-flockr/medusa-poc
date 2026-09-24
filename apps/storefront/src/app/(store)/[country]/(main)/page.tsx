@@ -2,9 +2,11 @@ import { Metadata } from "next"
 
 import { listCategories } from "@/store/lib/data/categories"
 import { listCollections } from "@/store/lib/data/collections"
+import { listAffiliates } from "@/store/lib/data/affiliates"
 import { listVendors } from "@/store/lib/data/vendors"
 import FeaturedCategories from "@/store/modules/home/components/featured-categories"
 import FeaturedCollections from "@/store/modules/home/components/featured-collections"
+import FeaturedCurators from "@/store/modules/home/components/featured-curators"
 import FeaturedVendors from "@/store/modules/home/components/featured-vendors"
 import EditorialMonograph from "@/store/modules/home/components/editorial-monograph"
 import Hero from "@/store/modules/home/components/hero"
@@ -28,6 +30,7 @@ export default async function Home({
     fields: "+storefront_content.*",
   })
   const { vendors } = await listVendors()
+  const { affiliates } = await listAffiliates()
 
   if (!collections) {
     return null
@@ -39,6 +42,7 @@ export default async function Home({
       <FeaturedCollections collections={collections} countryCode={country} />
       <EditorialMonograph />
       <FeaturedVendors vendors={vendors} />
+      <FeaturedCurators affiliates={affiliates} />
       <FeaturedCategories categories={categories} />
       <PrivateSalon />
     </>

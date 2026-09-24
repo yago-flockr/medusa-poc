@@ -1,66 +1,50 @@
 "use client"
 
 import { Section } from "@/components/display/section"
+import { StatCard } from "@/components/display/stat-card"
 import { useGetAffiliatesMe } from "@/affiliate/hooks/queries/me"
 import { useGetAffiliatesSales } from "@/affiliate/hooks/queries/sales"
-import { DataState } from "@/components/display/data-state"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 
 export default function AffiliateSalesPage() {
   const getAffiliatesMe = useGetAffiliatesMe()
   const getAffiliatesSales = useGetAffiliatesSales()
 
-  const productSales = getAffiliatesSales.data?.product_sales ?? []
+  const totals = getAffiliatesSales.data?.totals
 
   return (
     <Section
-      title="Sales"
+      title="Dashboard"
       description={
         getAffiliatesMe.data
-          ? `Everything bought through your code "${getAffiliatesMe.data.affiliate.handle}", best seller first.`
-          : "Everything bought through your code, best seller first."
+          ? `Everything bought through your code "${getAffiliatesMe.data.affiliate.handle}".`
+          : "Everything bought through your code."
       }
+      className="flex flex-col gap-4 sm:flex-row"
     >
-      <DataState
+      <StatCard
+        className="flex-1"
+        title="Orders"
+        value={totals?.orders ?? 0}
         isLoading={getAffiliatesSales.isLoading}
-        isEmpty={productSales.length === 0}
-      >
-        <DataState.Loading />
-        <DataState.Empty>
-          Nothing has sold through your code yet.
-        </DataState.Empty>
-        <DataState.Content>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead className="text-right">Units sold</TableHead>
-                <TableHead className="text-right">Orders</TableHead>
-                <TableHead className="text-right">Revenue</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {productSales.map((sales) => (
-                <TableRow key={sales.product_id}>
-                  <TableCell>{sales.product_title}</TableCell>
-                  <TableCell className="text-right">
-                    {sales.units_sold}
-                  </TableCell>
-                  <TableCell className="text-right">{sales.orders}</TableCell>
-                  <TableCell className="text-right">{sales.revenue}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </DataState.Content>
-      </DataState>
+      />
+      <StatCard
+        className="flex-1"
+        title="Units sold"
+        value={totals?.units_sold ?? 0}
+        isLoading={getAffiliatesSales.isLoading}
+      />
+      <StatCard
+        className="flex-1"
+        title="Revenue"
+        value={(totals?.revenue ?? 0).toFixed(2)}
+        isLoading={getAffiliatesSales.isLoading}
+      />
+      <StatCard
+        className="flex-1"
+        title="You earned"
+        value={(totals?.commission_total ?? 0).toFixed(2)}
+        isLoading={getAffiliatesSales.isLoading}
+      />
     </Section>
   )
 }

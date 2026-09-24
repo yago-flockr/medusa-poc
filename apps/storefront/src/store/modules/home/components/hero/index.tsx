@@ -5,8 +5,8 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { Eyebrow } from "@/components/ui/eyebrow"
+import { Separator } from "@/components/ui/separator"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
 import { RiArrowDownLine, RiArrowRightLine } from "@remixicon/react"
 
@@ -38,9 +38,8 @@ const Hero = ({ className, ...props }: ComponentProps<"div">) => {
           Anyone can buy here. <em>Almost no one</em> gets to sell.
         </h1>
         <p className="max-w-lg text-sm text-muted-foreground sm:text-base">
-          Every house in the catalog is reviewed before a single product goes
-          live. One basket can cross houses, one payment, one standard held
-          against all of them.
+          Every house in the catalog is chosen by invitation. One basket can
+          cross houses, one payment, one standard held against all of them.
         </p>
         <div className="flex flex-wrap gap-3">
           <Button
@@ -58,6 +57,14 @@ const Hero = ({ className, ...props }: ComponentProps<"div">) => {
             render={<Link href="/vendor" />}
           >
             Apply to sell
+          </Button>
+          <Button
+            size="xl"
+            variant="secondary"
+            nativeButton={false}
+            render={<Link href="/affiliate" />}
+          >
+            Become an affiliate
           </Button>
         </div>
         <Separator />

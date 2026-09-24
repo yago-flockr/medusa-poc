@@ -15,12 +15,12 @@ export default function ManifestoHeader({
       <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
         <Eyebrow variant="accent">Provenance &amp; philosophy</Eyebrow>
         <h1 className="font-heading text-4xl sm:text-5xl">
-          Reviewed, not listed.
+          Invited, not applied.
         </h1>
         <p className="text-sm text-muted-foreground sm:text-base">
           Anyone can buy here. Almost no one gets to sell. Every house in the
-          catalog is read, checked and approved before a single product goes
-          live, and one standard is held against all of them.
+          catalog is invited by us, and one standard is held against all of
+          them.
         </p>
       </div>
       <figure className="flex flex-col gap-3">

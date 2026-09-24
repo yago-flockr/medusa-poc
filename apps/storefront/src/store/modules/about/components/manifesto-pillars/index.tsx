@@ -15,7 +15,7 @@ const PILLARS = [
     label: "Restraint",
     title: "A short catalog on purpose",
     description:
-      "Houses are approved one at a time. We would rather list fewer pieces than list something we have not looked at.",
+      "Houses are invited one at a time. We would rather carry fewer houses than carry one we do not stand behind.",
   },
   {
     label: "Permanence",
