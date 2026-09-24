@@ -29,7 +29,6 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
         <Card className="w-full max-w-5xl gap-0 overflow-hidden p-0">
           <div className="grid lg:grid-cols-2">
             <Pitch
-              className="border-b bg-muted/40 p-8 lg:border-r lg:border-b-0 lg:p-10"
               title="Your house, your catalogue, our storefront."
               description="Sell alongside every other house under one storefront. One basket, one payment, one checkout — and your share of every sale recorded the moment an order is placed."
               cards={[

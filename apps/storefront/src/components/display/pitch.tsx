@@ -15,7 +15,13 @@ export function Pitch({
   ...props
 }: PitchProps) {
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center gap-6 border-b bg-muted/40 p-8 lg:border-r lg:border-b-0 lg:p-10",
+        className,
+      )}
+      {...props}
+    >
       <h1 className="font-heading text-3xl leading-tight sm:text-4xl">
         {title}
       </h1>

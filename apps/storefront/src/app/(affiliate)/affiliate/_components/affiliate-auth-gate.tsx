@@ -29,7 +29,6 @@ export function AffiliateAuthGate({ children }: { children: React.ReactNode }) {
         <Card className="w-full max-w-5xl gap-0 overflow-hidden p-0">
           <div className="grid lg:grid-cols-2">
             <Pitch
-              className="border-b bg-muted/40 p-8 lg:border-r lg:border-b-0 lg:p-10"
               title="Share what you would buy. Earn when it sells."
               description="Pick products from across every house, share your own link, and earn a share of every order that comes through it."
               cards={[
