@@ -1,4 +1,4 @@
-import { loadEnv, defineConfig } from "@medusajs/framework/utils"
+import { defineConfig, loadEnv } from "@medusajs/framework/utils"
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
@@ -11,14 +11,8 @@ module.exports = defineConfig({
     { resolve: "./src/modules/vendor" },
     { resolve: "./src/modules/affiliate" },
     { resolve: "./src/modules/storefront-content" },
-    {
-      resolve: "@medusajs/medusa/event-bus-redis",
-      options: { redisUrl: process.env.REDIS_URL },
-    },
-    {
-      resolve: "@medusajs/medusa/workflow-engine-redis",
-      options: { redis: { redisUrl: process.env.REDIS_URL } },
-    },
+    { resolve: "@medusajs/medusa/event-bus-redis" },
+    { resolve: "@medusajs/medusa/workflow-engine-redis" },
     {
       resolve: "@medusajs/medusa/settings",
       options: {

@@ -73,6 +73,9 @@ async function main() {
   console.log("[e2e] seeding catalog")
   runInBackend(["run", "seed:catalog"])
 
+  console.log("[e2e] seeding categories")
+  runInBackend(["run", "seed:categories"])
+
   console.log("[e2e] seeding identity")
   runInBackend(["run", "seed:identity"])
 
