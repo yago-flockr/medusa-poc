@@ -1,12 +1,14 @@
 import { ExecArgs } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
+  MedusaError,
   ProductStatus,
 } from "@medusajs/framework/utils"
 import {
   createCollectionsWorkflow,
   updateProductsWorkflow,
 } from "@medusajs/medusa/core-flows"
+import { graph } from "../src/lib/query"
 import { VENDOR_MODULE } from "../src/modules/vendor"
 import { updateStorefrontContentWorkflow } from "../src/workflows/shared/update-storefront-content"
 import { createVendorWorkflow } from "../src/workflows/vendors/create-vendor"
@@ -25,6 +27,7 @@ type ProductFixture = {
   basePrice: number
   images: string[]
   collection: string
+  categoryHandle: string
 }
 
 type VendorFixture = {
@@ -83,6 +86,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
     products: [
       {
         title: "Classic Tee",
+        categoryHandle: "t-shirts",
         description: "A timeless, comfortable everyday t-shirt.",
         optionValues: ["S", "M", "L"],
         basePrice: 20,
@@ -91,6 +95,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Vintage Sweatshirt",
+        categoryHandle: "sweats-and-knits",
         description: "A cozy sweatshirt with a vintage finish.",
         optionValues: ["S", "M", "L"],
         basePrice: 35,
@@ -99,6 +104,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Boxy Cotton Overshirt",
+        categoryHandle: "shirts",
         description:
           "A relaxed overshirt cut from heavy brushed cotton, built to layer.",
         optionValues: ["S", "M", "L"],
@@ -108,6 +114,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Garment-Dyed Pocket Tee",
+        categoryHandle: "t-shirts",
         description:
           "Dyed after stitching so the colour settles unevenly and softens with wear.",
         optionValues: ["S", "M", "L"],
@@ -117,6 +124,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Heavyweight Loopback Sweat",
+        categoryHandle: "sweats-and-knits",
         description:
           "Loopback cotton at 480gsm, milled slowly so the pile stays dense.",
         optionValues: ["S", "M", "L"],
@@ -126,6 +134,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Wide-Leg Drawcord Trouser",
+        categoryHandle: "shorts-and-trousers",
         description: "An unstructured trouser with a soft drawcord waist.",
         optionValues: ["S", "M", "L"],
         basePrice: 84,
@@ -134,6 +143,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Panelled Running Short",
+        categoryHandle: "shorts-and-trousers",
         description: "A light technical short with bonded, chafe-free seams.",
         optionValues: ["S", "M", "L"],
         basePrice: 46,
@@ -142,6 +152,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Mesh-Back Training Tee",
+        categoryHandle: "t-shirts",
         description: "An open mesh back panel keeps this tee moving air.",
         optionValues: ["S", "M", "L"],
         basePrice: 38,
@@ -150,6 +161,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Everyday Crew Three-Pack",
+        categoryHandle: "t-shirts",
         description: "Three plain crew-neck tees, cut from the same cotton.",
         optionValues: ["S", "M", "L"],
         basePrice: 26,
@@ -158,6 +170,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Last-Season Fleece Half-Zip",
+        categoryHandle: "sweats-and-knits",
         description:
           "A previous-season fleece, marked down, otherwise perfect.",
         optionValues: ["S", "M", "L"],
@@ -187,6 +200,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
     products: [
       {
         title: "Weekend Shorts",
+        categoryHandle: "shorts-and-trousers",
         description: "Relaxed-fit shorts for warm days.",
         optionValues: ["S", "M", "L"],
         basePrice: 25,
@@ -195,6 +209,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Everyday Tee",
+        categoryHandle: "t-shirts",
         description: "A soft cotton tee for daily wear.",
         optionValues: ["S", "M", "L"],
         basePrice: 18,
@@ -203,6 +218,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Open-Weave Linen Shirt",
+        categoryHandle: "shirts",
         description:
           "A loose linen weave that moves air, finished with shell buttons.",
         optionValues: ["S", "M", "L"],
@@ -212,6 +228,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Pleated Poplin Short",
+        categoryHandle: "shorts-and-trousers",
         description: "A single forward pleat gives this short its clean drape.",
         optionValues: ["S", "M", "L"],
         basePrice: 54,
@@ -220,6 +237,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Merino Crew Knit",
+        categoryHandle: "sweats-and-knits",
         description:
           "Fine-gauge merino, knitted whole so there are no shoulder seams.",
         optionValues: ["S", "M", "L"],
@@ -229,6 +247,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Brushed Flannel Overshirt",
+        categoryHandle: "shirts",
         description: "Double-brushed flannel with a deep, quiet nap.",
         optionValues: ["S", "M", "L"],
         basePrice: 74,
@@ -237,6 +256,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Court Canvas Warm-Up",
+        categoryHandle: "sweats-and-knits",
         description: "A boxy warm-up top in dense cotton canvas.",
         optionValues: ["S", "M", "L"],
         basePrice: 92,
@@ -245,6 +265,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Ribbed Training Short",
+        categoryHandle: "shorts-and-trousers",
         description: "A close-ribbed knit short that holds its shape.",
         optionValues: ["S", "M", "L"],
         basePrice: 44,
@@ -253,6 +274,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Basic Jersey Short",
+        categoryHandle: "shorts-and-trousers",
         description: "A plain jersey short, honest about what it is.",
         optionValues: ["S", "M", "L"],
         basePrice: 22,
@@ -261,6 +283,7 @@ const VENDOR_FIXTURES: VendorFixture[] = [
       },
       {
         title: "Archive Logo Sweat",
+        categoryHandle: "sweats-and-knits",
         description: "An archive print, discounted to clear the last run.",
         optionValues: ["S", "M", "L"],
         basePrice: 48,
@@ -272,6 +295,39 @@ const VENDOR_FIXTURES: VendorFixture[] = [
 ]
 
 const collectionIdCache = new Map<string, string>()
+
+const categoryIdCache = new Map<string, string>()
+
+async function resolveCategoryId(
+  container: ExecArgs["container"],
+  handle: string,
+) {
+  const cached = categoryIdCache.get(handle)
+
+  if (cached) {
+    return cached
+  }
+
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  const { data: categories } = await graph(query, {
+    entity: "product_category",
+    fields: ["id"],
+    filters: { handle },
+  })
+
+  const id = categories[0]?.id
+
+  if (!id) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_FOUND,
+      `Run seed:categories before seeding vendors — "${handle}" is missing.`,
+    )
+  }
+
+  categoryIdCache.set(handle, id)
+
+  return id
+}
 
 async function resolveCollectionId(
   container: ExecArgs["container"],
@@ -443,6 +499,9 @@ export default async function seedVendors({ container }: ExecArgs) {
           description: productFixture.description,
           handle,
           images: productFixture.images.map((url) => ({ url })),
+          category_ids: [
+            await resolveCategoryId(container, productFixture.categoryHandle),
+          ],
           options,
           variants,
         },

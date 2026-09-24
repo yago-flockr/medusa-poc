@@ -2,6 +2,7 @@ import { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import seedAffiliates from "./seed-affiliates"
 import seedCatalog from "./seed-catalog"
+import seedCategories from "./seed-categories"
 import seedIdentity from "./seed-identity"
 import seedOrders from "./seed-orders"
 import seedVendors from "./seed-vendors"
@@ -11,6 +12,9 @@ export default async function seed(args: ExecArgs) {
 
   logger.info("Seeding catalog...")
   await seedCatalog(args)
+
+  logger.info("Seeding categories...")
+  await seedCategories(args)
 
   logger.info("Seeding identity...")
   await seedIdentity(args)

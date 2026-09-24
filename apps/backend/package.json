@@ -22,6 +22,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p src/admin/tsconfig.json",
     "seed": "medusa exec ./seeds/seed.ts",
     "seed:catalog": "medusa exec ./seeds/seed-catalog.ts",
+    "seed:categories": "medusa exec ./seeds/seed-categories.ts",
     "seed:identity": "medusa exec ./seeds/seed-identity.ts",
     "seed:vendors": "medusa exec ./seeds/seed-vendors.ts",
     "seed:affiliates": "medusa exec ./seeds/seed-affiliates.ts",
