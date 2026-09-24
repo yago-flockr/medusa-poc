@@ -21,6 +21,7 @@ export const listAffiliateProductsStep = createStep(
         "products.title",
         "products.handle",
         "products.thumbnail",
+        "products.vendor.name",
       ],
       filters: { id: affiliateId },
     })

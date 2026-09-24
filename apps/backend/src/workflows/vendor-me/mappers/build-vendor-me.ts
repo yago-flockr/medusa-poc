@@ -3,8 +3,7 @@ import { vendorIntegrationConnectionProviderSchema } from "@dtc/api-contracts/ve
 
 type RawVendorMe = {
   id: string
-  first_name: string | null
-  last_name: string | null
+  name: string | null
   email: string
   vendor: {
     id: string
@@ -25,8 +24,7 @@ export function buildVendorMe(vendorUser: RawVendorMe): GetVendorsMeResponse {
   return {
     vendor_user: {
       id: vendorUser.id,
-      first_name: vendorUser.first_name,
-      last_name: vendorUser.last_name,
+      name: vendorUser.name,
       email: vendorUser.email,
     },
     vendor: {

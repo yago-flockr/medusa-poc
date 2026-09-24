@@ -19,7 +19,7 @@
     "dev": "medusa develop",
     "predev": "graphql-codegen",
     "lint": "medusa lint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p src/admin/tsconfig.json",
     "seed": "medusa exec ./seeds/seed.ts",
     "seed:catalog": "medusa exec ./seeds/seed-catalog.ts",
     "seed:identity": "medusa exec ./seeds/seed-identity.ts",

@@ -9,6 +9,10 @@ export const defaultAdminVendorFields = [
   "name",
   "handle",
   "is_active",
+  "commission_rate",
+  "consignments.subtotal",
+  "consignments.commission_total",
+  "consignments.earning_total",
   "integration_connections.provider",
   "integration_connections.external_account_identifier",
   "integration_connections.client_id",
@@ -20,8 +24,7 @@ export const defaultAdminVendorFields = [
   "updated_at",
   "users.id",
   "users.email",
-  "users.first_name",
-  "users.last_name",
+  "users.name",
 ]
 
 export const defaultAdminVendorAllowed = [

@@ -1,12 +1,12 @@
 import { Button, Drawer, Text, toast } from "@medusajs/ui"
 import type { VendorUser } from "@dtc/api-contracts/admin/vendor-users"
-import { TitleSubtitle } from "../../components/title-subtitle"
+import { TitleSubtitle } from "../../../components/title-subtitle"
 import {
   UPDATE_VENDOR_USER_FORM_ID,
   UpdateVendorUserForm,
   vendorUserToForm,
-} from "../../forms/vendor-users/update-vendor-user"
-import { useUpdateOneVendorUser } from "../../hooks/mutations/vendor-users"
+} from "../../../forms/vendor-users/update-vendor-user"
+import { useUpdateOneVendorUser } from "../../../hooks/mutations/vendor-users"
 
 type UpdateVendorUserDrawerProps = {
   vendorUser: VendorUser | null

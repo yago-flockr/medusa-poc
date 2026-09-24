@@ -28,8 +28,7 @@ export const PATCH = async (
   const { result } = await updateVendorMeWorkflow(req.scope).run({
     input: {
       actorId: req.auth_context.actor_id,
-      first_name: req.validatedBody.first_name,
-      last_name: req.validatedBody.last_name,
+      name: req.validatedBody.name,
     },
   })
 

@@ -1,10 +1,11 @@
 import { MedusaError } from "@medusajs/framework/utils"
 
-// Works for either cart or order line items — both carry these two fields,
-// and grouping-by-vendor never needs anything else.
+// Works for either cart or order line items — both carry these fields.
 export type VendorRoutableItem = {
   id: string
   product_id?: string | null
+  unit_price?: number | null
+  quantity?: number | null
 }
 
 export function groupItemsByVendor(

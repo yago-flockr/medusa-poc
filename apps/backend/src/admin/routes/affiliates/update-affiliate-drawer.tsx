@@ -44,6 +44,12 @@ export const UpdateAffiliateDrawer = ({
                 name: affiliate.name,
                 handle: affiliate.handle,
                 commission_rate: affiliate.commission_rate,
+                storefront_content: {
+                  name: affiliate.storefront_content?.name ?? "",
+                  description: affiliate.storefront_content?.description ?? "",
+                  hero_image_url:
+                    affiliate.storefront_content?.hero_image_url ?? "",
+                },
               }}
               onSubmit={(values) => {
                 updateOneAffiliate.mutate(

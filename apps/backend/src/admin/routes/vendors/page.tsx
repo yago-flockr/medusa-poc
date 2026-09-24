@@ -1,6 +1,6 @@
 import type { Vendor } from "@dtc/api-contracts/admin/vendors"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { CheckCircle, PencilSquare, XCircle } from "@medusajs/icons"
+import { CheckCircle, PencilSquare, Users, XCircle } from "@medusajs/icons"
 import {
   createDataTableColumnHelper,
   DataTable,
@@ -11,6 +11,7 @@ import {
   usePrompt,
 } from "@medusajs/ui"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Card } from "../../components/card"
 import { TitleSubtitle } from "../../components/title-subtitle"
 import { useUpdateOneVendor } from "../../hooks/mutations/vendors"
@@ -23,6 +24,7 @@ const PAGINATION_LIMIT = 15
 const columnHelper = createDataTableColumnHelper<Vendor>()
 
 const VendorsPage = () => {
+  const navigate = useNavigate()
   const prompt = usePrompt()
   const updateOneVendor = useUpdateOneVendor()
   const [pagination, setPagination] = useState<DataTablePaginationState>({
@@ -43,6 +45,16 @@ const VendorsPage = () => {
     columnHelper.accessor((row) => row.users?.length ?? 0, {
       id: "users",
       header: "Users",
+    }),
+    columnHelper.accessor((row) => row.commission_rate, {
+      id: "commission_rate",
+      header: "Commission",
+      cell: ({ getValue }) => `${(getValue() * 100).toFixed(0)}%`,
+    }),
+    columnHelper.accessor((row) => row.earnings_totals.earning_total, {
+      id: "earning_total",
+      header: "Earned",
+      cell: ({ getValue }) => getValue().toFixed(2),
     }),
     columnHelper.accessor("is_active", {
       header: "Status",
@@ -70,6 +82,13 @@ const VendorsPage = () => {
           icon: <PencilSquare />,
           onClick: () => {
             setEditingVendor(ctx.row.original)
+          },
+        },
+        {
+          label: "Manage Users",
+          icon: <Users />,
+          onClick: () => {
+            navigate(`/vendors/${ctx.row.original.id}`)
           },
         },
         {

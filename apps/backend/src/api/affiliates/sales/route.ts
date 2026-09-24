@@ -3,13 +3,13 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { getAffiliatesSalesResponseSchema } from "@dtc/api-contracts/affiliate/sales"
-import { getAffiliateProductSalesWorkflow } from "../../../workflows/affiliate-sales/get-affiliate-product-sales"
+import { getAffiliateSalesWorkflow } from "../../../workflows/affiliate-sales/get-affiliate-sales"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse,
 ) => {
-  const { result } = await getAffiliateProductSalesWorkflow(req.scope).run({
+  const { result } = await getAffiliateSalesWorkflow(req.scope).run({
     input: { affiliate_id: req.auth_context.actor_id },
   })
 

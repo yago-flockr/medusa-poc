@@ -11,8 +11,7 @@ import { buildVendorUser } from "./mappers/build-vendor-user"
 export type CreateVendorUserWorkflowInput = {
   vendor_id: string
   email: string
-  first_name?: string
-  last_name?: string
+  name?: string
   password?: string
 }
 
@@ -26,8 +25,7 @@ export const createVendorUserWorkflow = createWorkflow(
 
     const vendorUser = createVendorUserStep({
       email: input.email,
-      first_name: input.first_name,
-      last_name: input.last_name,
+      name: input.name,
       vendor_id: input.vendor_id,
     })
 

@@ -8,8 +8,7 @@ import { updateVendorUserStep } from "../vendor-users/steps/update-vendor-user"
 
 export type UpdateVendorMeWorkflowInput = {
   actorId: string
-  first_name: string
-  last_name: string
+  name: string
 }
 
 export const updateVendorMeWorkflow = createWorkflow(
@@ -19,16 +18,14 @@ export const updateVendorMeWorkflow = createWorkflow(
 
     const updateInput = transform({ resolveVendorUser, input }, (data) => ({
       id: data.resolveVendorUser.id,
-      first_name: data.input.first_name,
-      last_name: data.input.last_name,
+      name: data.input.name,
     }))
     const vendorUser = updateVendorUserStep(updateInput)
 
     const response = transform({ vendorUser }, (data) => ({
       vendor_user: {
         id: data.vendorUser.id,
-        first_name: data.vendorUser.first_name,
-        last_name: data.vendorUser.last_name,
+        name: data.vendorUser.name,
       },
     }))
 

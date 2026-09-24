@@ -6,6 +6,7 @@ import VendorModuleService from "../../../modules/vendor/service"
 export type CreateVendorStepInput = {
   name: string
   handle?: string
+  commission_rate?: number
 }
 
 export const createVendorStep = createStep(
@@ -17,6 +18,7 @@ export const createVendorStep = createStep(
     const vendor = await vendorModuleService.createVendors({
       name: input.name,
       handle: input.handle ?? toHandle(input.name),
+      commission_rate: input.commission_rate ?? 0,
     })
 
     return new StepResponse(vendor, vendor.id)

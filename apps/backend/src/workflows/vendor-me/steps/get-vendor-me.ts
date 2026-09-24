@@ -8,8 +8,7 @@ import { z } from "@medusajs/framework/zod"
 import { graph } from "../../../lib/query"
 const vendorMeSchema = z.object({
   id: z.string(),
-  first_name: z.string().nullable(),
-  last_name: z.string().nullable(),
+  name: z.string().nullable(),
   email: z.string(),
   is_active: z.boolean(),
   vendor: z.object({
@@ -47,8 +46,7 @@ export const getVendorMeStep = createStep(
       entity: "vendor_user",
       fields: [
         "id",
-        "first_name",
-        "last_name",
+        "name",
         "email",
         "is_active",
         "vendor.id",

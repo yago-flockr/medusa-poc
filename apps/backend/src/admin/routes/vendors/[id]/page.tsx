@@ -1,4 +1,3 @@
-import { defineRouteConfig } from "@medusajs/admin-sdk"
 import {
   ArrowPath,
   CheckCircle,
@@ -18,16 +17,18 @@ import {
   usePrompt,
 } from "@medusajs/ui"
 import { useState } from "react"
+import { useParams } from "react-router-dom"
 import type { VendorUser } from "@dtc/api-contracts/admin/vendor-users"
-import { Card } from "../../components/card"
-import { OtpShow } from "../../components/otp-show"
-import { TitleSubtitle } from "../../components/title-subtitle"
+import { Card } from "../../../components/card"
+import { OtpShow } from "../../../components/otp-show"
+import { TitleSubtitle } from "../../../components/title-subtitle"
 import {
   useDeleteOneVendorUser,
   useRegenerateVendorUserPassword,
   useUpdateOneVendorUser,
-} from "../../hooks/mutations/vendor-users"
-import { useFindManyVendorUsers } from "../../hooks/queries/vendor-users"
+} from "../../../hooks/mutations/vendor-users"
+import { useFindManyVendorUsers } from "../../../hooks/queries/vendor-users"
+import { useFindOneVendor } from "../../../hooks/queries/vendors"
 import { CreateVendorUserModal } from "./create-vendor-user-modal"
 import { UpdateVendorUserDrawer } from "./update-vendor-user-drawer"
 
@@ -36,6 +37,7 @@ const PAGINATION_LIMIT = 15
 const columnHelper = createDataTableColumnHelper<VendorUser>()
 
 const VendorUsersPage = () => {
+  const { id: vendorId = "" } = useParams()
   const prompt = usePrompt()
   const regeneratePassword = useRegenerateVendorUserPassword()
   const updateOneVendorUser = useUpdateOneVendorUser()
@@ -49,21 +51,19 @@ const VendorUsersPage = () => {
   )
   const [regeneratedPassword, setRegeneratedPassword] = useState<string>()
 
+  const findOneVendor = useFindOneVendor(vendorId)
   const findManyVendorUsers = useFindManyVendorUsers({
+    vendor_id: vendorId,
     limit: PAGINATION_LIMIT,
     offset: pagination.pageIndex * PAGINATION_LIMIT,
   })
 
   const columns = [
     columnHelper.accessor("email", { header: "Email" }),
-    columnHelper.accessor((row) => row.vendor?.name ?? row.vendor_id, {
-      id: "vendor",
-      header: "Vendor",
+    columnHelper.accessor((row) => row.name ?? "", {
+      id: "name",
+      header: "Name",
     }),
-    columnHelper.accessor(
-      (row) => [row.first_name, row.last_name].filter(Boolean).join(" "),
-      { id: "name", header: "Name" },
-    ),
     columnHelper.accessor("is_active", {
       header: "Status",
       cell: ({ getValue }) =>
@@ -136,8 +136,7 @@ const VendorUsersPage = () => {
                 vendorUserId: vendorUser.id,
                 body: {
                   is_active: !vendorUser.is_active,
-                  first_name: undefined,
-                  last_name: undefined,
+                  name: undefined,
                 },
               },
               {
@@ -196,10 +195,10 @@ const VendorUsersPage = () => {
     <Card.Root>
       <Card.Header>
         <Card.Title
-          title="Vendor Users"
+          title={`${findOneVendor.data?.vendor.name ?? "Vendor"} users`}
           description="Each user is created with a random password shown once — there is no invite email or self-service reset yet, so share it with the vendor yourself."
         />
-        <CreateVendorUserModal />
+        <CreateVendorUserModal vendorId={vendorId} />
       </Card.Header>
       <DataTable instance={table}>
         <DataTable.Table
@@ -254,9 +253,5 @@ const VendorUsersPage = () => {
     </Card.Root>
   )
 }
-
-export const config = defineRouteConfig({
-  label: "Vendor Users",
-})
 
 export default VendorUsersPage

@@ -1,4 +1,5 @@
 import type { Vendor } from "@dtc/api-contracts/admin/vendors"
+import { commissionRateSchema } from "@dtc/api-contracts/common/commission-rate"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "@medusajs/framework/zod"
 import { useEffect } from "react"
@@ -13,6 +14,7 @@ export const UPDATE_VENDOR_FORM_ID = "update-vendor-form"
 const updateVendorFormSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   handle: z.string().trim().min(1, "Handle is required"),
+  commission_rate: commissionRateSchema,
   storefront_content: z.object({
     name: z.string().trim().optional(),
     description: z.string().trim().optional(),
@@ -27,6 +29,7 @@ function defaultValuesFromVendor(vendor?: Vendor): UpdateVendorFormValues {
   return {
     name: vendor?.name ?? "",
     handle: vendor?.handle ?? "",
+    commission_rate: vendor?.commission_rate ?? 0,
     storefront_content: {
       name: vendor?.storefront_content?.name ?? "",
       description: vendor?.storefront_content?.description ?? "",
@@ -83,6 +86,17 @@ export const UpdateVendorForm = ({
         error={errors.handle?.message}
         disabled={isDisabled || isLoading}
         {...register("handle")}
+      />
+      <TextField
+        id="update-vendor-commission-rate"
+        label="Commission rate"
+        type="number"
+        step="0.01"
+        min="0"
+        max="1"
+        error={errors.commission_rate?.message}
+        disabled={isDisabled || isLoading}
+        {...register("commission_rate", { valueAsNumber: true })}
       />
       <Divider>Storefront Content</Divider>
       <TextField

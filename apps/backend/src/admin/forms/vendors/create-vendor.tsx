@@ -27,6 +27,7 @@ export const CreateVendorForm = ({
     defaultValues: {
       name: "",
       handle: "",
+      commission_rate: 0,
       ...defaultValues,
     },
   })
@@ -56,6 +57,17 @@ export const CreateVendorForm = ({
         error={errors.handle?.message}
         disabled={isDisabled || isLoading}
         {...register("handle")}
+      />
+      <TextField
+        id="create-vendor-commission-rate"
+        label="Commission rate"
+        type="number"
+        step="0.01"
+        min="0"
+        max="1"
+        error={errors.commission_rate?.message}
+        disabled={isDisabled || isLoading}
+        {...register("commission_rate", { valueAsNumber: true })}
       />
     </form>
   )

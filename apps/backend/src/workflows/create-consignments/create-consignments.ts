@@ -13,7 +13,6 @@ import {
   useQueryGraphStep,
 } from "@medusajs/medusa/core-flows"
 import type { CartLineItemDTO } from "@medusajs/framework/types"
-import consignmentOrderLink from "../../links/consignment-order"
 import { assertItemsFulfillableStep } from "./steps/assert-items-fulfillable"
 import { createConsignmentsStep } from "./steps/create-consignments"
 import { groupVendorItemsStep } from "./steps/group-vendor-items"
@@ -62,7 +61,7 @@ export const createConsignmentsWorkflow = createWorkflow(
 
     // One idempotency check suffices: only one linking mechanism exists.
     const { data: existingLinks } = useQueryGraphStep({
-      entity: consignmentOrderLink.entryPoint,
+      entity: "consignment_order",
       fields: ["consignment.id"],
       filters: { order_id: orderId },
     }).config({ name: "retrieve-existing-consignment-links" })
@@ -73,8 +72,13 @@ export const createConsignmentsWorkflow = createWorkflow(
         // country_code is unused here — only for the storefront's
         // post-redirect (see placeOrder in cart.ts).
         fields: [
+          "currency_code",
           "items.id",
           "items.product_id",
+          "items.unit_price",
+          // quantity lives on the order-item join; asking for items.quantity alone returns nothing.
+          "items.quantity",
+          "items.detail.quantity",
           "shipping_address.country_code",
         ],
       },
@@ -96,11 +100,14 @@ export const createConsignmentsWorkflow = createWorkflow(
       const { linkDefs } = createConsignmentsStep({
         orderId,
         vendorsItems,
+        currencyCode: order.currency_code,
       })
 
       const { linkDefs: referralLinkDefs } = createReferralStep({
         orderId,
         affiliateHandle,
+        currencyCode: order.currency_code,
+        items: orderItems,
       })
 
       const allLinkDefs = transform({ linkDefs, referralLinkDefs }, (data) => [

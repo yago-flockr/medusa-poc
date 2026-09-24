@@ -5,7 +5,9 @@ import {
   updateAffiliateSchema,
   type UpdateAffiliate,
 } from "@dtc/api-contracts/admin/affiliates"
+import { Divider } from "../../components/divider"
 import { TextField } from "../fields/text-field"
+import { TextareaField } from "../fields/textarea-field"
 import type { CommonFormProps } from "../form-type"
 
 export const UPDATE_AFFILIATE_FORM_ID = "update-affiliate-form"
@@ -61,6 +63,31 @@ export const UpdateAffiliateForm = ({
         error={errors.commission_rate?.message}
         disabled={isDisabled || isLoading}
         {...register("commission_rate", { valueAsNumber: true })}
+      />
+      <Divider>Storefront Content</Divider>
+      <TextField
+        id="update-affiliate-storefront-name"
+        label="Name"
+        optional
+        error={errors.storefront_content?.name?.message}
+        disabled={isDisabled || isLoading}
+        {...register("storefront_content.name")}
+      />
+      <TextareaField
+        id="update-affiliate-storefront-description"
+        label="Description"
+        optional
+        error={errors.storefront_content?.description?.message}
+        disabled={isDisabled || isLoading}
+        {...register("storefront_content.description")}
+      />
+      <TextField
+        id="update-affiliate-storefront-hero-image-url"
+        label="Image URL"
+        optional
+        error={errors.storefront_content?.hero_image_url?.message}
+        disabled={isDisabled || isLoading}
+        {...register("storefront_content.hero_image_url")}
       />
     </form>
   )

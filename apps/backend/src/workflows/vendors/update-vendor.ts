@@ -35,6 +35,7 @@ export const updateVendorWorkflow = createWorkflow(
       name: data.input.name,
       handle: data.input.handle,
       is_active: data.input.is_active,
+      commission_rate: data.input.commission_rate,
     }))
     const vendor = updateVendorStep(vendorFields)
 

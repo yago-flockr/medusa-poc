@@ -15,6 +15,10 @@ const consignmentListItemSchema = z.object({
 const consignmentListRowSchema = z.object({
   id: z.string(),
   status: vendorConsignmentStatusSchema,
+  subtotal: z.coerce.number(),
+  commission_rate: z.coerce.number(),
+  commission_total: z.coerce.number(),
+  earning_total: z.coerce.number(),
   order: z
     .object({
       id: z.string(),
@@ -50,6 +54,10 @@ export const listConsignmentsStep = createStep(
       fields: [
         "id",
         "status",
+        "subtotal",
+        "commission_rate",
+        "commission_total",
+        "earning_total",
         "order.id",
         "order.display_id",
         "order.currency_code",

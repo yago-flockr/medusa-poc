@@ -43,16 +43,6 @@ export const CreateAffiliateModal = () => {
                 >
                   Close
                 </Button>
-                <Button
-                  size="small"
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(otp)
-                    handleClose()
-                  }}
-                >
-                  Copy
-                </Button>
               </div>
             </FocusModal.Footer>
           </>

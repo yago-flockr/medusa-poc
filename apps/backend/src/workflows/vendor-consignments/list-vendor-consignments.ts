@@ -7,6 +7,7 @@ import type { GetVendorsOrdersResponse } from "@dtc/api-contracts/vendor/orders"
 import { resolveVendorUserStep } from "../vendors/shared/steps/resolve-vendor-user"
 import { listConsignmentsStep } from "./steps/list-consignments"
 import { buildOrderList } from "./mappers/build-order-list"
+import { sumVendorEarningsStep } from "./steps/sum-vendor-earnings"
 
 export type ListVendorConsignmentsWorkflowInput = {
   actorId: string
@@ -19,6 +20,10 @@ export const listVendorConsignmentsWorkflow = createWorkflow(
   function (input: ListVendorConsignmentsWorkflowInput) {
     const resolveVendorUser = resolveVendorUserStep({ actorId: input.actorId })
 
+    const earningsTotals = sumVendorEarningsStep({
+      vendorId: resolveVendorUser.vendorId,
+    })
+
     const listConsignments = listConsignmentsStep({
       vendorId: resolveVendorUser.vendorId,
       limit: input.limit,
@@ -26,13 +31,18 @@ export const listVendorConsignmentsWorkflow = createWorkflow(
     })
 
     const response = transform(
-      { listConsignments, input },
-      (data): GetVendorsOrdersResponse => ({
-        orders: buildOrderList(data.listConsignments.consignments),
-        count: data.listConsignments.count,
-        limit: data.input.limit,
-        offset: data.input.offset,
-      }),
+      { listConsignments, earningsTotals, input },
+      (data): GetVendorsOrdersResponse => {
+        const orders = buildOrderList(data.listConsignments.consignments)
+
+        return {
+          orders,
+          earnings_totals: data.earningsTotals,
+          count: data.listConsignments.count,
+          limit: data.input.limit,
+          offset: data.input.offset,
+        }
+      },
     )
 
     return new WorkflowResponse(response)

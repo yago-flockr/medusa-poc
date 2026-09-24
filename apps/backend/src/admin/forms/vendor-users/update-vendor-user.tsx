@@ -16,8 +16,7 @@ export type UpdateVendorUserFormProps = CommonFormProps<UpdateVendorUser>
 
 export function vendorUserToForm(vendorUser: VendorUser): UpdateVendorUser {
   return {
-    first_name: vendorUser.first_name ?? undefined,
-    last_name: vendorUser.last_name ?? undefined,
+    name: vendorUser.name ?? undefined,
   }
 }
 
@@ -39,18 +38,16 @@ export const UpdateVendorUserForm = ({
   >({
     resolver: zodResolver(updateVendorUserSchema),
     defaultValues: {
-      first_name: "",
-      last_name: "",
+      name: "",
       ...defaultValues,
     },
   })
 
   useEffect(() => {
     reset({
-      first_name: defaultValues?.first_name ?? "",
-      last_name: defaultValues?.last_name ?? "",
+      name: defaultValues?.name ?? "",
     })
-  }, [defaultValues?.first_name, defaultValues?.last_name, reset])
+  }, [defaultValues?.name, reset])
 
   const submit = handleSubmit(async (values) => {
     await onSubmit?.(values)
@@ -63,20 +60,12 @@ export const UpdateVendorUserForm = ({
       className="grid grid-cols-1 gap-4"
     >
       <TextField
-        id="update-vendor-user-first-name"
-        label="First name"
+        id="update-vendor-user-name"
+        label="Name"
         optional
-        error={errors.first_name?.message}
+        error={errors.name?.message}
         disabled={isDisabled || isLoading}
-        {...register("first_name")}
-      />
-      <TextField
-        id="update-vendor-user-last-name"
-        label="Last name"
-        optional
-        error={errors.last_name?.message}
-        disabled={isDisabled || isLoading}
-        {...register("last_name")}
+        {...register("name")}
       />
     </form>
   )

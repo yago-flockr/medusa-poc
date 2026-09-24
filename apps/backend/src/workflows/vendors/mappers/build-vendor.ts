@@ -20,6 +20,13 @@ type RawVendor = {
     description: string | null
     hero_image_url: string | null
   } | null
+  consignments?:
+    | ({
+        subtotal: number | string
+        commission_total: number | string
+        earning_total: number | string
+      } | null)[]
+    | null
 } & Record<string, unknown>
 
 export function buildVendor<T extends RawVendor>(
@@ -31,7 +38,13 @@ export function buildVendor<T extends RawVendor>(
   | "updated_at"
   | "deleted_at"
   | "storefront_content"
+  | "consignments"
 > & {
+  earnings_totals: {
+    subtotal: number
+    commission_total: number
+    earning_total: number
+  }
   created_at: string
   updated_at: string
   deleted_at: string | null
@@ -53,6 +66,7 @@ export function buildVendor<T extends RawVendor>(
     updated_at,
     deleted_at,
     storefront_content: storefrontContent,
+    consignments,
     ...rest
   } = vendor
 
@@ -73,5 +87,24 @@ export function buildVendor<T extends RawVendor>(
         connected: connection.connected_at !== null,
       })),
     storefront_content: storefrontContent ?? null,
+    earnings_totals: (consignments ?? [])
+      .filter(
+        (consignment): consignment is NonNullable<typeof consignment> =>
+          consignment !== null,
+      )
+      .reduce<{
+        subtotal: number
+        commission_total: number
+        earning_total: number
+      }>(
+        (totals, consignment) => ({
+          subtotal: totals.subtotal + Number(consignment.subtotal),
+          commission_total:
+            totals.commission_total + Number(consignment.commission_total),
+          earning_total:
+            totals.earning_total + Number(consignment.earning_total),
+        }),
+        { subtotal: 0, commission_total: 0, earning_total: 0 },
+      ),
   }
 }

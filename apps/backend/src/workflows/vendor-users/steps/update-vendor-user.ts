@@ -4,15 +4,13 @@ import VendorModuleService from "../../../modules/vendor/service"
 
 export type UpdateVendorUserStepInput = {
   id: string
-  first_name?: string | null
-  last_name?: string | null
+  name?: string | null
   is_active?: boolean
 }
 
 type UpdateVendorUserCompensation = {
   id: string
-  first_name: string | null
-  last_name: string | null
+  name: string | null
   is_active: boolean
 }
 
@@ -26,19 +24,14 @@ export const updateVendorUserStep = createStep(
 
     const update: {
       id: string
-      first_name?: string | null
-      last_name?: string | null
+      name?: string | null
       is_active?: boolean
     } = {
       id: input.id,
     }
 
-    if (input.first_name !== undefined) {
-      update.first_name = input.first_name
-    }
-
-    if (input.last_name !== undefined) {
-      update.last_name = input.last_name
+    if (input.name !== undefined) {
+      update.name = input.name
     }
 
     if (input.is_active !== undefined) {
@@ -49,8 +42,7 @@ export const updateVendorUserStep = createStep(
 
     return new StepResponse(vendorUser, {
       id: existing.id,
-      first_name: existing.first_name,
-      last_name: existing.last_name,
+      name: existing.name,
       is_active: existing.is_active,
     } satisfies UpdateVendorUserCompensation)
   },
@@ -67,8 +59,7 @@ export const updateVendorUserStep = createStep(
 
     await vendorModuleService.updateVendorUsers({
       id: compensation.id,
-      first_name: compensation.first_name,
-      last_name: compensation.last_name,
+      name: compensation.name,
       is_active: compensation.is_active,
     })
   },

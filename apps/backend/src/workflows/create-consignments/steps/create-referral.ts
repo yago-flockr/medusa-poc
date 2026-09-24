@@ -1,18 +1,22 @@
 import type { LinkDefinition } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import type { PricedItem } from "../../../lib/money"
 import { AFFILIATE_MODULE } from "../../../modules/affiliate"
+import { buildReferralEarnings } from "../mappers/build-referral-earnings"
 import type AffiliateModuleService from "../../../modules/affiliate/service"
 
 export type CreateReferralStepInput = {
   orderId: string
   affiliateHandle: string | null
+  currencyCode: string
+  items: PricedItem[]
 }
 
 export const createReferralStep = createStep(
   "create-referral",
   async (
-    { orderId, affiliateHandle }: CreateReferralStepInput,
+    { orderId, affiliateHandle, currencyCode, items }: CreateReferralStepInput,
     { container },
   ) => {
     if (!affiliateHandle) {
@@ -35,6 +39,8 @@ export const createReferralStep = createStep(
       affiliate_handle: affiliate.handle,
       commission_rate: affiliate.commission_rate,
       affiliate_id: affiliate.id,
+      currency_code: currencyCode,
+      ...buildReferralEarnings(items, Number(affiliate.commission_rate)),
     })
 
     const linkDefs: LinkDefinition[] = [

@@ -9,6 +9,9 @@ export const defaultAdminAffiliateFields = [
   "email",
   "commission_rate",
   "is_active",
+  "storefront_content.name",
+  "storefront_content.description",
+  "storefront_content.hero_image_url",
   "created_at",
   "updated_at",
 ]

@@ -5,6 +5,7 @@ type RawProduct = {
   title?: string | null
   handle?: string | null
   thumbnail?: string | null
+  vendor?: { name?: string | null } | null
 }
 
 export function buildAffiliateProducts(
@@ -20,5 +21,6 @@ export function buildAffiliateProducts(
       title: product.title as string,
       handle: product.handle as string,
       thumbnail: product.thumbnail ?? null,
+      vendor_name: product.vendor?.name ?? null,
     }))
 }

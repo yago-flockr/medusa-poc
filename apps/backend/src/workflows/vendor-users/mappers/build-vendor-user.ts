@@ -6,8 +6,7 @@ type RawVendorUser = {
   vendor_id: string
   // A module-service write returns only a stub `{id}` relation, never `name`.
   vendor?: { id: string; name?: string } | null
-  first_name: string | null
-  last_name: string | null
+  name: string | null
   email: string
   is_active: boolean
   created_at: string | Date
@@ -22,8 +21,7 @@ export function buildVendorUser(vendorUser: RawVendorUser): VendorUser {
       vendorUser.vendor?.name !== undefined
         ? { id: vendorUser.vendor.id, name: vendorUser.vendor.name }
         : undefined,
-    first_name: vendorUser.first_name,
-    last_name: vendorUser.last_name,
+    name: vendorUser.name,
     email: vendorUser.email,
     is_active: vendorUser.is_active,
     created_at: toIsoString(vendorUser.created_at),

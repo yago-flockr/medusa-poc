@@ -24,6 +24,12 @@ export function buildOrderList(
         consignment_status: consignment.status,
         total: items.reduce((sum, item) => sum + Number(item.total ?? 0), 0),
         currency_code: consignment.order.currency_code,
+        earnings: {
+          subtotal: consignment.subtotal,
+          commission_rate: consignment.commission_rate,
+          commission_total: consignment.commission_total,
+          earning_total: consignment.earning_total,
+        },
         items: items.map((item) => ({
           id: item.id!,
           title: item.title ?? "",

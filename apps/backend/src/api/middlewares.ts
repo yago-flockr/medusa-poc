@@ -9,6 +9,7 @@ import { adminVendorRoutesMiddlewares } from "./admin/vendors/middlewares"
 import { adminVendorUserRoutesMiddlewares } from "./admin/vendor-users/middlewares"
 import { storeCartRoutesMiddlewares } from "./store/carts/middlewares"
 import { storeProductRoutesMiddlewares } from "./store/products/middlewares"
+import { storeAffiliateRoutesMiddlewares } from "./store/affiliates/middlewares"
 import { storeVendorRoutesMiddlewares } from "./store/vendors/middlewares"
 import { vendorRoutesMiddlewares } from "./vendors/middlewares"
 
@@ -23,6 +24,7 @@ export default defineMiddlewares({
     ...adminVendorUserRoutesMiddlewares,
     ...storeCartRoutesMiddlewares,
     ...storeProductRoutesMiddlewares,
+    ...storeAffiliateRoutesMiddlewares,
     ...storeVendorRoutesMiddlewares,
     ...affiliateRoutesMiddlewares,
     ...vendorRoutesMiddlewares,

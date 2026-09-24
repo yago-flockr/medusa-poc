@@ -1,27 +1,46 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { Modules } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import type { LinkDefinition } from "@medusajs/framework/types"
+import { graph } from "../../../lib/query"
 import { VENDOR_MODULE } from "../../../modules/vendor"
+import { buildConsignmentEarnings } from "../mappers/build-consignment-earnings"
 import type { VendorRoutableItem } from "./group-vendor-items"
 
 export type CreateConsignmentsStepInput = {
   orderId: string
   vendorsItems: Record<string, VendorRoutableItem[]>
+  currencyCode: string
 }
 
 export const createConsignmentsStep = createStep(
   "create-consignments",
   async (
-    { orderId, vendorsItems }: CreateConsignmentsStepInput,
+    { orderId, vendorsItems, currencyCode }: CreateConsignmentsStepInput,
     { container },
   ) => {
     const vendorModuleService = container.resolve(VENDOR_MODULE)
+    const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const vendorIds = Object.keys(vendorsItems)
+
+    const { data: vendors } = await graph(query, {
+      entity: "vendor",
+      fields: ["id", "commission_rate"],
+      filters: { id: vendorIds },
+    })
+
+    const commissionRateByVendorId = new Map(
+      vendors.map((vendor) => [vendor.id, Number(vendor.commission_rate ?? 0)]),
+    )
 
     const createdConsignments = await vendorModuleService.createConsignments(
       vendorIds.map((vendorId) => ({
         vendor_id: vendorId,
         status: "placed" as const,
+        currency_code: currencyCode,
+        ...buildConsignmentEarnings(
+          vendorsItems[vendorId],
+          commissionRateByVendorId.get(vendorId) ?? 0,
+        ),
       })),
     )
 

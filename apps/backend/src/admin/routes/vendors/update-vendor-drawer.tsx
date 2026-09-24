@@ -61,11 +61,7 @@ export const UpdateVendorDrawer = ({
               <ul className="flex flex-col gap-y-1">
                 {users.map((user) => (
                   <li className="flex items-center gap-x-2" key={user.id}>
-                    <Text size="small">
-                      {[user.first_name, user.last_name]
-                        .filter(Boolean)
-                        .join(" ") || user.email}{" "}
-                    </Text>
+                    <Text size="small">{user.name || user.email} </Text>
                     <Text size="small" className="text-ui-fg-subtle">
                       ({user.email})
                     </Text>

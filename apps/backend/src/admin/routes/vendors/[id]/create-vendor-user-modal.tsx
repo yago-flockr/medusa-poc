@@ -1,25 +1,24 @@
 import { Button, FocusModal, toast } from "@medusajs/ui"
 import { useState } from "react"
-import { OtpShow } from "../../components/otp-show"
-import { TitleSubtitle } from "../../components/title-subtitle"
+import { OtpShow } from "../../../components/otp-show"
+import { TitleSubtitle } from "../../../components/title-subtitle"
 import {
   CREATE_VENDOR_USER_FORM_ID,
   CreateVendorUserForm,
-} from "../../forms/vendor-users/create-vendor-user"
-import { useCreateOneVendorUser } from "../../hooks/mutations/vendor-users"
-import { useFindManyVendors } from "../../hooks/queries/vendors"
+} from "../../../forms/vendor-users/create-vendor-user"
+import { useCreateOneVendorUser } from "../../../hooks/mutations/vendor-users"
 
-export const CreateVendorUserModal = () => {
+export type CreateVendorUserModalProps = {
+  vendorId: string
+}
+
+export const CreateVendorUserModal = ({
+  vendorId,
+}: CreateVendorUserModalProps) => {
   const [open, setOpen] = useState(false)
   const [otp, setOtp] = useState<string>()
 
   const createOneVendorUser = useCreateOneVendorUser()
-  const findManyVendors = useFindManyVendors({ limit: 1000 })
-
-  const vendorOptions = (findManyVendors.data?.vendors ?? []).map((vendor) => ({
-    value: vendor.id,
-    label: vendor.name,
-  }))
 
   const handleClose = () => {
     setOpen(false)
@@ -50,16 +49,6 @@ export const CreateVendorUserModal = () => {
                 >
                   Close
                 </Button>
-                <Button
-                  size="small"
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(otp)
-                    handleClose()
-                  }}
-                >
-                  Copy
-                </Button>
               </div>
             </FocusModal.Footer>
           </>
@@ -73,7 +62,7 @@ export const CreateVendorUserModal = () => {
                 />
                 <CreateVendorUserForm
                   isLoading={createOneVendorUser.isPending}
-                  vendorOptions={vendorOptions}
+                  defaultValues={{ vendor_id: vendorId }}
                   onSubmit={(values) => {
                     createOneVendorUser.mutate(values, {
                       onSuccess: (data) => {
