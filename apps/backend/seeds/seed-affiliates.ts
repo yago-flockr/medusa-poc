@@ -1,6 +1,7 @@
 import { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createAffiliateWorkflow } from "../src/workflows/affiliates/create-affiliate"
+import { updateAffiliateWorkflow } from "../src/workflows/affiliates/update-affiliate"
 import { promoteAffiliateProductWorkflow } from "../src/workflows/affiliate-products/promote-affiliate-product"
 import { SEED_CONFIG } from "./seed-config"
 import { buildSeedPlan } from "./seed-plan"
@@ -35,6 +36,17 @@ export default async function seedAffiliates({ container }: ExecArgs) {
         `Affiliate login for "${fixture.name}" — email: ${result.affiliate.email}  password: ${result.password}  code: ${result.affiliate.handle}`,
       )
     }
+
+    await updateAffiliateWorkflow(container).run({
+      input: {
+        id: affiliateId,
+        storefront_content: {
+          name: fixture.name,
+          description: fixture.description,
+          hero_image_url: fixture.heroImageUrl,
+        },
+      },
+    })
 
     const { data: promoted } = await query.graph({
       entity: "affiliate",

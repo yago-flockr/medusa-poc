@@ -44,6 +44,7 @@ export type VendorPlan = {
   password: string
   userName: string
   description: string
+  heroImageUrl: string
   commissionRate: number
   locations: { name: string; address: SeedAddress }[]
   products: ProductPlan[]
@@ -53,6 +54,8 @@ export type AffiliatePlan = {
   name: string
   handle: string
   email: string
+  description: string
+  heroImageUrl: string
   password: string
   commissionRate: number
   productHandles: string[]
@@ -94,6 +97,10 @@ function assertSeedConfig(condition: boolean, message: string) {
   if (!condition) {
     throw new Error(`SEED_CONFIG: ${message}`)
   }
+}
+
+function heroImageUrl(handle: string) {
+  return `https://picsum.photos/seed/${handle}/1200/450`
 }
 
 function toHandle(value: string) {
@@ -334,6 +341,7 @@ export function buildSeedPlan(config: SeedConfig): SeedPlan {
       password: config.password,
       userName: faker.person.fullName(),
       description: faker.company.catchPhrase(),
+      heroImageUrl: heroImageUrl(handle),
       commissionRate: faker.number.float({
         ...config.commissionRate,
         multipleOf: 0.01,
@@ -383,7 +391,7 @@ export function buildSeedPlan(config: SeedConfig): SeedPlan {
         name,
         handle,
         description: faker.commerce.productDescription(),
-        heroImageUrl: faker.helpers.arrayElement(IMAGE_SETS)[0],
+        heroImageUrl: heroImageUrl(handle),
       }
     })
 
@@ -413,7 +421,7 @@ export function buildSeedPlan(config: SeedConfig): SeedPlan {
         title,
         handle,
         description: faker.commerce.productDescription(),
-        heroImageUrl: faker.helpers.arrayElement(IMAGE_SETS)[0],
+        heroImageUrl: heroImageUrl(handle),
       }
     })
 
@@ -424,11 +432,14 @@ export function buildSeedPlan(config: SeedConfig): SeedPlan {
   )
   const affiliates: AffiliatePlan[] = config.affiliates.map((login) => {
     const name = `${capitalize(login)} Affiliate`
+    const handle = toHandle(name)
 
     return {
       name,
-      handle: toHandle(name),
+      handle,
       email: `${login}@affiliate.com`,
+      description: faker.lorem.sentences(2),
+      heroImageUrl: heroImageUrl(handle),
       password: config.password,
       commissionRate: faker.number.float({
         ...config.commissionRate,

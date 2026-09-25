@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals"
 import { SEED_CONFIG, type SeedRange } from "../seed-config"
 import { buildSeedPlan, type SeedPlan } from "../seed-plan"
 
@@ -145,6 +146,18 @@ describe.each([1, 2, 3, 4, 5])(
         ),
         config.stockPerVariant,
       )
+    })
+
+    it("gives every storefront entity a description and hero image", () => {
+      for (const entity of [
+        ...plan.vendors,
+        ...plan.affiliates,
+        ...plan.categories,
+        ...plan.collections,
+      ]) {
+        expect(entity.description).not.toHaveLength(0)
+        expect(entity.heroImageUrl).toMatch(/^https:\/\//)
+      }
     })
 
     it("covers every configured option set", () => {

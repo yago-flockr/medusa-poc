@@ -65,18 +65,20 @@ export default async function Footer() {
   return (
     <footer className="w-full border-t">
       <div className="container flex flex-col gap-20">
-        <div className="grid grid-cols-2 gap-12 sm:grid-cols-5">
-          <div className="col-span-2 flex flex-col gap-6">
-            <LocalizedClientLink
-              href="/"
-              className="font-heading text-xl uppercase tracking-widest text-foreground"
-            >
-              Vitrine
-            </LocalizedClientLink>
-            <p className="text-sm text-muted-foreground">
-              A marketplace where every house is chosen by invitation.
-            </p>
-            <div className="flex flex-col gap-4 pt-4">
+        <div className="grid grid-cols-2 gap-12 sm:grid-cols-4">
+          <div className="col-span-full flex gap-8 max-sm:flex-col">
+            <div className="flex flex-col gap-4 flex-1">
+              <LocalizedClientLink
+                href="/"
+                className="font-heading text-xl uppercase tracking-widest text-foreground"
+              >
+                Vitrine
+              </LocalizedClientLink>
+              <p className="text-sm text-muted-foreground">
+                A marketplace where every house is chosen by invitation.
+              </p>
+            </div>
+            <div className="flex flex-col gap-4 flex-1">
               <span className="text-xs uppercase tracking-widest text-primary">
                 Correspondence
               </span>

@@ -93,6 +93,7 @@ export default async function seedVendors({ container }: ExecArgs) {
         entityId: vendorId,
         name: vendorFixture.name,
         description: vendorFixture.description,
+        hero_image_url: vendorFixture.heroImageUrl,
       },
     })
 

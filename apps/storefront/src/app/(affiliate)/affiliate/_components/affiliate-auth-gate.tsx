@@ -10,6 +10,9 @@ import { useEffect, useState } from "react"
 
 import { PanelShell } from "@/components/panel/panel-shell"
 import { AffiliateSidebar } from "./affiliate-sidebar"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { RiArrowLeftSLine } from "@remixicon/react"
 
 export function AffiliateAuthGate({ children }: { children: React.ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -25,7 +28,7 @@ export function AffiliateAuthGate({ children }: { children: React.ReactNode }) {
 
   if (!token) {
     return (
-      <div className="container flex min-h-screen items-center justify-center py-12">
+      <div className="container flex min-h-screen items-center justify-center py-12 flex-col gap-4">
         <Card className="w-full max-w-5xl gap-0 overflow-hidden p-0">
           <div className="grid lg:grid-cols-2">
             <Pitch
@@ -75,6 +78,15 @@ export function AffiliateAuthGate({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </Card>
+        <Button
+          size="sm"
+          variant="link"
+          nativeButton={false}
+          render={<Link href="/" />}
+        >
+          <RiArrowLeftSLine />
+          Back to storefront
+        </Button>
       </div>
     )
   }

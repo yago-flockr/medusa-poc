@@ -11,6 +11,7 @@ import FeaturedVendors from "@/store/modules/home/components/featured-vendors"
 import EditorialMonograph from "@/store/modules/home/components/editorial-monograph"
 import Hero from "@/store/modules/home/components/hero"
 import PrivateSalon from "@/store/modules/home/components/private-salon"
+import { Separator } from "@/components/ui/separator"
 
 export const metadata: Metadata = {
   title: "Store",
@@ -39,10 +40,12 @@ export default async function Home({
   return (
     <>
       <Hero />
+      <FeaturedCurators affiliates={affiliates} />
+      <Separator />
       <FeaturedCollections collections={collections} countryCode={country} />
       <EditorialMonograph />
       <FeaturedVendors vendors={vendors} />
-      <FeaturedCurators affiliates={affiliates} />
+      <Separator />
       <FeaturedCategories categories={categories} />
       <PrivateSalon />
     </>

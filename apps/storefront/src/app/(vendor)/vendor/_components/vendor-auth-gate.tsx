@@ -6,10 +6,13 @@ import { Card } from "@/components/ui/card"
 import { LoginForm } from "@/forms/login-form"
 
 import { PanelShell } from "@/components/panel/panel-shell"
-import { VendorSidebar } from "./vendor-sidebar"
+import { Button } from "@/components/ui/button"
 import { usePostAuthVendorEmailpass } from "@/vendor/hooks/mutations/auth"
 import { useVendorAuthStore } from "@/vendor/stores/auth-store"
+import { RiArrowLeftSLine } from "@remixicon/react"
+import Link from "next/link"
 import { useEffect, useState } from "react"
+import { VendorSidebar } from "./vendor-sidebar"
 
 export function VendorAuthGate({ children }: { children: React.ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -25,7 +28,7 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
 
   if (!token) {
     return (
-      <div className="container flex min-h-screen items-center justify-center py-12">
+      <div className="container flex min-h-screen items-center justify-center py-12 flex-col gap-4">
         <Card className="w-full max-w-5xl gap-0 overflow-hidden p-0">
           <div className="grid lg:grid-cols-2">
             <Pitch
@@ -75,6 +78,15 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </Card>
+        <Button
+          size="sm"
+          variant="link"
+          nativeButton={false}
+          render={<Link href="/" />}
+        >
+          <RiArrowLeftSLine />
+          Back to storefront
+        </Button>
       </div>
     )
   }
