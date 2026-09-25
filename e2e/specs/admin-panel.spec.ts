@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { adminUrl, loginAsAdmin } from "../lib/admin-login"
 import { FIRST_AFFILIATE } from "../lib/affiliate-login"
+import { loginAsVendor } from "../lib/vendor-login"
 
 // Every test that mutates uses its own throwaway record: the e2e database is
 // seeded once and shared, and resetting a seeded login would break the panel
@@ -105,4 +106,52 @@ test("staff reach a vendor's own users from the vendors page", async ({
     page.getByRole("heading", { name: `${vendorName} users` }),
   ).toBeVisible()
   await expect(page.locator("tbody tr").first()).toBeVisible()
+})
+
+test("staff can create a vendor and its first user, who can then log in", async ({
+  page,
+  browser,
+}) => {
+  const vendor = throwaway()
+
+  await loginAsAdmin(page)
+  await page.goto(adminUrl("/vendors"))
+
+  await page.getByRole("button", { name: "Create" }).first().click()
+  await page.locator("#create-vendor-name").fill(vendor.name)
+  await page.locator("#create-vendor-commission-rate").fill("0.15")
+  await page.getByRole("button", { name: "Create" }).last().click()
+
+  const row = page.locator("tbody tr", { hasText: vendor.name })
+  await expect(row).toHaveCount(1)
+  await expect(row).toContainText("15%")
+
+  await row.getByRole("button").last().click()
+  await page.getByRole("menuitem", { name: "Manage users" }).click()
+  await expect(
+    page.getByRole("heading", { name: `${vendor.name} users` }),
+  ).toBeVisible()
+
+  await page.getByRole("button", { name: "Create" }).first().click()
+  await page.locator("#create-vendor-user-email").fill(vendor.email)
+  await page.locator("#create-vendor-user-name").fill(vendor.name)
+  await page.getByRole("button", { name: "Create" }).last().click()
+
+  const otpPanel = page
+    .getByText("Generated one-time password")
+    .locator("xpath=../..")
+  await expect(otpPanel).toBeVisible()
+  const password = (await otpPanel.locator("p").last().innerText()).trim()
+  await page.getByRole("button", { name: "Close" }).click()
+
+  await expect(page.locator("tbody tr", { hasText: vendor.email })).toHaveCount(
+    1,
+  )
+
+  const vendorContext = await browser.newContext()
+  await loginAsVendor(await vendorContext.newPage(), {
+    email: vendor.email,
+    password,
+  })
+  await vendorContext.close()
 })

@@ -101,6 +101,76 @@ medusaIntegrationTestRunner({
         expect(detail.data.product.variants[0].sku).toBe("OWNER-SKU")
       })
 
+      const SIZES = ["S", "M", "L"]
+      const COLORS = ["Black", "White", "Grey"]
+
+      it.each([
+        { shape: "no options", options: [], variantCount: 1 },
+        {
+          shape: "size",
+          options: [{ title: "Size", values: SIZES }],
+          variantCount: 3,
+        },
+        {
+          shape: "color",
+          options: [{ title: "Color", values: COLORS }],
+          variantCount: 3,
+        },
+        {
+          shape: "size and color",
+          options: [
+            { title: "Size", values: SIZES },
+            { title: "Color", values: COLORS },
+          ],
+          variantCount: 9,
+        },
+      ])(
+        "creates a $shape product with one variant per option combination",
+        async ({ shape, options, variantCount }) => {
+          const authHeaders = {
+            headers: { Authorization: `Bearer ${ownerToken}` },
+          }
+          const combinations = options.reduce<Record<string, string>[]>(
+            (acc, option) =>
+              acc.flatMap((combination) =>
+                option.values.map((value) => ({
+                  ...combination,
+                  [option.title]: value,
+                })),
+              ),
+            [{}],
+          )
+          const skuPrefix = shape.toUpperCase().replace(/\s+/g, "-")
+
+          const created = await api.post(
+            "/vendors/products",
+            {
+              title: `Shape ${shape}`,
+              options,
+              variants: combinations.map((optionValues, index) => ({
+                optionValues,
+                price: 20,
+                sku: `${skuPrefix}-${index}`,
+              })),
+            },
+            authHeaders,
+          )
+
+          const detail = await api.get(
+            `/vendors/products/${created.data.product.id}`,
+            authHeaders,
+          )
+          const variants = detail.data.product.variants
+
+          expect(variants).toHaveLength(variantCount)
+          expect(
+            new Set(variants.map((variant: { sku: string }) => variant.sku)),
+          ).toEqual(
+            new Set(combinations.map((_, index) => `${skuPrefix}-${index}`)),
+          )
+        },
+      )
+
       it("rejects a cross-vendor variant id smuggled into an update payload", async () => {
         const ownerHeaders = {
           headers: { Authorization: `Bearer ${ownerToken}` },

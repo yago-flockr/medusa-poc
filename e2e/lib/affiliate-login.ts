@@ -7,19 +7,21 @@ export type AffiliateFixture = {
   handle: string
   commissionRate: number
   promotedProductTitle: string
+  promotedProductHandle: string
 }
 
 const [firstAffiliate] = SEED_PLAN.affiliates
+const firstPromotedProduct = SEED_PLAN.vendors
+  .flatMap((vendor) => vendor.products)
+  .find((product) => product.handle === firstAffiliate.productHandles[0])!
 
 export const FIRST_AFFILIATE: AffiliateFixture = {
   email: firstAffiliate.email,
   password: firstAffiliate.password,
   handle: firstAffiliate.handle,
   commissionRate: firstAffiliate.commissionRate,
-  promotedProductTitle: SEED_PLAN.vendors
-    .flatMap((vendor) => vendor.products)
-    .find((product) => product.handle === firstAffiliate.productHandles[0])!
-    .title,
+  promotedProductTitle: firstPromotedProduct.title,
+  promotedProductHandle: firstPromotedProduct.handle,
 }
 
 export async function loginAsAffiliate(

@@ -34,4 +34,36 @@ describe("resolveProductVariants", () => {
     expect(result.productOptions).toBe(options)
     expect(result.productVariants.map((v) => v.title)).toEqual(["S", "M"])
   })
+
+  it("titles a two-option variant by both values and keeps each combination's options", () => {
+    const options = [
+      { title: "Size", values: ["S", "M"] },
+      { title: "Color", values: ["Black", "White"] },
+    ]
+    const combinations = [
+      { Size: "S", Color: "Black" },
+      { Size: "S", Color: "White" },
+      { Size: "M", Color: "Black" },
+      { Size: "M", Color: "White" },
+    ]
+    const result = resolveProductVariants(
+      options,
+      combinations.map((optionValues, index) => ({
+        optionValues,
+        price: 1000,
+        sku: `SKU-${index}`,
+      })),
+      ["gbp"],
+    )
+
+    expect(result.productVariants.map((variant) => variant.title)).toEqual([
+      "S / Black",
+      "S / White",
+      "M / Black",
+      "M / White",
+    ])
+    expect(result.productVariants.map((variant) => variant.options)).toEqual(
+      combinations,
+    )
+  })
 })

@@ -21,8 +21,12 @@ function toVendorFixture(
 
 export const FIRST_VENDOR = toVendorFixture(SEED_PLAN.vendors[0])
 export const SECOND_VENDOR = toVendorFixture(SEED_PLAN.vendors[1])
+export const THIRD_VENDOR = toVendorFixture(SEED_PLAN.vendors[2])
 
-export async function loginAsVendor(page: Page, vendor: VendorFixture) {
+export async function loginAsVendor(
+  page: Page,
+  vendor: Pick<VendorFixture, "email" | "password">,
+) {
   await page.goto("/vendor")
 
   await page.getByLabel("Email").fill(vendor.email)

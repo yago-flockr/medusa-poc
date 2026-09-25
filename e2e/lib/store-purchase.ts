@@ -31,7 +31,7 @@ async function fillShippingAddress(page: Page) {
   await page.getByTestId("shipping-phone-input").fill(BUYER.phone)
 }
 
-export async function addOpenProductToCart(page: Page) {
+export async function addOpenProductToCart(page: Page, expectedCartCount = 1) {
   await expect(page.getByTestId("product-container")).toBeVisible()
   await selectEveryProductOption(page)
 
@@ -39,7 +39,9 @@ export async function addOpenProductToCart(page: Page) {
   await expect(addToCart).toBeEnabled()
   await addToCart.click()
 
-  await expect(page.getByTestId("nav-cart-link")).toContainText("1")
+  await expect(page.getByTestId("nav-cart-link")).toContainText(
+    String(expectedCartCount),
+  )
 }
 
 export async function checkoutCartAndPlaceOrder(page: Page) {
@@ -54,10 +56,16 @@ export async function checkoutCartAndPlaceOrder(page: Page) {
 
   // Each checkout step is compiled on first hit by the dev server, so the
   // wait here is for a cold build, not just a round trip.
-  await expect(page.getByTestId("delivery-options-container")).toBeVisible({
+  await expect(
+    page.getByTestId("delivery-options-container").first(),
+  ).toBeVisible({
     timeout: 60_000,
   })
-  await page.getByTestId("delivery-option-radio").first().click()
+  for (const group of await page
+    .getByTestId("delivery-options-container")
+    .all()) {
+    await group.getByTestId("delivery-option-radio").first().click()
+  }
   await page.getByTestId("submit-delivery-option-button").click()
 
   await page

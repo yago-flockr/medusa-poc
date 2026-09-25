@@ -10,6 +10,7 @@ import {
 import { ProductStatus } from "@medusajs/framework/utils"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createAdminUserWorkflow } from "../../src/workflows/create-admin-user"
+import { createAffiliateWorkflow } from "../../src/workflows/affiliates/create-affiliate"
 import { createVendorWorkflow } from "../../src/workflows/vendors/create-vendor"
 import { createVendorUserWorkflow } from "../../src/workflows/vendor-users/create-vendor-user"
 import { createVendorStockLocationWorkflow } from "../../src/workflows/vendor-stock-locations/create-vendor-stock-location"
@@ -40,6 +41,8 @@ medusaIntegrationTestRunner({
       let vendorlessVariantId: string
       let vendorA: SeededVendor
       let vendorB: SeededVendor
+      let twoLocationVendor: SeededVendor
+      let affiliate: { id: string; handle: string; commissionRate: number }
 
       const createCart = async () => {
         const response = await api.post(
@@ -70,6 +73,7 @@ medusaIntegrationTestRunner({
         handle: string,
         commissionRate: number,
         unitPrice: number,
+        stockByLocation: number[] = [50],
       ): Promise<SeededVendor> => {
         const container = getContainer()
 
@@ -94,20 +98,24 @@ medusaIntegrationTestRunner({
         })
         const actorId = vendorUser.vendor_user.id
 
-        const { result: location } = await createVendorStockLocationWorkflow(
-          container,
-        ).run({
-          input: {
-            actorId,
-            name: `${handle} Warehouse`,
-            address: {
-              address_1: "1 Test Street",
-              city: "London",
-              postal_code: "E1 6AN",
-              country_code: "gb",
+        const locationIds: string[] = []
+        for (const [index] of stockByLocation.entries()) {
+          const { result: location } = await createVendorStockLocationWorkflow(
+            container,
+          ).run({
+            input: {
+              actorId,
+              name: `${handle} Warehouse ${index + 1}`,
+              address: {
+                address_1: "1 Test Street",
+                city: "London",
+                postal_code: "E1 6AN",
+                country_code: "gb",
+              },
             },
-          },
-        })
+          })
+          locationIds.push(location.stock_location.id)
+        }
 
         const { result: product } = await createVendorProductWorkflow(
           container,
@@ -141,15 +149,17 @@ medusaIntegrationTestRunner({
           input: { actorId, productId: product.id },
         })
 
-        await setVendorInventoryLevelWorkflow(container).run({
-          input: {
-            actorId,
-            productId: product.id,
-            variantId: detail.variants[0].id,
-            locationId: location.stock_location.id,
-            quantity: 50,
-          },
-        })
+        for (const [index, quantity] of stockByLocation.entries()) {
+          await setVendorInventoryLevelWorkflow(container).run({
+            input: {
+              actorId,
+              productId: product.id,
+              variantId: detail.variants[0].id,
+              locationId: locationIds[index],
+              quantity,
+            },
+          })
+        }
 
         return {
           vendorId: vendor.id,
@@ -296,6 +306,28 @@ medusaIntegrationTestRunner({
 
         vendorA = await seedVendorWithProduct("alpha", 0.1, 100)
         vendorB = await seedVendorWithProduct("beta", 0.25, 40)
+        twoLocationVendor = await seedVendorWithProduct(
+          "delta",
+          0.2,
+          30,
+          [0, 50],
+        )
+
+        const { result: createdAffiliate } = await createAffiliateWorkflow(
+          container,
+        ).run({
+          input: {
+            name: "Gamma Affiliate",
+            email: "gamma@affiliate.test",
+            password: "test1234",
+            commission_rate: 0.1,
+          },
+        })
+        affiliate = {
+          id: createdAffiliate.affiliate.id,
+          handle: createdAffiliate.affiliate.handle,
+          commissionRate: 0.1,
+        }
       })
 
       describe("an order across two vendors", () => {
@@ -319,17 +351,26 @@ medusaIntegrationTestRunner({
           }
         }
 
-        const completeTwoVendorCart = () =>
+        const completeCart = (
+          vendors: SeededVendor[],
+          affiliateHandle?: string,
+        ) =>
           readable(async () => {
             const cart = (
               await api.post(
                 "/store/carts",
-                { region_id: vendorRegionId, email: "buyer@test.com" },
+                {
+                  region_id: vendorRegionId,
+                  email: "buyer@test.com",
+                  additional_data: affiliateHandle
+                    ? { affiliate_handle: affiliateHandle }
+                    : undefined,
+                },
                 vendorStoreHeaders,
               )
             ).data.cart
 
-            for (const vendor of [vendorA, vendorB]) {
+            for (const vendor of vendors) {
               await api.post(
                 `/store/carts/${cart.id}/line-items`,
                 { variant_id: vendor.variantId, quantity: 1 },
@@ -388,7 +429,7 @@ medusaIntegrationTestRunner({
               vendorStoreHeaders,
             )
 
-            return response.data.order
+            return { order: response.data.order, shippingOptions }
           })
 
         const consignmentsForOrder = async (orderId: string) => {
@@ -410,7 +451,7 @@ medusaIntegrationTestRunner({
         }
 
         it("records what each vendor earned, at that vendor's own rate", async () => {
-          const order = await completeTwoVendorCart()
+          const { order } = await completeCart([vendorA, vendorB])
           const consignments = await consignmentsForOrder(order.id)
 
           expect(consignments).toHaveLength(2)
@@ -431,8 +472,64 @@ medusaIntegrationTestRunner({
           }
         })
 
+        const referralsForOrder = async (orderId: string) => {
+          const query = getContainer().resolve(ContainerRegistrationKeys.QUERY)
+          const { data: links } = await graph(query, {
+            entity: "referral_order",
+            fields: [
+              "referral.affiliate_id",
+              "referral.currency_code",
+              "referral.subtotal",
+              "referral.commission_rate",
+              "referral.commission_total",
+            ],
+            filters: { order_id: orderId },
+          })
+
+          return links.map((link) => link.referral!)
+        }
+
+        it("splits an affiliate's order per vendor but refers it once, on the whole subtotal", async () => {
+          const { order } = await completeCart(
+            [vendorA, vendorB],
+            affiliate.handle,
+          )
+          const subtotal = vendorA.unitPrice + vendorB.unitPrice
+
+          expect(await consignmentsForOrder(order.id)).toHaveLength(2)
+          expect(await referralsForOrder(order.id)).toEqual([
+            expect.objectContaining({
+              affiliate_id: affiliate.id,
+              currency_code: "gbp",
+              subtotal,
+              commission_rate: affiliate.commissionRate,
+              commission_total: subtotal * affiliate.commissionRate,
+            }),
+          ])
+        })
+
+        it("offers a two-location vendor one option and ships from the location holding stock", async () => {
+          const { order, shippingOptions } = await completeCart([
+            twoLocationVendor,
+          ])
+
+          expect(shippingOptions).toHaveLength(1)
+          expect(await consignmentsForOrder(order.id)).toEqual([
+            expect.objectContaining({
+              vendor_id: twoLocationVendor.vendorId,
+              subtotal: twoLocationVendor.unitPrice,
+            }),
+          ])
+        })
+
+        it("refers nothing when the cart carried no affiliate code", async () => {
+          const { order } = await completeCart([vendorA, vendorB])
+
+          expect(await referralsForOrder(order.id)).toEqual([])
+        })
+
         it("never lets one vendor's commission touch another's earnings", async () => {
-          const order = await completeTwoVendorCart()
+          const { order } = await completeCart([vendorA, vendorB])
           const consignments = await consignmentsForOrder(order.id)
 
           const totals = consignments.map(
