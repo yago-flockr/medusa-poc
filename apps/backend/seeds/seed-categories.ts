@@ -3,52 +3,14 @@ import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { createProductCategoriesWorkflow } from "@medusajs/medusa/core-flows"
 import { graph } from "../src/lib/query"
 import { updateStorefrontContentWorkflow } from "../src/workflows/shared/update-storefront-content"
-
-type CategoryFixture = {
-  name: string
-  handle: string
-  description: string
-  heroImageUrl: string
-}
-
-export const CATEGORY_FIXTURES: CategoryFixture[] = [
-  {
-    name: "T-shirts",
-    handle: "t-shirts",
-    description:
-      "Everyday weights and garment-dyed finishes, cut for repeat wear.",
-    heroImageUrl:
-      "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
-  },
-  {
-    name: "Sweats & knits",
-    handle: "sweats-and-knits",
-    description:
-      "Loopback sweats, merino crews and half-zips for the colder half of the year.",
-    heroImageUrl:
-      "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
-  },
-  {
-    name: "Shirts",
-    handle: "shirts",
-    description: "Overshirts and open-weave linen, made to be layered.",
-    heroImageUrl:
-      "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-front.png",
-  },
-  {
-    name: "Shorts & trousers",
-    handle: "shorts-and-trousers",
-    description: "Drawcord trousers and running shorts, built to move.",
-    heroImageUrl:
-      "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
-  },
-]
+import { SEED_CONFIG } from "./seed-config"
+import { buildSeedPlan } from "./seed-plan"
 
 export default async function seedCategories({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-  for (const fixture of CATEGORY_FIXTURES) {
+  for (const fixture of buildSeedPlan(SEED_CONFIG).categories) {
     const { data: existing } = await graph(query, {
       entity: "product_category",
       fields: ["id"],

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test"
-import { ASD_APPAREL, loginAsVendor } from "../lib/vendor-login"
+import { FIRST_VENDOR, loginAsVendor } from "../lib/vendor-login"
 
 test.describe("storefront error paths", () => {
   test("a product that does not exist shows the not-found page", async ({
@@ -47,7 +47,7 @@ test.describe("vendor panel error paths", () => {
   }) => {
     await page.goto("/vendor")
 
-    await page.getByLabel("Email").fill(ASD_APPAREL.email)
+    await page.getByLabel("Email").fill(FIRST_VENDOR.email)
     await page.getByLabel("Password").fill("definitely-not-the-password")
     await page.getByRole("button", { name: "Log in" }).click()
 
@@ -92,7 +92,7 @@ test.describe("vendor panel error paths", () => {
   test("clearing the stored token logs the vendor back out", async ({
     page,
   }) => {
-    await loginAsVendor(page, ASD_APPAREL)
+    await loginAsVendor(page, FIRST_VENDOR)
 
     await page.evaluate(() => window.localStorage.removeItem("vendor_token"))
     await page.goto("/vendor/products")

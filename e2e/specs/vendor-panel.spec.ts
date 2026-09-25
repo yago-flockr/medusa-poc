@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test"
-import { ASD_APPAREL, ZXC_THREADS, loginAsVendor } from "../lib/vendor-login"
+import { FIRST_VENDOR, SECOND_VENDOR, loginAsVendor } from "../lib/vendor-login"
 
 test("a vendor can log in and reach every panel section", async ({ page }) => {
-  await loginAsVendor(page, ASD_APPAREL)
+  await loginAsVendor(page, FIRST_VENDOR)
 
   await expect(page.getByRole("link", { name: "Products" })).toBeVisible()
   await expect(page.getByRole("link", { name: "Orders" })).toBeVisible()
@@ -10,20 +10,20 @@ test("a vendor can log in and reach every panel section", async ({ page }) => {
 })
 
 test("a vendor sees only their own products", async ({ page }) => {
-  await loginAsVendor(page, ASD_APPAREL)
+  await loginAsVendor(page, FIRST_VENDOR)
 
   await page.goto("/vendor/products")
 
   await expect(
-    page.getByText(ASD_APPAREL.ownProductTitle, { exact: true }),
+    page.getByText(FIRST_VENDOR.ownProductTitle, { exact: true }),
   ).toBeVisible()
   await expect(
-    page.getByText(ZXC_THREADS.ownProductTitle, { exact: true }),
+    page.getByText(SECOND_VENDOR.ownProductTitle, { exact: true }),
   ).toHaveCount(0)
 })
 
 test("a vendor can open their orders page", async ({ page }) => {
-  await loginAsVendor(page, ASD_APPAREL)
+  await loginAsVendor(page, FIRST_VENDOR)
 
   await page.goto("/vendor/orders")
 

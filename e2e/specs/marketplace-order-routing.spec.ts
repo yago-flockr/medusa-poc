@@ -1,16 +1,19 @@
 import { expect, test } from "@playwright/test"
-import { ASD_APPAREL, ZXC_THREADS, loginAsVendor } from "../lib/vendor-login"
+import { FIRST_VENDOR, SECOND_VENDOR, loginAsVendor } from "../lib/vendor-login"
 import { buyProductByHandle } from "../lib/store-purchase"
 
 test("an order reaches the vendor that owns the product, and no other vendor", async ({
   page,
   browser,
 }) => {
-  const orderNumber = await buyProductByHandle(page, "asd-apparel-classic-tee")
+  const orderNumber = await buyProductByHandle(
+    page,
+    FIRST_VENDOR.ownProductHandle,
+  )
 
   const owningVendorContext = await browser.newContext()
   const owningVendorPage = await owningVendorContext.newPage()
-  await loginAsVendor(owningVendorPage, ASD_APPAREL)
+  await loginAsVendor(owningVendorPage, FIRST_VENDOR)
   await owningVendorPage.goto("/vendor/orders")
 
   await expect(
@@ -20,7 +23,7 @@ test("an order reaches the vendor that owns the product, and no other vendor", a
 
   const otherVendorContext = await browser.newContext()
   const otherVendorPage = await otherVendorContext.newPage()
-  await loginAsVendor(otherVendorPage, ZXC_THREADS)
+  await loginAsVendor(otherVendorPage, SECOND_VENDOR)
   await otherVendorPage.goto("/vendor/orders")
 
   await expect(

@@ -1,31 +1,36 @@
 import { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createAdminUserWorkflow } from "../src/workflows/create-admin-user"
-
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "yago@flockr.com"
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "secret"
+import { SEED_CONFIG } from "./seed-config"
+import { buildSeedPlan } from "./seed-plan"
 
 export default async function seedIdentity({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-  logger.info("Seeding the admin user...")
+  const staff =
+    process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD
+      ? [
+          {
+            email: process.env.ADMIN_EMAIL,
+            password: process.env.ADMIN_PASSWORD,
+          },
+        ]
+      : buildSeedPlan(SEED_CONFIG).staff
 
-  const { data: existingAdmins } = await query.graph({
-    entity: "user",
-    fields: ["id"],
-    filters: { email: ADMIN_EMAIL },
-  })
+  for (const { email, password } of staff) {
+    const { data: existing } = await query.graph({
+      entity: "user",
+      fields: ["id"],
+      filters: { email },
+    })
 
-  if (existingAdmins[0]) {
-    logger.info(`Admin user "${ADMIN_EMAIL}" already exists, skipping.`)
-    return
+    if (existing[0]) {
+      logger.info(`Staff user "${email}" already exists, skipping.`)
+      continue
+    }
+
+    await createAdminUserWorkflow(container).run({ input: { email, password } })
+    logger.info(`Staff login — email: ${email}  password: ${password}`)
   }
-
-  await createAdminUserWorkflow(container).run({
-    input: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
-  })
-  logger.info(
-    `Admin login — email: ${ADMIN_EMAIL}  password: ${ADMIN_PASSWORD}`,
-  )
 }

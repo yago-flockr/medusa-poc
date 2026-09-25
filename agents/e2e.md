@@ -37,8 +37,10 @@ boot, and that key only exists after seeding. The script resets, migrates,
 seeds, then writes the key to `e2e/.publishable-key`, which the config reads
 before starting anything. Do not move seeding into `globalSetup`.
 
-`seeds/seed.ts` currently runs only `seed-identity` (catalog and vendors are
-commented out), so `prepare-db.ts` calls the three seed scripts explicitly.
+`prepare-db.ts` runs the backend's single `pnpm run seed` entry, so the e2e DB
+gets exactly the dev dataset. Fixtures come from `lib/seed-plan.ts`, which
+rebuilds the backend's seed plan from `SEED_CONFIG`. Never hardcode a seeded
+title/handle/email in a spec.
 
 ## Conventions
 

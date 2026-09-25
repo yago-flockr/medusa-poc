@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { adminUrl, loginAsAdmin } from "../lib/admin-login"
-import { QWE_CREATORS } from "../lib/affiliate-login"
+import { FIRST_AFFILIATE } from "../lib/affiliate-login"
 
 // Every test that mutates uses its own throwaway record: the e2e database is
 // seeded once and shared, and resetting a seeded login would break the panel
@@ -23,9 +23,11 @@ test("staff can open the affiliates page and see a seeded affiliate", async ({
   await loginAsAdmin(page)
   await openAffiliates(page)
 
-  const row = page.locator("tbody tr", { hasText: QWE_CREATORS.handle })
+  const row = page.locator("tbody tr", { hasText: FIRST_AFFILIATE.handle })
   await expect(row).toHaveCount(1)
-  await expect(row).toContainText("10%")
+  await expect(row).toContainText(
+    `${Math.round(FIRST_AFFILIATE.commissionRate * 100)}%`,
+  )
   await expect(row).toContainText("Active")
 })
 

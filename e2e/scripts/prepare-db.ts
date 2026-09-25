@@ -70,21 +70,8 @@ async function main() {
   console.log("[e2e] migrating")
   runInBackend(["exec", "medusa", "db:migrate"])
 
-  console.log("[e2e] seeding catalog")
-  runInBackend(["run", "seed:catalog"])
-
-  console.log("[e2e] seeding categories")
-  runInBackend(["run", "seed:categories"])
-
-  console.log("[e2e] seeding identity")
-  runInBackend(["run", "seed:identity"])
-
-  console.log("[e2e] seeding vendors")
-  runInBackend(["run", "seed:vendors"])
-
-  // After vendors: the affiliate fixture promotes a vendor's product.
-  console.log("[e2e] seeding affiliates")
-  runInBackend(["run", "seed:affiliates"])
+  console.log("[e2e] seeding")
+  runInBackend(["run", "seed"])
 
   writeFileSync(PUBLISHABLE_KEY_FILE, await readPublishableKey())
   console.log("[e2e] ready")

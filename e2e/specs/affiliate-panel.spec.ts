@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test"
-import { QWE_CREATORS, loginAsAffiliate } from "../lib/affiliate-login"
+import { FIRST_AFFILIATE, loginAsAffiliate } from "../lib/affiliate-login"
 
 test("an affiliate can log in and reach every panel section", async ({
   page,
 }) => {
-  await loginAsAffiliate(page, QWE_CREATORS)
+  await loginAsAffiliate(page, FIRST_AFFILIATE)
 
   await expect(page.getByRole("link", { name: "Dashboard" })).toBeVisible()
   await expect(page.getByRole("link", { name: "Products" })).toBeVisible()
@@ -12,12 +12,12 @@ test("an affiliate can log in and reach every panel section", async ({
 })
 
 test("an affiliate sees the products they promote", async ({ page }) => {
-  await loginAsAffiliate(page, QWE_CREATORS)
+  await loginAsAffiliate(page, FIRST_AFFILIATE)
 
   await page.goto("/affiliate/products")
 
   const promotedCard = page.locator('[data-slot="item"]').filter({
-    has: page.getByText(QWE_CREATORS.promotedProductTitle, { exact: true }),
+    has: page.getByText(FIRST_AFFILIATE.promotedProductTitle, { exact: true }),
   })
 
   await expect(promotedCard).toHaveCount(1)
@@ -29,7 +29,7 @@ test("an affiliate sees the products they promote", async ({ page }) => {
 test("an affiliate can promote and then stop promoting a product", async ({
   page,
 }) => {
-  await loginAsAffiliate(page, QWE_CREATORS)
+  await loginAsAffiliate(page, FIRST_AFFILIATE)
   await page.goto("/affiliate/products")
 
   await page.getByRole("button", { name: "Promote", exact: true }).click()
@@ -57,13 +57,13 @@ test("an affiliate can promote and then stop promoting a product", async ({
 })
 
 test("the dashboard names the affiliate's own code", async ({ page }) => {
-  await loginAsAffiliate(page, QWE_CREATORS)
+  await loginAsAffiliate(page, FIRST_AFFILIATE)
 
   await page.goto("/affiliate")
 
   await expect(
     page.getByText(
-      `Everything bought through your code "${QWE_CREATORS.handle}"`,
+      `Everything bought through your code "${FIRST_AFFILIATE.handle}"`,
     ),
   ).toBeVisible()
 })
@@ -71,7 +71,7 @@ test("the dashboard names the affiliate's own code", async ({ page }) => {
 test("signing out returns the affiliate to the log in screen", async ({
   page,
 }) => {
-  await loginAsAffiliate(page, QWE_CREATORS)
+  await loginAsAffiliate(page, FIRST_AFFILIATE)
 
   await page.getByRole("button", { name: "Sign Out" }).click()
 

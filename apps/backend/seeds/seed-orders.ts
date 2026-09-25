@@ -13,29 +13,8 @@ import {
 import { graph } from "../src/lib/query"
 import { createConsignmentsWorkflow } from "../src/workflows/create-consignments/create-consignments"
 import { listVendorShippingOptionsWorkflow } from "../src/workflows/vendor-shipping-options/list-vendor-shipping-options"
-import { DEFAULT_COUNTRY_CODE } from "../src/lib/markets"
-
-type OrderFixture = {
-  email: string
-  vendorHandles: string[]
-  quantity: number
-  affiliateHandle?: string
-}
-
-const ORDER_FIXTURES: OrderFixture[] = [
-  {
-    email: "ana@example.com",
-    vendorHandles: ["asd-apparel", "zxc-threads"],
-    quantity: 1,
-  },
-  { email: "bruno@example.com", vendorHandles: ["asd-apparel"], quantity: 2 },
-  {
-    email: "carla@example.com",
-    vendorHandles: ["zxc-threads"],
-    quantity: 3,
-    affiliateHandle: "qwe-creators",
-  },
-]
+import { SEED_CONFIG } from "./seed-config"
+import { buildSeedPlan } from "./seed-plan"
 
 export default async function seedOrders({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
@@ -70,34 +49,23 @@ export default async function seedOrders({ container }: ExecArgs) {
     )
   }
 
-  for (const fixture of ORDER_FIXTURES) {
-    const variantIds: string[] = []
+  for (const fixture of buildSeedPlan(SEED_CONFIG).orders) {
+    const skus = fixture.items.map((item) => item.sku)
+    const { data: variants } = await graph(query, {
+      entity: "product_variant",
+      fields: ["id", "sku"],
+      filters: { sku: skus },
+    })
+    const variantIdBySku = new Map(
+      variants.map((variant) => [variant.sku, variant.id]),
+    )
+    const missing = skus.filter((sku) => !variantIdBySku.has(sku))
 
-    for (const vendorHandle of fixture.vendorHandles) {
-      const { data: vendors } = await graph(query, {
-        entity: "vendor",
-        fields: [
-          "id",
-          "products.id",
-          "products.status",
-          "products.variants.id",
-        ],
-        filters: { handle: vendorHandle },
-      })
-
-      const product = (vendors[0]?.products ?? []).find(
-        (candidate) => candidate?.status === "published",
+    if (missing.length) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Run seed:vendors before seed:orders — missing variants: ${missing.join(", ")}`,
       )
-      const variantId = product?.variants?.[0]?.id
-
-      if (!variantId) {
-        throw new MedusaError(
-          MedusaError.Types.NOT_FOUND,
-          `No published product for vendor "${vendorHandle}"`,
-        )
-      }
-
-      variantIds.push(variantId)
     }
 
     const { result: cart } = await createCartWorkflow(container).run({
@@ -107,12 +75,9 @@ export default async function seedOrders({ container }: ExecArgs) {
         email: fixture.email,
         currency_code: region.currency_code,
         shipping_address: {
-          first_name: fixture.email.split("@")[0],
-          last_name: "Demo",
-          address_1: "1 Demo Street",
-          city: "London",
-          country_code: DEFAULT_COUNTRY_CODE,
-          postal_code: "E1 6AN",
+          first_name: fixture.firstName,
+          last_name: fixture.lastName,
+          ...fixture.address,
         },
         metadata: fixture.affiliateHandle
           ? { affiliate_handle: fixture.affiliateHandle }
@@ -123,9 +88,9 @@ export default async function seedOrders({ container }: ExecArgs) {
     await addToCartWorkflow(container).run({
       input: {
         cart_id: cart.id,
-        items: variantIds.map((variantId) => ({
-          variant_id: variantId,
-          quantity: fixture.quantity,
+        items: fixture.items.map((item) => ({
+          variant_id: variantIdBySku.get(item.sku)!,
+          quantity: item.quantity,
         })),
       },
     })
@@ -157,7 +122,7 @@ export default async function seedOrders({ container }: ExecArgs) {
     })
 
     logger.info(
-      `Seeded order for ${fixture.email} across ${fixture.vendorHandles.join(", ")}${
+      `Seeded order for ${fixture.email} with ${fixture.items.length} items${
         fixture.affiliateHandle ? ` via "${fixture.affiliateHandle}"` : ""
       } (${result.consignments.length} consignments).`,
     )

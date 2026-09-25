@@ -97,7 +97,7 @@ pnpm exec medusa db:migrate
 pnpm run seed
 ```
 
-Creates demo store/catalogue data, an admin user (`qwe@flockr.com` / `qwe`, override with `ADMIN_EMAIL`/`ADMIN_PASSWORD`), and several demo vendors with vendor users and vendor products. See [Seeding](#seeding) below.
+Creates the store setup plus demo staff, vendors, affiliates, categories, collections, products and orders. Every login's password is `123`. See [Seeding](#seeding) below.
 
 7. Start the backend (terminal 1):
 
@@ -136,11 +136,24 @@ pnpm run storefront:dev
 
 ## Seeding
 
-`pnpm run seed` (from `apps/backend`) chains three scripts, in order, all living in `apps/backend/seeds/` (not `src/` — this is demo/test data, not application source):
+`pnpm run seed` (from `apps/backend`) seeds everything. **To change what gets seeded, edit `apps/backend/seeds/seed-config.ts`**. That file holds every count and range (vendors, products per vendor, orders per affiliate, …). Nothing else needs to change.
 
-- **`seed:catalog`** (`seed-catalog.ts`) runs first: store, regions, shipping, product categories/options, and demo catalogue products. One-shot — it assumes a fresh DB and errors if run twice (unique product handles, duplicate regions, etc.).
-- **`seed:identity`** (`seed-identity.ts`) runs second and is idempotent: creates the admin user, skipping if it already exists. Run this part alone with `pnpm run seed:identity`.
-- **`seed:vendors`** (`seed-vendors.ts`) runs third and is idempotent: creates several demo vendors, each with a vendor user and 2–3 vendor products (each with 2–3 priced variants), skipping anything (vendor/vendor user/product) that already exists by handle/email. A vendor user's password is generated once, at creation, and only ever printed that one time — re-running after it exists just logs a reminder, not a new password. It needs the shipping profile and sales channel `seed:catalog` creates, so it can't run before it. Run this part alone with `pnpm run seed:vendors`.
+| Logins (password `123`) |                                                                                     |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| Staff (`/app`)          | `admin@staff.com`                                                                   |
+| Vendors                 | `main@vendor.com`, `qwe@vendor.com`, `asd@vendor.com`, `zxc@vendor.com`             |
+| Affiliates              | `main@affiliate.com`, `qwe@affiliate.com`, `asd@affiliate.com`, `zxc@affiliate.com` |
+
+A login is `<name>@<role>.com`, taken from the `staff` / `vendors` / `affiliates` lists in the config. Add a name to add a login.
+
+How it fits together:
+
+- `seed-config.ts` — the knobs.
+- `seed-plan.ts` — `buildSeedPlan(config)` turns them into concrete fixtures, using faker seeded with `randomSeed`. Same config → same data every run. Throws if the ranges contradict each other.
+- `seed-<entity>.ts` — each one creates its slice of the plan through the app's real workflows. Order: catalog → categories → collections → identity → vendors → affiliates → orders. Each also runs alone with `pnpm run seed:<entity>`.
+- Every step except `seed:catalog` is idempotent (it skips anything that already exists by handle/email). Orders are skipped once any exist.
+
+After changing the config, run `pnpm run db:reset`. Re-seeding on top of old data mixes the two datasets.
 
 If you do need a true clean slate (e.g. the catalogue step above already ran and you want to redo it), `pnpm run db:reset` (repo root) drops and recreates the database schema, migrates, reseeds everything from zero, and re-syncs the storefront's publishable API key (seeding always generates a new one, so the storefront would otherwise be left pointing at a key that no longer exists). Requires Docker running; prompts for confirmation unless run as `pnpm run db:reset -- -y`. This is the occasional full-reset option, not something to reach for between every feature — `pnpm run seed` alone covers that.
 

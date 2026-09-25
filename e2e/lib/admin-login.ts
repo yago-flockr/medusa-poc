@@ -2,8 +2,8 @@ import { expect, type Page } from "@playwright/test"
 import { BACKEND_URL } from "./e2e-config"
 
 export const ADMIN = {
-  email: "yago@flockr.com",
-  password: "secret",
+  email: "admin@staff.com",
+  password: "123",
 }
 
 export const adminUrl = (path: string) => `${BACKEND_URL}/app${path}`

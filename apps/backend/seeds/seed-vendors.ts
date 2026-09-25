@@ -4,10 +4,7 @@ import {
   MedusaError,
   ProductStatus,
 } from "@medusajs/framework/utils"
-import {
-  createCollectionsWorkflow,
-  updateProductsWorkflow,
-} from "@medusajs/medusa/core-flows"
+import { updateProductsWorkflow } from "@medusajs/medusa/core-flows"
 import { graph } from "../src/lib/query"
 import { VENDOR_MODULE } from "../src/modules/vendor"
 import { updateStorefrontContentWorkflow } from "../src/workflows/shared/update-storefront-content"
@@ -18,356 +15,55 @@ import { updateVendorProductWorkflow } from "../src/workflows/vendor-products/up
 import { getVendorProductWorkflow } from "../src/workflows/vendor-products/get-vendor-product"
 import { setVendorInventoryLevelWorkflow } from "../src/workflows/vendor-products/set-vendor-inventory-level"
 import { createVendorStockLocationWorkflow } from "../src/workflows/vendor-stock-locations/create-vendor-stock-location"
-import type { VendorVariantInput } from "../src/workflows/vendor-products/mappers/resolve-product-variants"
+import { SEED_CONFIG } from "./seed-config"
+import { buildSeedPlan } from "./seed-plan"
 
-type ProductFixture = {
-  title: string
-  description: string
-  optionValues: string[]
-  basePrice: number
-  images: string[]
-  collection: string
-  categoryHandle: string
-}
-
-type VendorFixture = {
-  name: string
-  handle: string
-  commissionRate: number
-  email: string
-  password: string
-  userName: string
-  description: string
-  location: {
-    name: string
-    address_1: string
-    city: string
-    province: string
-    postal_code: string
-    country_code: string
-  }
-  products: ProductFixture[]
-}
-
-const TEE_IMAGES = [
-  "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
-  "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-front.png",
-]
-const SWEATSHIRT_IMAGES = [
-  "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
-  "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-back.png",
-]
-const SHORTS_IMAGES = [
-  "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
-  "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
-]
-
-const SEED_STOCK_QUANTITY = 100
-
-// Fixed, memorable fixtures (asd@asd.com etc.), not faker-generated ones.
-const VENDOR_FIXTURES: VendorFixture[] = [
-  {
-    name: "Asd Apparel",
-    handle: "asd-apparel",
-    commissionRate: 0.1,
-    email: "asd@asd.com",
-    password: "asd",
-    userName: "Asd Owner",
-    description:
-      "A small studio making considered basics, reviewed and approved before anything goes live.",
-    location: {
-      name: "Asd Apparel Warehouse",
-      address_1: "1 Test Street",
-      city: "London",
-      province: "London",
-      postal_code: "E1 6AN",
-      country_code: "gb",
-    },
-    products: [
-      {
-        title: "Classic Tee",
-        categoryHandle: "t-shirts",
-        description: "A timeless, comfortable everyday t-shirt.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 20,
-        images: TEE_IMAGES,
-        collection: "New Arrivals",
-      },
-      {
-        title: "Vintage Sweatshirt",
-        categoryHandle: "sweats-and-knits",
-        description: "A cozy sweatshirt with a vintage finish.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 35,
-        images: SWEATSHIRT_IMAGES,
-        collection: "New Arrivals",
-      },
-      {
-        title: "Boxy Cotton Overshirt",
-        categoryHandle: "shirts",
-        description:
-          "A relaxed overshirt cut from heavy brushed cotton, built to layer.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 78,
-        images: SWEATSHIRT_IMAGES,
-        collection: "New Arrivals",
-      },
-      {
-        title: "Garment-Dyed Pocket Tee",
-        categoryHandle: "t-shirts",
-        description:
-          "Dyed after stitching so the colour settles unevenly and softens with wear.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 32,
-        images: TEE_IMAGES,
-        collection: "New Arrivals",
-      },
-      {
-        title: "Heavyweight Loopback Sweat",
-        categoryHandle: "sweats-and-knits",
-        description:
-          "Loopback cotton at 480gsm, milled slowly so the pile stays dense.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 96,
-        images: SWEATSHIRT_IMAGES,
-        collection: "The Winter Edit",
-      },
-      {
-        title: "Wide-Leg Drawcord Trouser",
-        categoryHandle: "shorts-and-trousers",
-        description: "An unstructured trouser with a soft drawcord waist.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 84,
-        images: SHORTS_IMAGES,
-        collection: "The Winter Edit",
-      },
-      {
-        title: "Panelled Running Short",
-        categoryHandle: "shorts-and-trousers",
-        description: "A light technical short with bonded, chafe-free seams.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 46,
-        images: SHORTS_IMAGES,
-        collection: "Best of Nike",
-      },
-      {
-        title: "Mesh-Back Training Tee",
-        categoryHandle: "t-shirts",
-        description: "An open mesh back panel keeps this tee moving air.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 38,
-        images: TEE_IMAGES,
-        collection: "Best of Nike",
-      },
-      {
-        title: "Everyday Crew Three-Pack",
-        categoryHandle: "t-shirts",
-        description: "Three plain crew-neck tees, cut from the same cotton.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 26,
-        images: TEE_IMAGES,
-        collection: "Cheap Clothes",
-      },
-      {
-        title: "Last-Season Fleece Half-Zip",
-        categoryHandle: "sweats-and-knits",
-        description:
-          "A previous-season fleece, marked down, otherwise perfect.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 42,
-        images: SWEATSHIRT_IMAGES,
-        collection: "Outlet",
-      },
-    ],
-  },
-  {
-    name: "Zxc Threads",
-    handle: "zxc-threads",
-    commissionRate: 0.15,
-    email: "zxc@zxc.com",
-    password: "zxc",
-    userName: "Zxc Owner",
-    description:
-      "Independent house, hand-forged pieces, small runs never reordered.",
-    location: {
-      name: "Zxc Threads Warehouse",
-      address_1: "2 Test Street",
-      city: "Manchester",
-      province: "Manchester",
-      postal_code: "M1 1AE",
-      country_code: "gb",
-    },
-    products: [
-      {
-        title: "Weekend Shorts",
-        categoryHandle: "shorts-and-trousers",
-        description: "Relaxed-fit shorts for warm days.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 25,
-        images: SHORTS_IMAGES,
-        collection: "Summer Collection",
-      },
-      {
-        title: "Everyday Tee",
-        categoryHandle: "t-shirts",
-        description: "A soft cotton tee for daily wear.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 18,
-        images: TEE_IMAGES,
-        collection: "Summer Collection",
-      },
-      {
-        title: "Open-Weave Linen Shirt",
-        categoryHandle: "shirts",
-        description:
-          "A loose linen weave that moves air, finished with shell buttons.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 88,
-        images: TEE_IMAGES,
-        collection: "Summer Collection",
-      },
-      {
-        title: "Pleated Poplin Short",
-        categoryHandle: "shorts-and-trousers",
-        description: "A single forward pleat gives this short its clean drape.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 54,
-        images: SHORTS_IMAGES,
-        collection: "Summer Collection",
-      },
-      {
-        title: "Merino Crew Knit",
-        categoryHandle: "sweats-and-knits",
-        description:
-          "Fine-gauge merino, knitted whole so there are no shoulder seams.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 112,
-        images: SWEATSHIRT_IMAGES,
-        collection: "The Winter Edit",
-      },
-      {
-        title: "Brushed Flannel Overshirt",
-        categoryHandle: "shirts",
-        description: "Double-brushed flannel with a deep, quiet nap.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 74,
-        images: SWEATSHIRT_IMAGES,
-        collection: "The Winter Edit",
-      },
-      {
-        title: "Court Canvas Warm-Up",
-        categoryHandle: "sweats-and-knits",
-        description: "A boxy warm-up top in dense cotton canvas.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 92,
-        images: SWEATSHIRT_IMAGES,
-        collection: "Best of Nike",
-      },
-      {
-        title: "Ribbed Training Short",
-        categoryHandle: "shorts-and-trousers",
-        description: "A close-ribbed knit short that holds its shape.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 44,
-        images: SHORTS_IMAGES,
-        collection: "Best of Nike",
-      },
-      {
-        title: "Basic Jersey Short",
-        categoryHandle: "shorts-and-trousers",
-        description: "A plain jersey short, honest about what it is.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 22,
-        images: SHORTS_IMAGES,
-        collection: "Cheap Clothes",
-      },
-      {
-        title: "Archive Logo Sweat",
-        categoryHandle: "sweats-and-knits",
-        description: "An archive print, discounted to clear the last run.",
-        optionValues: ["S", "M", "L"],
-        basePrice: 48,
-        images: SWEATSHIRT_IMAGES,
-        collection: "Outlet",
-      },
-    ],
-  },
-]
-
-const collectionIdCache = new Map<string, string>()
-
-const categoryIdCache = new Map<string, string>()
-
-async function resolveCategoryId(
-  container: ExecArgs["container"],
-  handle: string,
+function mapIdsByHandle(
+  entity: string,
+  handles: string[],
+  rows: { id: string; handle: string }[],
 ) {
-  const cached = categoryIdCache.get(handle)
+  const idByHandle = new Map(rows.map((row) => [row.handle, row.id]))
+  const missing = handles.filter((handle) => !idByHandle.has(handle))
 
-  if (cached) {
-    return cached
-  }
-
-  const query = container.resolve(ContainerRegistrationKeys.QUERY)
-  const { data: categories } = await graph(query, {
-    entity: "product_category",
-    fields: ["id"],
-    filters: { handle },
-  })
-
-  const id = categories[0]?.id
-
-  if (!id) {
+  if (missing.length) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      `Run seed:categories before seeding vendors — "${handle}" is missing.`,
+      `Run seed:categories and seed:collections before seed:vendors — missing ${entity}: ${missing.join(", ")}`,
     )
   }
 
-  categoryIdCache.set(handle, id)
-
-  return id
-}
-
-async function resolveCollectionId(
-  container: ExecArgs["container"],
-  title: string,
-) {
-  const cached = collectionIdCache.get(title)
-
-  if (cached) {
-    return cached
-  }
-
-  const query = container.resolve(ContainerRegistrationKeys.QUERY)
-  const handle = title.toLowerCase().replace(/\s+/g, "-")
-
-  const { data: existing } = await query.graph({
-    entity: "product_collection",
-    fields: ["id"],
-    filters: { handle },
-  })
-
-  const id =
-    existing[0]?.id ??
-    (
-      await createCollectionsWorkflow(container).run({
-        input: { collections: [{ title, handle }] },
-      })
-    ).result[0].id
-
-  collectionIdCache.set(title, id)
-
-  return id
+  return idByHandle
 }
 
 export default async function seedVendors({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  const plan = buildSeedPlan(SEED_CONFIG)
 
-  logger.info("Seeding demo vendors, vendor users, locations, and products...")
+  const categoryHandles = plan.categories.map((category) => category.handle)
+  const { data: categories } = await graph(query, {
+    entity: "product_category",
+    fields: ["id", "handle"],
+    filters: { handle: categoryHandles },
+  })
+  const categoryIds = mapIdsByHandle("categories", categoryHandles, categories)
 
-  for (const vendorFixture of VENDOR_FIXTURES) {
+  const collectionHandles = plan.collections.map(
+    (collection) => collection.handle,
+  )
+  const { data: collections } = await graph(query, {
+    entity: "product_collection",
+    fields: ["id", "handle"],
+    filters: { handle: collectionHandles },
+  })
+  const collectionIds = mapIdsByHandle(
+    "collections",
+    collectionHandles,
+    collections,
+  )
+
+  for (const vendorFixture of plan.vendors) {
     const { data: existingVendors } = await query.graph({
       entity: "vendor",
       fields: ["id"],
@@ -410,7 +106,7 @@ export default async function seedVendors({ container }: ExecArgs) {
 
     if (vendorUserId) {
       logger.info(
-        `Vendor user "${vendorFixture.email}" already exists, skipping — password is the fixed "${vendorFixture.password}" from VENDOR_FIXTURES.`,
+        `Vendor user "${vendorFixture.email}" already exists, skipping.`,
       )
     } else {
       const { result: vendorUser } = await createVendorUserWorkflow(
@@ -429,66 +125,48 @@ export default async function seedVendors({ container }: ExecArgs) {
       )
     }
 
-    const { data: existingStockLocations } = await query.graph({
+    const { data: existingLocations } = await query.graph({
       entity: "stock_location",
-      fields: ["id"],
+      fields: ["id", "name"],
       filters: { vendor: { id: vendorId } },
     })
+    const locationIds: string[] = []
 
-    let locationId = existingStockLocations[0]?.id
-
-    if (locationId) {
-      logger.info(
-        `Location for "${vendorFixture.name}" already exists, skipping.`,
-      )
-    } else {
-      // Same workflow the vendor panel's own "create location" action calls
-      // — auto-provisions free shipping for it, nothing extra to seed here.
-      const location = await createVendorStockLocationWorkflow(container).run({
-        input: {
-          actorId: vendorUserId,
-          name: vendorFixture.location.name,
-          address: {
-            address_1: vendorFixture.location.address_1,
-            city: vendorFixture.location.city,
-            province: vendorFixture.location.province,
-            postal_code: vendorFixture.location.postal_code,
-            country_code: vendorFixture.location.country_code,
-          },
-        },
-      })
-      locationId = location.result.stock_location.id
-    }
-
-    for (const productFixture of vendorFixture.products) {
-      const handle = `${vendorFixture.handle}-${productFixture.title
-        .toLowerCase()
-        .replace(/\s+/g, "-")}`
-
-      const { data: existingProducts } = await query.graph({
-        entity: "product",
-        fields: ["id"],
-        filters: { handle },
-      })
-
-      const collectionId = await resolveCollectionId(
-        container,
-        productFixture.collection,
+    for (const location of vendorFixture.locations) {
+      const existing = existingLocations.find(
+        (candidate) => candidate?.name === location.name,
       )
 
-      if (existingProducts[0]) {
-        logger.info(`Product "${handle}" already exists, skipping.`)
+      if (existing) {
+        locationIds.push(existing.id)
         continue
       }
 
-      const options = [{ title: "Size", values: productFixture.optionValues }]
-      const variants: VendorVariantInput[] = productFixture.optionValues.map(
-        (value, index) => ({
-          optionValues: { Size: value },
-          price: productFixture.basePrice + index * 5,
-          sku: `${handle}-${value}`.toUpperCase(),
-        }),
+      const { result } = await createVendorStockLocationWorkflow(container).run(
+        {
+          input: {
+            actorId: vendorUserId,
+            name: location.name,
+            address: location.address,
+          },
+        },
       )
+      locationIds.push(result.stock_location.id)
+    }
+
+    for (const productFixture of vendorFixture.products) {
+      const { data: existingProducts } = await query.graph({
+        entity: "product",
+        fields: ["id"],
+        filters: { handle: productFixture.handle },
+      })
+
+      if (existingProducts[0]) {
+        logger.info(
+          `Product "${productFixture.handle}" already exists, skipping.`,
+        )
+        continue
+      }
 
       const { result: createdProduct } = await createVendorProductWorkflow(
         container,
@@ -497,18 +175,16 @@ export default async function seedVendors({ container }: ExecArgs) {
           actorId: vendorUserId,
           title: productFixture.title,
           description: productFixture.description,
-          handle,
+          handle: productFixture.handle,
           images: productFixture.images.map((url) => ({ url })),
-          category_ids: [
-            await resolveCategoryId(container, productFixture.categoryHandle),
-          ],
-          options,
-          variants,
+          category_ids: productFixture.categoryHandles.map(
+            (handle) => categoryIds.get(handle)!,
+          ),
+          options: productFixture.options,
+          variants: productFixture.variants,
         },
       })
 
-      // Real submissions default to PROPOSED; seeded ones publish outright —
-      // same path a vendor's own "publish" action takes.
       await updateVendorProductWorkflow(container).run({
         input: {
           actorId: vendorUserId,
@@ -517,12 +193,16 @@ export default async function seedVendors({ container }: ExecArgs) {
         },
       })
 
-      await updateProductsWorkflow(container).run({
-        input: {
-          selector: { id: createdProduct.id },
-          update: { collection_id: collectionId },
-        },
-      })
+      if (productFixture.collectionHandle) {
+        await updateProductsWorkflow(container).run({
+          input: {
+            selector: { id: createdProduct.id },
+            update: {
+              collection_id: collectionIds.get(productFixture.collectionHandle),
+            },
+          },
+        })
+      }
 
       const { result: productDetail } = await getVendorProductWorkflow(
         container,
@@ -530,23 +210,29 @@ export default async function seedVendors({ container }: ExecArgs) {
         input: { actorId: vendorUserId, productId: createdProduct.id },
       })
 
+      const stockBySku = new Map(
+        productFixture.variants.map((variant) => [variant.sku, variant.stock]),
+      )
+
       for (const variant of productDetail.variants) {
-        await setVendorInventoryLevelWorkflow(container).run({
-          input: {
-            actorId: vendorUserId,
-            productId: createdProduct.id,
-            variantId: variant.id,
-            locationId,
-            quantity: SEED_STOCK_QUANTITY,
-          },
-        })
+        for (const locationId of locationIds) {
+          await setVendorInventoryLevelWorkflow(container).run({
+            input: {
+              actorId: vendorUserId,
+              productId: createdProduct.id,
+              variantId: variant.id,
+              locationId,
+              quantity: stockBySku.get(variant.sku!)!,
+            },
+          })
+        }
       }
 
       logger.info(
-        `Created vendor product "${productFixture.title}" for "${vendorFixture.name}" (${variants.length} variants, ${SEED_STOCK_QUANTITY} stock each at "${vendorFixture.location.name}").`,
+        `Created "${productFixture.title}" for "${vendorFixture.name}" (${productDetail.variants.length} variants × ${locationIds.length} locations).`,
       )
     }
   }
 
-  logger.info("Finished seeding demo vendors.")
+  logger.info("Finished seeding vendors.")
 }

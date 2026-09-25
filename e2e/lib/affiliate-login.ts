@@ -1,17 +1,25 @@
 import { expect, type Page } from "@playwright/test"
+import { SEED_PLAN } from "./seed-plan"
 
 export type AffiliateFixture = {
   email: string
   password: string
   handle: string
+  commissionRate: number
   promotedProductTitle: string
 }
 
-export const QWE_CREATORS: AffiliateFixture = {
-  email: "qwe@qwe.com",
-  password: "qwe",
-  handle: "qwe-creators",
-  promotedProductTitle: "Classic Tee",
+const [firstAffiliate] = SEED_PLAN.affiliates
+
+export const FIRST_AFFILIATE: AffiliateFixture = {
+  email: firstAffiliate.email,
+  password: firstAffiliate.password,
+  handle: firstAffiliate.handle,
+  commissionRate: firstAffiliate.commissionRate,
+  promotedProductTitle: SEED_PLAN.vendors
+    .flatMap((vendor) => vendor.products)
+    .find((product) => product.handle === firstAffiliate.productHandles[0])!
+    .title,
 }
 
 export async function loginAsAffiliate(

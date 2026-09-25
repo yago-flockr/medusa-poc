@@ -1,22 +1,26 @@
 import { expect, type Page } from "@playwright/test"
+import { SEED_PLAN } from "./seed-plan"
 
 export type VendorFixture = {
   email: string
   password: string
   ownProductTitle: string
+  ownProductHandle: string
 }
 
-export const ASD_APPAREL: VendorFixture = {
-  email: "asd@asd.com",
-  password: "asd",
-  ownProductTitle: "Classic Tee",
+function toVendorFixture(
+  vendor: (typeof SEED_PLAN.vendors)[number],
+): VendorFixture {
+  return {
+    email: vendor.email,
+    password: vendor.password,
+    ownProductTitle: vendor.products[0].title,
+    ownProductHandle: vendor.products[0].handle,
+  }
 }
 
-export const ZXC_THREADS: VendorFixture = {
-  email: "zxc@zxc.com",
-  password: "zxc",
-  ownProductTitle: "Archive Logo Sweat",
-}
+export const FIRST_VENDOR = toVendorFixture(SEED_PLAN.vendors[0])
+export const SECOND_VENDOR = toVendorFixture(SEED_PLAN.vendors[1])
 
 export async function loginAsVendor(page: Page, vendor: VendorFixture) {
   await page.goto("/vendor")
