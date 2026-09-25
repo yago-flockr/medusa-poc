@@ -8,8 +8,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { RiRefreshLine } from "@remixicon/react"
+import { RiRefreshLine, RiStore2Line } from "@remixicon/react"
 import { useQueryClient } from "@tanstack/react-query"
+import Link from "next/link"
 import type { ComponentProps, ReactNode } from "react"
 
 type PanelShellProps = ComponentProps<typeof SidebarProvider> & {
@@ -39,6 +40,16 @@ export function PanelShell({ children, sidebar, ...props }: PanelShellProps) {
                 disabled={queryClient.isFetching() > 0}
               >
                 <RiRefreshLine />
+              </Button>
+            </TextTooltip>
+            <TextTooltip content="Go to storefront">
+              <Button
+                variant="outline"
+                size="icon-sm"
+                nativeButton={false}
+                render={<Link href="/" />}
+              >
+                <RiStore2Line />
               </Button>
             </TextTooltip>
           </div>
