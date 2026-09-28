@@ -8,8 +8,8 @@ type ShippingDetailsProps = {
 
 const ShippingDetails = ({ order }: ShippingDetailsProps) => {
   return (
-    <div>
-      <h2 className="my-6 flex flex-row text-2xl font-medium">Delivery</h2>
+    <div className="flex flex-col gap-6">
+      <h2 className="text-2xl font-medium">Delivery</h2>
       <div className="flex items-start gap-x-8">
         <div
           className="flex w-1/3 flex-col"
@@ -59,7 +59,7 @@ const ShippingDetails = ({ order }: ShippingDetailsProps) => {
           </span>
         </div>
       </div>
-      <Separator className="mt-8" />
+      <Separator />
     </div>
   )
 }

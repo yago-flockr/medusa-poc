@@ -11,8 +11,8 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
   const payment = order.payment_collections?.[0].payments?.[0]
 
   return (
-    <div>
-      <h2 className="my-6 flex flex-row text-2xl font-medium">Payment</h2>
+    <div className="flex flex-col gap-6">
+      <h2 className="text-2xl font-medium">Payment</h2>
       <div>
         {payment && (
           <div className="flex w-full items-start gap-x-1">
@@ -47,7 +47,7 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
         )}
       </div>
 
-      <Separator className="mt-8" />
+      <Separator />
     </div>
   )
 }

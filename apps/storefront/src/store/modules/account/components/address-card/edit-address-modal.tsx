@@ -219,7 +219,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
               type="reset"
               variant="secondary"
               onClick={close}
-              className="h-10"
+              size="lg"
               data-testid="cancel-button"
             >
               Cancel

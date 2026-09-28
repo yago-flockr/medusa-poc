@@ -10,7 +10,7 @@ import type {
 } from "@dtc/api-contracts/vendor/products"
 import { vendorProductStatusSchema } from "@dtc/api-contracts/vendor/products"
 import type { VendorProductCategory } from "@dtc/api-contracts/vendor/product-categories"
-import { keyBy, mapValues } from "lodash"
+import { keyBy, mapValues, capitalize } from "lodash"
 import { useState, type FormEvent } from "react"
 import z from "zod"
 import { ComboboxChipsField } from "@/forms/fields/combobox-chips-field"
@@ -95,7 +95,7 @@ function StatusField({
   const options = [
     ...VENDOR_SETTABLE_STATUSES,
     ...(isSettable ? [] : [value]),
-  ].map((status) => ({ value: status, label: status }))
+  ].map((status) => ({ value: status, label: capitalize(status) }))
 
   return (
     <SelectField

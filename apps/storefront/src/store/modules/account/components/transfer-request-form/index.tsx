@@ -67,7 +67,6 @@ export default function TransferRequestForm() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-fit"
             onClick={() => setShowSuccess(false)}
           >
             <RiCloseCircleLine className="text-muted-foreground" size={16} />

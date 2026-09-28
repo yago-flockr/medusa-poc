@@ -3,13 +3,24 @@ import type {
   GetAffiliatesOrdersByIdResponse,
   GetAffiliatesOrdersResponse,
 } from "@dtc/api-contracts/affiliate/orders"
-import { useQuery } from "@tanstack/react-query"
+import type { PaginationQuery } from "@dtc/api-contracts/common/pagination"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { queryKeys } from "./query-keys"
 
-export const useGetAffiliatesOrders = () =>
+export const useGetAffiliatesOrders = ({
+  limit,
+  offset,
+}: Required<PaginationQuery>) =>
   useQuery({
-    queryKey: queryKeys.orders,
-    queryFn: () => request<GetAffiliatesOrdersResponse>("/affiliates/orders"),
+    queryKey: [...queryKeys.orders, { limit, offset }],
+    queryFn: () =>
+      request<GetAffiliatesOrdersResponse>(
+        `/affiliates/orders?${new URLSearchParams({
+          limit: String(limit),
+          offset: String(offset),
+        })}`,
+      ),
+    placeholderData: keepPreviousData,
   })
 
 export const useGetAffiliatesOrdersById = (

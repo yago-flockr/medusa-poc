@@ -1,7 +1,8 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { RiCheckboxCircleLine, RiErrorWarningLine } from "@remixicon/react"
 import { useEffect } from "react"
 
 import useToggleState from "@/store/lib/hooks/use-toggle-state"
@@ -44,7 +45,7 @@ const AccountInfo = ({
   }, [isSuccess, close])
 
   return (
-    <div className="text-sm" data-testid={dataTestid}>
+    <div className="flex flex-col gap-4 text-sm" data-testid={dataTestid}>
       <div className="flex items-end justify-between">
         <div className="flex flex-col">
           <span className="uppercase text-foreground">{label}</span>
@@ -61,7 +62,6 @@ const AccountInfo = ({
         <div>
           <Button
             variant="secondary"
-            className="w-[100px]"
             onClick={handleToggle}
             type={state ? "reset" : "button"}
             data-testid="edit-button"
@@ -73,31 +73,24 @@ const AccountInfo = ({
       </div>
 
       {isSuccess && (
-        <Badge variant="success" className="my-4" data-testid="success-message">
-          {label} updated succesfully
-        </Badge>
+        <Alert variant="success" data-testid="success-message">
+          <RiCheckboxCircleLine />
+          <AlertDescription>{label} updated successfully</AlertDescription>
+        </Alert>
       )}
 
       {isError && (
-        <Badge
-          variant="destructive"
-          className="my-4"
-          data-testid="error-message"
-        >
-          {errorMessage}
-        </Badge>
+        <Alert variant="destructive" data-testid="error-message">
+          <RiErrorWarningLine />
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
       )}
 
       {state && (
-        <div className="flex flex-col gap-y-2 py-4">
+        <div className="flex flex-col gap-y-2">
           <div>{children}</div>
-          <div className="mt-2 flex items-center justify-end">
-            <Button
-              disabled={pending}
-              className="w-full sm:max-w-[140px]"
-              type="submit"
-              data-testid="save-button"
-            >
+          <div className="flex items-center justify-end">
+            <Button disabled={pending} type="submit" data-testid="save-button">
               Save changes
             </Button>
           </div>

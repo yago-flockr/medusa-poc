@@ -8,7 +8,7 @@ import { useGetVendorsStockLocations } from "@/vendor/hooks/queries/stock-locati
 
 export default function VendorDashboardPage() {
   const getVendorsProducts = useGetVendorsProducts()
-  const getVendorsOrders = useGetVendorsOrders()
+  const getVendorsOrders = useGetVendorsOrders({ limit: 1, offset: 0 })
   const getVendorsStockLocations = useGetVendorsStockLocations()
 
   const currencyCode =

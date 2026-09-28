@@ -13,41 +13,34 @@ export type StepsProps = {
   steps: Step[]
 } & ComponentProps<"div">
 
+const badgeVariantByState = {
+  done: "default",
+  current: "outline",
+  upcoming: "muted",
+} as const
+
 export function Steps({ steps, className, ...props }: StepsProps) {
   return (
     <div className={cn("flex items-start", className)} {...props}>
       {steps.map((step, index) => (
         <div
           key={step.label}
-          className="flex flex-1 items-center last:flex-none"
+          className="flex flex-1 items-center gap-2 last:flex-none"
         >
           <div className="flex flex-col items-center gap-1">
-            <Badge
-              className={cn(
-                "size-6 rounded-full p-0",
-                step.state === "upcoming" && "opacity-40",
-              )}
-              variant={step.state === "done" ? "default" : "outline"}
-            >
-              {step.state === "done" ? <RiCheckLine size={14} /> : index + 1}
+            <Badge variant={badgeVariantByState[step.state]}>
+              {step.state === "done" ? <RiCheckLine /> : index + 1}
             </Badge>
             <span
               className={cn(
                 "text-center text-xs whitespace-nowrap",
-                step.state === "upcoming" && "opacity-40",
+                step.state === "upcoming" && "text-muted-foreground",
               )}
             >
               {step.label}
             </span>
           </div>
-          {index < steps.length - 1 && (
-            <Separator
-              className={cn(
-                "mx-2 flex-1",
-                step.state !== "done" && "opacity-40",
-              )}
-            />
-          )}
+          {index < steps.length - 1 && <Separator className="flex-1" />}
         </div>
       ))}
     </div>

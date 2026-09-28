@@ -279,8 +279,8 @@ const Shipping: React.FC<ShippingProps> = ({
   }
 
   return (
-    <div className="bg-background">
-      <div className="mb-6 flex flex-row items-center justify-between">
+    <div className="flex flex-col gap-6 bg-background">
+      <div className="flex flex-row items-center justify-between">
         <h2
           className={cn(
             "flex flex-row items-baseline gap-x-2 text-2xl font-medium",
@@ -523,7 +523,7 @@ const Shipping: React.FC<ShippingProps> = ({
           </div>
         </div>
       )}
-      <Separator className="mt-8" />
+      <Separator />
     </div>
   )
 }

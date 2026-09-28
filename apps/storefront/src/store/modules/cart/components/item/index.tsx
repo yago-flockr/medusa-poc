@@ -45,8 +45,8 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const maxQuantity = 10
 
   return (
-    <TableRow className="w-full" data-testid="product-row">
-      <TableCell className="w-24 !pl-0 p-4">
+    <TableRow data-testid="product-row">
+      <TableCell className="w-24">
         <LocalizedClientLink
           href={`/products/${item.product_handle}`}
           className={cn("flex", {
@@ -62,7 +62,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         </LocalizedClientLink>
       </TableCell>
 
-      <TableCell className="text-left">
+      <TableCell>
         <span
           className="font-medium text-foreground"
           data-testid="product-title"
@@ -104,9 +104,9 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         </TableCell>
       )}
 
-      <TableCell className="!pr-0">
+      <TableCell>
         <span
-          className={cn("!pr-0", {
+          className={cn({
             "flex h-full flex-col items-end justify-center": type === "preview",
           })}
         >

@@ -2,17 +2,18 @@ import { vendorClient } from "@/vendor/lib/contract-client"
 import { tc } from "@/vendor/lib/tc"
 import type {
   GetVendorsOrdersByIdResponse,
+  GetVendorsOrdersInput,
   GetVendorsOrdersResponse,
 } from "@dtc/api-contracts/vendor/orders"
 import { createResourceQueryHook } from "./create-resource-query"
 import { queryKeys } from "./query-keys"
 
 export const useGetVendorsOrders = createResourceQueryHook<
-  void,
+  Required<GetVendorsOrdersInput>,
   GetVendorsOrdersResponse
 >({
-  queryKey: () => queryKeys.orders.getVendorsOrders,
-  queryFn: () => tc(vendorClient.getVendorsOrders({ query: {} })),
+  queryKey: (query) => [...queryKeys.orders.getVendorsOrders, query],
+  queryFn: (query) => tc(vendorClient.getVendorsOrders({ query })),
 })
 
 export const useGetVendorsOrdersById = createResourceQueryHook<

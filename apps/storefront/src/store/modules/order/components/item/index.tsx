@@ -13,22 +13,22 @@ type ItemProps = {
 
 const Item = ({ item, currencyCode }: ItemProps) => {
   return (
-    <TableRow className="w-full" data-testid="product-row">
-      <TableCell className="w-24 p-4 !pl-0">
+    <TableRow data-testid="product-row">
+      <TableCell className="w-24">
         <div className="flex w-16">
           <Thumbnail src={item.thumbnail} alt={item.title} ratio="square" />
         </div>
       </TableCell>
 
-      <TableCell className="text-left">
+      <TableCell>
         <span className="font-medium" data-testid="product-name">
           {item.product_title}
         </span>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
       </TableCell>
 
-      <TableCell className="!pr-0">
-        <span className="flex h-full flex-col items-end justify-center !pr-0">
+      <TableCell>
+        <span className="flex h-full flex-col items-end justify-center">
           <span className="flex gap-x-1">
             <span className="text-muted-foreground">
               <span data-testid="product-quantity">{item.quantity}</span>x{" "}

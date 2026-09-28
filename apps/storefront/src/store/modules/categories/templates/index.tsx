@@ -33,7 +33,7 @@ function CategoryBreadcrumb({
   parents: HttpTypes.StoreProductCategory[]
 }) {
   return (
-    <Breadcrumb className="mb-4">
+    <Breadcrumb>
       <BreadcrumbList>
         {parents.map((parent) => (
           <Fragment key={parent.id}>

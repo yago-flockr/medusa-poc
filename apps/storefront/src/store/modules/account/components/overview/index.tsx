@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 
 import { convertToLocale } from "@/store/lib/util/money"
 import LocalizedClientLink from "@/store/modules/common/components/localized-client-link"
-import { RiArrowDownSLine } from "@remixicon/react"
+import { RiArrowRightSLine } from "@remixicon/react"
 import { HttpTypes } from "@medusajs/types"
 
 type OverviewProps = {
@@ -84,40 +84,39 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                         <LocalizedClientLink
                           href={`/account/orders/details/${order.id}`}
                         >
-                          <Card className="flex items-center justify-between bg-muted p-4">
-                            <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-x-4 text-sm">
-                              <span className="font-semibold">Date placed</span>
-                              <span className="font-semibold">
-                                Order number
-                              </span>
-                              <span className="font-semibold">
-                                Total amount
-                              </span>
-                              <span data-testid="order-created-date">
-                                {new Date(order.created_at).toDateString()}
-                              </span>
-                              <span
-                                data-testid="order-id"
-                                data-value={order.display_id}
-                              >
-                                #{order.display_id}
-                              </span>
-                              <span data-testid="order-amount">
-                                {convertToLocale({
-                                  amount: order.total,
-                                  currency_code: order.currency_code,
-                                })}
-                              </span>
-                            </div>
-                            <button
-                              className="flex items-center justify-between"
-                              data-testid="open-order-button"
-                            >
-                              <span className="sr-only">
-                                Go to order #{order.display_id}
-                              </span>
-                              <RiArrowDownSLine className="-rotate-90" />
-                            </button>
+                          <Card size="sm">
+                            <CardContent className="flex items-center justify-between gap-4">
+                              <div className="grid flex-1 grid-cols-3 grid-rows-2 gap-x-4">
+                                <span className="font-semibold">
+                                  Date placed
+                                </span>
+                                <span className="font-semibold">
+                                  Order number
+                                </span>
+                                <span className="font-semibold">
+                                  Total amount
+                                </span>
+                                <span data-testid="order-created-date">
+                                  {new Date(order.created_at).toDateString()}
+                                </span>
+                                <span
+                                  data-testid="order-id"
+                                  data-value={order.display_id}
+                                >
+                                  #{order.display_id}
+                                </span>
+                                <span data-testid="order-amount">
+                                  {convertToLocale({
+                                    amount: order.total,
+                                    currency_code: order.currency_code,
+                                  })}
+                                </span>
+                              </div>
+                              <RiArrowRightSLine
+                                aria-label={`Go to order #${order.display_id}`}
+                                data-testid="open-order-button"
+                              />
+                            </CardContent>
                           </Card>
                         </LocalizedClientLink>
                       </li>

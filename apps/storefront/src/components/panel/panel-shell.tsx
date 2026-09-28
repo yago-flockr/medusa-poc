@@ -11,7 +11,7 @@ import {
 import { RiRefreshLine, RiStore2Line } from "@remixicon/react"
 import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
-import type { ComponentProps, ReactNode } from "react"
+import { Suspense, type ComponentProps, type ReactNode } from "react"
 
 type PanelShellProps = ComponentProps<typeof SidebarProvider> & {
   sidebar: ReactNode
@@ -55,7 +55,7 @@ export function PanelShell({ children, sidebar, ...props }: PanelShellProps) {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 p-6 container">
-          {children}
+          <Suspense>{children}</Suspense>
         </div>
       </SidebarInset>
     </SidebarProvider>

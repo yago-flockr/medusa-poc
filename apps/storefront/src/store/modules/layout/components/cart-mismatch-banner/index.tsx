@@ -40,12 +40,7 @@ function CartMismatchBanner(props: {
 
         <span>·</span>
 
-        <Button
-          variant="link"
-          className="h-auto p-0"
-          disabled={isPending}
-          onClick={handleSubmit}
-        >
+        <Button variant="link" disabled={isPending} onClick={handleSubmit}>
           {actionText}
         </Button>
       </div>

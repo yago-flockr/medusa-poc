@@ -111,8 +111,8 @@ const Payment = ({
   }, [isOpen])
 
   return (
-    <div className="bg-background">
-      <div className="mb-6 flex flex-row items-center justify-between">
+    <div className="flex flex-col gap-6 bg-background">
+      <div className="flex flex-row items-center justify-between">
         <h2
           className={cn(
             "flex flex-row items-baseline gap-x-2 text-2xl font-medium",
@@ -137,7 +137,7 @@ const Payment = ({
         )}
       </div>
       <div>
-        <div className={isOpen ? "block" : "hidden"}>
+        <div className={isOpen ? "flex flex-col gap-6" : "hidden"}>
           {!paidByGiftcard && availablePaymentMethods?.length && (
             <>
               <RadioGroup
@@ -189,7 +189,7 @@ const Payment = ({
 
           <Button
             size="lg"
-            className="mt-6"
+            className="w-fit"
             onClick={handleSubmit}
             disabled={
               isLoading ||
@@ -257,7 +257,7 @@ const Payment = ({
           ) : null}
         </div>
       </div>
-      <Separator className="mt-8" />
+      <Separator />
     </div>
   )
 }

@@ -23,13 +23,13 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
         <h1 className="text-[2rem] leading-[2.75rem] font-semibold">Cart</h1>
       </div>
       <Table>
-        <TableHeader className="border-t-0">
-          <TableRow className="font-medium text-muted-foreground">
-            <TableHead className="!pl-0">Item</TableHead>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Item</TableHead>
             <TableHead></TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead className="hidden sm:table-cell">Price</TableHead>
-            <TableHead className="!pr-0 text-right">Total</TableHead>
+            <TableHead className="text-right">Total</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

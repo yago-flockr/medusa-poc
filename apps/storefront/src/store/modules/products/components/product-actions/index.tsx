@@ -20,7 +20,6 @@ import { Separator } from "@/components/ui/separator"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
-  region: HttpTypes.StoreRegion
   disabled?: boolean
 }
 
@@ -202,7 +201,8 @@ export default function ProductActions({
             isAdding ||
             !isValidVariant
           }
-          className="h-10 w-full"
+          size="lg"
+          className="w-full"
           data-testid="add-product-button"
         >
           {isAdding && <Spinner />}

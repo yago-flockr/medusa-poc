@@ -15,7 +15,7 @@ const Items = ({ order }: ItemsProps) => {
 
   return (
     <div className="flex flex-col">
-      <Separator className="!mb-0" />
+      <Separator />
       <Table>
         <TableBody data-testid="products-table">
           {items?.length

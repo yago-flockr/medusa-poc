@@ -1,3 +1,4 @@
+import { retrieveCustomer } from "@/store/lib/data/customer"
 import { listVendorShippingOptions } from "@/store/lib/data/fulfillment"
 import { listCartPaymentMethods } from "@/store/lib/data/payment"
 import Addresses from "@/store/modules/checkout/components/addresses"
@@ -8,15 +9,14 @@ import { HttpTypes } from "@medusajs/types"
 
 export default async function CheckoutForm({
   cart,
-  customer,
 }: {
   cart: HttpTypes.StoreCart | null
-  customer: HttpTypes.StoreCustomer | null
 }) {
   if (!cart) {
     return null
   }
 
+  const customer = await retrieveCustomer()
   const shippingOptions = await listVendorShippingOptions(cart.id)
   const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? "")
 

@@ -5,6 +5,7 @@ import {
   useGetAffiliatesOrdersById,
 } from "@/affiliate/hooks/queries/orders"
 import { DataState } from "@/components/display/data-state"
+import { Pagination } from "@/components/display/pagination"
 import { FormDialog } from "@/components/display/form-dialog"
 import { Section } from "@/components/display/section"
 import { TextTooltip } from "@/components/display/text-tooltip"
@@ -26,10 +27,21 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { RiEyeLine, RiFileList3Line } from "@remixicon/react"
+import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 
+const PAGE_SIZE = 20
+
 export default function AffiliateOrdersPage() {
-  const getAffiliatesOrders = useGetAffiliatesOrders()
+  const searchParams = useSearchParams()
+  const page = Math.max(Number(searchParams.get("page")) || 1, 1)
+  const getAffiliatesOrders = useGetAffiliatesOrders({
+    limit: PAGE_SIZE,
+    offset: (page - 1) * PAGE_SIZE,
+  })
+  const totalPages = Math.ceil(
+    (getAffiliatesOrders.data?.count ?? 0) / PAGE_SIZE,
+  )
   const [viewingOrderId, setViewingOrderId] = useState<string | null>(null)
 
   const getAffiliatesOrdersById = useGetAffiliatesOrdersById(
@@ -93,6 +105,8 @@ export default function AffiliateOrdersPage() {
           </ItemGroup>
         </DataState.Content>
       </DataState>
+
+      {totalPages > 1 && <Pagination page={page} totalPages={totalPages} />}
 
       <FormDialog
         title={viewingOrder ? `Order #${viewingOrder.display_id}` : "Order"}

@@ -215,10 +215,12 @@ function FreeShippingPopup({
     >
       <div>
         <Button
-          className="rounded-full bg-neutral-900 shadow-none outline-none border-none text-[15px] p-2"
+          variant="secondary"
+          size="icon-sm"
+          aria-label="Close"
           onClick={() => setIsClosed(true)}
         >
-          <RiCloseLine size={16} />
+          <RiCloseLine />
         </Button>
       </div>
 

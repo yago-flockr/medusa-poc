@@ -3,11 +3,11 @@ import { TableCell, TableRow } from "@/components/ui/table"
 
 const SkeletonLineItem = () => {
   return (
-    <TableRow className="m-4 w-full">
-      <TableCell className="w-24 p-4">
+    <TableRow>
+      <TableCell className="w-24">
         <Skeleton className="h-24 w-24 p-4" />
       </TableCell>
-      <TableCell className="text-left">
+      <TableCell>
         <div className="flex flex-col gap-y-2">
           <Skeleton className="h-4 w-32" />
           <Skeleton className="h-4 w-24" />

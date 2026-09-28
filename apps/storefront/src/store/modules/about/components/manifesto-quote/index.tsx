@@ -47,7 +47,7 @@ export default function ManifestoQuote({
         </p>
         <Button
           variant="link"
-          className="w-fit px-0"
+          className="w-fit"
           nativeButton={false}
           render={<LocalizedClientLink href="/store" />}
         >

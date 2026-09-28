@@ -1,5 +1,10 @@
 import { DataState } from "@/components/display/data-state"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from "@/components/ui/card"
 import type { ComponentProps, ReactNode } from "react"
 
 type StatCardProps = ComponentProps<typeof Card> & {
@@ -12,13 +17,12 @@ export function StatCard({
   title,
   value,
   isLoading = false,
-  className,
   ...props
 }: StatCardProps) {
   return (
-    <Card className={className} {...props}>
+    <Card {...props}>
       <CardHeader>
-        <CardTitle className="text-sm text-muted-foreground">{title}</CardTitle>
+        <CardDescription>{title}</CardDescription>
       </CardHeader>
       <CardContent>
         <DataState isLoading={isLoading}>

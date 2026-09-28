@@ -32,9 +32,9 @@ const SkeletonCartPage = () => {
                 <Skeleton className="h-12 w-20" />
               </div>
               <Table>
-                <TableHeader className="border-t-0">
+                <TableHeader>
                   <TableRow>
-                    <TableHead className="pl-0!">
+                    <TableHead>
                       <Skeleton className="h-6 w-10" />
                     </TableHead>
                     <TableHead></TableHead>
@@ -44,7 +44,7 @@ const SkeletonCartPage = () => {
                     <TableHead>
                       <Skeleton className="h-6 w-12" />
                     </TableHead>
-                    <TableHead className="pr-0!">
+                    <TableHead>
                       <div className="flex justify-end">
                         <Skeleton className="h-6 w-12" />
                       </div>

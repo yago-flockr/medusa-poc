@@ -1,6 +1,7 @@
 "use client"
 
 import { DataState } from "@/components/display/data-state"
+import { Pagination } from "@/components/display/pagination"
 import { FormDialog } from "@/components/display/form-dialog"
 import { Steps, type Step } from "@/components/display/steps"
 import { TextTooltip } from "@/components/display/text-tooltip"
@@ -39,6 +40,8 @@ import type {
   VendorOrder,
 } from "@dtc/api-contracts/vendor/orders"
 import { RiFileList3Line, RiPencilLine } from "@remixicon/react"
+import { keepPreviousData } from "@tanstack/react-query"
+import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -70,8 +73,16 @@ function getOrderSteps(order: GetVendorsOrdersByIdResponse): Step[] {
   )
 }
 
+const PAGE_SIZE = 20
+
 export default function VendorOrdersPage() {
-  const getVendorsOrders = useGetVendorsOrders()
+  const searchParams = useSearchParams()
+  const page = Math.max(Number(searchParams.get("page")) || 1, 1)
+  const getVendorsOrders = useGetVendorsOrders(
+    { limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE },
+    { placeholderData: keepPreviousData },
+  )
+  const totalPages = Math.ceil((getVendorsOrders.data?.count ?? 0) / PAGE_SIZE)
   const [viewingOrderId, setViewingOrderId] = useState<string | null>(null)
 
   const getVendorsOrdersById = useGetVendorsOrdersById(viewingOrderId ?? "", {
@@ -136,6 +147,8 @@ export default function VendorOrdersPage() {
           </ItemGroup>
         </DataState.Content>
       </DataState>
+
+      {totalPages > 1 && <Pagination page={page} totalPages={totalPages} />}
 
       <FormDialog
         title={viewingOrder ? `Order #${viewingOrder.display_id}` : "Order"}

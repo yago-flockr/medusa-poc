@@ -1,5 +1,4 @@
 import { retrieveCart } from "@/store/lib/data/cart"
-import { retrieveCustomer } from "@/store/lib/data/customer"
 import PaymentWrapper from "@/store/modules/checkout/components/payment-wrapper"
 import CheckoutForm from "@/store/modules/checkout/templates/checkout-form"
 import CheckoutSummary from "@/store/modules/checkout/templates/checkout-summary"
@@ -17,12 +16,10 @@ export default async function Checkout() {
     return notFound()
   }
 
-  const customer = await retrieveCustomer()
-
   return (
     <div className="container grid grid-cols-1 gap-x-40 py-12 sm:grid-cols-[1fr_416px]">
       <PaymentWrapper cart={cart}>
-        <CheckoutForm cart={cart} customer={customer} />
+        <CheckoutForm cart={cart} />
       </PaymentWrapper>
       <CheckoutSummary cart={cart} />
     </div>

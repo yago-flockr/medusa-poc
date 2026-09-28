@@ -29,7 +29,7 @@ export function VendorAuthGate({ children }: { children: React.ReactNode }) {
   if (!token) {
     return (
       <div className="container flex min-h-screen items-center justify-center py-12 flex-col gap-4">
-        <Card className="w-full max-w-5xl gap-0 overflow-hidden p-0">
+        <Card className="w-full max-w-5xl p-0">
           <div className="grid lg:grid-cols-2">
             <Pitch
               title="Your house, your catalogue, our storefront."

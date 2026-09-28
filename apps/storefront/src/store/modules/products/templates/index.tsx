@@ -43,7 +43,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <div className="container flex flex-col gap-16">
       <Breadcrumb>
-        <BreadcrumbList className="text-xs uppercase tracking-widest text-muted-foreground">
+        <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink render={<LocalizedClientLink href="/store" />}>
               Store
@@ -80,13 +80,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         <div className="flex flex-col gap-8 lg:sticky lg:top-28 lg:self-start">
           <ProductInfo product={product} />
           <Suspense
-            fallback={
-              <ProductActions
-                disabled={true}
-                product={product}
-                region={region}
-              />
-            }
+            fallback={<ProductActions disabled={true} product={product} />}
           >
             <ProductActionsWrapper id={product.id} region={region} />
           </Suspense>

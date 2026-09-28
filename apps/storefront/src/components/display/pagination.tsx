@@ -9,7 +9,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { cn } from "@/lib/utils"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { ComponentProps, MouseEvent } from "react"
 
@@ -41,12 +40,7 @@ type PaginationProps = ComponentProps<typeof PaginationRoot> & {
   totalPages: number
 }
 
-export function Pagination({
-  page,
-  totalPages,
-  className,
-  ...props
-}: PaginationProps) {
+export function Pagination({ page, totalPages, ...props }: PaginationProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -66,7 +60,7 @@ export function Pagination({
   const nextPage = Math.min(page + 1, totalPages)
 
   return (
-    <PaginationRoot className={cn("mt-12", className)} {...props}>
+    <PaginationRoot {...props}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious

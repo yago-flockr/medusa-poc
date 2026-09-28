@@ -103,7 +103,10 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
         clearState={clearState}
         data-testid="account-billing-address-editor"
       >
-        <div className="grid grid-cols-1 gap-y-2">
+        <div
+          key={billingAddress?.updated_at}
+          className="grid grid-cols-1 gap-y-2"
+        >
           <div className="grid grid-cols-2 gap-x-2">
             <Input
               label="First name"

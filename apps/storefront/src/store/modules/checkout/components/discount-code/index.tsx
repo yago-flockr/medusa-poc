@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import React from "react"
 
 import { applyPromotions } from "@/store/lib/data/cart"
@@ -56,110 +56,93 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   }
 
   return (
-    <div className="flex w-full flex-col bg-background">
-      <div className="text-sm">
-        <form action={(a) => addPromotionCode(a)} className="mb-5 w-full">
-          <Label className="my-2 flex items-center gap-x-1">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              type="button"
-              className="text-primary hover:text-primary/80"
-              data-testid="add-discount-button"
-            >
-              Add Promotion Code(s)
-            </button>
-          </Label>
+    <div className="flex w-full flex-col gap-5 text-sm">
+      <form
+        action={(a) => addPromotionCode(a)}
+        className="flex w-full flex-col gap-2"
+      >
+        <Button
+          type="button"
+          variant="link"
+          className="w-fit"
+          onClick={() => setIsOpen(!isOpen)}
+          data-testid="add-discount-button"
+        >
+          Add Promotion Code(s)
+        </Button>
 
-          {isOpen && (
-            <>
-              <div className="flex w-full gap-x-2">
-                <Input
-                  className="h-9 flex-1"
-                  id="promotion-input"
-                  name="code"
-                  type="text"
-                  autoFocus={false}
-                  data-testid="discount-input"
-                />
-                <SubmitButton
-                  variant="secondary"
-                  data-testid="discount-apply-button"
-                >
-                  Apply
-                </SubmitButton>
-              </div>
-
-              <ErrorMessage
-                error={errorMessage}
-                data-testid="discount-error-message"
+        {isOpen && (
+          <>
+            <div className="flex w-full gap-2">
+              <Input
+                id="promotion-input"
+                name="code"
+                type="text"
+                aria-label="Promotion code"
+                data-testid="discount-input"
               />
-            </>
-          )}
-        </form>
-
-        {promotions.length > 0 && (
-          <div className="flex w-full items-center">
-            <div className="flex w-full flex-col">
-              <span className="mb-2 font-medium">Promotion(s) applied:</span>
-
-              {promotions.map((promotion) => {
-                return (
-                  <div
-                    key={promotion.id}
-                    className="mb-2 flex w-full max-w-full items-center justify-between"
-                    data-testid="discount-row"
-                  >
-                    <span className="flex w-4/5 items-baseline gap-x-1 pr-1">
-                      <span className="truncate" data-testid="discount-code">
-                        <Badge
-                          variant={promotion.is_automatic ? "success" : "muted"}
-                        >
-                          {promotion.code}
-                        </Badge>{" "}
-                        (
-                        {promotion.application_method?.value !== undefined &&
-                          promotion.application_method.currency_code !==
-                            undefined && (
-                            <>
-                              {promotion.application_method.type ===
-                              "percentage"
-                                ? `${promotion.application_method.value}%`
-                                : convertToLocale({
-                                    amount: +promotion.application_method.value,
-                                    currency_code:
-                                      promotion.application_method
-                                        .currency_code,
-                                  })}
-                            </>
-                          )}
-                        )
-                      </span>
-                    </span>
-                    {!promotion.is_automatic && (
-                      <button
-                        className="flex items-center"
-                        onClick={() => {
-                          if (!promotion.code) {
-                            return
-                          }
-
-                          removePromotionCode(promotion.code)
-                        }}
-                        data-testid="remove-discount-button"
-                      >
-                        <RiDeleteBinLine size={14} />
-                        <span className="sr-only">
-                          Remove discount code from order
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                )
-              })}
+              <SubmitButton
+                variant="secondary"
+                data-testid="discount-apply-button"
+              >
+                Apply
+              </SubmitButton>
             </div>
-          </div>
+
+            <ErrorMessage
+              error={errorMessage}
+              data-testid="discount-error-message"
+            />
+          </>
         )}
-      </div>
+      </form>
+
+      {promotions.length > 0 && (
+        <div className="flex w-full flex-col gap-2">
+          <span className="font-medium">Promotion(s) applied:</span>
+
+          {promotions.map((promotion) => (
+            <div
+              key={promotion.id}
+              className="flex w-full items-center justify-between gap-2"
+              data-testid="discount-row"
+            >
+              <span className="truncate" data-testid="discount-code">
+                <Badge variant={promotion.is_automatic ? "success" : "muted"}>
+                  {promotion.code}
+                </Badge>{" "}
+                (
+                {promotion.application_method?.value !== undefined &&
+                  promotion.application_method.currency_code !== undefined &&
+                  (promotion.application_method.type === "percentage"
+                    ? `${promotion.application_method.value}%`
+                    : convertToLocale({
+                        amount: +promotion.application_method.value,
+                        currency_code:
+                          promotion.application_method.currency_code,
+                      }))}
+                )
+              </span>
+              {!promotion.is_automatic && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label="Remove discount code from order"
+                  onClick={() => {
+                    if (promotion.code) {
+                      removePromotionCode(promotion.code)
+                    }
+                  }}
+                  data-testid="remove-discount-button"
+                >
+                  <RiDeleteBinLine />
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

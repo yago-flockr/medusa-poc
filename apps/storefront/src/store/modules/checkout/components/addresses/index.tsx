@@ -39,8 +39,8 @@ const Addresses = ({
   const [message, formAction] = useActionState(setAddresses, null)
 
   return (
-    <div className="bg-background">
-      <div className="mb-6 flex flex-row items-center justify-between">
+    <div className="flex flex-col gap-6 bg-background">
+      <div className="flex flex-row items-center justify-between">
         <h2 className="flex flex-row items-baseline gap-x-2 text-2xl font-medium">
           Shipping Address
           {!isOpen && <RiCheckboxCircleFill className="text-success" />}
@@ -57,7 +57,7 @@ const Addresses = ({
       </div>
       {isOpen ? (
         <form action={formAction}>
-          <div className="pb-8">
+          <div className="flex flex-col gap-6">
             <ShippingAddress
               customer={customer}
               checked={sameAsBilling}
@@ -66,15 +66,13 @@ const Addresses = ({
             />
 
             {!sameAsBilling && (
-              <div>
-                <h2 className="gap-x-4 pt-8 pb-6 text-2xl font-medium">
-                  Billing address
-                </h2>
+              <div className="flex flex-col gap-6">
+                <h2 className="text-2xl font-medium">Billing address</h2>
 
                 <BillingAddress cart={cart} />
               </div>
             )}
-            <SubmitButton className="mt-6" data-testid="submit-address-button">
+            <SubmitButton className="w-fit" data-testid="submit-address-button">
               Continue to delivery
             </SubmitButton>
             <ErrorMessage error={message} data-testid="address-error-message" />
@@ -165,7 +163,7 @@ const Addresses = ({
           </div>
         </div>
       )}
-      <Separator className="mt-8" />
+      <Separator />
     </div>
   )
 }
