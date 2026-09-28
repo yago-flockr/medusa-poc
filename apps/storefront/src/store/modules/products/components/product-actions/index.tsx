@@ -40,17 +40,18 @@ export default function ProductActions({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [options, setOptions] = useState<Record<string, string | undefined>>({})
+  const [options, setOptions] = useState<Record<string, string | undefined>>(
+    () => {
+      const variant =
+        product.variants?.length === 1
+          ? product.variants[0]
+          : product.variants?.find((v) => v.id === searchParams.get("v_id"))
+
+      return (variant && optionsAsKeymap(variant.options)) || {}
+    },
+  )
   const [isAdding, setIsAdding] = useState(false)
   const country = useParams().country as string
-
-  // If there is only 1 variant, preselect the options
-  useEffect(() => {
-    if (product.variants?.length === 1) {
-      const variantOptions = optionsAsKeymap(product.variants[0].options)
-      setOptions(variantOptions ?? {})
-    }
-  }, [product.variants])
 
   // Options can be shared across products (see resolve-shared-product-options
   // on the backend), so an option's values can include ones no variant of
@@ -122,7 +123,7 @@ export default function ProductActions({
     }
 
     router.replace(pathname + "?" + params.toString())
-  }, [selectedVariant, isValidVariant])
+  }, [selectedVariant, isValidVariant, pathname, router, searchParams])
 
   // check if the selected variant is in stock
   const inStock = useMemo(() => {

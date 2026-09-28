@@ -78,7 +78,6 @@ export function ImagesField({
 
         {Array.from({ length: pendingUploads }).map((_, index) => (
           <Attachment
-            // eslint-disable-next-line react/no-array-index-key
             key={`uploading-${index}`}
             orientation="vertical"
             size="sm"

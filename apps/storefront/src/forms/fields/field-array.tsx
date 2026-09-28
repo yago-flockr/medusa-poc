@@ -49,7 +49,6 @@ export function FieldArray({
       <ItemGroup>
         {values.map((_, index) => (
           <Item
-            // eslint-disable-next-line react/no-array-index-key
             key={index}
             variant="outline"
             className="flex-col items-stretch gap-2"

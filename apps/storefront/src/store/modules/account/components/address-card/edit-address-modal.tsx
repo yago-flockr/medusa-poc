@@ -49,7 +49,6 @@ const EditAddress: React.FC<EditAddressProps> = ({
     if (successState) {
       close()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [successState])
 
   useEffect(() => {

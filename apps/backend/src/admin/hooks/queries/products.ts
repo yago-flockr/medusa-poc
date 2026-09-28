@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
-import type { Product, ProductQuery } from "../../../api/admin/products/types"
+import {
+  productLinksSchema,
+  type ProductQuery,
+} from "../../../api/admin/products/types"
 import { queryKeys } from "./query-keys"
 import { sdk } from "../../lib/sdk"
 
@@ -8,6 +11,6 @@ export const useAdminProductRetrieve = (id: string, query?: ProductQuery) =>
     queryKey: [...queryKeys.products.findOne, id, query],
     queryFn: async () => {
       const { product } = await sdk.admin.product.retrieve(id, query)
-      return product as Product
+      return productLinksSchema.parse(product)
     },
   })
