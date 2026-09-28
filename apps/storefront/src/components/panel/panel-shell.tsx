@@ -54,7 +54,9 @@ export function PanelShell({ children, sidebar, ...props }: PanelShellProps) {
             </TextTooltip>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-6 p-6">{children}</div>
+        <div className="flex flex-1 flex-col gap-6 p-6 container">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

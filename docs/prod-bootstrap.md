@@ -2,7 +2,7 @@
 
 Migrations run automatically on deploy. The rest is manual, done once.
 
-1. **Deploy (Cloud panel).** Project root `apps/backend`, Storefront root `apps/storefront`. Set `JWT_SECRET`, `COOKIE_SECRET`.
+1. **Deploy (Cloud panel).** Project root `apps/backend`, Storefront root `apps/storefront`. Set `JWT_SECRET`, `COOKIE_SECRET`, and `PANEL_URL` (the storefront's public origin, e.g. `https://store.example.com`, no trailing slash; the Shopify connect flow redirects back to it).
 2. **Store currency (Admin → Settings → Store).** Add GBP, set as default.
 3. **Region (Admin → Settings → Regions).** UK: GBP, GB.
 4. **Tax region (Admin → Settings → Tax Regions).** One for GB. Rate can stay 0 for now.
