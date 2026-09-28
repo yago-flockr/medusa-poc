@@ -1,7 +1,7 @@
 "use client"
 
 import { Input as InputPrimitive } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Field, FieldLabel } from "@/components/ui/field"
 import React, { useState } from "react"
 
 import { RiEyeLine, RiEyeOffLine } from "@remixicon/react"
@@ -26,18 +26,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputType = type === "password" && showPassword ? "text" : type
 
     return (
-      <div className="flex w-full flex-col gap-1.5">
-        <Label htmlFor={name}>
+      <Field>
+        <FieldLabel htmlFor={name}>
           {topLabel ?? label}
           {required && <span className="text-destructive">*</span>}
-        </Label>
+        </FieldLabel>
         <div className="relative flex w-full items-center">
           <InputPrimitive
             id={name}
             type={inputType}
             name={name}
             required={required}
-            className="h-11 rounded-md"
             {...props}
             ref={ref}
           />
@@ -55,7 +54,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </button>
           )}
         </div>
-      </div>
+      </Field>
     )
   },
 )

@@ -1,8 +1,8 @@
 "use client"
 
 import {
-  NativeSelect as NativeSelectPrimitive,
   NativeSelectOption,
+  NativeSelect as NativeSelectPrimitive,
 } from "@/components/ui/native-select"
 import { cn } from "@/lib/utils"
 import {
@@ -41,11 +41,7 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
     return (
       <NativeSelectPrimitive
         ref={innerRef}
-        className={cn(
-          "h-16 w-16",
-          isPlaceholder && "text-muted-foreground",
-          className,
-        )}
+        className={cn(isPlaceholder && "text-muted-foreground", className)}
         {...props}
       >
         <NativeSelectOption disabled value="">
