@@ -16,6 +16,7 @@
     "./affiliate/me": "./src/affiliate/me.ts",
     "./affiliate/profile": "./src/affiliate/profile.ts",
     "./affiliate/products": "./src/affiliate/products.ts",
+    "./affiliate/orders": "./src/affiliate/orders.ts",
     "./affiliate/sales": "./src/affiliate/sales.ts",
     "./vendor/me": "./src/vendor/me.ts",
     "./vendor/auth": "./src/vendor/auth.ts",

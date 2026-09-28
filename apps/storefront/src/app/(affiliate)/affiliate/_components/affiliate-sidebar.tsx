@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar"
 import {
   RiDashboardLine,
+  RiFileList3Line,
   RiLogoutCircleLine,
   RiStore2Line,
   RiUserLine,
@@ -24,6 +25,7 @@ import { ComponentProps } from "react"
 const ITEMS = [
   { href: "/affiliate", label: "Dashboard", icon: RiDashboardLine },
   { href: "/affiliate/products", label: "Products", icon: RiStore2Line },
+  { href: "/affiliate/orders", label: "Orders", icon: RiFileList3Line },
 ]
 
 const ACCOUNT_ITEMS = [

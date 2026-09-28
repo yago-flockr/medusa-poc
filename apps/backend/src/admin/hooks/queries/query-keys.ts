@@ -1,4 +1,7 @@
 export const queryKeys = {
+  orders: {
+    findOne: ["findOneOrder"] as const,
+  },
   products: {
     findOne: ["findOneProduct"] as const,
   },
