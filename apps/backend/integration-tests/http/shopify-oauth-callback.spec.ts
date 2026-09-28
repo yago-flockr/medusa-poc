@@ -135,6 +135,26 @@ medusaIntegrationTestRunner({
         const connection = await readConnection()
         expect(connection?.connected_at ?? null).toBeNull()
       })
+
+      it("sends the vendor back with the reason when the install link is stale", async () => {
+        const query = signQuery(
+          { shop: STORE_DOMAIN, code: "abc", state: "state-we-never-issued" },
+          CLIENT_SECRET,
+        )
+
+        await expect(callback(query)).rejects.toMatchObject({
+          response: {
+            status: 302,
+            headers: {
+              location: expect.stringContaining(
+                `/vendor/shopify?error=${encodeURIComponent(
+                  "This Shopify install link has expired or was already used. Generate a new one and try again.",
+                )}`,
+              ),
+            },
+          },
+        })
+      })
     })
   },
 })

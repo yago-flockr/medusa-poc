@@ -13,6 +13,7 @@ import {
   type UpsertVendorIntegrationConnectionStepInput,
 } from "../shared/steps/upsert-vendor-integration-connection"
 import { upsertStorefrontContentStep } from "../shared/steps/upsert-storefront-content"
+import { assertIntegrationAccountAvailableStep } from "./steps/assert-integration-account-available"
 import { VENDOR_MODULE } from "../../modules/vendor"
 
 export type UpdateVendorWorkflowInput = UpdateVendorStepInput & {
@@ -48,6 +49,7 @@ export const updateVendorWorkflow = createWorkflow(
         vendor_id: data.input.id,
         ...data.input.integration_connection!,
       }))
+      assertIntegrationAccountAvailableStep(connectionInput)
       return upsertVendorIntegrationConnectionStep(connectionInput)
     })
 

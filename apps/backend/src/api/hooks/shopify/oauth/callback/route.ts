@@ -27,6 +27,13 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     })
   } catch (error) {
     console.error("Couldn't complete Shopify OAuth connection:", error)
+    const message = MedusaError.isMedusaError(error)
+      ? error.message
+      : "Couldn't connect to Shopify. Please try again."
+    res.redirect(
+      `${panelUrl}/vendor/shopify?error=${encodeURIComponent(message)}`,
+    )
+    return
   }
 
   res.redirect(`${panelUrl}/vendor/shopify`)

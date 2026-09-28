@@ -2,9 +2,8 @@ import {
   createWorkflow,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { findVendorByShopifyDomainStep } from "./steps/find-vendor-by-shopify-domain"
+import { findShopifyConnectionByOauthStateStep } from "./steps/find-shopify-connection-by-oauth-state"
 import { verifyShopifyCallbackHmacStep } from "./steps/verify-shopify-callback-hmac"
-import { verifyShopifyOAuthStateStep } from "./steps/verify-shopify-oauth-state"
 import { exchangeShopifyOAuthCodeStep } from "./steps/exchange-shopify-oauth-code"
 import { upsertVendorIntegrationConnectionStep } from "../shared/steps/upsert-vendor-integration-connection"
 
@@ -17,18 +16,14 @@ export type CompleteVendorShopifyConnectionWorkflowInput = {
 export const completeVendorShopifyConnectionWorkflow = createWorkflow(
   "complete-vendor-shopify-connection",
   function (input: CompleteVendorShopifyConnectionWorkflowInput) {
-    const found = findVendorByShopifyDomainStep({
+    const found = findShopifyConnectionByOauthStateStep({
+      oauthState: input.query.state,
       shopifyStoreDomain: input.shop,
     })
 
     verifyShopifyCallbackHmacStep({
       query: input.query,
       clientSecret: found.clientSecret,
-    })
-
-    verifyShopifyOAuthStateStep({
-      expectedState: found.oauthState,
-      actualState: input.query.state,
     })
 
     const { access_token, scope, connectedAt } = exchangeShopifyOAuthCodeStep({

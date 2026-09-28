@@ -69,6 +69,47 @@ medusaIntegrationTestRunner({
         expect(response.data.vendor.shopify_store_domain).toBe(STORE_DOMAIN)
       })
 
+      it("refuses a store that is already connected to another vendor", async () => {
+        const container = getContainer()
+        const { result: otherVendor } = await createVendorWorkflow(
+          container,
+        ).run({ input: { name: "Second Shopify Vendor" } })
+        await createVendorUserWorkflow(container).run({
+          input: {
+            vendor_id: otherVendor.id,
+            email: "second-shopify@test.com",
+            password: "test1234",
+            name: "Second",
+          },
+        })
+        const otherLogin = await api.post("/auth/vendor/emailpass", {
+          email: "second-shopify@test.com",
+          password: "test1234",
+        })
+
+        await connect()
+
+        await expect(
+          api.patch(
+            "/vendors/shopify/connection",
+            {
+              shopify_store_domain: STORE_DOMAIN,
+              shopify_client_id: CLIENT_ID,
+              shopify_client_secret: CLIENT_SECRET,
+            },
+            { headers: { Authorization: `Bearer ${otherLogin.data.token}` } },
+          ),
+        ).rejects.toMatchObject({
+          response: {
+            status: 400,
+            data: {
+              message: `${STORE_DOMAIN} is already connected to another vendor. Each shopify store can belong to one vendor only.`,
+            },
+          },
+        })
+        expect((await connect()).status).toBe(200)
+      })
+
       it("never echoes the client secret back", async () => {
         const response = await connect()
 

@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { getBaseURL } from "@/lib/env"
+import { SearchParamErrorToast } from "@/lib/search-param-error-toast"
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "next-themes"
 import { Metadata } from "next"
@@ -41,6 +42,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster />
+          <SearchParamErrorToast />
         </ThemeProvider>
       </body>
     </html>
