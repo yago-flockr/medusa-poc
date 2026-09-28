@@ -31,6 +31,8 @@ Do not record generic facts, obvious code, or duplicates.
 - Known-insecure-for-now items, mapped but deliberately not fixed yet → `docs/security-backlog.md`
 - `AGENTS.md` → only when agent files are added or renamed
 
+**Progress tracking lives in Linear**, project [Vitrine](https://linear.app/flockr/project/vitrine-be0e1b34e3be/issues) (team Flockr). Whenever a piece of work lands, changes scope, or a new next step shows up, update Linear in the same session: tick the area issue's bullets, move status, and add unscheduled work to Backlog. Keep it flat, one top-level issue per area, and update existing issues rather than creating duplicates. Local docs keep the _what_ and _how_; Linear keeps the _status_.
+
 ## Overview
 
 Medusa v2 monorepo chassis (still close to the DTC starter). Brand-agnostic foundation to specialize per client.
