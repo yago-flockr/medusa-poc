@@ -3,7 +3,6 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { getBaseURL } from "@/lib/env"
 import { SearchParamErrorToast } from "@/lib/search-param-error-toast"
 import { cn } from "@/lib/utils"
-import { ThemeProvider } from "next-themes"
 import { Metadata } from "next"
 import { Inter, Playfair_Display } from "next/font/google"
 
@@ -39,11 +38,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TooltipProvider>{children}</TooltipProvider>
-          <Toaster />
-          <SearchParamErrorToast />
-        </ThemeProvider>
+        <TooltipProvider>{children}</TooltipProvider>
+        <Toaster />
+        <SearchParamErrorToast />
       </body>
     </html>
   )

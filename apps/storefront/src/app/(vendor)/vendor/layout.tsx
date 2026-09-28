@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { ThemeProvider } from "next-themes"
 
 import { getBaseURL } from "@/lib/env"
 import "@/styles/globals.css"
@@ -17,8 +18,10 @@ export default function VendorLayout({
   children: React.ReactNode
 }) {
   return (
-    <VendorQueryClientProvider>
-      <VendorAuthGate>{children}</VendorAuthGate>
-    </VendorQueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <VendorQueryClientProvider>
+        <VendorAuthGate>{children}</VendorAuthGate>
+      </VendorQueryClientProvider>
+    </ThemeProvider>
   )
 }

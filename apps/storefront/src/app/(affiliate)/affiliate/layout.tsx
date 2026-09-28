@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { ThemeProvider } from "next-themes"
 
 import { getBaseURL } from "@/lib/env"
 import "@/styles/globals.css"
@@ -17,8 +18,10 @@ export default function AffiliateLayout({
   children: React.ReactNode
 }) {
   return (
-    <AffiliateQueryClientProvider>
-      <AffiliateAuthGate>{children}</AffiliateAuthGate>
-    </AffiliateQueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <AffiliateQueryClientProvider>
+        <AffiliateAuthGate>{children}</AffiliateAuthGate>
+      </AffiliateQueryClientProvider>
+    </ThemeProvider>
   )
 }
